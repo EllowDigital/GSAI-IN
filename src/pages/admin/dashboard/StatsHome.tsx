@@ -1,106 +1,73 @@
-
 import React from "react";
-import { User, BookOpen, Newspaper, Image as GalleryIcon, Calendar } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { DollarSign, Users, LayoutDashboard, BookOpen, Newspaper, Image, BadgeDollarSign } from "lucide-react";
 
-// Accept only valid literal table names for type safety!
-type CountableTable = "students" | "blogs" | "news" | "gallery_images" | "events";
-
-const CARD_BG = [
-  "bg-yellow-400 text-black",
-  "bg-blue-200 text-blue-900",
-  "bg-pink-200 text-pink-900",
-  "bg-violet-200 text-violet-900",
-  "bg-lime-200 text-lime-900",
+const stats = [
+  {
+    title: "Total Revenue",
+    value: "$25,678",
+    icon: DollarSign,
+    description: "From all courses and programs",
+  },
+  {
+    title: "Active Students",
+    value: "124",
+    icon: Users,
+    description: "Currently enrolled",
+  },
+  {
+    title: "Total Courses",
+    value: "8",
+    icon: BookOpen,
+    description: "Different programs offered",
+  },
+  {
+    title: "Latest News",
+    value: "3",
+    icon: Newspaper,
+    description: "News items published",
+  },
+  {
+    title: "Gallery Images",
+    value: "45",
+    icon: Image,
+    description: "Images in the gallery",
+  },
 ];
 
-// Stat fetchers
-async function getTotal(table: CountableTable): Promise<number> {
-  const { count } = await supabase
-    .from(table)
-    .select("*", { count: "exact", head: true });
-  return count ?? 0;
-}
-
 export default function StatsHome() {
-  const { data: students = 0, isLoading: loadingStudents } = useQuery({
-    queryKey: ["stats", "students"],
-    queryFn: () => getTotal("students"),
-  });
-  const { data: blogs = 0, isLoading: loadingBlogs } = useQuery({
-    queryKey: ["stats", "blogs"],
-    queryFn: () => getTotal("blogs"),
-  });
-  const { data: news = 0, isLoading: loadingNews } = useQuery({
-    queryKey: ["stats", "news"],
-    queryFn: () => getTotal("news"),
-  });
-  const { data: gallery = 0, isLoading: loadingGallery } = useQuery({
-    queryKey: ["stats", "gallery_images"],
-    queryFn: () => getTotal("gallery_images"),
-  });
-  const { data: events = 0, isLoading: loadingEvents } = useQuery({
-    queryKey: ["stats", "events"],
-    queryFn: () => getTotal("events"),
-  });
-
-  const stats = [
-    {
-      label: "Total Students",
-      value: students,
-      icon: <User />,
-      loading: loadingStudents,
-      bg: CARD_BG[0],
-    },
-    {
-      label: "Total Blogs",
-      value: blogs,
-      icon: <BookOpen />,
-      loading: loadingBlogs,
-      bg: CARD_BG[1],
-    },
-    {
-      label: "News Posted",
-      value: news,
-      icon: <Newspaper />,
-      loading: loadingNews,
-      bg: CARD_BG[2],
-    },
-    {
-      label: "Gallery Images",
-      value: gallery,
-      icon: <GalleryIcon />,
-      loading: loadingGallery,
-      bg: CARD_BG[3],
-    },
-    {
-      label: "Events",
-      value: events,
-      icon: <Calendar />,
-      loading: loadingEvents,
-      bg: CARD_BG[4],
-    },
-  ];
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-      {stats.map((s) => (
-        <div
-          key={s.label}
-          className={`rounded-2xl shadow-lg p-6 flex items-center gap-6 ${s.bg} min-w-[230px]`}
+    <div>
+      <h2 className="text-3xl font-bold tracking-tight mb-4 flex items-center gap-3 text-yellow-400">
+        <LayoutDashboard className="w-8 h-8" />
+        Dashboard
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {stats.map((item, i) => (
+          <Card key={i} className="shadow-md">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                {item.icon && <item.icon className="w-4 h-4 text-muted-foreground" />}
+                {item.title}
+              </CardTitle>
+              {/* <MoreHorizontal className="h-4 w-4 text-muted-foreground" /> */}
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{item.value}</div>
+              <p className="text-xs text-muted-foreground">{item.description}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      <div className="mt-4">
+        <a
+          href="/admin/dashboard/fees"
+          className="inline-flex items-center gap-2 border border-yellow-400 px-4 py-2 rounded-full bg-yellow-50 text-yellow-700 font-semibold hover:bg-yellow-200 transition"
         >
-          <div className="bg-white/70 rounded-xl p-3 flex items-center justify-center shadow">{s.icon}</div>
-          <div>
-            <div className="text-3xl font-bold">
-              {s.loading ? <Skeleton className="h-7 w-16" /> : s.value}
-            </div>
-            <div className="text-sm font-semibold mt-1">{s.label}</div>
-          </div>
-        </div>
-      ))}
+          <BadgeDollarSign className="w-5 h-5" />
+          Fees Manager
+        </a>
+      </div>
     </div>
   );
 }
-
