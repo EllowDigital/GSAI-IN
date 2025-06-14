@@ -8,7 +8,16 @@ import { useForm } from "react-hook-form";
 import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
-export default function FeeModal({ open, onClose, fee, student, month, year }) {
+type FeeModalProps = {
+  open: boolean;
+  onClose: () => void;
+  fee?: any;
+  student?: any;
+  month?: number | string;
+  year?: number | string;
+};
+
+export default function FeeModal({ open, onClose, fee, student, month, year }: FeeModalProps) {
   const upsert = useUpsertFee();
   const { register, setValue, handleSubmit, reset, watch, formState } = useForm({
     defaultValues: {
@@ -49,13 +58,14 @@ export default function FeeModal({ open, onClose, fee, student, month, year }) {
         ...values,
         student_id: student.id,
         balance_due: calcBalance(),
+        id: fee?.id,
       },
       {
         onSuccess: () => {
           toast.success("Fee saved!");
           onClose();
         },
-        onError: (e) => toast.error(e?.message || "Failed to save fee."),
+        onError: (e: any) => toast.error(e?.message || "Failed to save fee."),
       }
     );
   };
