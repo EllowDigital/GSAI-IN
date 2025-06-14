@@ -5,6 +5,9 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Accept only valid literal table names for type safety!
+type CountableTable = "students" | "blogs" | "news" | "gallery_images" | "events";
+
 const CARD_BG = [
   "bg-yellow-400 text-black",
   "bg-blue-200 text-blue-900",
@@ -14,7 +17,7 @@ const CARD_BG = [
 ];
 
 // Stat fetchers
-async function getTotal(table: string): Promise<number> {
+async function getTotal(table: CountableTable): Promise<number> {
   const { count } = await supabase
     .from(table)
     .select("*", { count: "exact", head: true });
@@ -83,7 +86,7 @@ export default function StatsHome() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-      {stats.map((s, i) => (
+      {stats.map((s) => (
         <div
           key={s.label}
           className={`rounded-2xl shadow-lg p-6 flex items-center gap-6 ${s.bg} min-w-[230px]`}
@@ -100,3 +103,4 @@ export default function StatsHome() {
     </div>
   );
 }
+
