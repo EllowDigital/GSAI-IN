@@ -2,12 +2,12 @@ import React from "react";
 
 const AboutSection = () => {
   return (
-    <section id="about" className="px-4 py-20 md:py-28 bg-white border-b border-gray-100">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <h2 className="text-3xl md:text-4xl font-bold text-yellow-400 mb-4">
+    <section id="about" className="px-2 xs:px-4 py-14 xs:py-20 md:py-28 bg-white border-b border-gray-100">
+      <div className="max-w-6xl mx-auto space-y-5 xs:space-y-6">
+        <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-400 mb-2 xs:mb-4 text-center xs:text-left">
           About GSAI
         </h2>
-        <p className="text-lg leading-relaxed text-justify text-gray-800 mb-4">
+        <p className="text-base xs:text-lg leading-relaxed text-justify text-gray-800 mb-2 xs:mb-4">
           Ghatak Sports Academy India™ (GSAI) is a{" "}
           <span className="text-yellow-400 font-semibold">
             Government-recognized
@@ -19,7 +19,7 @@ const AboutSection = () => {
           institution committed to empowering individuals through{" "}
           <strong>martial arts and self-defense</strong>. 💪✨
         </p>
-        <p className="mb-4 text-justify text-gray-700">
+        <p className="mb-2 xs:mb-4 text-justify text-gray-700">
           We seamlessly blend{" "}
           <span className="text-red-500 font-medium">
             traditional martial arts
