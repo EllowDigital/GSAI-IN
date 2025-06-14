@@ -14,6 +14,7 @@ import News from "./pages/admin/dashboard/News";
 import Gallery from "./pages/admin/dashboard/Gallery";
 import Students from "./pages/admin/dashboard/Students";
 import NotFoundAdmin from "./pages/admin/NotFoundAdmin";
+import FeesManager from "./pages/admin/dashboard/FeesManager";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
                   <Route path="login" element={<AdminLogin />} />
                   <Route path="dashboard" element={<AdminLayout />}>
                     <Route index element={<StatsHome />} />
+                    <Route path="fees" element={<FeesManager />} />
                     <Route path="blogs" element={<Blogs />} />
                     <Route path="news" element={<News />} />
                     <Route path="gallery" element={<Gallery />} />

@@ -1,13 +1,13 @@
-
 import React, { useState } from "react";
 import { Outlet, NavLink, useLocation } from "react-router-dom";
 import { useAdminAuth } from "./AdminAuthProvider";
-import { LogOut, Home, BookOpen, Newspaper, Image, Users, ChevronUp } from "lucide-react";
+import { LogOut, Home, BookOpen, Newspaper, Image, Users, ChevronUp, BadgeDollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // Route tabs
 const navPages = [
   { path: "/admin/dashboard", label: "Dashboard", icon: <Home /> },
+  { path: "/admin/dashboard/fees", label: "Fees", icon: <BadgeDollarSign /> },
   { path: "/admin/dashboard/blogs", label: "Blogs", icon: <BookOpen /> },
   { path: "/admin/dashboard/news", label: "News", icon: <Newspaper /> },
   { path: "/admin/dashboard/gallery", label: "Gallery", icon: <Image /> },
