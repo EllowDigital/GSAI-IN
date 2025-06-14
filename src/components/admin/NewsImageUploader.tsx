@@ -1,4 +1,3 @@
-
 import React from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -30,13 +29,9 @@ export default function NewsImageUploader({ imageUrl, onUpload, disabled }: Prop
         setUploading(false);
         return;
       }
-      const { data: urlData, error: publicError } = supabase.storage.from("news-images").getPublicUrl(filePath);
-      if (publicError) {
-        console.error("Error getting public URL:", publicError);
-        toast.error("Upload succeeded but could not retrieve image URL.");
-        setUploading(false);
-        return;
-      }
+
+      // getPublicUrl only returns { data }
+      const { data: urlData } = supabase.storage.from("news-images").getPublicUrl(filePath);
       if (!urlData?.publicUrl) {
         console.error("Could not get public URL data:", urlData);
         toast.error("Upload succeeded but image URL is missing.");
