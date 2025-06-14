@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from "react";
 import {
   Table,
@@ -56,6 +57,11 @@ export default function FeeTable({
   students: any[] | undefined;
   isLoading: boolean;
 }) {
+  // DEBUG LOGS to help track rendering
+  console.log("[FeeTable] fees:", fees);
+  console.log("[FeeTable] students:", students);
+  console.log("[FeeTable] isLoading:", isLoading);
+
   const [modalOpen, setModalOpen] = useState(false);
   const [modalFee, setModalFee] = useState<any>(null);
   const [modalStudent, setModalStudent] = useState<any>(null);
@@ -70,7 +76,7 @@ export default function FeeTable({
   const [search, setSearch] = useState<string>("");
 
   // Defensive: show loading spinner until both arrays are loaded
-  if (isLoading || !students) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center py-10 w-full">
         <Loader2 className="animate-spin text-yellow-500" />
@@ -80,10 +86,21 @@ export default function FeeTable({
       </div>
     );
   }
+  // Defensive: show visible error if students fail to load
   if (!Array.isArray(students) || students.length === 0) {
     return (
       <div className="text-center text-gray-500 py-10 w-full">
         No students available. Add students before managing fees.
+      </div>
+    );
+  }
+  // Defensive: if fees is undefined/errored show visible notice
+  if (!Array.isArray(fees)) {
+    return (
+      <div className="text-center text-gray-500 py-10 w-full">
+        Fees data could not be loaded.<br />
+        Please check your connection or try reloading.<br />
+        <span className="mt-2 block text-xs text-red-400">If the issue persists, check for errors in the browser console.</span>
       </div>
     );
   }
@@ -290,7 +307,9 @@ export default function FeeTable({
         student={modalStudent}
         month={modalMonth}
         year={modalYear}
-        carryForwardBalance={modalStudent && allRows.find(r => r.student.id === modalStudent.id)?.carryForward}
+        carryForwardBalance={
+          modalStudent && allRows.find(r => r.student.id === modalStudent.id)?.carryForward
+        }
       />
     </div>
   );
