@@ -26,8 +26,8 @@ export default function FeeTable({
   students,
   isLoading
 }: {
-  fees: any[];
-  students: any[];
+  fees: any[] | undefined;
+  students: any[] | undefined;
   isLoading: boolean;
 }) {
   const [modalOpen, setModalOpen] = useState(false);
@@ -39,15 +39,36 @@ export default function FeeTable({
   const [status, setStatus] = useState<string>("");
   const [search, setSearch] = useState<string>("");
 
+  // Defensive: show loading spinner until both arrays are loaded
+  if (isLoading || !students) {
+    return (
+      <div className="flex items-center justify-center py-10 w-full">
+        <Loader2 className="animate-spin text-yellow-500" />
+        <span className="ml-3 text-gray-600">Loading students and fees...</span>
+      </div>
+    );
+  }
+
+  if (!Array.isArray(students) || students.length === 0) {
+    return (
+      <div className="text-center text-gray-500 py-10 w-full">
+        No students available. Add students before managing fees.
+      </div>
+    );
+  }
+
+  // Defensive: allow fees to be blank (skip filtering if so)
   const filtered = useMemo(() => {
-    if (!fees) return [];
+    if (!Array.isArray(fees) || fees.length === 0) return [];
     return fees.filter((f) => {
       if (month && f.month !== Number(month)) return false;
       if (year && f.year !== Number(year)) return false;
       if (status && f.status !== status) return false;
       if (
         search &&
-        !f.students?.name?.toLowerCase().includes(search.toLowerCase())
+        !(f.students?.name || "")
+          .toLowerCase()
+          .includes(search.toLowerCase())
       )
         return false;
       return true;
@@ -138,51 +159,51 @@ export default function FeeTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={9}>
-                  <div className="flex items-center justify-center py-10">
-                    <Loader2 className="animate-spin" />
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : filtered.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={9} className="text-center text-gray-500 py-10">
-                  No fees found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              filtered.map((fee) => (
-                <TableRow key={fee.id} className={getStatusColor(fee.status)}>
-                  <TableCell>{fee.students?.name}</TableCell>
-                  <TableCell>{fee.students?.program}</TableCell>
-                  <TableCell>{fee.month}</TableCell>
-                  <TableCell>{fee.year}</TableCell>
-                  <TableCell>₹{fee.monthly_fee}</TableCell>
-                  <TableCell>₹{fee.paid_amount}</TableCell>
-                  <TableCell>₹{fee.balance_due}</TableCell>
-                  <TableCell>
-                    <span className="rounded-full px-3 py-1 font-bold text-xs capitalize">
-                      {fee.status}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => {
-                        setModalFee(fee);
-                        setModalStudent(fee.students);
-                        setModalOpen(true);
-                      }}
-                      className="flex items-center gap-1"
-                    >
-                      <Edit className="w-4 h-4" /> Edit
-                    </Button>
+            {Array.isArray(fees) && fees.length > 0 ? (
+              filtered.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center text-gray-500 py-10">
+                    No fees found for the current filters.
                   </TableCell>
                 </TableRow>
-              ))
+              ) : (
+                filtered.map((fee) => (
+                  <TableRow key={fee.id} className={getStatusColor(fee.status)}>
+                    <TableCell>{fee.students?.name}</TableCell>
+                    <TableCell>{fee.students?.program}</TableCell>
+                    <TableCell>{fee.month}</TableCell>
+                    <TableCell>{fee.year}</TableCell>
+                    <TableCell>₹{fee.monthly_fee}</TableCell>
+                    <TableCell>₹{fee.paid_amount}</TableCell>
+                    <TableCell>₹{fee.balance_due}</TableCell>
+                    <TableCell>
+                      <span className="rounded-full px-3 py-1 font-bold text-xs capitalize">
+                        {fee.status}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => {
+                          setModalFee(fee);
+                          setModalStudent(fee.students);
+                          setModalOpen(true);
+                        }}
+                        className="flex items-center gap-1"
+                      >
+                        <Edit className="w-4 h-4" /> Edit
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )
+            ) : (
+              <TableRow>
+                <TableCell colSpan={9} className="text-center text-gray-500 py-10">
+                  No fee records available yet.
+                </TableCell>
+              </TableRow>
             )}
           </TableBody>
         </Table>

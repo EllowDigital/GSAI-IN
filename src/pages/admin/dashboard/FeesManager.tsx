@@ -20,7 +20,14 @@ export default function FeesManager() {
   });
 
   // All fees (live)
-  const { fees, isLoading: loadingFees } = useFees();
+  const { fees, isLoading: loadingFees, error } = useFees();
+
+  // Logging for debugging
+  React.useEffect(() => {
+    console.log("Loaded students:", students);
+    console.log("Loaded fees:", fees);
+    if (error) console.error("Error loading fees:", error);
+  }, [students, fees, error]);
 
   return (
     <div className="max-w-7xl mx-auto p-4 bg-white rounded-2xl shadow-lg">
@@ -29,7 +36,11 @@ export default function FeesManager() {
           <BadgeDollarSign className="w-7 h-7" /> Fees Management
         </h2>
       </div>
-      <FeeTable fees={fees} students={students} isLoading={loadingFees || loadingStudents} />
+      <FeeTable
+        fees={fees}
+        students={students}
+        isLoading={loadingFees || loadingStudents}
+      />
     </div>
   );
 }
