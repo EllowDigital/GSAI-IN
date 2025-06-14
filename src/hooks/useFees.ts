@@ -2,7 +2,6 @@
 import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-// Add type imports for strong typing
 import type { Tables, TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
 
 // Type for Fees Hook Arguments
@@ -21,7 +20,7 @@ export function useFees(args: UseFeesArgs = {}) {
       let q = supabase
         .from("fees")
         .select(
-          "id, student_id, month, year, monthly_fee, paid_amount, balance_due, status, notes, created_at, updated_at, students(name, program, default_monthly_fee)"
+          "id, student_id, month, year, monthly_fee, paid_amount, balance_due, status, notes, created_at, updated_at, students(id, name, program, default_monthly_fee)"
         )
         .order("year", { ascending: false })
         .order("month", { ascending: false });
@@ -29,7 +28,11 @@ export function useFees(args: UseFeesArgs = {}) {
       if (year) q = q.eq("year", Number(year));
       if (studentId) q = q.eq("student_id", studentId);
       const { data, error } = await q;
-      if (error) throw error;
+      if (error) {
+        console.error("Fees query error:", error.message);
+        throw error;
+      }
+      console.log("Fees fetched:", data);
       return data || [];
     }
   });
@@ -60,13 +63,8 @@ export function useUpsertFee() {
   return useMutation({
     // Accept payload as FeesInsert or FeesUpdate (see below)
     mutationFn: async (form: Partial<TablesInsert<'fees'>> & { id?: string }) => {
-      // Remove id from payload for insert or update object
       const { id, ...payload } = form;
-      // These are required fields for Insert/Update
-      // For Insert: student_id, month, year, monthly_fee
-      // For Update: these can be partial (but for safety, you can send full or patch)
       if (id) {
-        // For update, filter only fields allowed for update
         const updatePayload: TablesUpdate<'fees'> = { ...payload };
         const { error, data } = await supabase
           .from("fees")
@@ -77,9 +75,7 @@ export function useUpsertFee() {
         if (error) throw error;
         return data;
       } else {
-        // For insert, cast payload as TablesInsert
         const insertPayload: TablesInsert<'fees'> = {
-          // Insert all required fields
           student_id: payload.student_id as string,
           month: payload.month as number,
           year: payload.year as number,
@@ -87,9 +83,7 @@ export function useUpsertFee() {
           paid_amount: payload.paid_amount as number || 0,
           balance_due: payload.balance_due as number || 0,
           notes: payload.notes || null,
-          // status, created_at, updated_at are computed or defaulted in db
         };
-        // Insert, but if exists, upsert on unique composite key
         const { error, data } = await supabase
           .from("fees")
           .upsert(insertPayload, { onConflict: "student_id, month, year" })
