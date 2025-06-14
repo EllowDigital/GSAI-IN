@@ -143,32 +143,41 @@ export type Database = {
       }
       students: {
         Row: {
+          aadhar_number: string
           created_at: string | null
           created_by: string | null
           fee_status: string | null
           id: string
           join_date: string
           name: string
+          parent_contact: string
+          parent_name: string
           profile_image_url: string | null
           program: string
         }
         Insert: {
+          aadhar_number: string
           created_at?: string | null
           created_by?: string | null
           fee_status?: string | null
           id?: string
           join_date: string
           name: string
+          parent_contact: string
+          parent_name: string
           profile_image_url?: string | null
           program: string
         }
         Update: {
+          aadhar_number?: string
           created_at?: string | null
           created_by?: string | null
           fee_status?: string | null
           id?: string
           join_date?: string
           name?: string
+          parent_contact?: string
+          parent_name?: string
           profile_image_url?: string | null
           program?: string
         }
