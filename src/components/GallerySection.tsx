@@ -1,36 +1,79 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 
-const images = [
-  "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1466721591366-2d5fba72006d?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1493962853295-0fd70327578a?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=600&q=80",
-];
+type GalleryImage = {
+  id: string;
+  image_url: string;
+  caption?: string | null;
+  tag?: string | null;
+  created_at?: string | null;
+};
 
 export default function GallerySection() {
+  const [images, setImages] = useState<GalleryImage[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<string | null>(null);
+
+  useEffect(() => {
+    let ignore = false;
+    const fetchImages = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("gallery_images")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      if (!ignore) {
+        setImages(data || []);
+        setLoading(false);
+      }
+    };
+    fetchImages();
+    // Subscribe to realtime updates
+    const channel = supabase
+      .channel("gsai-gallery-public-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "gallery_images",
+        },
+        () => fetchImages()
+      )
+      .subscribe();
+    return () => {
+      ignore = true;
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   return (
     <section id="gallery" className="py-10 xs:py-16 px-2 xs:px-4 bg-gray-50">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-400 mb-6 xs:mb-8 text-center">🖼️ Gallery</h2>
-        <div className="columns-2 xs:columns-3 md:columns-4 gap-2 xs:gap-4 space-y-2 xs:space-y-4">
-          {images.map((url, i) => (
-            <img
-              key={url}
-              src={url}
-              alt={`Gallery ${i + 1}`}
-              className="w-full rounded-lg shadow-sm cursor-pointer mb-2 xs:mb-4 hover:opacity-90 transition"
-              loading="lazy"
-              onClick={() => setSelected(url)}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <div className="w-full flex justify-center items-center py-20">
+            <span className="animate-spin w-8 h-8 rounded-full border-4 border-yellow-300 border-t-transparent inline-block" />
+          </div>
+        ) : images.length === 0 ? (
+          <div className="text-gray-400 text-center py-16 font-semibold">No images yet.</div>
+        ) : (
+          <div className="columns-2 xs:columns-3 md:columns-4 gap-2 xs:gap-4 space-y-2 xs:space-y-4">
+            {images.map((img, i) => (
+              <img
+                key={img.id}
+                src={img.image_url}
+                alt={img.caption || `Gallery ${i + 1}`}
+                className="w-full rounded-lg shadow-sm cursor-pointer mb-2 xs:mb-4 hover:opacity-90 transition"
+                loading="lazy"
+                onClick={() => setSelected(img.image_url)}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Lightbox */}
         <AnimatePresence>
@@ -46,7 +89,7 @@ export default function GallerySection() {
                 src={selected}
                 alt="Preview"
                 className="max-w-full max-h-[80vh] rounded-xl shadow-2xl border-4 border-yellow-400"
-                onClick={(e) => e.stopPropagation()}
+                onClick={e => e.stopPropagation()}
               />
             </motion.div>
           )}
