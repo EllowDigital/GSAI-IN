@@ -9,7 +9,168 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      admin_users: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      blogs: {
+        Row: {
+          content: string
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          published_at: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          published_at?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          published_at?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          date: string
+          id: string
+          title: string
+        }
+        Insert: {
+          date: string
+          id?: string
+          title: string
+        }
+        Update: {
+          date?: string
+          id?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      gallery_images: {
+        Row: {
+          caption: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          image_url: string
+          tag: string | null
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          image_url: string
+          tag?: string | null
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          image_url?: string
+          tag?: string | null
+        }
+        Relationships: []
+      }
+      news: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          date: string
+          id: string
+          short_description: string | null
+          status: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          date: string
+          id?: string
+          short_description?: string | null
+          status?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          date?: string
+          id?: string
+          short_description?: string | null
+          status?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      students: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          fee_status: string | null
+          id: string
+          join_date: string
+          name: string
+          profile_image_url: string | null
+          program: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          fee_status?: string | null
+          id?: string
+          join_date: string
+          name: string
+          profile_image_url?: string | null
+          program: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          fee_status?: string | null
+          id?: string
+          join_date?: string
+          name?: string
+          profile_image_url?: string | null
+          program?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
