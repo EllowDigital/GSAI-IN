@@ -1,4 +1,3 @@
-
 import React from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Edit, Delete } from "lucide-react";
@@ -14,6 +13,7 @@ type News = {
   short_description: string;
   date: string;
   status: string;
+  image_url?: string | null;
 };
 
 function formatDate(dt: string) {
@@ -38,7 +38,7 @@ export default function NewsManager() {
     setLoading(true);
     const { data, error } = await supabase
       .from("news")
-      .select("id, title, short_description, date, status")
+      .select("id, title, short_description, date, status, image_url")
       .order("date", { ascending: false });
     if (error) {
       toast.error("Failed to fetch news.");
@@ -169,11 +169,11 @@ export default function NewsManager() {
           ? Array.from({ length: 2 }).map((_, idx) => (
               <div
                 key={idx}
-                className="rounded-2xl shadow-lg bg-white p-6 font-inter animate-pulse h-44"
+                className="rounded-2xl shadow-lg bg-white p-6 font-inter animate-pulse h-56"
               >
+                <div className="h-32 bg-yellow-100 w-full rounded mb-2"></div>
                 <div className="h-6 bg-yellow-100 w-1/3 rounded mb-2"></div>
                 <div className="h-4 bg-gray-100 w-2/3 rounded mb-1"></div>
-                <div className="h-4 bg-gray-100 w-1/2 rounded"></div>
               </div>
             ))
           : displayedNews.length === 0
@@ -185,6 +185,11 @@ export default function NewsManager() {
                 key={item.id}
                 className="rounded-2xl shadow-lg bg-white p-6 font-inter flex flex-col gap-3"
               >
+                {item.image_url ? (
+                  <img src={item.image_url} alt={item.title} className="w-full h-32 object-cover rounded-xl mb-3" />
+                ) : (
+                  <div className="w-full h-32 bg-yellow-100 flex items-center justify-center rounded-xl mb-3 text-yellow-300">No Image</div>
+                )}
                 <div className="flex justify-between items-center">
                   <h3 className="font-bold text-lg mb-1">{item.title}</h3>
                   <StatusBadge status={item.status} />
@@ -214,6 +219,7 @@ export default function NewsManager() {
                 short_description: selectedNews.short_description,
                 date: selectedNews.date,
                 status: selectedNews.status,
+                image_url: selectedNews.image_url ?? null,
               }
             : null
         }

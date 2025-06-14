@@ -1,4 +1,3 @@
-
 import Navbar from "../components/Navbar";
 import HeroSection from "../components/HeroSection";
 import AboutSection from "../components/AboutSection";
@@ -10,6 +9,7 @@ import RecognitionAffiliationsSection from "../components/RecognitionAffiliation
 import FaqSection from "../components/FaqSection";
 import LocationSection from "../components/LocationSection";
 import FooterSection from "../components/FooterSection";
+import NewsSection from "../components/NewsSection";
 
 // Main page for Ghatak Sports Academy India™
 const Index = () => {
@@ -21,6 +21,7 @@ const Index = () => {
         <AboutSection />
         <FounderSection />
         <ProgramsSection />
+        <NewsSection />
         <BlogNewsSection />
         <GallerySection />
         <FaqSection />
