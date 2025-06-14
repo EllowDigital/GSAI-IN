@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -14,10 +15,21 @@ type FeeModalProps = {
   student?: any;
   month?: number | string;
   year?: number | string;
-  carryForwardBalance?: number; // <-- ADDED
+  carryForwardBalance?: number;
 };
 
-export default function FeeModal({ open, onClose, fee, student, month, year, carryForwardBalance }: FeeModalProps) {
+export default function FeeModal({
+  open,
+  onClose,
+  fee,
+  student,
+  month,
+  year,
+  carryForwardBalance,
+}: FeeModalProps) {
+  // Logging the inputs for further debugging
+  console.log("[FeeModal] open:", open, "fee:", fee, "student:", student, "month:", month, "year:", year, "carryForwardBalance:", carryForwardBalance);
+
   const upsert = useUpsertFee();
   const { register, setValue, handleSubmit, reset, watch, formState } = useForm({
     defaultValues: {
@@ -40,16 +52,19 @@ export default function FeeModal({ open, onClose, fee, student, month, year, car
   }, [open, fee, student, month, year, reset]);
 
   const calcBalance = () => {
-    // Add carryForwardBalance if present and not already included in the fee
     const mf = Number(watch("monthly_fee") || 0);
     const paid = Number(watch("paid_amount") || 0);
-    // let balance = mf - paid; // original
     let balance = (mf + (carryForwardBalance || 0)) - paid;
     if (balance < 0) balance = 0;
     return balance;
   };
 
   const onSubmit = async (values) => {
+    // Defensive: check all required values
+    if (!student || typeof student.id !== "string") {
+      toast.error("Student data not available.");
+      return;
+    }
     if (values.paid_amount > values.monthly_fee + (carryForwardBalance || 0)) {
       toast.error("Paid amount cannot exceed the sum of monthly fee and carried forward balance.");
       return;
@@ -70,6 +85,24 @@ export default function FeeModal({ open, onClose, fee, student, month, year, car
       }
     );
   };
+
+  // Defensive: if student prop is missing, show fallback and do not render form
+  if (!student) {
+    return (
+      <Dialog open={open} onOpenChange={onClose}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Payment Details</DialogTitle>
+          </DialogHeader>
+          <div className="p-4 text-red-600 text-center">
+            No student data available for fee entry.<br />
+            Please close and retry.<br />
+            <span className="block text-xs text-gray-500 mt-2">If this persists, please contact support.</span>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
