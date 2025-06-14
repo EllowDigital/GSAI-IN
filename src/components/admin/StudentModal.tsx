@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -100,25 +99,31 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
           .from("students")
           .select("id")
           .eq("aadhar_number", values.aadhar_number);
+        if (err1) throw err1;
         if (existing && existing.length > 0) {
           toast.error("A student with this Aadhar Number already exists.");
           return;
         }
       }
-      // Insert or update
+      // Prepare DB payload (keep only DB fields)
+      const payload = {
+        name: values.name,
+        aadhar_number: values.aadhar_number,
+        program: values.program,
+        join_date: values.join_date,
+        parent_name: values.parent_name,
+        parent_contact: values.parent_contact,
+        profile_image_url: values.profile_image_url,
+      };
       if (student) {
         const { error } = await supabase
           .from("students")
-          .update({
-            ...values
-          })
+          .update(payload)
           .eq("id", student.id);
         if (error) throw error;
         toast.success("Student updated.");
       } else {
-        const { error } = await supabase.from("students").insert([
-          { ...values }
-        ]);
+        const { error } = await supabase.from("students").insert([payload]);
         if (error) throw error;
         toast.success("Student created.");
       }

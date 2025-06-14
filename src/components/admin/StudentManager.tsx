@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -16,6 +17,7 @@ import { toast } from "@/components/ui/sonner";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import clsx from "clsx";
 
+// --- All required columns now reflected ---
 type StudentRow = {
   id: string;
   name: string;
@@ -26,7 +28,6 @@ type StudentRow = {
   parent_contact: string;
   profile_image_url: string | null;
   created_at: string | null;
-  // Any other fields from Supabase students table can be omitted here for safety.
 };
 
 const TABLE_HEAD = [
@@ -50,20 +51,21 @@ export default function StudentManager() {
   const [sortCol, setSortCol] = useState<"name" | "program" | "join_date">("join_date");
   const [sortAsc, setSortAsc] = useState(false);
 
-  // Realtime fetching
+  // Realtime fetch with all required columns
   useEffect(() => {
     let ignore = false;
     const fetchStudents = async () => {
       setLoading(true);
       const { data, error } = await supabase
         .from("students")
-        .select("*")
+        .select("id, name, aadhar_number, program, join_date, parent_name, parent_contact, profile_image_url, created_at")
         .order("created_at", { ascending: false });
       if (!ignore) {
         if (error) {
           toast.error("Failed to fetch students: " + error.message);
         }
-        setStudents((data || []) as StudentRow[]); // Explicit assertion, fields now match
+        // All fields now align -- safe cast
+        setStudents((data || []) as StudentRow[]);
         setLoading(false);
       }
     };
