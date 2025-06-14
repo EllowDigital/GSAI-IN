@@ -5,9 +5,14 @@ import { ArrowDownCircle } from "lucide-react";
 const bgUrl =
   "https://images.unsplash.com/photo-1615729947596-a598e5de0ab3?auto=format&fit=crop&w=1500&q=80";
 
+// Use a cubic-bezier array for the 'ease' transition prop
 const variants = {
   initial: { opacity: 0, y: 40 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.9, ease: "easeOut" } },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.9, ease: [0.4, 0, 0.2, 1] as [number, number, number, number] },
+  },
 };
 
 export default function HeroSection() {

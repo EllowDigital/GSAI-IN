@@ -13,13 +13,14 @@ const programs = [
   { icon: "🏋️", title: "Fat Loss", desc: "Burn fat, build agility" },
 ];
 
+// Use the literal value for the 'type' (e.g., "spring"), not just a string
 const cardVariants = {
   offscreen: { opacity: 0, y: 40 },
   onscreen: {
     opacity: 1,
     y: 0,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       bounce: 0.36,
       duration: 0.5,
     },
@@ -55,3 +56,4 @@ export default function ProgramsSection() {
     </section>
   );
 }
+
