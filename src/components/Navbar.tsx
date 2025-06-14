@@ -1,15 +1,13 @@
 
 import React, { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogIn } from "lucide-react";
 
 const navLinks = [
   { name: "Home", href: "#" },
   { name: "About", href: "#about" },
-  { name: "Founder", href: "#founder" },
   { name: "Programs", href: "#programs" },
   { name: "Gallery", href: "#gallery" },
   { name: "Blog/News", href: "#blog" },
-  { name: "Recognitions", href: "#recognitions" },
   { name: "FAQ", href: "#faq" },
   { name: "Location", href: "#location" },
 ];
@@ -26,7 +24,7 @@ export default function Navbar() {
           GSAI
         </a>
         {/* Desktop Links */}
-        <div className="hidden md:flex gap-6">
+        <div className="hidden md:flex gap-6 items-center">
           {navLinks.map((link) => (
             <a
               key={link.name}
@@ -36,6 +34,12 @@ export default function Navbar() {
               {link.name}
             </a>
           ))}
+          <a
+            href="/admin/login"
+            className="flex items-center gap-1 px-4 py-2 rounded-xl bg-yellow-400 text-black font-bold shadow hover:bg-yellow-500 transition ml-2"
+          >
+            <LogIn className="w-5 h-5" /> Admin Panel
+          </a>
         </div>
         {/* Mobile Hamburger */}
         <button
@@ -60,9 +64,17 @@ export default function Navbar() {
                 {link.name}
               </a>
             ))}
+            <a
+              href="/admin/login"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-yellow-400 text-black font-bold shadow hover:bg-yellow-500 transition"
+              onClick={() => setMobileOpen(false)}
+            >
+              <LogIn className="w-5 h-5" /> Admin Panel
+            </a>
           </div>
         </div>
       )}
     </nav>
   );
 }
+
