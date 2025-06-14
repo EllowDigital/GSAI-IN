@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -27,6 +26,7 @@ type StudentRow = {
   parent_contact: string;
   profile_image_url: string | null;
   created_at: string | null;
+  // Any other fields from Supabase students table can be omitted here for safety.
 };
 
 const TABLE_HEAD = [
@@ -63,7 +63,7 @@ export default function StudentManager() {
         if (error) {
           toast.error("Failed to fetch students: " + error.message);
         }
-        setStudents(data || []);
+        setStudents((data || []) as StudentRow[]); // Explicit assertion, fields now match
         setLoading(false);
       }
     };
