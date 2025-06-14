@@ -2,6 +2,7 @@
 import React from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/sonner";
 
 type Props = {
   imageUrl: string | null;
@@ -16,19 +17,38 @@ export default function NewsImageUploader({ imageUrl, onUpload, disabled }: Prop
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const fileExt = file.name.split('.').pop();
-    const filePath = `news-images/${Date.now()}-${Math.random().toString(36).substr(2, 8)}.${fileExt}`;
-    const { error } = await supabase.storage.from("news-images").upload(filePath, file, {
-      cacheControl: "3600",
-      upsert: false
-    });
-    if (error) {
-      alert('Failed to upload image');
-      setUploading(false);
-      return;
+    try {
+      const fileExt = file.name.split('.').pop();
+      const filePath = `news-images/${Date.now()}-${Math.random().toString(36).substr(2, 8)}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage.from("news-images").upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: false
+      });
+      if (uploadError) {
+        console.error("Image upload error:", uploadError);
+        toast.error(`Image upload failed: ${uploadError.message}`);
+        setUploading(false);
+        return;
+      }
+      const { data: urlData, error: publicError } = supabase.storage.from("news-images").getPublicUrl(filePath);
+      if (publicError) {
+        console.error("Error getting public URL:", publicError);
+        toast.error("Upload succeeded but could not retrieve image URL.");
+        setUploading(false);
+        return;
+      }
+      if (!urlData?.publicUrl) {
+        console.error("Could not get public URL data:", urlData);
+        toast.error("Upload succeeded but image URL is missing.");
+        setUploading(false);
+        return;
+      }
+      onUpload(urlData.publicUrl);
+      toast.success("Image uploaded.");
+    } catch (ex: any) {
+      console.error("Unknown upload exception:", ex);
+      toast.error("Unexpected error during upload.");
     }
-    const { data: urlData } = supabase.storage.from("news-images").getPublicUrl(filePath);
-    onUpload(urlData.publicUrl);
     setUploading(false);
   }
 
