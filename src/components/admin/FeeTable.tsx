@@ -1,6 +1,13 @@
 
 import React, { useState, useMemo } from "react";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Loader2, Edit, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -14,15 +21,23 @@ function getStatusColor(status: string) {
     : "bg-red-100 text-red-700";
 }
 
-export default function FeeTable({ fees, students, isLoading }) {
+export default function FeeTable({
+  fees,
+  students,
+  isLoading
+}: {
+  fees: any[];
+  students: any[];
+  isLoading: boolean;
+}) {
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalFee, setModalFee] = useState(null);
-  const [modalStudent, setModalStudent] = useState(null);
+  const [modalFee, setModalFee] = useState<any>(null);
+  const [modalStudent, setModalStudent] = useState<any>(null);
 
-  const [month, setMonth] = useState("");
-  const [year, setYear] = useState("");
-  const [status, setStatus] = useState("");
-  const [search, setSearch] = useState("");
+  const [month, setMonth] = useState<string>("");
+  const [year, setYear] = useState<string>("");
+  const [status, setStatus] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
 
   const filtered = useMemo(() => {
     if (!fees) return [];
@@ -30,15 +45,21 @@ export default function FeeTable({ fees, students, isLoading }) {
       if (month && f.month !== Number(month)) return false;
       if (year && f.year !== Number(year)) return false;
       if (status && f.status !== status) return false;
-      if (search && !f.students?.name?.toLowerCase().includes(search.toLowerCase())) return false;
+      if (
+        search &&
+        !f.students?.name?.toLowerCase().includes(search.toLowerCase())
+      )
+        return false;
       return true;
     });
   }, [fees, month, year, status, search]);
 
   // Monthly summary
   const summary = useMemo(() => {
-    let collected = 0, pending = 0, overdue = 0;
-    filtered.forEach(f => {
+    let collected = 0,
+      pending = 0,
+      overdue = 0;
+    filtered.forEach((f) => {
       if (f.status === "paid") collected += f.paid_amount;
       else if (f.status === "partial") pending += f.balance_due;
       else overdue += f.balance_due;
@@ -46,33 +67,41 @@ export default function FeeTable({ fees, students, isLoading }) {
     return { collected, pending, overdue };
   }, [filtered]);
 
+  // For modal: select month/year from fee row or defaults
+  const modalMonth = modalFee?.month ?? "";
+  const modalYear = modalFee?.year ?? "";
+
   return (
     <div className="w-full">
       <div className="flex flex-col md:flex-row gap-2 md:items-end mb-4">
-        <Input
-          placeholder="Search student name..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="w-full md:w-56"
-          prefix={<Search />}
-        />
+        <div className="relative w-full md:w-56">
+          <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+            <Search className="w-4 h-4" />
+          </span>
+          <Input
+            placeholder="Search student name..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-8"
+          />
+        </div>
         <Input
           placeholder="Month"
           type="number"
           value={month}
-          onChange={e => setMonth(e.target.value)}
+          onChange={(e) => setMonth(e.target.value)}
           className="w-full md:w-32"
         />
         <Input
           placeholder="Year"
           type="number"
           value={year}
-          onChange={e => setYear(e.target.value)}
+          onChange={(e) => setYear(e.target.value)}
           className="w-full md:w-32"
         />
         <select
           value={status}
-          onChange={e => setStatus(e.target.value)}
+          onChange={(e) => setStatus(e.target.value)}
           className="border px-3 py-1 rounded bg-gray-50 text-sm w-full md:w-40"
         >
           <option value="">All Status</option>
@@ -124,7 +153,7 @@ export default function FeeTable({ fees, students, isLoading }) {
                 </TableCell>
               </TableRow>
             ) : (
-              filtered.map(fee => (
+              filtered.map((fee) => (
                 <TableRow key={fee.id} className={getStatusColor(fee.status)}>
                   <TableCell>{fee.students?.name}</TableCell>
                   <TableCell>{fee.students?.program}</TableCell>
@@ -134,7 +163,7 @@ export default function FeeTable({ fees, students, isLoading }) {
                   <TableCell>₹{fee.paid_amount}</TableCell>
                   <TableCell>₹{fee.balance_due}</TableCell>
                   <TableCell>
-                    <span className={`rounded-full px-3 py-1 font-bold text-xs capitalize`}>
+                    <span className="rounded-full px-3 py-1 font-bold text-xs capitalize">
                       {fee.status}
                     </span>
                   </TableCell>
@@ -163,6 +192,8 @@ export default function FeeTable({ fees, students, isLoading }) {
         onClose={() => setModalOpen(false)}
         fee={modalFee}
         student={modalStudent}
+        month={modalMonth}
+        year={modalYear}
       />
     </div>
   );

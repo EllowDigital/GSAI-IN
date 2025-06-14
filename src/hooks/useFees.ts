@@ -3,7 +3,15 @@ import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-export function useFees({ month, year, studentId } = {}) {
+// Type for Fees Hook Arguments
+type UseFeesArgs = {
+  month?: number | string;
+  year?: number | string;
+  studentId?: string;
+};
+
+export function useFees(args: UseFeesArgs = {}) {
+  const { month, year, studentId } = args;
   const queryClient = useQueryClient();
   const { data: rows, isLoading, error } = useQuery({
     queryKey: ["fees", month, year, studentId],
@@ -15,13 +23,13 @@ export function useFees({ month, year, studentId } = {}) {
         )
         .order("year", { ascending: false })
         .order("month", { ascending: false });
-      if (month) q = q.eq("month", month);
-      if (year) q = q.eq("year", year);
+      if (month) q = q.eq("month", Number(month));
+      if (year) q = q.eq("year", Number(year));
       if (studentId) q = q.eq("student_id", studentId);
       const { data, error } = await q;
       if (error) throw error;
       return data || [];
-    },
+    }
   });
 
   // Realtime - listen to inserts/updates/deletes on fees
@@ -48,9 +56,9 @@ export function useFees({ month, year, studentId } = {}) {
 export function useUpsertFee() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (form) => {
+    mutationFn: async (form: Record<string, any>) => {
       // For upsert, match on student_id, month, year.
-      const { id, ...payload } = form;
+      const { id, ...payload } = form || {};
       const isUpdate = !!id;
       let q = supabase.from("fees");
       if (isUpdate) {
@@ -59,7 +67,6 @@ export function useUpsertFee() {
         return data;
       } else {
         // Insert, but if exists, update (unique constraint)
-        // Try insert, on conflict update
         const { error, data } = await q
           .upsert(payload, { onConflict: "student_id, month, year" })
           .select()
@@ -70,6 +77,6 @@ export function useUpsertFee() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["fees"] });
-    },
+    }
   });
 }
