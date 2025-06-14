@@ -16,24 +16,25 @@ const logos = [
 
 export default function RecognitionAffiliationsSection() {
   return (
-    <section className="py-12 px-4 bg-white border-t border-b">
+    <section id="recognitions" className="py-12 px-4 bg-white border-t border-b">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-bold text-yellow-400 mb-6 text-center">
           🏆 Recognitions &amp; Affiliations
         </h2>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto pb-2">
           <div className="flex items-center gap-10 min-w-max px-2 py-4">
             {logos.map((logo) => (
               <div
                 key={logo.name}
-                className="flex flex-col items-center min-w-[88px] flex-shrink-0"
+                className="flex flex-col items-center min-w-[88px] flex-shrink-0 group"
                 title={logo.name}
               >
                 <img
                   src={logo.url}
                   alt={logo.name}
                   loading="lazy"
-                  className="h-16 w-auto object-contain grayscale hover:grayscale-0 transition mb-1"
+                  className="h-16 w-auto object-contain grayscale hover:grayscale-0 group-hover:shadow-lg transition mb-1 border border-yellow-200 bg-white rounded-md p-1"
+                  style={{ backgroundColor: "#fff" }}
                 />
                 <span className="text-xs text-gray-600 text-center max-w-[88px]">{logo.name}</span>
               </div>

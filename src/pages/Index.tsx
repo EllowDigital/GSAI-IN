@@ -1,4 +1,5 @@
 
+import Navbar from "../components/Navbar";
 import HeroSection from "../components/HeroSection";
 import AboutSection from "../components/AboutSection";
 import FounderSection from "../components/FounderSection";
@@ -14,19 +15,21 @@ import FooterSection from "../components/FooterSection";
 const Index = () => {
   return (
     <div className="bg-background w-full min-h-screen flex flex-col">
-      <HeroSection />
-      <AboutSection />
-      <FounderSection />
-      <ProgramsSection />
-      <BlogNewsSection />
-      <GallerySection />
-      <RecognitionAffiliationsSection />
-      <FaqSection />
-      <LocationSection />
+      <Navbar />
+      <div className="pt-16 md:pt-20 flex-1 flex flex-col">
+        <HeroSection />
+        <AboutSection />
+        <FounderSection />
+        <ProgramsSection />
+        <BlogNewsSection />
+        <GallerySection />
+        <RecognitionAffiliationsSection />
+        <FaqSection />
+        <LocationSection />
+      </div>
       <FooterSection />
     </div>
   );
 };
 
 export default Index;
-
