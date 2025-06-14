@@ -15,7 +15,7 @@ type BlogForm = {
   description: string;
   content: string;
   image_url: string;
-  published_at: string;
+  published_at: string; // Must be string, e.g. '2024-06-14'
 };
 
 type Props = {
@@ -58,18 +58,21 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
   // Mutations
   const createBlog = useMutation({
     mutationFn: async (val: BlogForm) => {
+      // Convert published_at to ISO string (Supabase expects string, not Date)
+      const published_at_string = val.published_at.length === 10
+        ? `${val.published_at}T00:00:00Z`
+        : val.published_at;
+
       const { error } = await supabase
         .from("blogs")
-        .insert([
-          {
-            title: val.title,
-            description: val.description,
-            content: val.content,
-            image_url: val.image_url,
-            published_at: new Date(val.published_at),
-            created_by: "admin", // Optional: you can put current user email
-          },
-        ]);
+        .insert([{
+          title: val.title,
+          description: val.description,
+          content: val.content,
+          image_url: val.image_url,
+          published_at: published_at_string,
+          created_by: "admin", // Optional: you can put current user email
+        }]);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
@@ -85,6 +88,12 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
   const updateBlog = useMutation({
     mutationFn: async (val: BlogForm) => {
       if (!blog?.id) throw new Error("No blog ID");
+
+      // Convert published_at to ISO string properly
+      const published_at_string = val.published_at.length === 10
+        ? `${val.published_at}T00:00:00Z`
+        : val.published_at;
+
       const { error } = await supabase
         .from("blogs")
         .update({
@@ -92,7 +101,7 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
           description: val.description,
           content: val.content,
           image_url: val.image_url,
-          published_at: new Date(val.published_at),
+          published_at: published_at_string,
         })
         .eq("id", blog.id);
       if (error) throw new Error(error.message);
@@ -219,3 +228,5 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
     </Dialog>
   );
 }
+
+// ... end of file ...
