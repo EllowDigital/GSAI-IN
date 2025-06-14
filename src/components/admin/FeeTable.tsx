@@ -39,25 +39,7 @@ export default function FeeTable({
   const [status, setStatus] = useState<string>("");
   const [search, setSearch] = useState<string>("");
 
-  // Defensive: show loading spinner until both arrays are loaded
-  if (isLoading || !students) {
-    return (
-      <div className="flex items-center justify-center py-10 w-full">
-        <Loader2 className="animate-spin text-yellow-500" />
-        <span className="ml-3 text-gray-600">Loading students and fees...</span>
-      </div>
-    );
-  }
-
-  if (!Array.isArray(students) || students.length === 0) {
-    return (
-      <div className="text-center text-gray-500 py-10 w-full">
-        No students available. Add students before managing fees.
-      </div>
-    );
-  }
-
-  // Defensive: allow fees to be blank (skip filtering if so)
+  // Always call hooks before early returns!
   const filtered = useMemo(() => {
     if (!Array.isArray(fees) || fees.length === 0) return [];
     return fees.filter((f) => {
@@ -75,7 +57,6 @@ export default function FeeTable({
     });
   }, [fees, month, year, status, search]);
 
-  // Monthly summary
   const summary = useMemo(() => {
     let collected = 0,
       pending = 0,
@@ -91,6 +72,24 @@ export default function FeeTable({
   // For modal: select month/year from fee row or defaults
   const modalMonth = modalFee?.month ?? "";
   const modalYear = modalFee?.year ?? "";
+
+  // Defensive: show loading spinner until both arrays are loaded
+  if (isLoading || !students) {
+    return (
+      <div className="flex items-center justify-center py-10 w-full">
+        <Loader2 className="animate-spin text-yellow-500" />
+        <span className="ml-3 text-gray-600">Loading students and fees...</span>
+      </div>
+    );
+  }
+
+  if (!Array.isArray(students) || students.length === 0) {
+    return (
+      <div className="text-center text-gray-500 py-10 w-full">
+        No students available. Add students before managing fees.
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
