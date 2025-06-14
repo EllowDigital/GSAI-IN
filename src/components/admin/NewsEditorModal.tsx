@@ -1,16 +1,17 @@
-
 import React from "react";
 import { useForm } from "react-hook-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/sonner";
+import NewsImageUploader from "./NewsImageUploader";
 
 type NewsEditorForm = {
   title: string;
   short_description: string;
   date: string;
   status: string;
+  image_url?: string | null;
 };
 
 type Props = {
@@ -34,25 +35,31 @@ export default function NewsEditorModal({ open, onOpenChange, onSubmit, initialD
       title: "",
       short_description: "",
       date: "",
-      status: "Draft"
+      status: "Draft",
+      image_url: null
     }
   });
+
+  const [imageUrl, setImageUrl] = React.useState<string | null>(initialData?.image_url ?? null);
 
   React.useEffect(() => {
     if (initialData) {
       reset(initialData);
+      setImageUrl(initialData.image_url ?? null);
     } else {
       reset({
         title: "",
         short_description: "",
         date: "",
-        status: "Draft"
+        status: "Draft",
+        image_url: null,
       });
+      setImageUrl(null);
     }
   }, [initialData, open, reset]);
 
   async function onFormSubmit(data: NewsEditorForm) {
-    await onSubmit(data);
+    await onSubmit({ ...data, image_url: imageUrl ?? null });
   }
 
   return (
@@ -88,6 +95,14 @@ export default function NewsEditorModal({ open, onOpenChange, onSubmit, initialD
               <option value="Draft">Draft</option>
             </select>
             {errors.status && <div className="text-red-500 text-xs mt-1">{errors.status.message}</div>}
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Image</label>
+            <NewsImageUploader
+              imageUrl={imageUrl}
+              onUpload={setImageUrl}
+              disabled={loading}
+            />
           </div>
           <DialogFooter className="flex justify-end gap-2 pt-4">
             <DialogClose asChild>
