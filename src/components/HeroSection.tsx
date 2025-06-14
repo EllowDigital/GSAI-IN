@@ -1,0 +1,68 @@
+
+import { motion } from "framer-motion";
+import { ArrowDownCircle } from "lucide-react";
+
+const bgUrl =
+  "https://images.unsplash.com/photo-1615729947596-a598e5de0ab3?auto=format&fit=crop&w=1500&q=80";
+
+const variants = {
+  initial: { opacity: 0, y: 40 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.9, ease: "easeOut" } },
+};
+
+export default function HeroSection() {
+  return (
+    <section
+      className="relative min-h-[75vh] flex items-center justify-center"
+      style={{
+        backgroundImage: `linear-gradient(rgba(23,23,23,0.64),rgba(35,27,36,0.64)),url('${bgUrl}')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div className="w-full flex flex-col items-center justify-center px-4 py-20">
+        <motion.h1
+          className="text-4xl md:text-6xl font-black text-white drop-shadow-lg text-center"
+          initial="initial"
+          animate="animate"
+          variants={variants}
+        >
+          Unleash Your Strength with{" "}
+          <span className="text-yellow-400">
+            Ghatak Sports Academy India™
+          </span>
+        </motion.h1>
+        <motion.p
+          className="mt-4 text-lg md:text-2xl font-semibold text-white/90 text-center max-w-2xl"
+          initial="initial"
+          animate="animate"
+          variants={variants}
+          transition={{ delay: 0.3 }}
+        >
+          Government-Recognized | <span className="text-yellow-400">ISO 9001:2015</span> | Martial Arts | Fitness | Self-Defense
+        </motion.p>
+        <motion.a
+          href="#programs"
+          className="mt-10 px-8 py-4 bg-red-600 hover:bg-red-700 rounded-full text-lg font-bold uppercase text-white shadow-lg transition-colors duration-200 hover-scale"
+          whileHover={{ scale: 1.06 }}
+          initial="initial"
+          animate="animate"
+          variants={variants}
+          transition={{ delay: 0.6 }}
+        >
+          Join Now
+        </motion.a>
+        {/* Scroll Down Indicator */}
+        <motion.div
+          className="absolute left-1/2 transform -translate-x-1/2 bottom-8 flex flex-col items-center"
+          initial={{ opacity: 0, y: 32 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, type: "spring" }}
+        >
+          <ArrowDownCircle className="w-12 h-12 text-yellow-400 animate-bounce" />
+          <span className="text-xs text-white mt-2 tracking-widest font-medium">Scroll</span>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
