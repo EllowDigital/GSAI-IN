@@ -81,6 +81,56 @@ export type Database = {
         }
         Relationships: []
       }
+      fees: {
+        Row: {
+          balance_due: number
+          created_at: string | null
+          id: string
+          month: number
+          monthly_fee: number
+          notes: string | null
+          paid_amount: number
+          status: string | null
+          student_id: string
+          updated_at: string | null
+          year: number
+        }
+        Insert: {
+          balance_due?: number
+          created_at?: string | null
+          id?: string
+          month: number
+          monthly_fee: number
+          notes?: string | null
+          paid_amount?: number
+          status?: string | null
+          student_id: string
+          updated_at?: string | null
+          year: number
+        }
+        Update: {
+          balance_due?: number
+          created_at?: string | null
+          id?: string
+          month?: number
+          monthly_fee?: number
+          notes?: string | null
+          paid_amount?: number
+          status?: string | null
+          student_id?: string
+          updated_at?: string | null
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fees_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gallery_images: {
         Row: {
           caption: string | null
@@ -146,6 +196,7 @@ export type Database = {
           aadhar_number: string
           created_at: string | null
           created_by: string | null
+          default_monthly_fee: number
           fee_status: string | null
           id: string
           join_date: string
@@ -159,6 +210,7 @@ export type Database = {
           aadhar_number: string
           created_at?: string | null
           created_by?: string | null
+          default_monthly_fee?: number
           fee_status?: string | null
           id?: string
           join_date: string
@@ -172,6 +224,7 @@ export type Database = {
           aadhar_number?: string
           created_at?: string | null
           created_by?: string | null
+          default_monthly_fee?: number
           fee_status?: string | null
           id?: string
           join_date?: string
