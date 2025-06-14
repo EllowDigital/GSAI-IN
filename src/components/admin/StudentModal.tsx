@@ -4,12 +4,26 @@ import { Dialog, DialogContent, DialogTitle, DialogHeader } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
 import StudentAvatarUploader from "./StudentAvatarUploader";
+
+// List of valid programs
+const programOptions = [
+  { value: "Karate", label: "🥋 Karate - Traditional strikes & self-discipline" },
+  { value: "Taekwondo", label: "🦵 Taekwondo - Dynamic kicks & sparring" },
+  { value: "Boxing", label: "🥊 Boxing - Build stamina & precision" },
+  { value: "Kickboxing", label: "🥋 Kickboxing - Cardio meets combat" },
+  { value: "Grappling", label: "🤼 Grappling - Ground control tactics" },
+  { value: "MMA", label: "🥋 MMA - Striking & grappling combined" },
+  { value: "Kalaripayattu", label: "🕉️ Kalaripayattu - India’s ancient warrior art" },
+  { value: "Self-Defense", label: "🛡️ Self-Defense - Practical safety training" },
+  { value: "Fat Loss", label: "🏋️ Fat Loss - Burn fat, build agility" },
+];
 
 const StudentSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -50,7 +64,7 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
         name: student.name || "",
         aadhar_number: student.aadhar_number || "",
         program: student.program || "",
-        join_date: student.join_date || "",
+        join_date: student.join_date ? student.join_date.slice(0, 10) : "",
         parent_name: student.parent_name || "",
         parent_contact: student.parent_contact || "",
         profile_image_url: student.profile_image_url || null,
@@ -159,7 +173,22 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
                 <FormItem>
                   <FormLabel>Program</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Abacus, Vedic Math" {...field} required />
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      required
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select program" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {programOptions.map(opt => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -222,3 +251,5 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
     </Dialog>
   );
 }
+
+// This file is getting long (225+ lines). Consider splitting it into smaller files after this change.
