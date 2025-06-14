@@ -5,6 +5,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import { AdminAuthProvider } from "./pages/admin/AdminAuthProvider";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminLayout from "./pages/admin/AdminLayout";
+import StatsHome from "./pages/admin/dashboard/StatsHome";
+import Blogs from "./pages/admin/dashboard/Blogs";
+import News from "./pages/admin/dashboard/News";
+import Gallery from "./pages/admin/dashboard/Gallery";
+import Students from "./pages/admin/dashboard/Students";
+import NotFoundAdmin from "./pages/admin/NotFoundAdmin";
 
 const queryClient = new QueryClient();
 
@@ -16,6 +25,26 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          {/* --- ADMIN ROUTES --- */}
+          <Route
+            path="/admin/*"
+            element={
+              <AdminAuthProvider>
+                <Routes>
+                  <Route path="login" element={<AdminLogin />} />
+                  <Route path="dashboard" element={<AdminLayout />}>
+                    <Route index element={<StatsHome />} />
+                    <Route path="blogs" element={<Blogs />} />
+                    <Route path="news" element={<News />} />
+                    <Route path="gallery" element={<Gallery />} />
+                    <Route path="students" element={<Students />} />
+                    <Route path="*" element={<NotFoundAdmin />} />
+                  </Route>
+                  <Route path="*" element={<NotFoundAdmin />} />
+                </Routes>
+              </AdminAuthProvider>
+            }
+          />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
