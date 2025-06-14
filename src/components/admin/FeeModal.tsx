@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -15,9 +14,10 @@ type FeeModalProps = {
   student?: any;
   month?: number | string;
   year?: number | string;
+  carryForwardBalance?: number; // <-- ADDED
 };
 
-export default function FeeModal({ open, onClose, fee, student, month, year }: FeeModalProps) {
+export default function FeeModal({ open, onClose, fee, student, month, year, carryForwardBalance }: FeeModalProps) {
   const upsert = useUpsertFee();
   const { register, setValue, handleSubmit, reset, watch, formState } = useForm({
     defaultValues: {
@@ -40,17 +40,18 @@ export default function FeeModal({ open, onClose, fee, student, month, year }: F
   }, [open, fee, student, month, year, reset]);
 
   const calcBalance = () => {
-    // If editing, carry forward previous balance here if needed via prop
+    // Add carryForwardBalance if present and not already included in the fee
     const mf = Number(watch("monthly_fee") || 0);
     const paid = Number(watch("paid_amount") || 0);
-    let balance = mf - paid;
+    // let balance = mf - paid; // original
+    let balance = (mf + (carryForwardBalance || 0)) - paid;
     if (balance < 0) balance = 0;
     return balance;
   };
 
   const onSubmit = async (values) => {
-    if (values.paid_amount > values.monthly_fee) {
-      toast.error("Paid amount cannot exceed the monthly fee.");
+    if (values.paid_amount > values.monthly_fee + (carryForwardBalance || 0)) {
+      toast.error("Paid amount cannot exceed the sum of monthly fee and carried forward balance.");
       return;
     }
     upsert.mutate(
@@ -116,6 +117,13 @@ export default function FeeModal({ open, onClose, fee, student, month, year }: F
               min={0}
             />
           </div>
+          {carryForwardBalance ? (
+            <div>
+              <span className="text-xs text-gray-700">
+                Carried forward balance from previous month: <strong>₹{carryForwardBalance}</strong>
+              </span>
+            </div>
+          ) : null}
           <div>
             <label className="text-xs font-semibold">Notes</label>
             <Input {...register("notes")} />
