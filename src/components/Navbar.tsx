@@ -1,13 +1,13 @@
+
 import React, { useState } from "react";
 import { Menu, X, LogIn } from "lucide-react";
-import PWAInstallButton from "./PWAInstallButton";
+// Removed: import PWAInstallButton from "./PWAInstallButton";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
 } from "../components/ui/dropdown-menu";
 
-// Only keep essential links for navigation clarity
 const navLinks = [
   { name: "Home", href: "/" },
   { name: "About", href: "#about" },
@@ -21,7 +21,6 @@ const navLinks = [
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Trap scroll underneath menus (removed for dropdown)
   React.useEffect(() => {
     if (mobileOpen) {
       // No scroll trap for dropdown
@@ -33,12 +32,9 @@ export default function Navbar() {
     };
   }, [mobileOpen]);
 
-  // Accessible close on route change – not handled here, but could listen for hash changes.
-
   return (
     <nav className="w-full fixed z-50 top-0 left-0 bg-white/90 backdrop-blur border-b border-yellow-100 shadow-md transition-all">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-2 xs:px-3 sm:px-5 md:px-8 lg:px-10 py-2 md:py-3">
-        {/* SEO: logo img uses descriptive alt */}
         <a
           href="/"
           className="flex items-center gap-2 xs:gap-3 font-black text-base xs:text-lg md:text-xl tracking-wider text-red-700 select-none"
@@ -54,7 +50,6 @@ export default function Navbar() {
             Ghatak Sports Academy India
           </span>
         </a>
-        {/* Desktop & Large Tablet Links */}
         <div className="hidden lg:flex gap-5 xl:gap-8 items-center">
           {navLinks.map((link) => (
             <a
@@ -71,9 +66,8 @@ export default function Navbar() {
           >
             <LogIn className="w-5 h-5" /> <span className="hidden sm:inline">Admin Panel</span>
           </a>
-          <PWAInstallButton />
+          {/* Removed: <PWAInstallButton /> */}
         </div>
-        {/* Tablet/Mid-Size Horizontal Nav */}
         <div className="hidden md:flex lg:hidden gap-2 xs:gap-3 items-center">
           {navLinks.slice(0, 4).map((link) => (
             <a
@@ -84,7 +78,6 @@ export default function Navbar() {
               {link.name}
             </a>
           ))}
-          {/* Hamburger dropdown for remaining + admin (tablet) */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
@@ -111,12 +104,11 @@ export default function Navbar() {
                 >
                   <LogIn className="w-5 h-5" /> Admin Panel
                 </a>
-                <PWAInstallButton />
+                {/* Removed: <PWAInstallButton /> */}
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        {/* Mobile Hamburger */}
         <div className="md:hidden flex items-center">
           <DropdownMenu open={mobileOpen} onOpenChange={setMobileOpen}>
             <DropdownMenuTrigger asChild>
@@ -152,7 +144,6 @@ export default function Navbar() {
                     className="flex items-center gap-3 text-gray-800 font-semibold py-3 px-3 rounded-xl transition-all duration-200 hover:bg-yellow-100 active:bg-yellow-200 text-base"
                     onClick={() => setMobileOpen(false)}
                   >
-                    {/* Add circle bullet */}
                     <span className="inline-block w-2 h-2 rounded-full bg-yellow-400 mr-2" />
                     <span>{link.name}</span>
                   </a>
@@ -164,7 +155,7 @@ export default function Navbar() {
                 >
                   <LogIn className="w-5 h-5" /> Admin Panel
                 </a>
-                <PWAInstallButton />
+                {/* Removed: <PWAInstallButton /> */}
               </div>
             </DropdownMenuContent>
           </DropdownMenu>

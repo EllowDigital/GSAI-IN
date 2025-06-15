@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,7 +21,7 @@ import Preloader from "./components/Preloader";
 import React from "react";
 import PrivacyPage from "./pages/PrivacyPage";
 import TermsPage from "./pages/TermsPage";
-import PWAInstallButton from "@/components/PWAInstallButton";
+// Removed: import PWAInstallButton from "@/components/PWAInstallButton";
 
 const queryClient = new QueryClient();
 
@@ -72,7 +73,7 @@ const App = () => {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
-            <PWAInstallButton />
+            {/* Removed: <PWAInstallButton /> */}
           </>
         )}
       </TooltipProvider>
@@ -81,3 +82,4 @@ const App = () => {
 };
 
 export default App;
+
