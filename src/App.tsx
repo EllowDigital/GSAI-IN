@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import HomePageWrapper from "./pages/HomePageWrapper";
 import NotFound from "./pages/NotFound";
 import { AdminAuthProvider } from "./pages/admin/AdminAuthProvider";
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -49,13 +49,23 @@ const App = () => {
       setIsOnline(false);
     };
 
+    const handleInstallPrompt = (e: Event) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      // For now, we'll just log it to confirm it's working.
+      console.log('PWA install prompt event captured. You can now show a custom install button.', e);
+    };
+
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
+    window.addEventListener('beforeinstallprompt', handleInstallPrompt);
 
     return () => {
       clearTimeout(timeout);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('beforeinstallprompt', handleInstallPrompt);
     };
   }, []);
 
@@ -70,7 +80,7 @@ const App = () => {
           <>
             <BrowserRouter>
               <Routes>
-                <Route path="/" element={<Index />} />
+                <Route path="/" element={<HomePageWrapper />} />
                 {/* --- ADMIN ROUTES --- */}
                 <Route
                   path="/admin/*"

@@ -14,11 +14,12 @@ export default function AdminLogin() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    // If already admin, redirect to dashboard. (no need to ever show login when logged in)
-    if (isAdmin) {
+    // If already admin and auth state is determined, redirect to dashboard.
+    // This prevents a redirect flash before the session has been checked.
+    if (!isLoading && isAdmin) {
       navigate("/admin/dashboard", { replace: true });
     }
-  }, [isAdmin, navigate]);
+  }, [isAdmin, navigate, isLoading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
