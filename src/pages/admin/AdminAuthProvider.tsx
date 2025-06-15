@@ -24,7 +24,7 @@ const AdminAuthContext = createContext<AdminAuthContextType>({
 
 const ADMIN_EMAIL = "ghatakgsai@gmail.com";
 
-function AdminAuthProviderInner({ children }: { children: ReactNode }) {
+function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -38,9 +38,15 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
       setUserEmail(newSession?.user?.email ?? null);
       setIsAdmin(newSession?.user?.email === ADMIN_EMAIL);
       setIsLoading(false);
-      if (!newSession) {
-        console.warn("Supabase session went null after event!");
+
+      // Redirect if not admin anymore or after logout
+      if (
+        !_event.startsWith("INITIAL") &&
+        (!newSession || newSession?.user?.email !== ADMIN_EMAIL)
+      ) {
+        window.location.replace("/admin/login");
       }
+
       console.log("[Supabase Auth Change]", _event, newSession);
     });
 
@@ -50,6 +56,10 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
       setUserEmail(session?.user?.email ?? null);
       setIsAdmin(session?.user?.email === ADMIN_EMAIL);
       setIsLoading(false);
+      // If not admin, redirect away right away (avoids brief "offline")
+      if (!session?.user || session.user.email !== ADMIN_EMAIL) {
+        window.location.replace("/admin/login");
+      }
       console.log("[Supabase Session Init]", session);
     });
 
@@ -82,6 +92,8 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     setUserEmail(data.user.email);
     setIsLoading(false);
     console.log("[Admin SignIn] session/user", data.session, data.user);
+    // Always redirect to dashboard on successful login
+    navigate("/admin/dashboard", { replace: true });
   };
 
   // Logout with redirect to home
@@ -90,10 +102,8 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     setIsAdmin(false);
     setSession(null);
     setUserEmail(null);
-    toast.success("Logged out.");
-    console.log("[Admin SignOut]");
 
-    // Optional: Unregister all service workers to clear PWA cache for admin routes
+    // Unregister all service workers and delete all caches to ensure no offline page is served
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(registrations => {
         for (let reg of registrations) {
@@ -101,8 +111,16 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
         }
       });
     }
+    if ('caches' in window) {
+      // Clear all caches
+      caches.keys().then((names) => {
+        for (let name of names) caches.delete(name);
+      });
+    }
 
-    // Force a navigation to the login page, clearing SW fallback/offline state
+    toast.success("Logged out.");
+    console.log("[Admin SignOut]");
+    // Hard redirect to avoid cached/restricted views
     window.location.replace("/admin/login");
   };
 

@@ -15,16 +15,16 @@ export default function PWAInstallButton() {
     };
     window.addEventListener("beforeinstallprompt", handler);
 
-    // Hide button if app is already installed or running standalone
+    // Only show if not installed and not an admin/auth page
+    const isAdminRoute = window.location.pathname.startsWith("/admin");
     if (
       (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
-      // @ts-ignore
-      window.navigator.standalone === true
+      window.navigator.standalone === true ||
+      isAdminRoute
     ) {
       setShowButton(false);
     }
 
-    // Hide button on install complete
     const onAppInstalled = () => setShowButton(false);
     window.addEventListener("appinstalled", onAppInstalled);
 
