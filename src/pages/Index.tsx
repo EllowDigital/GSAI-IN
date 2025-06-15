@@ -44,14 +44,14 @@ const Index = () => {
         {/* Academy Photo Gallery */}
         <GallerySection />
 
-        {/* Recognitions and Affiliations */}
-        <RecognitionAffiliationsSection />
-
         {/* Frequently Asked Questions */}
         <FaqSection />
 
         {/* Academy Location */}
         <LocationSection />
+
+        {/* Recognitions and Affiliations */}
+        <RecognitionAffiliationsSection />
       </main>
 
       {/* Footer */}
