@@ -1,14 +1,13 @@
-
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import StudentModal from "./StudentModal";
-import StudentDeleteDialog from "./StudentDeleteDialog";
-import StudentSummaryCard from "./StudentSummaryCard";
-import { exportStudentsToCsv } from "@/utils/exportToCsv";
-import StudentsTable from "./students/StudentsTable";
-import StudentsCards from "./students/StudentsCards";
-import { useStudents } from "@/hooks/useStudents";
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import StudentModal from './StudentModal';
+import StudentDeleteDialog from './StudentDeleteDialog';
+import StudentSummaryCard from './StudentSummaryCard';
+import { exportStudentsToCsv } from '@/utils/exportToCsv';
+import StudentsTable from './students/StudentsTable';
+import StudentsCards from './students/StudentsCards';
+import { useStudents } from '@/hooks/useStudents';
 
 // --- All required columns now reflected ---
 type StudentRow = {
@@ -24,8 +23,16 @@ type StudentRow = {
 };
 
 export default function StudentManager() {
-  const { students, loading, filteredStudents, search, setSearch, sortConfig, requestSort } = useStudents();
-  
+  const {
+    students,
+    loading,
+    filteredStudents,
+    search,
+    setSearch,
+    sortConfig,
+    requestSort,
+  } = useStudents();
+
   const [showModal, setShowModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState<StudentRow | null>(null);
   const [deleteStudent, setDeleteStudent] = useState<StudentRow | null>(null);
@@ -68,7 +75,7 @@ export default function StudentManager() {
         onDelete={setDeleteStudent}
       />
     );
-  }
+  };
 
   return (
     <div className="max-w-[98vw] mx-auto w-full">
@@ -79,7 +86,9 @@ export default function StudentManager() {
         <button
           onClick={() => exportStudentsToCsv(filteredStudents)}
           className="border border-blue-400 px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-medium hover:bg-blue-200 transition text-xs sm:text-sm ml-0 md:ml-auto min-w-[120px]"
-          disabled={!Array.isArray(filteredStudents) || filteredStudents.length === 0}
+          disabled={
+            !Array.isArray(filteredStudents) || filteredStudents.length === 0
+          }
           title="Download as CSV"
         >
           Download CSV
@@ -92,14 +101,15 @@ export default function StudentManager() {
           className="border rounded px-2 py-2 text-sm w-full xs:w-auto flex-1"
           placeholder="Search by Name or Program"
           value={search}
-          onChange={e => setSearch(e.target.value)}
+          onChange={(e) => setSearch(e.target.value)}
         />
         <Button
           onClick={handleAdd}
           variant="default"
           className="flex gap-2 rounded-full w-full xs:w-auto justify-center"
         >
-          <Plus size={18} /> <span className="hidden xs:inline">Add Student</span>
+          <Plus size={18} />{' '}
+          <span className="hidden xs:inline">Add Student</span>
           <span className="inline xs:hidden">Add</span>
         </Button>
       </div>

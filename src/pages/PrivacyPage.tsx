@@ -1,26 +1,34 @@
-
-import React from "react";
+import React from 'react';
 
 const privacySections = [
   {
-    title: "1. Introduction",
+    title: '1. Introduction',
     content: `At Ghatak Sports Academy India, we respect your privacy and are committed to protecting your personal information. This Privacy Policy outlines how we collect, use, and safeguard your data.`,
   },
   {
-    title: "2. Information We Collect",
+    title: '2. Information We Collect',
     content: (
       <>
         <p>We may collect the following types of information:</p>
         <ul className="list-disc pl-4 mt-2 space-y-1">
-          <li><strong>Personal Data:</strong> Name, email address, phone number (submitted voluntarily).</li>
-          <li><strong>Usage Data:</strong> IP address, browser type, device info, pages visited.</li>
-          <li><strong>Cookies:</strong> Small files stored in your browser to enhance your experience.</li>
+          <li>
+            <strong>Personal Data:</strong> Name, email address, phone number
+            (submitted voluntarily).
+          </li>
+          <li>
+            <strong>Usage Data:</strong> IP address, browser type, device info,
+            pages visited.
+          </li>
+          <li>
+            <strong>Cookies:</strong> Small files stored in your browser to
+            enhance your experience.
+          </li>
         </ul>
       </>
     ),
   },
   {
-    title: "3. How We Use Your Information",
+    title: '3. How We Use Your Information',
     content: (
       <>
         <p>We use your information to:</p>
@@ -34,37 +42,43 @@ const privacySections = [
     ),
   },
   {
-    title: "4. Disclosure of Information",
+    title: '4. Disclosure of Information',
     content: (
       <>
         <p>We may share your data with:</p>
         <ul className="list-disc pl-4 mt-2 space-y-1">
-          <li><strong>Service Providers:</strong> To facilitate services and enhance user experience.</li>
-          <li><strong>Legal Obligations:</strong> When required by law or to protect our legal rights.</li>
+          <li>
+            <strong>Service Providers:</strong> To facilitate services and
+            enhance user experience.
+          </li>
+          <li>
+            <strong>Legal Obligations:</strong> When required by law or to
+            protect our legal rights.
+          </li>
         </ul>
       </>
     ),
   },
   {
-    title: "5. Security Measures",
+    title: '5. Security Measures',
     content: `We employ administrative and technical safeguards to protect your information from unauthorized access or disclosure.`,
   },
   {
-    title: "6. Your Rights",
+    title: '6. Your Rights',
     content: `You may request access to, update, or delete your personal data by contacting us.`,
   },
   {
-    title: "7. Changes to This Policy",
+    title: '7. Changes to This Policy',
     content: `We may update this Privacy Policy periodically. Changes will be posted on this page with the updated date.`,
   },
   {
-    title: "8. Contact Us",
+    title: '8. Contact Us',
     content: (
       <>
         <p>If you have any questions about this Privacy Policy, contact us:</p>
         <div className="mt-1">
           <span>
-            Email:{" "}
+            Email:{' '}
             <a
               href="mailto:ghatakgsai@gmail.com"
               className="text-yellow-500 underline hover:text-yellow-600"
@@ -74,14 +88,14 @@ const privacySections = [
           </span>
           <br />
           <span>
-            Phone:{" "}
+            Phone:{' '}
             <a
               href="tel:+916394135988"
               className="text-yellow-500 underline hover:text-yellow-600"
             >
               +91 63941 35988
             </a>
-            ,{" "}
+            ,{' '}
             <a
               href="tel:+918355062424"
               className="text-yellow-500 underline hover:text-yellow-600"
@@ -108,7 +122,9 @@ const PrivacyPage: React.FC = () => (
       </header>
       {privacySections.map((s, i) => (
         <section className="mb-7 last:mb-0" key={s.title}>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">{s.title}</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            {s.title}
+          </h2>
           <div className="text-gray-700 text-base">{s.content}</div>
         </section>
       ))}

@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -9,9 +8,9 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
   AlertDialogDescription,
-} from "@/components/ui/alert-dialog";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/components/ui/sonner";
+} from '@/components/ui/alert-dialog';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/sonner';
 
 interface Props {
   student: any;
@@ -25,14 +24,14 @@ export default function StudentDeleteDialog({ student, onClose }: Props) {
     setLoading(true);
     try {
       const { error } = await supabase
-        .from("students")
+        .from('students')
         .delete()
-        .eq("id", student.id);
+        .eq('id', student.id);
       if (error) throw error;
-      toast.success("Student deleted.");
+      toast.success('Student deleted.');
       onClose();
     } catch (err: any) {
-      toast.error("Error deleting student: " + err.message);
+      toast.error('Error deleting student: ' + err.message);
     }
     setLoading(false);
   };
@@ -43,7 +42,9 @@ export default function StudentDeleteDialog({ student, onClose }: Props) {
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Student?</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to remove <span className="font-semibold">{student.name}</span>? This action cannot be undone.
+            Are you sure you want to remove{' '}
+            <span className="font-semibold">{student.name}</span>? This action
+            cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -53,7 +54,7 @@ export default function StudentDeleteDialog({ student, onClose }: Props) {
             disabled={loading}
             className="bg-red-600 text-white hover:bg-red-800"
           >
-            {loading ? "Deleting..." : "Delete"}
+            {loading ? 'Deleting...' : 'Delete'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

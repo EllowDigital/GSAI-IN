@@ -1,6 +1,5 @@
-
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React from 'react';
+import { NavLink } from 'react-router-dom';
 import {
   Home,
   BadgeDollarSign,
@@ -12,19 +11,19 @@ import {
   LogOut,
   Globe,
   GitBranch,
-} from "lucide-react";
-import { useAdminAuth } from "@/pages/admin/AdminAuthProvider";
+} from 'lucide-react';
+import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 
 // Modern sidebar nav items
 const navItems = [
-  { title: "Homepage", url: "https://ghatakgsai.netlify.app/", icon: Globe },
-  { title: "Dashboard", url: "/admin/dashboard", icon: Home },
-  { title: "Fees", url: "/admin/dashboard/fees", icon: BadgeDollarSign },
-  { title: "Blogs", url: "/admin/dashboard/blogs", icon: BookOpen },
-  { title: "News", url: "/admin/dashboard/news", icon: Newspaper },
-  { title: "Gallery", url: "/admin/dashboard/gallery", icon: GalleryIcon },
-  { title: "Students", url: "/admin/dashboard/students", icon: Users },
-  { title: "Events", url: "/admin/dashboard/events", icon: Calendar },
+  { title: 'Homepage', url: 'https://ghatakgsai.netlify.app/', icon: Globe },
+  { title: 'Dashboard', url: '/admin/dashboard', icon: Home },
+  { title: 'Fees', url: '/admin/dashboard/fees', icon: BadgeDollarSign },
+  { title: 'Blogs', url: '/admin/dashboard/blogs', icon: BookOpen },
+  { title: 'News', url: '/admin/dashboard/news', icon: Newspaper },
+  { title: 'Gallery', url: '/admin/dashboard/gallery', icon: GalleryIcon },
+  { title: 'Students', url: '/admin/dashboard/students', icon: Users },
+  { title: 'Events', url: '/admin/dashboard/events', icon: Calendar },
 ];
 
 interface AppSidebarProps {
@@ -34,7 +33,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
   const { signOut } = useAdminAuth();
-  const APP_VERSION = "1.0.0";
+  const APP_VERSION = '1.0.0';
 
   // Hide sidebar on mobile unless open
   return (
@@ -45,11 +44,11 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
         shadow-lg border-r border-yellow-200
         w-4/5 max-w-xs transform
         transition-transform duration-300
-        ${open ? "translate-x-0" : "-translate-x-full"}
+        ${open ? 'translate-x-0' : '-translate-x-full'}
         md:w-64 md:max-w-none md:translate-x-0 md:static md:block
         flex flex-col
       `}
-      style={{ minWidth: "15rem", maxWidth: "18rem" }}
+      style={{ minWidth: '15rem', maxWidth: '18rem' }}
       aria-label="Sidebar"
     >
       {/* Header */}
@@ -59,15 +58,19 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
           alt="Logo"
           className="w-12 h-12 rounded-full border-2 border-yellow-400 shadow-md"
         />
-        <span className="text-[1.35rem] font-bold text-yellow-600">GSAI Admin</span>
-        <span className="text-xs font-bold text-gray-400">Professional Panel</span>
+        <span className="text-[1.35rem] font-bold text-yellow-600">
+          GSAI Admin
+        </span>
+        <span className="text-xs font-bold text-gray-400">
+          Professional Panel
+        </span>
       </div>
       {/* Nav */}
       <div className="flex-1 mt-2 px-2 overflow-y-auto custom-scroll">
         <ul className="space-y-1">
           {navItems.map(({ title, url, icon: Icon }) => (
             <li key={title}>
-              {url === "/" ? (
+              {url === '/' ? (
                 <a
                   href={url}
                   target="_blank"
@@ -93,8 +96,8 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
                     `flex items-center px-4 py-2 rounded-lg gap-3 transition-all font-medium
                      hover:bg-yellow-100/80 ${
                        isActive
-                         ? "bg-yellow-100 text-yellow-800"
-                         : "text-gray-700"
+                         ? 'bg-yellow-100 text-yellow-800'
+                         : 'text-gray-700'
                      }`
                   }
                 >
@@ -117,7 +120,10 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
         <div className="mt-1 text-[11px] text-gray-400 text-center select-none flex justify-center items-center gap-2">
           <span>© 2025 GSAI Dashboard</span>
           <span className="text-gray-300">|</span>
-          <div className="flex items-center gap-1" title={`Version ${APP_VERSION}`}>
+          <div
+            className="flex items-center gap-1"
+            title={`Version ${APP_VERSION}`}
+          >
             <GitBranch size={12} />
             <span>v{APP_VERSION}</span>
           </div>

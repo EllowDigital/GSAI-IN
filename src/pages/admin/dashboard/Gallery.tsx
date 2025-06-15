@@ -1,10 +1,9 @@
-
-import React, { useState, useCallback, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { BadgePlus, Loader2, ArrowUp } from "lucide-react";
-import GalleryUploadDrawer from "./GalleryUploadDrawer";
-import GalleryImageCard from "./GalleryImageCard";
-import toast, { Toaster } from "react-hot-toast";
+import React, { useState, useCallback, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { BadgePlus, Loader2, ArrowUp } from 'lucide-react';
+import GalleryUploadDrawer from './GalleryUploadDrawer';
+import GalleryImageCard from './GalleryImageCard';
+import toast, { Toaster } from 'react-hot-toast';
 
 type GalleryImage = {
   id: string;
@@ -15,9 +14,9 @@ type GalleryImage = {
 };
 
 const masonryCols = {
-  base: "columns-1 sm:columns-2",
-  md: "md:columns-3",
-  lg: "lg:columns-4",
+  base: 'columns-1 sm:columns-2',
+  md: 'md:columns-3',
+  lg: 'lg:columns-4',
 };
 
 export default function Gallery() {
@@ -32,13 +31,13 @@ export default function Gallery() {
     setLoading(true);
     const fetchGallery = async () => {
       const { data, error } = await supabase
-        .from("gallery_images")
-        .select("*")
-        .order("created_at", { ascending: false })
+        .from('gallery_images')
+        .select('*')
+        .order('created_at', { ascending: false })
         .limit(100);
 
       if (!ignore) {
-        if (error) toast.error("Could not fetch gallery.");
+        if (error) toast.error('Could not fetch gallery.');
         setImages(data || []);
         setLoading(false);
       }
@@ -47,13 +46,13 @@ export default function Gallery() {
     fetchGallery();
 
     const channel = supabase
-      .channel("gsai-gallery-db-changes")
+      .channel('gsai-gallery-db-changes')
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "*",
-          schema: "public",
-          table: "gallery_images",
+          event: '*',
+          schema: 'public',
+          table: 'gallery_images',
         },
         () => {
           fetchGallery();
@@ -84,8 +83,8 @@ export default function Gallery() {
   const [showBackToTop, setShowBackToTop] = useState(false);
   useEffect(() => {
     const handler = () => setShowBackToTop(window.scrollY > 200);
-    window.addEventListener("scroll", handler);
-    return () => window.removeEventListener("scroll", handler);
+    window.addEventListener('scroll', handler);
+    return () => window.removeEventListener('scroll', handler);
   }, []);
 
   return (
@@ -116,8 +115,8 @@ export default function Gallery() {
           <button
             className={`chip px-3 py-1 rounded-full font-inter shadow hover:shadow-lg focus:ring-2 transition border border-yellow-200 ${
               !filterTag
-                ? "bg-yellow-400 text-black"
-                : "bg-gray-100 hover:bg-yellow-100 text-gray-700"
+                ? 'bg-yellow-400 text-black'
+                : 'bg-gray-100 hover:bg-yellow-100 text-gray-700'
             }`}
             onClick={() => setFilterTag(null)}
           >
@@ -128,8 +127,8 @@ export default function Gallery() {
               key={tag}
               className={`chip px-3 py-1 rounded-full font-inter shadow hover:shadow-lg focus:ring-2 transition border border-yellow-200 ${
                 filterTag === tag
-                  ? "bg-yellow-400 text-black"
-                  : "bg-gray-100 hover:bg-yellow-100 text-gray-700"
+                  ? 'bg-yellow-400 text-black'
+                  : 'bg-gray-100 hover:bg-yellow-100 text-gray-700'
               }`}
               onClick={() => setFilterTag(tag)}
             >
@@ -148,7 +147,7 @@ export default function Gallery() {
         ) : (
           <div
             className={`transition-all duration-300 w-full space-y-4 ${masonryCols.base} ${masonryCols.md} ${masonryCols.lg} gap-x-4 flex-1`}
-            style={{ minHeight: "40vh" }} // Ensures grid fills available space
+            style={{ minHeight: '40vh' }} // Ensures grid fills available space
           >
             {filteredImages.length ? (
               filteredImages.map((img) => (
@@ -157,7 +156,7 @@ export default function Gallery() {
                   image={img}
                   onDeleteSuccess={() => {
                     setImages((cur) => cur.filter((i) => i.id !== img.id));
-                    toast.success("Image deleted.");
+                    toast.success('Image deleted.');
                   }}
                 />
               ))
@@ -181,9 +180,7 @@ export default function Gallery() {
         <button
           className="fixed bottom-6 right-4 xs:right-6 sm:right-8 bg-yellow-400 hover:bg-yellow-500 rounded-full shadow-2xl p-3 z-50 transition flex items-center"
           aria-label="Back to Top"
-          onClick={() =>
-            window.scrollTo({ top: 0, behavior: "smooth" })
-          }
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
           <ArrowUp className="text-black" size={22} />
         </button>

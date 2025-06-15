@@ -1,7 +1,6 @@
-
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, List } from "lucide-react";
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Users, List } from 'lucide-react';
 
 type Student = {
   program: string;
@@ -33,7 +32,7 @@ export default function StudentSummaryCard({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <span className="text-2xl font-bold">{loading ? "..." : total}</span>
+          <span className="text-2xl font-bold">{loading ? '...' : total}</span>
         </CardContent>
       </Card>
       <Card className="shadow flex-1 min-w-0 col-span-1 xs:col-span-2">
@@ -44,15 +43,20 @@ export default function StudentSummaryCard({
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-x-4 gap-y-1">
-          {loading
-            ? "..."
-            : Object.keys(byProgram).length === 0
-            ? <span className="text-muted-foreground">No programs</span>
-            : Object.entries(byProgram).map(([prog, count]) => (
-                <div key={prog} className="text-xs font-medium text-gray-800 bg-yellow-50 rounded px-2 py-1 mb-1">
-                  {prog}: <b>{count}</b>
-                </div>
-              ))}
+          {loading ? (
+            '...'
+          ) : Object.keys(byProgram).length === 0 ? (
+            <span className="text-muted-foreground">No programs</span>
+          ) : (
+            Object.entries(byProgram).map(([prog, count]) => (
+              <div
+                key={prog}
+                className="text-xs font-medium text-gray-800 bg-yellow-50 rounded px-2 py-1 mb-1"
+              >
+                {prog}: <b>{count}</b>
+              </div>
+            ))
+          )}
         </CardContent>
       </Card>
     </div>

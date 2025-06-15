@@ -1,6 +1,5 @@
-
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 // Hook: Handles checking if the current user is in the admin_users table for RLS operations
 export function useAdminRLS() {
@@ -18,9 +17,9 @@ export function useAdminRLS() {
 
       if (userEmail) {
         const { data: foundUser } = await supabase
-          .from("admin_users")
-          .select("*")
-          .eq("email", userEmail)
+          .from('admin_users')
+          .select('*')
+          .eq('email', userEmail)
           .maybeSingle();
         setIsAdminInTable(!!foundUser);
         if (!foundUser) {

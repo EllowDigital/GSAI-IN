@@ -1,7 +1,6 @@
-
-import React from "react";
-import { BadgeDollarSign } from "lucide-react";
-import FeesManagerPanel from "@/components/admin/FeesManagerPanel";
+import React from 'react';
+import { BadgeDollarSign } from 'lucide-react';
+import FeesManagerPanel from '@/components/admin/FeesManagerPanel';
 
 export default function FeesManager() {
   return (

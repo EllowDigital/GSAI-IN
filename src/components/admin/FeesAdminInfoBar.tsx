@@ -1,5 +1,4 @@
-
-import React from "react";
+import React from 'react';
 
 type Props = {
   isAdminInTable: boolean | null;
@@ -17,17 +16,20 @@ export default function FeesAdminInfoBar({
   return (
     <div className="mb-2 text-xs text-gray-400 flex flex-wrap items-center gap-2">
       <span>
-        In admin_users? <b>{isAdminInTable === null ? "..." : isAdminInTable ? "✅" : "❌"}</b>
+        In admin_users?{' '}
+        <b>{isAdminInTable === null ? '...' : isAdminInTable ? '✅' : '❌'}</b>
       </span>
       <span>
-        canSubmitFeeEdits: <b>{canSubmitFeeEdits() ? "✅" : "❌"}</b>
+        canSubmitFeeEdits: <b>{canSubmitFeeEdits() ? '✅' : '❌'}</b>
       </span>
-      {rlsError && <span className="text-red-700 ml-2">RLS Error: {rlsError}</span>}
+      {rlsError && (
+        <span className="text-red-700 ml-2">RLS Error: {rlsError}</span>
+      )}
       <button
         onClick={() => {
-          console.log("[DEBUG] isAdminInTable", isAdminInTable);
-          console.log("[DEBUG] canSubmitFeeEdits", canSubmitFeeEdits());
-          alert("Debug info printed to console.");
+          console.log('[DEBUG] isAdminInTable', isAdminInTable);
+          console.log('[DEBUG] canSubmitFeeEdits', canSubmitFeeEdits());
+          alert('Debug info printed to console.');
         }}
         className="text-xs px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-600 ml-2"
         type="button"

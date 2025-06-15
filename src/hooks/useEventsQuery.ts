@@ -1,16 +1,15 @@
+import { useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Tables } from '@/integrations/supabase/types';
 
-import { useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Tables } from "@/integrations/supabase/types";
-
-export type EventRow = Tables<"events">;
+export type EventRow = Tables<'events'>;
 
 async function fetchEvents(): Promise<EventRow[]> {
   const { data, error } = await supabase
-    .from("events")
-    .select("*")
-    .order("from_date", { ascending: false })
+    .from('events')
+    .select('*')
+    .order('from_date', { ascending: false })
     .limit(6);
 
   if (error) throw new Error(error.message);
@@ -25,7 +24,7 @@ export function useEventsQuery() {
 
   // Use react-query for fetching and retry mechanism
   const query = useQuery<EventRow[], Error>({
-    queryKey: ["events", "public", "cards"],
+    queryKey: ['events', 'public', 'cards'],
     queryFn: fetchEvents,
     retry: 2, // Retry up to 2 times on failure
     staleTime: 1000 * 60, // 1 minute
@@ -37,13 +36,15 @@ export function useEventsQuery() {
   useEffect(() => {
     // Subscribe to events changes from Supabase
     const channel = supabase
-      .channel("public-events-realtime")
+      .channel('public-events-realtime')
       .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "events" },
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'events' },
         () => {
           // Refetch on any event change
-          queryClient.invalidateQueries({ queryKey: ["events", "public", "cards"] });
+          queryClient.invalidateQueries({
+            queryKey: ['events', 'public', 'cards'],
+          });
         }
       )
       .subscribe();

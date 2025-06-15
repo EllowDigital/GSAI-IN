@@ -1,22 +1,21 @@
-
-import React, { useState, useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import FeeSummaryCard from "./FeeSummaryCard";
-import FeesTable from "./FeesTable";
-import FeeEditModal from "./FeeEditModal";
-import FeeHistoryDrawer from "./FeeHistoryDrawer";
-import FeesFilterBar from "./FeesFilterBar";
-import { exportFeesToCsv } from "@/utils/exportToCsv";
-import { useIsMobile } from "@/hooks/use-mobile";
-import FeesCards from "./FeesCards";
+import React, { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import FeeSummaryCard from './FeeSummaryCard';
+import FeesTable from './FeesTable';
+import FeeEditModal from './FeeEditModal';
+import FeeHistoryDrawer from './FeeHistoryDrawer';
+import FeesFilterBar from './FeesFilterBar';
+import { exportFeesToCsv } from '@/utils/exportToCsv';
+import { useIsMobile } from '@/hooks/use-mobile';
+import FeesCards from './FeesCards';
 
 export default function FeesManagerPanel() {
   const now = new Date();
   const [filterMonth, setFilterMonth] = useState(now.getMonth() + 1);
   const [filterYear, setFilterYear] = useState(now.getFullYear());
-  const [filterStatus, setFilterStatus] = useState("");
-  const [filterName, setFilterName] = useState("");
+  const [filterStatus, setFilterStatus] = useState('');
+  const [filterName, setFilterName] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editStudent, setEditStudent] = useState<any | null>(null);
   const [editFee, setEditFee] = useState<any | null>(null);
@@ -27,11 +26,11 @@ export default function FeesManagerPanel() {
 
   useEffect(() => {
     const channel = supabase
-      .channel("public:fees:fees-manager")
+      .channel('public:fees:fees-manager')
       .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "fees" },
-        () => queryClient.invalidateQueries({ queryKey: ["fees"] })
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'fees' },
+        () => queryClient.invalidateQueries({ queryKey: ['fees'] })
       )
       .subscribe();
 
@@ -42,11 +41,11 @@ export default function FeesManagerPanel() {
 
   // Fetch students
   const { data: students, isLoading: loadingStudents } = useQuery({
-    queryKey: ["students"],
+    queryKey: ['students'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("students")
-        .select("id, name, program, default_monthly_fee, profile_image_url");
+        .from('students')
+        .select('id, name, program, default_monthly_fee, profile_image_url');
       if (error) throw error;
       return data || [];
     },
@@ -54,13 +53,13 @@ export default function FeesManagerPanel() {
 
   // Fetch fees for filtered month/year
   const { data: fees, isLoading: loadingFees } = useQuery({
-    queryKey: ["fees", filterMonth, filterYear],
+    queryKey: ['fees', filterMonth, filterYear],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("fees")
-        .select("*")
-        .eq("month", filterMonth)
-        .eq("year", filterYear);
+        .from('fees')
+        .select('*')
+        .eq('month', filterMonth)
+        .eq('year', filterYear);
       if (error) throw error;
       return data || [];
     },
@@ -68,9 +67,9 @@ export default function FeesManagerPanel() {
 
   // All fees for history drawer
   const { data: allFees } = useQuery({
-    queryKey: ["fees", "all"],
+    queryKey: ['fees', 'all'],
     queryFn: async () => {
-      const { data, error } = await supabase.from("fees").select("*");
+      const { data, error } = await supabase.from('fees').select('*');
       if (error) throw error;
       return data || [];
     },
@@ -80,25 +79,26 @@ export default function FeesManagerPanel() {
   // Compose filtered rows
   const rows = Array.isArray(students)
     ? students
-      .map((student) => {
-        const fee = fees?.find((f) => f.student_id === student.id) || null;
-        return { student, fee };
-      })
-      .filter((row) => {
-        if (
-          filterName &&
-          !row.student.name.toLowerCase().includes(filterName.toLowerCase())
-        ) return false;
-        if (filterStatus) {
-          const status = row.fee
-            ? (row.fee.status || "unpaid").toLowerCase()
-            : "unpaid";
-          return status === filterStatus.toLowerCase();
-        }
-        return true;
-      })
+        .map((student) => {
+          const fee = fees?.find((f) => f.student_id === student.id) || null;
+          return { student, fee };
+        })
+        .filter((row) => {
+          if (
+            filterName &&
+            !row.student.name.toLowerCase().includes(filterName.toLowerCase())
+          )
+            return false;
+          if (filterStatus) {
+            const status = row.fee
+              ? (row.fee.status || 'unpaid').toLowerCase()
+              : 'unpaid';
+            return status === filterStatus.toLowerCase();
+          }
+          return true;
+        })
     : [];
-  
+
   const isLoading = loadingStudents || loadingFees;
 
   // Handlers
@@ -111,22 +111,33 @@ export default function FeesManagerPanel() {
     setHistoryStudent(student);
     setHistoryDrawerOpen(true);
   };
-  
+
   const renderContent = () => {
     if (isLoading) {
-        return (
-            <div className="w-full py-10 flex items-center justify-center">
-                <div className="animate-spin h-8 w-8 border-4 border-yellow-400 rounded-full border-t-transparent" />
-            </div>
-        );
+      return (
+        <div className="w-full py-10 flex items-center justify-center">
+          <div className="animate-spin h-8 w-8 border-4 border-yellow-400 rounded-full border-t-transparent" />
+        </div>
+      );
     }
     if (isMobile) {
-        return <FeesCards rows={rows} onEditFee={handleEditFee} onShowHistory={handleShowHistory} />;
+      return (
+        <FeesCards
+          rows={rows}
+          onEditFee={handleEditFee}
+          onShowHistory={handleShowHistory}
+        />
+      );
     }
     return (
-        <div className="rounded-2xl shadow-lg overflow-x-auto bg-white animate-fade-in">
-            <FeesTable rows={rows} isLoading={false} onEditFee={handleEditFee} onShowHistory={handleShowHistory} />
-        </div>
+      <div className="rounded-2xl shadow-lg overflow-x-auto bg-white animate-fade-in">
+        <FeesTable
+          rows={rows}
+          isLoading={false}
+          onEditFee={handleEditFee}
+          onShowHistory={handleShowHistory}
+        />
+      </div>
     );
   };
 
@@ -155,7 +166,7 @@ export default function FeesManagerPanel() {
           </button>
         </div>
       </div>
-      
+
       {renderContent()}
 
       {/* Modals/Drawers for mobile friendly */}

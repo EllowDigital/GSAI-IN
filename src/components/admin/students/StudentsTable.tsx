@@ -1,10 +1,16 @@
-
 import React from 'react';
-import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Edit, Trash2, User, ChevronsUpDown } from "lucide-react";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import clsx from "clsx";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Edit, Trash2, User, ChevronsUpDown } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import clsx from 'clsx';
 
 type StudentRow = {
   id: string;
@@ -24,22 +30,41 @@ type Props = {
   onDelete: (student: StudentRow) => void;
   loading: boolean;
   sortConfig: {
-    key: "name" | "program" | "join_date";
+    key: 'name' | 'program' | 'join_date';
     direction: 'asc' | 'desc';
   };
-  requestSort: (key: "name" | "program" | "join_date") => void;
+  requestSort: (key: 'name' | 'program' | 'join_date') => void;
 };
 
-const SortableHeader = ({ children, active, direction, onClick }: { children: React.ReactNode, active: boolean, direction: string, onClick: () => void }) => (
-    <TableHead className="cursor-pointer" onClick={onClick}>
-        <div className="flex items-center gap-1">
-            {children}
-            <ChevronsUpDown className={`h-4 w-4 transition-opacity ${active ? 'opacity-100 text-black' : 'opacity-40'}`} />
-        </div>
-    </TableHead>
-)
+const SortableHeader = ({
+  children,
+  active,
+  direction,
+  onClick,
+}: {
+  children: React.ReactNode;
+  active: boolean;
+  direction: string;
+  onClick: () => void;
+}) => (
+  <TableHead className="cursor-pointer" onClick={onClick}>
+    <div className="flex items-center gap-1">
+      {children}
+      <ChevronsUpDown
+        className={`h-4 w-4 transition-opacity ${active ? 'opacity-100 text-black' : 'opacity-40'}`}
+      />
+    </div>
+  </TableHead>
+);
 
-export default function StudentsTable({ students, onEdit, onDelete, loading, sortConfig, requestSort }: Props) {
+export default function StudentsTable({
+  students,
+  onEdit,
+  onDelete,
+  loading,
+  sortConfig,
+  requestSort,
+}: Props) {
   if (loading) {
     return (
       <TableRow>
@@ -55,11 +80,13 @@ export default function StudentsTable({ students, onEdit, onDelete, loading, sor
 
   if (students.length === 0) {
     return (
-        <TableRow>
-            <TableCell colSpan={8}>
-              <div className="py-10 text-center text-gray-400">No students found.</div>
-            </TableCell>
-        </TableRow>
+      <TableRow>
+        <TableCell colSpan={8}>
+          <div className="py-10 text-center text-gray-400">
+            No students found.
+          </div>
+        </TableCell>
+      </TableRow>
     );
   }
 
@@ -69,10 +96,28 @@ export default function StudentsTable({ students, onEdit, onDelete, loading, sor
         <TableHeader>
           <TableRow>
             <TableHead className="min-w-[60px]">Avatar</TableHead>
-            <SortableHeader active={sortConfig.key === 'name'} direction={sortConfig.direction} onClick={() => requestSort('name')}>Name</SortableHeader>
+            <SortableHeader
+              active={sortConfig.key === 'name'}
+              direction={sortConfig.direction}
+              onClick={() => requestSort('name')}
+            >
+              Name
+            </SortableHeader>
             <TableHead className="min-w-[130px]">Aadhar Number</TableHead>
-            <SortableHeader active={sortConfig.key === 'program'} direction={sortConfig.direction} onClick={() => requestSort('program')}>Program</SortableHeader>
-            <SortableHeader active={sortConfig.key === 'join_date'} direction={sortConfig.direction} onClick={() => requestSort('join_date')}>Join Date</SortableHeader>
+            <SortableHeader
+              active={sortConfig.key === 'program'}
+              direction={sortConfig.direction}
+              onClick={() => requestSort('program')}
+            >
+              Program
+            </SortableHeader>
+            <SortableHeader
+              active={sortConfig.key === 'join_date'}
+              direction={sortConfig.direction}
+              onClick={() => requestSort('join_date')}
+            >
+              Join Date
+            </SortableHeader>
             <TableHead className="min-w-[120px]">Parent Name</TableHead>
             <TableHead className="min-w-[120px]">Parent Contact</TableHead>
             <TableHead className="min-w-[90px]">Actions</TableHead>
@@ -83,15 +128,19 @@ export default function StudentsTable({ students, onEdit, onDelete, loading, sor
             <TableRow
               key={stu.id}
               className={clsx(
-                "transition",
-                "hover:bg-yellow-50",
-                (index % 2 === 1) ? "bg-gray-50" : "bg-white"
+                'transition',
+                'hover:bg-yellow-50',
+                index % 2 === 1 ? 'bg-gray-50' : 'bg-white'
               )}
             >
               <TableCell>
                 <Avatar className="h-9 w-9">
                   {stu.profile_image_url ? (
-                    <AvatarImage src={stu.profile_image_url} alt={stu.name} className="object-cover" />
+                    <AvatarImage
+                      src={stu.profile_image_url}
+                      alt={stu.name}
+                      className="object-cover"
+                    />
                   ) : (
                     <AvatarFallback className="bg-yellow-100">
                       <User size={18} className="text-yellow-600" />
@@ -102,18 +151,24 @@ export default function StudentsTable({ students, onEdit, onDelete, loading, sor
               <TableCell className="font-semibold">{stu.name}</TableCell>
               <TableCell>{stu.aadhar_number}</TableCell>
               <TableCell>
-                <span className="block max-w-[100px] truncate">{stu.program}</span>
+                <span className="block max-w-[100px] truncate">
+                  {stu.program}
+                </span>
               </TableCell>
               <TableCell>
                 {stu.join_date
                   ? new Date(stu.join_date).toLocaleDateString()
-                  : ""}
+                  : ''}
               </TableCell>
               <TableCell>
-                <span className="block max-w-[110px] truncate">{stu.parent_name}</span>
+                <span className="block max-w-[110px] truncate">
+                  {stu.parent_name}
+                </span>
               </TableCell>
               <TableCell>
-                <span className="block max-w-[110px] truncate">{stu.parent_contact}</span>
+                <span className="block max-w-[110px] truncate">
+                  {stu.parent_contact}
+                </span>
               </TableCell>
               <TableCell>
                 <div className="flex gap-2">

@@ -1,7 +1,6 @@
-
-import React from "react";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import React from 'react';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 
 type Props = {
   filterMonth: number;
@@ -31,7 +30,7 @@ export default function FeesFilterBar({
         <Input
           placeholder="Search student name..."
           value={filterName}
-          onChange={e => setFilterName(e.target.value)}
+          onChange={(e) => setFilterName(e.target.value)}
           className="pl-8 w-full"
         />
       </div>
@@ -41,7 +40,7 @@ export default function FeesFilterBar({
           value={filterMonth}
           min={1}
           max={12}
-          onChange={e => setFilterMonth(Number(e.target.value))}
+          onChange={(e) => setFilterMonth(Number(e.target.value))}
           className="w-full xs:w-20"
           placeholder="Month"
         />
@@ -50,13 +49,13 @@ export default function FeesFilterBar({
           value={filterYear}
           min={2020}
           max={2100}
-          onChange={e => setFilterYear(Number(e.target.value))}
+          onChange={(e) => setFilterYear(Number(e.target.value))}
           className="w-full xs:w-28"
           placeholder="Year"
         />
         <select
           value={filterStatus}
-          onChange={e => setFilterStatus(e.target.value)}
+          onChange={(e) => setFilterStatus(e.target.value)}
           className="border px-3 py-2 rounded text-sm bg-white w-full xs:w-28 min-w-[8rem]"
         >
           <option value="">All Status</option>

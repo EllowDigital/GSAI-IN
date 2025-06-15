@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   AlertDialog,
@@ -19,14 +18,20 @@ interface BlogDeleteConfirmationDialogProps {
   isDeleting: boolean;
 }
 
-export default function BlogDeleteConfirmationDialog({ open, onOpenChange, onConfirm, isDeleting }: BlogDeleteConfirmationDialogProps) {
+export default function BlogDeleteConfirmationDialog({
+  open,
+  onOpenChange,
+  onConfirm,
+  isDeleting,
+}: BlogDeleteConfirmationDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the blog post.
+            This action cannot be undone. This will permanently delete the blog
+            post.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

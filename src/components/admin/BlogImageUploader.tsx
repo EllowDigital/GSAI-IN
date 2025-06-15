@@ -1,8 +1,7 @@
-
-import React from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import React from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 
 type Props = {
   url: string;
@@ -18,20 +17,22 @@ export default function BlogImageUploader({ url, disabled, onUpload }: Props) {
     setUploading(true);
     const filename = `${Date.now()}-${file.name}`;
     // Ensure bucket exists: "blog-images"
-    const { data, error } = await supabase.storage.from("blog-images").upload(filename, file, {
-      cacheControl: "3600",
-      upsert: true,
-    });
+    const { data, error } = await supabase.storage
+      .from('blog-images')
+      .upload(filename, file, {
+        cacheControl: '3600',
+        upsert: true,
+      });
     if (error) {
-      alert("Failed to upload image: " + error.message);
+      alert('Failed to upload image: ' + error.message);
       setUploading(false);
       return;
     }
     // Get public URL:
     const { data: urlData } = supabase.storage
-      .from("blog-images")
+      .from('blog-images')
       .getPublicUrl(filename);
-    onUpload(urlData.publicUrl || "");
+    onUpload(urlData.publicUrl || '');
     setUploading(false);
   }
 
@@ -56,7 +57,7 @@ export default function BlogImageUploader({ url, disabled, onUpload }: Props) {
         />
       )}
       <div
-        className={`flex items-center justify-center rounded-xl border-2 border-dashed border-yellow-300 py-5 bg-yellow-50 hover:bg-yellow-100 cursor-pointer transition ${disabled ? "opacity-70 pointer-events-none" : ""}`}
+        className={`flex items-center justify-center rounded-xl border-2 border-dashed border-yellow-300 py-5 bg-yellow-50 hover:bg-yellow-100 cursor-pointer transition ${disabled ? 'opacity-70 pointer-events-none' : ''}`}
         onClick={() => inputRef.current?.click()}
         onDrop={onDrop}
         onDragOver={(e) => e.preventDefault()}
@@ -71,14 +72,14 @@ export default function BlogImageUploader({ url, disabled, onUpload }: Props) {
         />
         <div className="flex flex-col items-center text-yellow-600 text-sm font-semibold select-none">
           <Plus className="mb-1" />
-          {uploading ? "Uploading..." : "Drag & drop or click to select image"}
+          {uploading ? 'Uploading...' : 'Drag & drop or click to select image'}
         </div>
       </div>
       <Button
         type="button"
         variant="ghost"
         className="w-max mt-1 text-xs"
-        onClick={() => onUpload("")}
+        onClick={() => onUpload('')}
         disabled={disabled || uploading}
       >
         Remove image

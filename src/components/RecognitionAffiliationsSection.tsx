@@ -1,33 +1,33 @@
-import React from "react";
+import React from 'react';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
-} from "./ui/carousel";
-import { Award } from "lucide-react";
+} from './ui/carousel';
+import { Award } from 'lucide-react';
 
 const logos = [
-  { name: "Government of India", url: "/assets/af_img/india.png" },
+  { name: 'Government of India', url: '/assets/af_img/india.png' },
   {
-    name: "Ministry of Youth Affairs & Sports",
-    url: "/assets/af_img/ministry.png",
+    name: 'Ministry of Youth Affairs & Sports',
+    url: '/assets/af_img/ministry.png',
   },
-  { name: "Fit India", url: "/assets/af_img/fit-india.png" },
-  { name: "Khelo India", url: "/assets/af_img/khelo-india.png" },
-  { name: "MSME", url: "/assets/af_img/MSME.png" },
-  { name: "ISO Certified", url: "/assets/af_img/iso.png" },
-  { name: "SGFI", url: "/assets/af_img/SGF.png" },
-  { name: "UP Olympic Association", url: "/assets/af_img/up-olympic.png" },
+  { name: 'Fit India', url: '/assets/af_img/fit-india.png' },
+  { name: 'Khelo India', url: '/assets/af_img/khelo-india.png' },
+  { name: 'MSME', url: '/assets/af_img/MSME.png' },
+  { name: 'ISO Certified', url: '/assets/af_img/iso.png' },
+  { name: 'SGFI', url: '/assets/af_img/SGF.png' },
+  { name: 'UP Olympic Association', url: '/assets/af_img/up-olympic.png' },
   {
-    name: "UP Kalaripayattu Federation",
-    url: "/assets/af_img/up-kalarippayattu.png",
+    name: 'UP Kalaripayattu Federation',
+    url: '/assets/af_img/up-kalarippayattu.png',
   },
-  { name: "Taekwondo Federation", url: "/assets/af_img/takewondo.png" },
+  { name: 'Taekwondo Federation', url: '/assets/af_img/takewondo.png' },
   {
-    name: "Indian Kalaripayattu Federation",
-    url: "/assets/af_img/in-kalarippayattufed.png",
+    name: 'Indian Kalaripayattu Federation',
+    url: '/assets/af_img/in-kalarippayattufed.png',
   },
 ];
 
@@ -70,7 +70,7 @@ export default function RecognitionAffiliationsSection() {
         <div className="relative flex items-center w-full justify-center">
           <Carousel
             opts={{
-              align: "center",
+              align: 'center',
               loop: true,
               slidesToScroll: 2,
               dragFree: true,
@@ -93,7 +93,7 @@ export default function RecognitionAffiliationsSection() {
                       alt={logo.name}
                       loading="lazy"
                       className="h-16 w-auto object-contain grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-200 shadow-sm group-hover:shadow-lg border border-yellow-200 bg-white rounded-lg p-1"
-                      style={{ backgroundColor: "#fff" }}
+                      style={{ backgroundColor: '#fff' }}
                     />
                     <span className="text-xs mt-2 text-gray-600 text-center max-w-[100px] group-hover:text-yellow-700 transition-colors font-medium">
                       {logo.name}

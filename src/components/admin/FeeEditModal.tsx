@@ -1,10 +1,14 @@
-
-import React, { useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { supabase } from "@/integrations/supabase/client";
-import { FeeAdminDebugBanner } from "./FeeAdminDebugBanner";
-import { FeeForm } from "./FeeForm";
-import { getFeeStatus } from "@/utils/feeStatusUtils";
+import React, { useEffect } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { supabase } from '@/integrations/supabase/client';
+import { FeeAdminDebugBanner } from './FeeAdminDebugBanner';
+import { FeeForm } from './FeeForm';
+import { getFeeStatus } from '@/utils/feeStatusUtils';
 
 export default function FeeEditModal({
   open,
@@ -36,14 +40,14 @@ export default function FeeEditModal({
       const prevMonth = month === 1 ? 12 : month - 1;
       const prevYear = month === 1 ? year - 1 : year;
       const { data, error } = await supabase
-        .from("fees")
-        .select("*")
-        .eq("student_id", student.id)
-        .eq("month", prevMonth)
-        .eq("year", prevYear)
+        .from('fees')
+        .select('*')
+        .eq('student_id', student.id)
+        .eq('month', prevMonth)
+        .eq('year', prevYear)
         .maybeSingle();
-      const shouldCarry = data && getFeeStatus(data) !== "paid";
-      const balance = shouldCarry ? (data.balance_due || 0) : 0;
+      const shouldCarry = data && getFeeStatus(data) !== 'paid';
+      const balance = shouldCarry ? data.balance_due || 0 : 0;
       setCarryForward(balance || 0);
     }
     fetchPrevious();
@@ -53,7 +57,7 @@ export default function FeeEditModal({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{fee ? "Edit Payment" : "Add Payment"}</DialogTitle>
+          <DialogTitle>{fee ? 'Edit Payment' : 'Add Payment'}</DialogTitle>
         </DialogHeader>
         <FeeAdminDebugBanner adminDebug={adminDebug} />
         <FeeForm

@@ -1,15 +1,21 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-interface NavLinkItemProps extends React.PropsWithChildren<{
-  href: string;
-  name: string;
-  className: string;
-  onClick?: () => void;
-}> {}
+interface NavLinkItemProps
+  extends React.PropsWithChildren<{
+    href: string;
+    name: string;
+    className: string;
+    onClick?: () => void;
+  }> {}
 
-export function NavLinkItem({ href, name, className, onClick, children }: NavLinkItemProps) {
+export function NavLinkItem({
+  href,
+  name,
+  className,
+  onClick,
+  children,
+}: NavLinkItemProps) {
   const content = children || name;
 
   if (href.startsWith('/')) {

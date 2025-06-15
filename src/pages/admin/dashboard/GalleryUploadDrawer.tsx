@@ -1,10 +1,15 @@
-
-import React, { useState } from "react";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { supabase } from "@/integrations/supabase/client";
-import toast from "react-hot-toast";
+import React, { useState } from 'react';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+} from '@/components/ui/drawer';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { supabase } from '@/integrations/supabase/client';
+import toast from 'react-hot-toast';
 
 type Props = {
   open: boolean;
@@ -13,15 +18,15 @@ type Props = {
 
 export default function GalleryUploadDrawer({ open, onClose }: Props) {
   const [file, setFile] = useState<File | null>(null);
-  const [caption, setCaption] = useState("");
-  const [tag, setTag] = useState("");
+  const [caption, setCaption] = useState('');
+  const [tag, setTag] = useState('');
   const [uploading, setUploading] = useState(false);
 
   async function handleUpload(e: React.FormEvent) {
     e.preventDefault();
 
     if (!file) {
-      toast.error("Please select an image to upload.");
+      toast.error('Please select an image to upload.');
       return;
     }
     setUploading(true);
@@ -29,21 +34,25 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
     // 1. Upload image to storage
     const ext = file.name.split('.').pop();
     const filePath = `gallery/${Date.now()}-${Math.random().toString(36).substr(2, 8)}.${ext}`;
-    const { error: uploadError } = await supabase.storage.from("gallery").upload(filePath, file, {
-      cacheControl: "3600",
-      upsert: false
-    });
+    const { error: uploadError } = await supabase.storage
+      .from('gallery')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false,
+      });
 
     if (uploadError) {
-      toast.error("Image upload failed: " + uploadError.message);
+      toast.error('Image upload failed: ' + uploadError.message);
       setUploading(false);
       return;
     }
 
     // 2. Get public URL
-    const { data: urlData } = supabase.storage.from("gallery").getPublicUrl(filePath);
+    const { data: urlData } = supabase.storage
+      .from('gallery')
+      .getPublicUrl(filePath);
     if (!urlData?.publicUrl) {
-      toast.error("Upload succeeded but missing image URL.");
+      toast.error('Upload succeeded but missing image URL.');
       setUploading(false);
       return;
     }
@@ -55,19 +64,21 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
       tag: tag || null,
     };
 
-    console.log("Uploading image, inserting metadata:", meta);
+    console.log('Uploading image, inserting metadata:', meta);
 
-    const { error: insertError } = await supabase.from("gallery_images").insert([meta]);
+    const { error: insertError } = await supabase
+      .from('gallery_images')
+      .insert([meta]);
     if (insertError) {
-      toast.error("Upload failed (DB): " + insertError.message);
-      console.error("Insert error details:", insertError);
+      toast.error('Upload failed (DB): ' + insertError.message);
+      console.error('Insert error details:', insertError);
       setUploading(false);
       return;
     }
 
-    toast.success("Image uploaded!");
-    setCaption("");
-    setTag("");
+    toast.success('Image uploaded!');
+    setCaption('');
+    setTag('');
     setFile(null);
     setUploading(false);
     onClose();
@@ -91,9 +102,15 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
   }
 
   return (
-    <Drawer open={open} onOpenChange={open => !open ? onClose() : undefined}>
+    <Drawer
+      open={open}
+      onOpenChange={(open) => (!open ? onClose() : undefined)}
+    >
       <DrawerContent>
-        <form onSubmit={handleUpload} className="px-2 xs:px-4 py-4 space-y-6 w-full max-w-lg mx-auto">
+        <form
+          onSubmit={handleUpload}
+          className="px-2 xs:px-4 py-4 space-y-6 w-full max-w-lg mx-auto"
+        >
           <DrawerHeader>
             <DrawerTitle className="text-lg sm:text-xl text-yellow-500 font-bold">
               Add Image to Gallery
@@ -101,7 +118,7 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
           </DrawerHeader>
           <div
             className={`rounded-xl border-2 border-dashed p-4 xs:p-6 text-center bg-gray-50 relative flex flex-col items-center justify-center cursor-pointer transition ${
-              file ? "border-yellow-400 bg-yellow-50" : "hover:bg-yellow-100"
+              file ? 'border-yellow-400 bg-yellow-50' : 'hover:bg-yellow-100'
             }`}
             onDrop={onDrop}
             onDragOver={onDragOver}
@@ -141,7 +158,7 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
               type="text"
               placeholder="Caption (optional)"
               value={caption}
-              onChange={e => setCaption(e.target.value)}
+              onChange={(e) => setCaption(e.target.value)}
               maxLength={100}
               disabled={uploading}
               className="w-full"
@@ -150,7 +167,7 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
               type="text"
               placeholder="Tag (optional)"
               value={tag}
-              onChange={e => setTag(e.target.value.replace(/\s/g, ""))}
+              onChange={(e) => setTag(e.target.value.replace(/\s/g, ''))}
               maxLength={20}
               disabled={uploading}
               className="w-full"
@@ -188,7 +205,7 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
                   </span>
                 </span>
               ) : (
-                "Upload"
+                'Upload'
               )}
             </Button>
             <Button

@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 type CardConfig = {
@@ -25,9 +24,15 @@ export default function StatsCards({ cardsConfig, counts, loading }: Props) {
         >
           <Icon className="w-7 h-7 sm:w-8 sm:h-8 mb-2" />
           <span className="text-xl sm:text-2xl font-extrabold">
-            {loading ? <span className="animate-pulse">...</span> : counts?.[key] ?? 0}
+            {loading ? (
+              <span className="animate-pulse">...</span>
+            ) : (
+              (counts?.[key] ?? 0)
+            )}
           </span>
-          <span className="text-xs sm:text-sm font-bold opacity-80 text-center">{label}</span>
+          <span className="text-xs sm:text-sm font-bold opacity-80 text-center">
+            {label}
+          </span>
         </div>
       ))}
     </div>

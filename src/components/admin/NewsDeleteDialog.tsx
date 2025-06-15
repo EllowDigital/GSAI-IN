@@ -1,7 +1,14 @@
-
-import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription, DialogClose } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import React from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+  DialogClose,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 type Props = {
   open: boolean;
@@ -11,7 +18,13 @@ type Props = {
   loading: boolean;
 };
 
-export default function NewsDeleteDialog({ open, onOpenChange, onDelete, newsTitle, loading }: Props) {
+export default function NewsDeleteDialog({
+  open,
+  onOpenChange,
+  onDelete,
+  newsTitle,
+  loading,
+}: Props) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -19,7 +32,8 @@ export default function NewsDeleteDialog({ open, onOpenChange, onDelete, newsTit
           <DialogTitle>Delete News</DialogTitle>
         </DialogHeader>
         <DialogDescription>
-          Are you sure you want to delete <strong>{newsTitle}</strong>? This action cannot be undone.
+          Are you sure you want to delete <strong>{newsTitle}</strong>? This
+          action cannot be undone.
         </DialogDescription>
         <DialogFooter>
           <DialogClose asChild>
