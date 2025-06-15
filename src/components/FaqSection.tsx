@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { help as Help } from "lucide-react"; // Correct lowercase icon import
+import { Help } from "lucide-react";
 
 const faqs = [
   {
