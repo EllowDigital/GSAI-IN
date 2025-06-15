@@ -4,21 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Edit, Plus } from "lucide-react";
 import clsx from "clsx";
-
-function getStatusTextAndColor(status: string) {
-  switch (status) {
-    case "paid":
-    case "Paid":
-      return ["Paid", "bg-green-100 text-green-700"];
-    case "partial":
-    case "Partial":
-      return ["Partial", "bg-yellow-100 text-yellow-700"];
-    case "unpaid":
-    case "Unpaid":
-    default:
-      return ["Unpaid", "bg-red-100 text-red-700"];
-  }
-}
+import { getFeeStatus, getStatusTextAndColor } from "@/utils/feeStatusUtils";
 
 export default function FeesTable({
   students,
@@ -59,9 +45,8 @@ export default function FeesTable({
           </TableHeader>
           <TableBody>
             {rows.map(({ student, fee }) => {
-              const [statusText, statusClass] = getStatusTextAndColor(
-                fee ? fee.status : "unpaid"
-              );
+              const status = fee ? getFeeStatus(fee) : "unpaid";
+              const [statusText, statusClass] = getStatusTextAndColor(status);
               return (
                 <TableRow key={student.id} className={clsx(fee ? "" : "bg-gray-50")}>
                   <TableCell>
