@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Outlet } from "react-router-dom";
 import { useAdminAuth } from "./AdminAuthProvider";
@@ -9,7 +8,7 @@ import AdminBackToTopButton from "@/components/admin/AdminBackToTopButton";
 
 /**
  * AdminLayout is responsible for rendering the sidebar and dashboard content.
- * We ensure proper responsive flexbox layout so the sidebar is always on the left on desktop,
+ * Ensures the sidebar is always fixed to the left on desktop,
  * overlays on mobile, and main content fills remaining space.
  */
 const AdminLayout: React.FC = () => {
@@ -34,32 +33,31 @@ const AdminLayout: React.FC = () => {
     );
   }
 
-  // Responsive layout: Sidebar (fixed width on desktop, overlays on mobile) + Main content
+  // Dashboard layout and decorations
   return (
     <SidebarProvider>
-      <div className="relative min-h-screen w-full bg-gradient-to-tr from-yellow-50 via-white/60 to-yellow-100 font-montserrat flex flex-col md:flex-row transition-all duration-300 overflow-hidden">
-        {/* Decorative BG circles */}
-        <div className="absolute left-0 top-0 w-64 h-64 bg-yellow-100 rounded-full blur-3xl opacity-60 -z-10 hidden md:block" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-yellow-200 via-yellow-100 to-white rounded-full blur-3xl opacity-50 -z-10 pointer-events-none hidden md:block" />
-        
-        {/* Sidebar as a sibling in the flex */}
+      <div className="relative min-h-screen w-full font-montserrat flex bg-gradient-to-tr from-yellow-50 via-white/60 to-yellow-100 transition-all duration-300 overflow-hidden">
+        {/* Decorative background circles */}
+        <div className="absolute -left-28 -top-28 md:left-0 md:top-0 w-72 h-72 md:w-64 md:h-64 bg-yellow-100 rounded-full blur-3xl opacity-60 -z-10 pointer-events-none" />
+        <div className="absolute right-0 bottom-0 w-[34rem] h-[34rem] bg-gradient-to-br from-yellow-200 via-yellow-100 to-white rounded-full blur-3xl opacity-40 -z-10 pointer-events-none" />
+
+        {/* Sidebar: Always on the left, full height on desktop, overlays on mobile */}
         <AppSidebar />
 
         {/* Main Content Area */}
         <main
           className={`
-            flex-1 flex flex-col min-w-0 max-w-full 
-            bg-white/90 rounded-none md:rounded-2xl 
+            flex-1 flex flex-col min-w-0 max-w-full
+            bg-white/90 rounded-none md:rounded-2xl
             m-0 md:m-4 
             shadow-2xl border border-yellow-100 backdrop-blur-lg
             z-10 relative
-            md:ml-0
             transition-all duration-300
           `}
           style={{ minHeight: "100svh" }}
         >
           <AdminTopbar />
-          <section className="px-1 sm:px-2 md:px-5 xl:px-12 py-3 md:py-6 flex-1 w-full max-w-full lg:max-w-7xl xl:mx-auto transition-all duration-300">
+          <section className="px-2 sm:px-4 md:px-8 xl:px-16 py-4 md:py-7 flex-1 w-full max-w-full lg:max-w-7xl xl:mx-auto transition-all duration-300">
             <Outlet />
           </section>
           <AdminBackToTopButton />
@@ -70,4 +68,3 @@ const AdminLayout: React.FC = () => {
 };
 
 export default AdminLayout;
-
