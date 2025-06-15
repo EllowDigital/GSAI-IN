@@ -27,7 +27,8 @@ import { useLocation, NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAdminAuth } from "@/pages/admin/AdminAuthProvider";
 
-export function AppSidebar() {
+// Accept an onNavClick prop to close sidebar on mobile nav
+export function AppSidebar({ onNavClick }: { onNavClick?: () => void }) {
   const location = useLocation();
   const { signOut } = useAdminAuth();
   const { isMobile, setOpenMobile } = useSidebar();
@@ -42,8 +43,10 @@ export function AppSidebar() {
     { title: "Events", url: "/admin/dashboard/events", icon: Calendar },
   ];
 
+  // On nav click: close mobile sidebar via both sidebar context and provided handler
   const handleNavClick = () => {
     if (isMobile) setOpenMobile(false);
+    if (typeof onNavClick === "function") onNavClick();
   };
 
   return (
