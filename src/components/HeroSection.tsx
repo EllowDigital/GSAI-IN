@@ -32,8 +32,7 @@ export default function HeroSection() {
 
   return (
     <section
-      className="relative min-h-[68vh] md:min-h-[78vh] flex items-center justify-center overflow-hidden"
-      style={{ /* Prevent unwanted scrollbars on mobile; overflow hidden only on y-axis for hero section */ overflowX: 'hidden' }}
+      className="relative min-h-[68vh] md:min-h-[78vh] flex items-center justify-center overflow-x-hidden overflow-y-hidden"
     >
       {/* Background Image Slider */}
       <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
@@ -93,14 +92,16 @@ export default function HeroSection() {
             absolute
             left-1/2
             -translate-x-1/2
-            bottom-3
-            xs:bottom-4
-            sm:bottom-6
-            flex flex-col items-center w-full z-20 pointer-events-none
+            bottom-4
+            xs:bottom-3
+            sm:bottom-5
+            flex flex-col items-center gap-1
+            z-50
+            pointer-events-none
           "
         >
           <motion.div
-            className="flex flex-col items-center mb-1 pointer-events-auto"
+            className="flex flex-col items-center pointer-events-auto"
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, type: "spring" }}
@@ -117,7 +118,7 @@ export default function HeroSection() {
                 aria-label={`Go to slide ${idx + 1}`}
                 style={{
                   outline: imgIndex === idx ? "2px solid #facc15" : undefined,
-                  pointerEvents: "auto" // allow tapping even if parent is none
+                  pointerEvents: "auto"
                 }}
                 tabIndex={0}
               />
