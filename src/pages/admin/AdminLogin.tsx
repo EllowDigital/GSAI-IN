@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import { useAdminAuth } from "./AdminAuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
+import { Loader2, WifiOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function AdminLogin() {
   const { signIn, isLoading, isAdmin } = useAdminAuth();
@@ -12,6 +13,7 @@ export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   React.useEffect(() => {
     // If already admin and auth state is determined, redirect to dashboard.
@@ -21,14 +23,29 @@ export default function AdminLogin() {
     }
   }, [isAdmin, navigate, isLoading]);
 
+  React.useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isOnline) {
+      setError("You are offline. Please check your internet connection.");
+      return;
+    }
     setError(null);
     await signIn(email.trim(), password); // signIn already triggers admin/dashboard redirect
   };
 
   return (
-    <div className="h-screen w-full bg-gradient-to-b from-yellow-100 to-yellow-50 flex flex-col items-center justify-center font-montserrat">
+    <div className="h-screen w-full bg-gradient-to-b from-yellow-100 to-yellow-50 flex flex-col items-center justify-center font-montserrat p-4">
       <form
         className="bg-white rounded-2xl shadow-2xl p-8 px-6 md:px-10 max-w-md w-full flex flex-col gap-6 relative border border-yellow-200 animate-fade-in"
         style={{ boxShadow: "0 4px 24px 0 rgba(245, 158, 66, 0.14)" }}
@@ -69,11 +86,22 @@ export default function AdminLogin() {
             required
           />
         </div>
+
+        {!isOnline && (
+          <Alert variant="destructive" className="text-center">
+            <WifiOff className="h-4 w-4" />
+            <AlertTitle>You are offline</AlertTitle>
+            <AlertDescription>
+              An internet connection is required to sign in.
+            </AlertDescription>
+          </Alert>
+        )}
+
         {error && <div className="text-red-500 text-sm text-center">{error}</div>}
         <Button
           variant="default"
-          className="mt-1 rounded-xl h-12 text-lg flex gap-2 items-center justify-center bg-yellow-400 hover:bg-yellow-500 text-white font-bold shadow"
-          disabled={isLoading}
+          className="mt-1 rounded-xl h-12 text-lg flex gap-2 items-center justify-center bg-yellow-400 hover:bg-yellow-500 text-white font-bold shadow disabled:bg-yellow-300"
+          disabled={isLoading || !isOnline}
         >
           {isLoading ? <Loader2 className="animate-spin" /> : "Sign In"}
         </Button>
