@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 const navPages = [
   { path: "/admin/dashboard", label: "Dashboard", icon: <Home /> },
   { path: "/admin/dashboard/fees", label: "Fees", icon: <BadgeDollarSign /> },
-  { path: "/admin/dashboard/FeeRLSTest", label: "Fee RLS Test", icon: <FlaskConical /> },
   { path: "/admin/dashboard/blogs", label: "Blogs", icon: <BookOpen /> },
   { path: "/admin/dashboard/news", label: "News", icon: <Newspaper /> },
   { path: "/admin/dashboard/gallery", label: "Gallery", icon: <Image /> },
