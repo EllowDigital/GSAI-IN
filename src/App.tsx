@@ -18,6 +18,8 @@ import FeesManager from "./pages/admin/dashboard/FeesManager";
 import Events from "./pages/admin/dashboard/Events";
 import Preloader from "./components/Preloader";
 import React from "react";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
 
 const queryClient = new QueryClient();
 
@@ -62,8 +64,8 @@ const App = () => {
                 }
               />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="/privacy" element={React.createElement(require("./pages/PrivacyPolicy").default)} />
-              <Route path="/terms" element={React.createElement(require("./pages/TermsAndConditions").default)} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsAndConditions />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
