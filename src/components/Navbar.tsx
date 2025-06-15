@@ -1,6 +1,10 @@
-
 import React, { useState } from "react";
 import { Menu, X, LogIn } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+} from "../components/ui/dropdown-menu";
 
 // Only keep essential links for navigation clarity
 const navLinks = [
@@ -75,14 +79,36 @@ export default function Navbar() {
               {link.name}
             </a>
           ))}
-          {/* Hamburger menu for remaining + admin (tablet) */}
-          <button
-            className="p-2 rounded hover:bg-yellow-100 transition h-10 w-10 flex items-center justify-center"
-            onClick={() => setMobileOpen((p) => !p)}
-            aria-label="Toggle menu"
-          >
-            {mobileOpen ? <X size={26} /> : <Menu size={26} />}
-          </button>
+          {/* Hamburger dropdown for remaining + admin (tablet) */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="p-2 rounded hover:bg-yellow-100 transition h-10 w-10 flex items-center justify-center"
+                aria-label="Toggle menu"
+              >
+                <Menu size={26} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="z-50 mt-2 mr-2 w-56 bg-white rounded shadow-xl border border-yellow-100">
+              <div className="flex flex-col py-2 px-2 gap-1">
+                {navLinks.slice(4).map((link) => (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    className="block text-gray-800 font-medium py-2 rounded hover:bg-yellow-100 transition text-sm xs:text-base px-2 w-full"
+                  >
+                    {link.name}
+                  </a>
+                ))}
+                <a
+                  href="/admin/login"
+                  className="flex items-center gap-2 px-4 py-2 rounded-md bg-yellow-400 text-black font-semibold shadow hover:bg-yellow-500 transition mt-2"
+                >
+                  <LogIn className="w-5 h-5" /> Admin Panel
+                </a>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         {/* Mobile Hamburger */}
         <button
@@ -145,56 +171,7 @@ export default function Navbar() {
         />
       </div>
       {/* Tablet-only drawer: md <= width < lg */}
-      <div className={`
-        fixed inset-0 z-40 hidden md:flex lg:hidden transition
-        ${mobileOpen ? "visible opacity-100" : "invisible opacity-0"}
-      `} style={{ pointerEvents: mobileOpen ? "auto" : "none" }}>
-        <div
-          className={`
-            ml-auto w-full max-w-xs bg-white shadow-xl border-l border-yellow-200 h-full overflow-y-auto flex flex-col
-            transform transition-transform duration-300
-            ${mobileOpen ? "translate-x-0" : "translate-x-full"}
-          `}
-        >
-          <div className="flex items-center gap-2 xs:gap-3 mb-2 px-4 pt-5">
-            <img
-              src="/assets/img/logo.webp"
-              alt="GSAI Logo"
-              className="w-8 h-8 xs:w-9 xs:h-9 rounded-full border border-yellow-400"
-            />
-            <span className="font-bold text-base text-black">GSAI</span>
-            <span className="text-xs font-semibold text-yellow-700 ml-2 xs:ml-3 border-l border-yellow-200 pl-1 xs:pl-2">
-              Ghatak Sports Academy India
-            </span>
-          </div>
-          <div className="flex flex-col py-2 px-4 xs:px-6 gap-2 xs:gap-4">
-            {navLinks.slice(4).map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="text-gray-800 font-medium py-2 rounded hover:bg-yellow-100 transition text-sm xs:text-base px-2 w-full"
-                onClick={() => setMobileOpen(false)}
-              >
-                {link.name}
-              </a>
-            ))}
-            <a
-              href="/admin/login"
-              className="flex items-center gap-2 px-4 py-2 rounded-md bg-yellow-400 text-black font-semibold shadow hover:bg-yellow-500 transition mt-2"
-              onClick={() => setMobileOpen(false)}
-            >
-              <LogIn className="w-5 h-5" /> Admin Panel
-            </a>
-          </div>
-        </div>
-        {/* overlay - clicking closes */}
-        <div
-          className={`flex-1 bg-black/30 transition`}
-          onClick={() => setMobileOpen(false)}
-          aria-label="Close tablet menu"
-        />
-      </div>
+      {/* Removed slide-out drawer for tablets */}
     </nav>
   );
 }
-
