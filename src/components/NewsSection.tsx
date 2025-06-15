@@ -1,4 +1,3 @@
-
 import React from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Newspaper, Image as ImageIcon } from "lucide-react";
@@ -59,9 +58,9 @@ export default function NewsSection() {
     >
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col items-center gap-2 mb-7">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 justify-center w-full">
             <Newspaper size={32} className="text-yellow-400" />
-            <h2 className="text-3xl md:text-4xl font-bold text-yellow-500 tracking-tight drop-shadow">
+            <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-500 tracking-tight drop-shadow text-center w-full">
               Latest News & Highlights
             </h2>
           </div>

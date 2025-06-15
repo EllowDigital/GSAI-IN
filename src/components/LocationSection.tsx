@@ -11,9 +11,9 @@ export default function LocationSection() {
   return (
     <section id="location" className="py-10 xs:py-14 md:py-20 px-2 xs:px-4 md:px-6 bg-gray-100">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-center gap-2 mb-2">
+        <div className="flex items-center justify-center gap-2 mb-2 w-full">
           <MapPin className="w-6 h-6 text-yellow-500" aria-hidden="true" />
-          <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-500 text-center font-montserrat tracking-tight">
+          <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-500 text-center font-montserrat tracking-tight w-full">
             Our Location
           </h2>
         </div>

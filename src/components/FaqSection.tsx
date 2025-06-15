@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { HelpCircle } from "lucide-react"; // Correct icon import
@@ -38,9 +37,9 @@ export default function FaqSection() {
     >
       <div className="max-w-2xl mx-auto">
         <div className="flex flex-col items-center mb-8 gap-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 justify-center w-full">
             <HelpCircle className="w-6 h-6 text-gray-600" aria-hidden="true" />
-            <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-500 tracking-tight drop-shadow font-montserrat">
+            <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-500 tracking-tight drop-shadow font-montserrat text-center w-full">
               Frequently Asked Questions
             </h2>
           </div>
@@ -68,4 +67,3 @@ export default function FaqSection() {
     </section>
   );
 }
-

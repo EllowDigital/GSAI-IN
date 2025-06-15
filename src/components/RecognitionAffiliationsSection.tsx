@@ -39,15 +39,13 @@ export default function RecognitionAffiliationsSection() {
     >
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col items-center mb-7 gap-2">
-          <div className="flex items-center gap-3">
-            {/* Optionally, use the Award icon instead of an emoji */}
-            {/* <Award size={36} className="text-yellow-500 drop-shadow" /> */}
+          <div className="flex items-center gap-3 justify-center w-full">
             <span className="text-3xl md:text-4xl text-yellow-500">
               <span role="img" aria-label="Awards">
                 🏆
               </span>
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-yellow-500 tracking-tight drop-shadow">
+            <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-500 tracking-tight drop-shadow text-center w-full">
               Recognitions &amp; Affiliations
             </h2>
           </div>
