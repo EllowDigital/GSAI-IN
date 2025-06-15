@@ -5,7 +5,7 @@ const quickLinks = [
   { name: "Home", href: "/" },
   { name: "Programs", href: "#programs" },
   { name: "Gallery", href: "#gallery" },
-  { name: "Contact", href: "#" },
+  { name: "Contact", href: "#contact" },
 ];
 
 export default function FooterSection() {
@@ -43,7 +43,7 @@ export default function FooterSection() {
           <div className="text-gray-400 text-sm mb-3">
             Email: <a href="mailto:ghatakgsai@gmail.com" className="hover:text-yellow-400 underline">ghatakgsai@gmail.com</a>
             <br />
-            Jamshedpur, Jharkhand, India
+            Lucknow, Uttar Pradesh, India
           </div>
           <div>
             <div className="flex gap-3 items-center mt-2">
@@ -67,7 +67,7 @@ export default function FooterSection() {
           &copy; {new Date().getFullYear()} Ghatak Sports Academy India™. All rights reserved.
         </span>
         <span className="block mt-1">
-          Crafted by <span className="text-yellow-400 font-medium">EllowDigitals</span>
+          Crafted by <span className="text-yellow-400 font-medium"><a href="https://ellowdigitals.me" target="_blank" rel="noopener noreferrer">EllowDigital</a></span>
         </span>
       </div>
     </footer>
