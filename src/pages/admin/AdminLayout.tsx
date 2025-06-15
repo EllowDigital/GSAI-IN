@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { useAdminAuth } from "./AdminAuthProvider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/admin/AppSidebar";
@@ -29,17 +29,19 @@ const AdminLayout: React.FC = () => {
     );
   }
 
-  // Main responsive layout
+  // Improved layout: always flexbox, sidebar always flush-left and at the very top
   return (
     <SidebarProvider>
-      <div className="min-h-screen w-full flex bg-gradient-to-br from-yellow-50/70 via-white to-yellow-100 font-montserrat">
+      <div className="min-h-screen w-full flex flex-row bg-gradient-to-br from-yellow-50/70 via-white to-yellow-100 font-montserrat">
+        {/* Sidebar: fixed width on desktop, overlays on mobile */}
         <AppSidebar />
+        {/* Main content: full height, no overlap or push-down, responsive max widths */}
         <main
-          className="flex-1 flex flex-col min-w-0 max-w-full bg-white/90 rounded-2xl m-2 md:mx-4 md:my-4 shadow-2xl border border-yellow-100"
+          className="flex-1 min-w-0 max-w-full flex flex-col m-1 md:m-4 rounded-2xl bg-white/90 shadow-2xl border border-yellow-100"
           style={{ minHeight: "100svh" }}
         >
           <AdminTopbar />
-          <section className="px-1 sm:px-2 md:px-5 xl:px-12 py-3 md:py-6 flex-1 w-full max-w-full lg:max-w-7xl xl:mx-auto transition-all duration-300">
+          <section className="flex-1 w-full max-w-full lg:max-w-7xl xl:mx-auto px-1 sm:px-2 md:px-5 xl:px-12 py-3 md:py-6 transition-all duration-300">
             <Outlet />
           </section>
           <AdminBackToTopButton />
