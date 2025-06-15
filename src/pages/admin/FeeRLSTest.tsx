@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -10,22 +9,25 @@ export default function FeeRLSTest() {
   const [adminCheck, setAdminCheck] = useState<boolean | null>(null);
   const [insertStatus, setInsertStatus] = useState<string | null>(null);
   const [feeInsertLoading, setFeeInsertLoading] = useState(false);
-  const [customEmail, setCustomEmail] = useState(""); // Just for view/query
+  const [customEmail, setCustomEmail] = useState("");
+  const [sessionObj, setSessionObj] = useState<any>(null);
+  const [sessionLoading, setSessionLoading] = useState(true);
 
   // On mount, fetch current session and check admin_users presence
   useEffect(() => {
     const getSessionDetails = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
-
-      setSessionEmail(user?.email ?? null);
-      console.log("👤 Logged-in email:", user?.email || "❌ No session");
+      setSessionLoading(true);
+      const { data: { session }, error } = await supabase.auth.getSession();
+      setSessionObj(session);
+      setSessionEmail(session?.user?.email ?? null);
+      console.log("👤 Supabase Session Object:", session);
       if (error) console.error("❌ Session error:", error.message);
 
-      if (user?.email) {
+      if (session?.user?.email) {
         const { data: adminCheckRows, error: adminError } = await supabase
           .from("admin_users")
           .select("*")
-          .eq("email", user.email);
+          .eq("email", session.user.email);
 
         setAdminCheck((adminCheckRows && adminCheckRows.length > 0) || false);
         console.log(
@@ -36,6 +38,7 @@ export default function FeeRLSTest() {
       } else {
         setAdminCheck(null);
       }
+      setSessionLoading(false);
     };
 
     getSessionDetails();
@@ -43,9 +46,19 @@ export default function FeeRLSTest() {
 
   // Test inserting a new minimal fee row for debugging
   const handleTestInsert = async () => {
+    if (sessionLoading) {
+      setInsertStatus("Session is still loading. Please wait and try again.");
+      return;
+    }
+    if (!sessionObj) {
+      setInsertStatus("No valid session found. Please log in again.");
+      return;
+    }
     setFeeInsertLoading(true);
     setInsertStatus(null);
     try {
+      // Debug print: Access Token
+      console.log("🔑 Access token used for this request:", sessionObj.access_token);
       // We need a valid student id in your students table! We'll grab the first available one.
       const { data: students, error: studentErr } = await supabase
         .from("students")
@@ -67,7 +80,7 @@ export default function FeeRLSTest() {
           student_id,
           month,
           year,
-          monthly_fee: 111, // recognizable test number
+          monthly_fee: 111,
           paid_amount: 0,
           balance_due: 111,
           notes: "Test insert (can delete)",
@@ -80,7 +93,9 @@ export default function FeeRLSTest() {
           insertErr.message.toLowerCase().includes("rls")
         ) {
           setInsertStatus(
-            "❌ RLS Error: Your email is not authorized for fees table!\nCheck you are logged in as the admin and your email exists in admin_users table.",
+            "❌ RLS Error: Your email is not authorized for fees table!\n"
+            + "Check you are logged in as the admin and your email exists in admin_users table.\n\n"
+            + `DEBUG: Session email: ${sessionObj.user?.email}\nAccess token: ${sessionObj.access_token?.slice(0,30)}...`
           );
           toast({
             title: "❌ RLS Error",
@@ -137,7 +152,7 @@ export default function FeeRLSTest() {
         <div>
           <b>Session email:</b>{" "}
           <span className={sessionEmail ? "text-green-700" : "text-red-600"}>
-            {sessionEmail || "❌ None"}
+            {sessionLoading ? "Loading…" : (sessionEmail || "❌ None")}
           </span>
         </div>
         <div>
@@ -159,7 +174,7 @@ export default function FeeRLSTest() {
         <Button
           type="button"
           onClick={handleTestInsert}
-          disabled={!sessionEmail || !adminCheck || feeInsertLoading}
+          disabled={sessionLoading || !sessionEmail || !adminCheck || feeInsertLoading}
         >
           {feeInsertLoading ? "Inserting (wait…)" : "Test Insert Fee (RLS check)"}
         </Button>
@@ -195,6 +210,10 @@ export default function FeeRLSTest() {
             You must use a <b>valid student_id</b> in fees (the test insert uses the first student found).
           </li>
         </ul>
+      </div>
+      <div className="mt-2 text-[10px] text-gray-400">
+        <b>Session debug:</b>
+        <pre>{sessionObj ? JSON.stringify(sessionObj, null, 2) : "No session"}</pre>
       </div>
     </div>
   );
