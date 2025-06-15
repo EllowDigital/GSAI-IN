@@ -68,7 +68,7 @@ export default defineConfig(({ mode }) => ({
         globIgnores: ["**/node_modules/**/*"],
         navigateFallback: "/offline.html",
         runtimeCaching: [
-          // Disable caching for admin dashboard
+          // Strongly exclude all admin pages from cache (including base and nested)
           {
             urlPattern: /^\/admin($|\/.*)/,
             handler: "NetworkOnly",
