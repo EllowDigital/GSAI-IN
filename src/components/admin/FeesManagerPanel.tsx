@@ -95,34 +95,41 @@ export default function FeesManagerPanel() {
   };
 
   return (
-    <div>
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-2">
+    <div className="w-full">
+      {/* Responsive card/grid summary and filter controls */}
+      <div className="flex flex-col gap-3 sm:gap-4 mb-4">
         <FeeSummaryCard fees={fees || []} loading={loadingFees} />
-        <button
-          onClick={() => exportFeesToCsv(rows, filterMonth, filterYear)}
-          className="border border-yellow-400 px-4 py-2 rounded-full bg-yellow-50 text-yellow-700 font-medium hover:bg-yellow-200 transition text-sm ml-auto"
-          disabled={!Array.isArray(rows) || rows.length === 0}
-        >
-          Export CSV
-        </button>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 animate-fade-in">
+          <FeesFilterBar
+            filterMonth={filterMonth}
+            filterYear={filterYear}
+            filterStatus={filterStatus}
+            filterName={filterName}
+            setFilterMonth={setFilterMonth}
+            setFilterYear={setFilterYear}
+            setFilterStatus={setFilterStatus}
+            setFilterName={setFilterName}
+          />
+          <button
+            onClick={() => exportFeesToCsv(rows, filterMonth, filterYear)}
+            className="border border-yellow-400 px-4 py-2 rounded-full bg-yellow-50 text-yellow-700 font-medium hover:bg-yellow-200 transition text-sm sm:ml-4 mt-1 sm:mt-0 w-full sm:w-auto"
+            disabled={!Array.isArray(rows) || rows.length === 0}
+          >
+            Export CSV
+          </button>
+        </div>
       </div>
-      <FeesFilterBar
-        filterMonth={filterMonth}
-        filterYear={filterYear}
-        filterStatus={filterStatus}
-        filterName={filterName}
-        setFilterMonth={setFilterMonth}
-        setFilterYear={setFilterYear}
-        setFilterStatus={setFilterStatus}
-        setFilterName={setFilterName}
-      />
-      <FeesTable
-        students={students}
-        fees={fees}
-        isLoading={loadingStudents || loadingFees}
-        onEditFee={handleEditFee}
-        onShowHistory={handleShowHistory}
-      />
+      {/* Fees Table - responsive scroll */}
+      <div className="rounded-2xl shadow-lg overflow-x-auto bg-white animate-fade-in">
+        <FeesTable
+          students={students}
+          fees={fees}
+          isLoading={loadingStudents || loadingFees}
+          onEditFee={handleEditFee}
+          onShowHistory={handleShowHistory}
+        />
+      </div>
+      {/* Modals/Drawers for mobile friendly */}
       {modalOpen && (
         <FeeEditModal
           open={modalOpen}
@@ -144,3 +151,4 @@ export default function FeesManagerPanel() {
     </div>
   );
 }
+
