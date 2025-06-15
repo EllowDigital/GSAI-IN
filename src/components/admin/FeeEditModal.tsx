@@ -59,7 +59,7 @@ export default function FeeEditModal({
       monthly_fee: fee?.monthly_fee ?? student?.default_monthly_fee ?? 2000,
       paid_amount: fee?.paid_amount ?? "",
       notes: fee?.notes ?? "",
-    })
+    });
   }, [fee, student, open]);
 
   const monthly_fee = Number(form.watch("monthly_fee") || 0);
@@ -74,11 +74,19 @@ export default function FeeEditModal({
   // Save handler
   async function onSubmit(values: any) {
     if (!student || typeof student.id !== "string") {
-      toast.error("Student data missing");
+      toast({
+        title: "Student data missing",
+        description: "Cannot save fee record without a valid student.",
+        variant: "destructive"
+      });
       return;
     }
     if (paid_amount > (monthly_fee + carryForward)) {
-      toast.error("Paid cannot exceed monthly fee + carry-forward!");
+      toast({
+        title: "Invalid Paid Amount",
+        description: "Paid cannot exceed monthly fee + carry-forward!",
+        variant: "destructive"
+      });
       return;
     }
     setLoading(true);
@@ -119,9 +127,16 @@ export default function FeeEditModal({
     }
     setLoading(false);
     if (error) {
-      toast.error("Failed to save fee: " + (error.message || ""));
+      toast({
+        title: "Failed to save fee",
+        description: error.message || "",
+        variant: "destructive"
+      });
     } else {
-      toast.success("Fee saved!");
+      toast({
+        title: "Fee saved!",
+        description: "The fee record has been saved successfully."
+      });
       onClose();
     }
   }
