@@ -32,10 +32,10 @@ const AdminLayout: React.FC = () => {
   // Main responsive layout
   return (
     <SidebarProvider>
-      <div className="min-h-screen w-full flex bg-[#f8fafc] font-montserrat">
+      <div className="min-h-screen w-full flex bg-gradient-to-br from-yellow-50/70 via-white to-yellow-100 font-montserrat">
         <AppSidebar />
         <main
-          className="flex-1 flex flex-col min-w-0 max-w-full bg-transparent"
+          className="flex-1 flex flex-col min-w-0 max-w-full bg-white/90 rounded-2xl m-2 md:mx-4 md:my-4 shadow-2xl border border-yellow-100"
           style={{ minHeight: "100svh" }}
         >
           <AdminTopbar />
