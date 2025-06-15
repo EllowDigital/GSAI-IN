@@ -1,4 +1,3 @@
-
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
@@ -37,7 +36,7 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
   return (
     <nav
       className={`
-        fixed left-0 top-0 z-50 h-full
+        fixed left-0 top-0 z-50 h-screen
         bg-gradient-to-b from-yellow-200/80 via-yellow-50 to-white
         shadow-lg border-r border-yellow-200
         w-4/5 max-w-xs transform
