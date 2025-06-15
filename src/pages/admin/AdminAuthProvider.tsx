@@ -92,6 +92,16 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     setUserEmail(null);
     toast.success("Logged out.");
     console.log("[Admin SignOut]");
+
+    // Optional: Unregister all service workers to clear PWA cache for admin routes
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        for (let reg of registrations) {
+          reg.unregister();
+        }
+      });
+    }
+
     // Force a navigation to the login page, clearing SW fallback/offline state
     window.location.replace("/admin/login");
   };

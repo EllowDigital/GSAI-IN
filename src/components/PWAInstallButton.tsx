@@ -1,56 +1,63 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 
-const PWAInstallButton: React.FC = () => {
-  const [deferredPrompt, setDeferredPrompt] = React.useState<any>(null);
-  const [visible, setVisible] = React.useState(false);
+export default function PWAInstallButton() {
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showButton, setShowButton] = useState(false);
 
-  React.useEffect(() => {
-    // Listen for the beforeinstallprompt event
+  useEffect(() => {
     const handler = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      setVisible(true);
+      setShowButton(true);
     };
     window.addEventListener("beforeinstallprompt", handler);
 
-    // Check for already installed state
-    if ((window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
-        // @ts-ignore
-        window.navigator.standalone === true) {
-      setVisible(false);
+    // Hide button if app is already installed or running standalone
+    if (
+      (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+      // @ts-ignore
+      window.navigator.standalone === true
+    ) {
+      setShowButton(false);
     }
 
-    // Hide if already installed
-    window.addEventListener("appinstalled", () => setVisible(false));
+    // Hide button on install complete
+    const onAppInstalled = () => setShowButton(false);
+    window.addEventListener("appinstalled", onAppInstalled);
+
     return () => {
       window.removeEventListener("beforeinstallprompt", handler);
-      window.removeEventListener("appinstalled", () => setVisible(false));
+      window.removeEventListener("appinstalled", onAppInstalled);
     };
   }, []);
 
-  const onClick = async () => {
+  const handleInstall = async () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === "accepted") {
-        setVisible(false);
+      const result = await deferredPrompt.userChoice;
+      if (result.outcome === "accepted") {
+        console.log("User accepted the install prompt");
       }
+      setDeferredPrompt(null);
+      setShowButton(false);
     }
   };
 
-  if (!visible) return null;
+  if (!showButton) return null;
 
   return (
-    <button
-      onClick={onClick}
-      className="ml-2 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-yellow-400 text-black font-bold hover:bg-yellow-500 shadow transition duration-150 text-sm"
-      aria-label="Install App"
-    >
-      <Download className="w-5 h-5" /> Install App
-    </button>
+    <div className="fixed bottom-5 right-5 z-50">
+      <Button
+        onClick={handleInstall}
+        variant="default"
+        className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl"
+      >
+        <Download className="w-5 h-5 mr-2" />
+        Install App
+      </Button>
+    </div>
   );
-};
-
-export default PWAInstallButton;
+}

@@ -20,6 +20,7 @@ import Preloader from "./components/Preloader";
 import React from "react";
 import PrivacyPage from "./pages/PrivacyPage";
 import TermsPage from "./pages/TermsPage";
+import PWAInstallButton from "@/components/PWAInstallButton";
 
 const queryClient = new QueryClient();
 
@@ -38,38 +39,41 @@ const App = () => {
         <Sonner />
         {loading && <Preloader />}
         {!loading && (
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              {/* --- ADMIN ROUTES --- */}
-              <Route
-                path="/admin/*"
-                element={
-                  <AdminAuthProvider>
-                    <Routes>
-                      <Route path="login" element={<AdminLogin />} />
-                      <Route path="dashboard" element={<AdminLayout />}>
-                        <Route index element={<StatsHome />} />
-                        <Route path="fees" element={<FeesManager />} />
-                        <Route path="blogs" element={<Blogs />} />
-                        <Route path="news" element={<News />} />
-                        <Route path="gallery" element={<Gallery />} />
-                        <Route path="students" element={<Students />} />
-                        <Route path="events" element={<Events />} />
+          <>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                {/* --- ADMIN ROUTES --- */}
+                <Route
+                  path="/admin/*"
+                  element={
+                    <AdminAuthProvider>
+                      <Routes>
+                        <Route path="login" element={<AdminLogin />} />
+                        <Route path="dashboard" element={<AdminLayout />}>
+                          <Route index element={<StatsHome />} />
+                          <Route path="fees" element={<FeesManager />} />
+                          <Route path="blogs" element={<Blogs />} />
+                          <Route path="news" element={<News />} />
+                          <Route path="gallery" element={<Gallery />} />
+                          <Route path="students" element={<Students />} />
+                          <Route path="events" element={<Events />} />
+                          <Route path="*" element={<NotFoundAdmin />} />
+                        </Route>
                         <Route path="*" element={<NotFoundAdmin />} />
-                      </Route>
-                      <Route path="*" element={<NotFoundAdmin />} />
-                    </Routes>
-                  </AdminAuthProvider>
-                }
-              />
-              {/* CUSTOM ROUTES */}
-              <Route path="/privacy" element={<PrivacyPage />} />
-              <Route path="/terms" element={<TermsPage />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+                      </Routes>
+                    </AdminAuthProvider>
+                  }
+                />
+                {/* CUSTOM ROUTES */}
+                <Route path="/privacy" element={<PrivacyPage />} />
+                <Route path="/terms" element={<TermsPage />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+            <PWAInstallButton />
+          </>
         )}
       </TooltipProvider>
     </QueryClientProvider>
