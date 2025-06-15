@@ -55,8 +55,6 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
         clearAdminState();
         navigate("/admin/login", { replace: true });
       }
-
-      console.log("[Supabase Auth Change]", _event, newSession);
     });
 
     // On mount, check for persisted session
@@ -71,7 +69,6 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
         clearAdminState();
         navigate("/admin/login", { replace: true });
       }
-      console.log("[Supabase Session Init]", session);
     });
 
     return () => {
@@ -101,7 +98,6 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
     setSession(data.session ?? null);
     setUserEmail(data.user.email);
     setIsLoading(false);
-    console.log("[Admin SignIn] session/user", data.session, data.user);
     // Redirect to dashboard on successful login
     navigate("/admin/dashboard", { replace: true });
   };
@@ -112,7 +108,6 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
     clearAdminState();
 
     toast.success("Logged out.");
-    console.log("[Admin SignOut]");
     // Redirect to homepage and prevent back navigation.
     window.location.replace("/");
   };

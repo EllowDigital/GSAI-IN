@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import { useAdminAuth } from "./AdminAuthProvider";
 import { AppSidebar } from "@/components/admin/AppSidebar";
 import { useQueryClient } from "@tanstack/react-query";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Menu } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 // Drawer overlay that closes sidebar when you click it
@@ -69,9 +69,7 @@ const AdminLayout: React.FC = () => {
               onClick={() => setSidebarOpen(true)}
               aria-label="Open sidebar"
             >
-              <span className="block w-6 h-0.5 bg-yellow-500 rounded mb-1"></span>
-              <span className="block w-6 h-0.5 bg-yellow-500 rounded mb-1"></span>
-              <span className="block w-6 h-0.5 bg-yellow-500 rounded"></span>
+              <Menu className="w-6 h-6 text-yellow-500" />
             </button>
             <span className="font-extrabold text-yellow-600 text-lg md:text-2xl select-none">
               GSAI Admin Dashboard
