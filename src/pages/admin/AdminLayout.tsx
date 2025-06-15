@@ -2,11 +2,18 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import { useAdminAuth } from "./AdminAuthProvider";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/admin/AppSidebar";
 import AdminTopbar from "@/components/admin/AdminTopbar";
 import AdminBackToTopButton from "@/components/admin/AdminBackToTopButton";
 
+/**
+ * Admin Layout with fully responsive sidebar:
+ * - Sidebar is sticky and flush left, with max height and scrollable if needed.
+ * - Uses Flexbox for app shell.
+ * - Sidebar overlays as a drawer on mobile.
+ * - Main content adapts and has consistent padding.
+ */
 const AdminLayout: React.FC = () => {
   const { isAdmin, isLoading } = useAdminAuth();
 
@@ -29,19 +36,37 @@ const AdminLayout: React.FC = () => {
     );
   }
 
-  // Improved layout: always flexbox, sidebar always flush-left and at the very top
   return (
     <SidebarProvider>
       <div className="min-h-screen w-full flex flex-row bg-gradient-to-br from-yellow-50/70 via-white to-yellow-100 font-montserrat">
-        {/* Sidebar: fixed width on desktop, overlays on mobile */}
-        <AppSidebar />
-        {/* Main content: full height, no overlap or push-down, responsive max widths */}
+        {/* Sidebar: sticky on desktop, overlays as drawer mobile */}
+        <aside className="hidden md:block h-screen sticky top-0 z-30">
+          <AppSidebar />
+        </aside>
+        {/* Mobile sidebar/hamburger trigger: show only on mobile */}
+        <div className="md:hidden fixed top-3 left-3 z-40">
+          <SidebarTrigger />
+        </div>
+        {/* Main content area */}
         <main
-          className="flex-1 min-w-0 max-w-full flex flex-col m-1 md:m-4 rounded-2xl bg-white/90 shadow-2xl border border-yellow-100"
-          style={{ minHeight: "100svh" }}
+          className="
+            flex-1 min-w-0 max-w-full flex flex-col
+            m-1 md:m-4 rounded-2xl bg-white/90 shadow-2xl border border-yellow-100
+            min-h-screen
+            transition-all
+          "
         >
           <AdminTopbar />
-          <section className="flex-1 w-full max-w-full lg:max-w-7xl xl:mx-auto px-1 sm:px-2 md:px-5 xl:px-12 py-3 md:py-6 transition-all duration-300">
+          {/* Responsive grid wrapper for sections: stack on mobile, side-by-side on desktop */}
+          <section
+            className="
+              flex-1 w-full max-w-full
+              px-1 sm:px-2 md:px-5 xl:px-12 py-3 md:py-6 
+              xl:mx-auto
+              flex flex-col gap-4
+              transition-all duration-300
+            "
+          >
             <Outlet />
           </section>
           <AdminBackToTopButton />

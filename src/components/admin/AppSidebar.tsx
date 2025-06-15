@@ -49,8 +49,12 @@ export function AppSidebar() {
   return (
     <Sidebar
       variant="sidebar"
-      // REMOVE ANY mt-4/pt-4 etc. so sidebar is always flush with top/left
-      className="bg-gradient-to-b from-yellow-50 to-white border-r border-yellow-200 shadow-xl rounded-tr-3xl md:rounded-tr-none"
+      className={`
+        bg-gradient-to-b from-yellow-50 to-white border-r border-yellow-200 shadow-xl
+        md:rounded-tr-none rounded-tr-3xl
+        h-full sticky top-0
+        flex flex-col
+      `}
     >
       <SidebarHeader className="mb-4 px-6 flex flex-col items-center justify-center">
         <img src="/favicon.ico" alt="Logo" className="w-11 h-11 mb-2 drop-shadow-lg" />
