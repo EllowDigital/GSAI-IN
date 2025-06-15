@@ -1,8 +1,10 @@
+
 import React, { useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { FeeAdminDebugBanner } from "./FeeAdminDebugBanner";
 import { FeeForm } from "./FeeForm";
+import { getFeeStatus } from "@/utils/feeStatusUtils";
 
 export default function FeeEditModal({
   open,
@@ -40,7 +42,8 @@ export default function FeeEditModal({
         .eq("month", prevMonth)
         .eq("year", prevYear)
         .maybeSingle();
-      const balance = data && data.status !== "paid" ? (data.balance_due || 0) : 0;
+      const shouldCarry = data && getFeeStatus(data) !== "paid";
+      const balance = shouldCarry ? (data.balance_due || 0) : 0;
       setCarryForward(balance || 0);
     }
     fetchPrevious();

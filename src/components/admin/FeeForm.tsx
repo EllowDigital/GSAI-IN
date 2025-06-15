@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { FeeReceiptUploader } from "./FeeReceiptUploader";
+import { getFeeStatus } from "@/utils/feeStatusUtils";
 
 type Props = {
   student: any;
@@ -88,7 +88,12 @@ export function FeeForm({
       balance_due: calcBalance(),
       notes: values.notes || null,
       receipt_url: values.receipt_url ?? null,
-      updated_at: now
+      updated_at: now,
+      status: getFeeStatus({
+        monthly_fee,
+        paid_amount,
+        balance_due: calcBalance()
+      })
     };
     const payload = fee && fee.id
       ? { ...basePayload }
