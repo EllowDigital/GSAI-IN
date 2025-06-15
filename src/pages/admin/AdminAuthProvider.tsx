@@ -1,4 +1,3 @@
-
 import React, { createContext, useEffect, useState, useContext, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
@@ -107,14 +106,15 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
     navigate("/admin/dashboard", { replace: true });
   };
 
-  // Logout: always clear state & redirect home
+  // Logout: always clear state & redirect to login
   const signOut = async () => {
     await supabase.auth.signOut();
     clearAdminState();
 
     toast.success("Logged out.");
     console.log("[Admin SignOut]");
-    navigate("/", { replace: true });
+    // Redirect to login page and prevent back navigation, as requested.
+    window.location.replace("/admin/login");
   };
 
   return (
@@ -132,4 +132,3 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 export function useAdminAuth() {
   return useContext(AdminAuthContext);
 }
-
