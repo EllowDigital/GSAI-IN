@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -67,6 +66,13 @@ export default defineConfig(({ mode }) => ({
         globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,woff2}"],
         globIgnores: ['**/node_modules/**/*'],
         runtimeCaching: [
+          {
+            urlPattern: /^\/admin(\/.*)?$/i,
+            handler: "NetworkOnly",
+            options: {
+              cacheName: "admin-pages",
+            },
+          },
           {
             urlPattern: ({ request }) => request.destination === "document" || request.destination === "script" || request.destination === "style",
             handler: "NetworkFirst",
