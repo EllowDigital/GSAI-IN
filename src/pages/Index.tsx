@@ -1,3 +1,4 @@
+
 import Navbar from "../components/Navbar";
 import HeroSection from "../components/HeroSection";
 import AboutSection from "../components/AboutSection";
@@ -61,19 +62,19 @@ export default function Index() {
       <main className="pt-16 md:pt-20 flex-1 flex flex-col gap-0">
         {/* Use semantic sections and proper heading order (SEO best practice) */}
         <HeroSection />
+        <ProgramsSection />
         <AboutSection />
         <FounderSection />
-        <ProgramsSection />
+        <AchievementSection />
         <EventsSection />
-        <NewsSection />
-        <BlogNewsSection />
         <GallerySection />
         <TestimonialSection />
-        <AchievementSection />
+        <RecognitionAffiliationsSection />
+        <NewsSection />
+        <BlogNewsSection />
         <FaqSection />
         <ContactSection />
         <LocationSection />
-        <RecognitionAffiliationsSection />
       </main>
       <FooterSection />
     </div>
