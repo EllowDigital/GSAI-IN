@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,7 +8,7 @@ import FeeEditModal from "./FeeEditModal";
 import FeeHistoryDrawer from "./FeeHistoryDrawer";
 import FeeSummaryCard from "./FeeSummaryCard";
 import FeesTable from "./FeesTable";
-import FeesAdminInfoBar from "./FeesAdminInfoBar";
+// Removed FeesAdminInfoBar import
 import FeesFilterBar from "./FeesFilterBar";
 import { exportFeesToCsv } from "@/utils/exportToCsv";
 
@@ -117,13 +118,7 @@ export default function FeesManagerPanel() {
 
   return (
     <div>
-      {/* Info / Debug Bar */}
-      <FeesAdminInfoBar
-        isAdminInTable={isAdminInTable}
-        canSubmitFeeEdits={canSubmitFeeEdits}
-        rlsError={rlsError}
-        checkingAdminEntry={checkingAdminEntry}
-      />
+      {/* Removed admin info/debug bar */}
       {/* Summary / Export */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-2">
         <FeeSummaryCard fees={fees || []} loading={loadingFees} />
@@ -135,7 +130,7 @@ export default function FeesManagerPanel() {
           Export CSV
         </button>
       </div>
-      {/* Filters - ensure only shown here, never anywhere else */}
+      {/* Filters */}
       <FeesFilterBar
         filterMonth={filterMonth}
         filterYear={filterYear}
@@ -146,7 +141,7 @@ export default function FeesManagerPanel() {
         setFilterStatus={setFilterStatus}
         setFilterName={setFilterName}
       />
-      {/* Fee Table - remove any filter duplicated in FeesTable itself */}
+      {/* Fee Table */}
       <FeesTable
         students={students}
         fees={fees}
@@ -186,14 +181,7 @@ export default function FeesManagerPanel() {
           allFees={allFees}
         />
       )}
-      <div className="mt-3 text-xs text-gray-600">
-        <b>Having trouble saving fee?</b> Ensure you're signed in as an admin and your email exists in the <b>admin_users</b> table in Supabase.
-        <ul className="inline-block ml-2 text-xs">
-          <li>1. Not logged in or session expired (try logging out and in again)</li>
-          <li>2. Email not present in admin_users table</li>
-          <li>3. Possible typo in your email address</li>
-        </ul>
-      </div>
+      {/* Removed admin troubleshooting help and any debug info */}
     </div>
   );
 }
