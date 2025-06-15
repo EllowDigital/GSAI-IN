@@ -118,11 +118,33 @@ export default function FeesManagerPanel() {
     if (rlsError) {
       return (
         <div className="p-2 bg-red-100 text-red-700 rounded mb-3 text-center font-bold">
-          {rlsError}
+          {rlsError} <br />
+          <span className="block text-xs mt-2">
+            <b>⚠️ Important:</b>
+            <br />
+            You will NOT be able to save or update fees unless your email is present in the <b>admin_users</b> table. 
+            <br />
+            Please check in Supabase → <b>admin_users</b> and add your login email if needed.
+          </span>
+        </div>
+      );
+    }
+    // New: extra warning if user is not in admin_users table
+    if (isAdminInTable === false) {
+      return (
+        <div className="p-2 bg-red-100 text-red-700 rounded mb-3 text-center font-bold">
+          Your admin email is <b>not</b> in the admin_users table!<br/>
+          You cannot save or edit fees.<br/>
+          See Supabase → admin_users to add your email.
         </div>
       );
     }
     return null;
+  }
+
+  // Centralized upsert guard (for future, not in panel directly)
+  function canSubmitFeeEdits() {
+    return isAdminInTable === true && !rlsError;
   }
 
   // Map students/fees for CSV: Reuse rows creation from FeesTable logic
@@ -143,13 +165,26 @@ export default function FeesManagerPanel() {
   return (
     <div>
       <AdminRLSBanner />
-      {/* Show admin email and admin_users lookup for debugging */}
+      {/* Debug: Show admin email and admin_users lookup for debugging */}
       <div className="mb-2 text-xs text-gray-400">
         <span>Session email: <b>{adminEmail || "none"}</b> </span>
         | <span>
           In admin_users? <b>{isAdminInTable === null ? "..." : isAdminInTable ? "✅" : "❌"}</b>
         </span>
       </div>
+      {/* Suggest debugging steps if RLS errors persist */}
+      {rlsError || isAdminInTable === false ? (
+        <div className="mb-2 p-2 text-sm rounded bg-orange-50 text-orange-700 border border-orange-300">
+          <b>Still seeing "violates row-level security" errors?</b> <br />
+          <ul className="list-disc ml-4">
+            <li>Check <b>admin_users</b> table in Supabase and make sure your exact login email exists there.</li>
+            <li>Double-check for any typos or extra spaces in the email.</li>
+            <li>Try re-logging in to refresh the JWT.</li>
+            <li>Review <b>public.rls_debug_log</b> for the actual email claim reaching Postgres.</li>
+            <li>If still stuck: Try logging out, clearing localStorage/cookies, and re-login.</li>
+          </ul>
+        </div>
+      ) : null}
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-2">
         <FeeSummaryCard fees={fees || []} loading={loadingFees} />
         <button
@@ -174,6 +209,15 @@ export default function FeesManagerPanel() {
         setFilterStatus={setFilterStatus}
         setFilterName={setFilterName}
         onEditFee={({ student, fee }) => {
+          if (!canSubmitFeeEdits()) {
+            toast({
+              title: "RLS Error",
+              description:
+                "Your admin email is not in admin_users; you cannot edit or add fees.",
+              variant: "destructive",
+            });
+            return;
+          }
           setEditStudent(student);
           setEditFee(fee);
           setModalOpen(true);
@@ -192,7 +236,6 @@ export default function FeesManagerPanel() {
           fee={editFee}
           month={filterMonth}
           year={filterYear}
-          // Patch: propagate RLS error up if detected (optional, for FeeEditModal)
         />
       )}
       {/* Payment History Drawer */}
