@@ -78,7 +78,7 @@ export default function FeeEditModal({
       toast({
         title: "Student data missing",
         description: "Cannot save fee record without a valid student.",
-        variant: "destructive"
+        variant: "error"
       });
       return;
     }
@@ -86,7 +86,7 @@ export default function FeeEditModal({
       toast({
         title: "Invalid Paid Amount",
         description: "Paid cannot exceed monthly fee + carry-forward!",
-        variant: "destructive"
+        variant: "error"
       });
       return;
     }
@@ -128,7 +128,7 @@ export default function FeeEditModal({
       toast({
         title: "Failed to save fee",
         description: error.message || "",
-        variant: "destructive"
+        variant: "error"
       });
     } else {
       toast({

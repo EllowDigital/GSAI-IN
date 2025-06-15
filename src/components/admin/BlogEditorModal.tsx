@@ -1,4 +1,3 @@
-
 import React from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -81,7 +80,7 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
       onClose();
     },
     onError: (err: any) => {
-      toast({ title: "Error!", description: err.message, variant: "destructive" });
+      toast({ title: "Error!", description: err.message, variant: "error" });
     },
   });
 
@@ -112,7 +111,7 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
       onClose();
     },
     onError: (err: any) => {
-      toast({ title: "Error!", description: err.message, variant: "destructive" });
+      toast({ title: "Error!", description: err.message, variant: "error" });
     },
   });
 
@@ -228,5 +227,3 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
     </Dialog>
   );
 }
-
-// ... end of file ...

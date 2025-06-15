@@ -76,7 +76,7 @@ export default function Blogs() {
       setConfirmDeleteId(null);
     },
     onError: (err: any) => {
-      toast({ title: "Error deleting blog", description: err.message, variant: "destructive" });
+      toast({ title: "Error deleting blog", description: err.message, variant: "error" });
       setDeleting(null);
       setConfirmDeleteId(null);
     },
