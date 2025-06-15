@@ -1,4 +1,3 @@
-
 import React from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -66,14 +65,14 @@ const cardsConfig = [
 ];
 
 const fetchAllCounts = async () => {
-  const newCounts: Record<string, number> = {};
-  for (const { key, table } of cardsConfig) {
+  const promises = cardsConfig.map(async ({ key, table }) => {
     const { count } = await supabase
       .from(table as any)
       .select("id", { count: "exact", head: true });
-    newCounts[key] = count ?? 0;
-  }
-  return newCounts;
+    return [key, count ?? 0] as const;
+  });
+  const results = await Promise.all(promises);
+  return Object.fromEntries(results);
 };
 
 export default function StatsHome() {

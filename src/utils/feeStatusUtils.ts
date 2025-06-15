@@ -10,39 +10,54 @@ export type FeeRow = {
   [key: string]: any;
 };
 
-// Returns the status for a given fee row, using robust logic
+// Returns the status for a given fee row, based on paid amount versus monthly fee
 export function getFeeStatus(fee: FeeRow): "paid" | "partial" | "unpaid" {
-  const totalDue = Number(fee.monthly_fee ?? 0) + Number(fee.balance_due ?? 0);
-  const paid = Number(fee.paid_amount ?? 0);
+  const monthlyFee = Number(fee.monthly_fee ?? 0);
+  const paidAmount = Number(fee.paid_amount ?? 0);
 
-  if (paid >= totalDue && totalDue > 0) {
+  // If fee is 0 or negative, consider it paid.
+  if (monthlyFee <= 0) {
     return "paid";
   }
-  if (paid > 0 && paid < totalDue) {
+
+  if (paidAmount >= monthlyFee) {
+    return "paid";
+  }
+  if (paidAmount > 0 && paidAmount < monthlyFee) {
     return "partial";
   }
   return "unpaid";
 }
 
-// Returns overall paid/partial/overdue stats (amounts and counts)
+// Returns clearer and more accurate stats for paid, partial, and overdue fees
 export function summarizeFees(fees: FeeRow[]) {
-  let paidAmount = 0, partialAmount = 0, overdueAmount = 0;
-  let paidCount = 0, partialCount = 0, overdueCount = 0;
+  let paidAmount = 0; // Total money from fully paid fees
+  let partialAmount = 0; // Total money from partially paid fees
+  let overdueAmount = 0; // Total money pending/due
+  let paidCount = 0;
+  let partialCount = 0;
+  let overdueCount = 0; // Count of students with outstanding balance
 
   fees.forEach(fee => {
     const status = getFeeStatus(fee);
+    const monthlyFee = Number(fee.monthly_fee ?? 0);
+    const paid = Number(fee.paid_amount ?? 0);
+    
     if (status === "paid") {
-      paidAmount += Number(fee.paid_amount ?? 0);
+      paidAmount += paid;
       paidCount += 1;
     } else if (status === "partial") {
-      partialAmount += Number(fee.balance_due ?? 0);
+      partialAmount += paid;
       partialCount += 1;
-    } else {
-      // Overdue/unpaid
-      overdueAmount += Number(fee.balance_due ?? 0);
+      
+      overdueAmount += monthlyFee - paid;
+      overdueCount += 1;
+    } else { // unpaid
+      overdueAmount += monthlyFee;
       overdueCount += 1;
     }
   });
+  
   return {
     paidAmount,
     partialAmount,

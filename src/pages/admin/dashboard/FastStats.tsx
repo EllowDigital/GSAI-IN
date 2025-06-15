@@ -26,15 +26,16 @@ export default function FastStats() {
     let ignore = false;
     async function fetchCounts() {
       setLoading(true);
-      const results: Record<string, number> = {};
-      for (const ent of entities) {
+      const promises = entities.map(async (ent) => {
         const { count } = await supabase
-          .from(ent.table as "fees" | "students" | "blogs" | "news" | "gallery_images" | "events")
+          .from(ent.table as any)
           .select("id", { count: "exact", head: true });
-        results[ent.name] = count ?? 0;
-      }
+        return [ent.name, count ?? 0] as const;
+      });
+      const results = await Promise.all(promises);
+
       if (!ignore) {
-        setCounts(results);
+        setCounts(Object.fromEntries(results));
         setLoading(false);
       }
     }
