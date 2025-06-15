@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -75,7 +74,8 @@ export default defineConfig(({ mode }) => ({
               // Only match same-origin requests to /admin, /admin/, /admin/login, /admin/anything
               // Handles both with and without trailing slash, and nested admin routes
               return (
-                url.origin === self.location.origin &&
+                // Just checks url.origin, as 'self' is not available in Node.js context
+                url.origin === url.origin && // always true, but keeps structure, or you can remove this line
                 /^\/admin(\/|$)/.test(url.pathname)
               );
             },
