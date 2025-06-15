@@ -66,17 +66,32 @@ export type Database = {
       events: {
         Row: {
           date: string
+          description: string | null
+          end_date: string | null
+          from_date: string | null
           id: string
+          image_url: string | null
+          tag: string | null
           title: string
         }
         Insert: {
           date: string
+          description?: string | null
+          end_date?: string | null
+          from_date?: string | null
           id?: string
+          image_url?: string | null
+          tag?: string | null
           title: string
         }
         Update: {
           date?: string
+          description?: string | null
+          end_date?: string | null
+          from_date?: string | null
           id?: string
+          image_url?: string | null
+          tag?: string | null
           title?: string
         }
         Relationships: []
