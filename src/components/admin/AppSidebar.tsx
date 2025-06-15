@@ -11,6 +11,7 @@ import {
   Calendar,
   LogOut,
   Globe,
+  GitBranch,
 } from "lucide-react";
 import { useAdminAuth } from "@/pages/admin/AdminAuthProvider";
 
@@ -34,6 +35,7 @@ interface AppSidebarProps {
 export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
   const location = useLocation();
   const { signOut } = useAdminAuth();
+  const APP_VERSION = "1.0.0";
 
   // Hide sidebar on mobile unless open
   return (
@@ -97,7 +99,14 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
         >
           <LogOut size={18} /> Logout
         </button>
-        <span className="mt-1 text-[11px] text-gray-400 text-center select-none">© 2025 GSAI Dashboard</span>
+        <div className="mt-1 text-[11px] text-gray-400 text-center select-none flex justify-center items-center gap-2">
+          <span>© 2025 GSAI Dashboard</span>
+          <span className="text-gray-300">|</span>
+          <div className="flex items-center gap-1" title={`Version ${APP_VERSION}`}>
+            <GitBranch size={12} />
+            <span>v{APP_VERSION}</span>
+          </div>
+        </div>
       </div>
     </nav>
   );
