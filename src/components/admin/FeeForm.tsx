@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -36,7 +35,7 @@ export function FeeForm({ student, fee, carryForward, month, year, adminDebug, l
     }
   });
 
-  useEffect(() => {
+  React.useEffect(() => {
     form.reset({
       monthly_fee: fee?.monthly_fee ?? student?.default_monthly_fee ?? 2000,
       paid_amount: fee?.paid_amount ?? 0,
@@ -55,14 +54,6 @@ export function FeeForm({ student, fee, carryForward, month, year, adminDebug, l
   };
 
   async function onSubmit(values: { monthly_fee: number; paid_amount: number; notes: string }) {
-    if (!adminDebug?.canSubmitFeeEdits) {
-      toast({
-        title: "No admin access.",
-        description: "Your admin email is not authorized. Please ask a system administrator.",
-        variant: "error"
-      });
-      return;
-    }
     if (!student || typeof student.id !== "string") {
       toast({
         title: "Student data missing",
@@ -80,9 +71,7 @@ export function FeeForm({ student, fee, carryForward, month, year, adminDebug, l
       return;
     }
     setLoading(true);
-
     const now = new Date().toISOString();
-
     const basePayload = {
       student_id: student.id,
       month,
@@ -93,25 +82,11 @@ export function FeeForm({ student, fee, carryForward, month, year, adminDebug, l
       notes: values.notes || null,
       updated_at: now
     };
-
     const payload = fee && fee.id
       ? { ...basePayload }
       : { ...basePayload, created_at: now };
 
-    // Debug output
-    console.log("[FEE DEBUG SUBMIT]", {
-      adminDebug,
-      payload,
-      student,
-      fee,
-      month,
-      year,
-      paid_amount,
-      carryForward
-    });
-
     let result, error;
-
     if (fee && fee.id) {
       ({ error, data: result } = await supabase
         .from("fees")
@@ -129,7 +104,6 @@ export function FeeForm({ student, fee, carryForward, month, year, adminDebug, l
     setLoading(false);
 
     if (error) {
-      console.log("[FEE SUPABASE ERROR]", error);
       toast({
         title: "Failed to save fee",
         description: (error.message || "") + " (see console for RLS info)",
@@ -162,7 +136,6 @@ export function FeeForm({ student, fee, carryForward, month, year, adminDebug, l
         <Input
           type="number"
           {...form.register("monthly_fee", { required: true, min: 0, valueAsNumber: true })}
-          disabled={!adminDebug?.canSubmitFeeEdits}
         />
       </div>
       <div>
@@ -170,7 +143,6 @@ export function FeeForm({ student, fee, carryForward, month, year, adminDebug, l
         <Input
           type="number"
           {...form.register("paid_amount", { required: true, min: 0, valueAsNumber: true })}
-          disabled={!adminDebug?.canSubmitFeeEdits}
         />
       </div>
       {carryForward ? (
@@ -180,7 +152,7 @@ export function FeeForm({ student, fee, carryForward, month, year, adminDebug, l
       ) : null}
       <div>
         <label className="text-xs font-semibold">Notes</label>
-        <Input {...form.register("notes")} disabled={!adminDebug?.canSubmitFeeEdits} />
+        <Input {...form.register("notes")} />
       </div>
       <div>
         <span className="font-semibold text-xs">Balance:</span>{" "}
@@ -188,7 +160,7 @@ export function FeeForm({ student, fee, carryForward, month, year, adminDebug, l
       </div>
       <div className="flex justify-end gap-2">
         <Button variant="secondary" type="button" onClick={onClose}>Cancel</Button>
-        <Button type="submit" disabled={loading || !adminDebug?.canSubmitFeeEdits}>
+        <Button type="submit" disabled={loading}>
           {loading ? <Loader2 className="animate-spin w-4 h-4" /> : "Save"}
         </Button>
       </div>
