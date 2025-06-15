@@ -3,6 +3,8 @@ import { Outlet, NavLink, useLocation } from "react-router-dom";
 import { useAdminAuth } from "./AdminAuthProvider";
 import { LogOut, Home, BookOpen, Newspaper, Image, Users, ChevronUp, BadgeDollarSign, FlaskConical } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/admin/AppSidebar";
 
 // Route tabs
 const navPages = [
@@ -37,15 +39,7 @@ function BackToTopButton() {
 
 const AdminLayout: React.FC = () => {
   const { isAdmin, signOut, isLoading } = useAdminAuth();
-  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= SIDEBAR_COLLAPSE_WIDTH);
   const location = useLocation();
-
-  // Responsive sidebar
-  React.useEffect(() => {
-    const handleResize = () => setSidebarOpen(window.innerWidth >= SIDEBAR_COLLAPSE_WIDTH);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   if (isLoading) {
     return (
@@ -67,61 +61,35 @@ const AdminLayout: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#f8fafc] font-montserrat flex">
-      {/* Sidebar */}
-      <aside
-        className={`${
-          sidebarOpen ? "w-56" : "w-0"
-        } transition-all duration-200 bg-white shadow-lg rounded-2xl my-4 ml-4 flex flex-col overflow-hidden sticky top-0 h-fit`}
-        style={{ minHeight: "90vh" }}
-      >
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="m-2 md:hidden self-end text-gray-600 bg-yellow-100 hover:bg-yellow-300 rounded-full p-2 shadow"
-          aria-label="Toggle sidebar"
-        >
-          <span className="sr-only">Toggle Sidebar</span>☰
-        </button>
-        {sidebarOpen && (
-          <nav className="flex flex-col py-4 gap-1">
-            <h3 className="text-lg font-bold px-6 mb-6 mt-2 text-yellow-400">GSAI Admin</h3>
-            {navPages.map((page) => (
-              <NavLink
-                to={page.path}
-                key={page.path}
-                className={({ isActive }) =>
-                  `flex items-center gap-4 px-6 py-2 rounded-md hover:bg-yellow-100 font-semibold ${
-                    isActive || location.pathname === page.path ? "bg-yellow-300 text-black shadow" : "text-gray-700"
-                  }`
-                }
-              >
-                {page.icon}
-                <span>{page.label}</span>
-              </NavLink>
-            ))}
-          </nav>
-        )}
-      </aside>
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col pt-0">
-        {/* Topbar */}
-        <header className="sticky top-0 z-30 bg-white shadow-lg rounded-2xl mx-4 mt-4 px-4 py-2 flex items-center justify-between">
-          <h2 className="font-bold text-xl text-yellow-400">Admin Dashboard</h2>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={signOut}
-            className="flex items-center gap-2 rounded-full"
-          >
-            <LogOut size={18} /> Logout
-          </Button>
-        </header>
-        <section className="px-4 py-6 flex-1">
-          <Outlet />
-        </section>
-        <BackToTopButton />
-      </main>
-    </div>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-[#f8fafc] font-montserrat">
+        {/* Sidebar */}
+        <AppSidebar />
+
+        {/* Main Content */}
+        <main className="flex-1 flex flex-col min-w-0">
+          {/* Topbar */}
+          <header className="sticky top-0 z-30 bg-white shadow-lg rounded-2xl mx-2 md:mx-4 mt-2 md:mt-4 px-4 py-2 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <SidebarTrigger className="md:hidden mr-2" />
+              <h2 className="font-bold text-xl text-yellow-400">Admin Dashboard</h2>
+            </div>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={signOut}
+              className="flex items-center gap-2 rounded-full hidden md:flex"
+            >
+              <LogOut size={18} /> Logout
+            </Button>
+          </header>
+          <section className="px-2 md:px-4 py-4 md:py-6 flex-1 w-full max-w-full">
+            <Outlet />
+          </section>
+          <BackToTopButton />
+        </main>
+      </div>
+    </SidebarProvider>
   );
 };
 
