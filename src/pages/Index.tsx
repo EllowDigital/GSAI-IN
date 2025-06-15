@@ -14,7 +14,7 @@ import GallerySection from "../components/GallerySection";
 import NewsSection from "../components/NewsSection";
 import BlogNewsSection from "../components/BlogNewsSection";
 
-import FaqSection from "../components/FaqSection";
+import FaqSection, { faqs as faqData } from "../components/FaqSection";
 import ContactSection from "../components/ContactSection";
 import LocationSection from "../components/LocationSection";
 
@@ -48,6 +48,19 @@ const orgStructuredData = {
   ]
 };
 
+const faqStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqData.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer,
+    },
+  })),
+};
+
 export default function Index() {
   return (
     <div className="bg-background w-full min-h-screen flex flex-col font-montserrat">
@@ -57,7 +70,7 @@ export default function Index() {
         description="Join Ghatak Sports Academy India™ for world-class martial arts, fitness, and self-development programs. Explore training, events, latest news and a vibrant sports community."
         canonical="https://ghatakgsai.netlify.app/"
         image="https://ghatakgsai.netlify.app/assets/img/logo.webp"
-        structuredData={[orgStructuredData]}
+        structuredData={[orgStructuredData, faqStructuredData]}
       />
 
       {/* Navbar */}

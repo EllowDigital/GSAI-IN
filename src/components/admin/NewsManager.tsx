@@ -1,4 +1,3 @@
-
 import React from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Edit, Delete, Filter } from "lucide-react";
@@ -129,12 +128,7 @@ export default function NewsManager() {
 
   return (
     <div className="w-full max-w-7xl mx-auto mt-2 mb-8 px-1 xs:px-2 sm:px-3 md:px-6">
-      <div className="flex flex-col xs:flex-row justify-between items-center mb-6 gap-4">
-        <div className="flex flex-col xs:flex-row gap-2 xs:items-center w-full xs:w-auto">
-          <h2 className="text-2xl xs:text-3xl font-bold text-yellow-400 font-montserrat">
-            🗞️ News Manager
-          </h2>
-        </div>
+      <div className="flex flex-col xs:flex-row justify-end items-center mb-6 gap-4">
         <Button
           variant="default"
           size="lg"
