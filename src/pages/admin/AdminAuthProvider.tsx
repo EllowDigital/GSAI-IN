@@ -1,4 +1,3 @@
-
 import React, { createContext, useEffect, useState, useContext, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
@@ -93,7 +92,8 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     setUserEmail(null);
     toast.success("Logged out.");
     console.log("[Admin SignOut]");
-    navigate("/"); // Redirect to home page after logout
+    // Force a navigation to the login page, clearing SW fallback/offline state
+    window.location.replace("/admin/login");
   };
 
   return (
