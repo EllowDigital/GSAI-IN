@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -118,22 +119,35 @@ export default function FeesManagerPanel() {
 
   // Map students/fees for CSV: Reuse rows creation from FeesTable logic
   const rows = Array.isArray(students)
-    ? students.map((student) => {
-        const fee = fees?.find((f) => f.student_id === student.id) || null;
-        return { student, fee };
-      }).filter(row => {
-        if (filterName && !row.student.name.toLowerCase().includes(filterName.toLowerCase())) return false;
-        if (filterStatus) {
-          const status = row.fee ? (row.fee.status || "unpaid").toLowerCase() : "unpaid";
-          return status === filterStatus.toLowerCase();
-        }
-        return true;
-      })
+    ? students
+        .map((student) => {
+          const fee = fees?.find((f) => f.student_id === student.id) || null;
+          return { student, fee };
+        })
+        .filter((row) => {
+          if (
+            filterName &&
+            !row.student.name.toLowerCase().includes(filterName.toLowerCase())
+          )
+            return false;
+          if (filterStatus) {
+            const status = row.fee
+              ? (row.fee.status || "unpaid").toLowerCase()
+              : "unpaid";
+            return status === filterStatus.toLowerCase();
+          }
+          return true;
+        })
     : [];
 
   return (
     <div>
-      <AdminRLSBanner />
+      <AdminRLSBanner
+        adminEmail={adminEmail}
+        checkingAdminEntry={checkingAdminEntry}
+        rlsError={rlsError}
+        isAdminInTable={isAdminInTable}
+      />
       {/* Debug: Show admin email and admin_users lookup for debugging */}
       <div className="mb-2 text-xs text-gray-400">
         <span>
@@ -141,8 +155,13 @@ export default function FeesManagerPanel() {
         </span>
         |{" "}
         <span>
-          In admin_users? <b>
-            {isAdminInTable === null ? "..." : isAdminInTable ? "✅" : "❌"}
+          In admin_users?{" "}
+          <b>
+            {isAdminInTable === null
+              ? "..."
+              : isAdminInTable
+              ? "✅"
+              : "❌"}
           </b>
         </span>
       </div>
@@ -152,12 +171,19 @@ export default function FeesManagerPanel() {
           <b>Still seeing "violates row-level security" errors?</b> <br />
           <ul className="list-disc ml-4">
             <li>
-              Check <b>admin_users</b> table in Supabase and make sure your exact login email exists there.
+              Check <b>admin_users</b> table in Supabase and make sure your
+              exact login email exists there.
             </li>
             <li>Double-check for any typos or extra spaces in the email.</li>
             <li>Try re-logging in to refresh the JWT.</li>
-            <li>Review <b>public.rls_debug_log</b> for the actual email claim reaching Postgres.</li>
-            <li>If still stuck: Try logging out, clearing localStorage/cookies, and re-login.</li>
+            <li>
+              Review <b>public.rls_debug_log</b> for the actual email claim
+              reaching Postgres.
+            </li>
+            <li>
+              If still stuck: Try logging out, clearing localStorage/cookies,
+              and re-login.
+            </li>
           </ul>
         </div>
       )}
@@ -188,7 +214,8 @@ export default function FeesManagerPanel() {
           if (!canSubmitFeeEdits()) {
             toast({
               title: "RLS Error",
-              description: "Your admin email is not in admin_users; you cannot edit or add fees.",
+              description:
+                "Your admin email is not in admin_users; you cannot edit or add fees.",
               variant: "destructive",
             });
             return;
@@ -197,7 +224,7 @@ export default function FeesManagerPanel() {
           setEditFee(fee);
           setModalOpen(true);
         }}
-        onShowHistory={student => {
+        onShowHistory={(student) => {
           setHistoryStudent(student);
           setHistoryDrawerOpen(true);
         }}
@@ -223,7 +250,8 @@ export default function FeesManagerPanel() {
         />
       )}
       <div className="mt-3 text-xs text-gray-600">
-        <b>Having trouble saving fee?</b> Make sure you are signed in as an admin and your email exists in the <b>admin_users</b> table in Supabase.
+        <b>Having trouble saving fee?</b> Make sure you are signed in as an admin and your email exists in the{" "}
+        <b>admin_users</b> table in Supabase.
         <br />
         <b>Common issues:</b>
         <ul className="inline-block ml-2 text-xs">
@@ -236,4 +264,52 @@ export default function FeesManagerPanel() {
       </div>
     </div>
   );
+}
+
+// ---- Move AdminRLSBanner as a prop-based presentational component ---- //
+function AdminRLSBanner({
+  adminEmail,
+  checkingAdminEntry,
+  rlsError,
+  isAdminInTable,
+}: {
+  adminEmail: string | null;
+  checkingAdminEntry: boolean;
+  rlsError: string | null;
+  isAdminInTable: boolean | null;
+}) {
+  if (checkingAdminEntry) {
+    return (
+      <div className="p-2 bg-yellow-50 text-yellow-800 rounded mb-3 text-center font-bold">
+        Checking admin status...
+      </div>
+    );
+  }
+  if (rlsError) {
+    return (
+      <div className="p-2 bg-red-100 text-red-700 rounded mb-3 text-center font-bold">
+        {rlsError}
+        <br />
+        <span className="block text-xs mt-2">
+          <b>⚠️ Important:</b>
+          <br />
+          You will NOT be able to save or update fees unless your email is present in the <b>admin_users</b> table. 
+          <br />
+          Please check in Supabase → <b>admin_users</b> and add your login email if needed.
+        </span>
+      </div>
+    );
+  }
+  if (isAdminInTable === false) {
+    return (
+      <div className="p-2 bg-red-100 text-red-700 rounded mb-3 text-center font-bold">
+        Your admin email is <b>not</b> in the admin_users table!
+        <br />
+        You cannot save or edit fees.
+        <br />
+        See Supabase → admin_users to add your email.
+      </div>
+    );
+  }
+  return null;
 }
