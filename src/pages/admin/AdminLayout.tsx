@@ -3,7 +3,6 @@ import { Outlet } from "react-router-dom";
 import { useAdminAuth } from "./AdminAuthProvider";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/admin/AppSidebar";
-import AdminTopbar from "@/components/admin/AdminTopbar";
 import AdminBackToTopButton from "@/components/admin/AdminBackToTopButton";
 
 const SIDEBAR_WIDTH = "16rem"; // Equal to AppSidebar width
@@ -76,7 +75,7 @@ const AdminLayout: React.FC = () => {
             ...(window.innerWidth >= 768 ? { marginLeft: SIDEBAR_WIDTH } : {}),
           }}
         >
-          <AdminTopbar />
+          {/* AdminTopbar removed */}
           <section
             className="
               flex-1 w-full max-w-full
