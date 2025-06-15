@@ -25,6 +25,12 @@ export default function FeesManagerPanel() {
   const [historyDrawerOpen, setHistoryDrawerOpen] = useState(false);
   const [historyStudent, setHistoryStudent] = useState<any | null>(null);
 
+  // Track RLS error for user notification
+  const [rlsError, setRlsError] = useState<string | null>(null);
+  const [checkingAdminEntry, setCheckingAdminEntry] = useState<boolean>(false);
+  const [adminEmail, setAdminEmail] = useState<string | null>(null);
+  const [isAdminInTable, setIsAdminInTable] = useState<boolean | null>(null);
+
   // Fetch all students (for sidebar and to ensure all included in table even with no fee entry)
   const { data: students, isLoading: loadingStudents } = useQuery({
     queryKey: ["students"],
@@ -69,11 +75,55 @@ export default function FeesManagerPanel() {
   // Debug: Check if user is logged in and has correct email for admin access
   // We'll log these for better RLS issue tracking
   React.useEffect(() => {
+    setCheckingAdminEntry(true);
     (async () => {
-      const session = await supabase.auth.getSession();
-      console.log("Supabase session:", session);
+      const { data: sessionData, error: authError } = await supabase.auth.getSession();
+      const userEmail = sessionData?.session?.user?.email;
+      setAdminEmail(userEmail ?? null);
+      console.log("DEBUG: Current session email:", userEmail);
+
+      if (userEmail) {
+        // Check if admin email exists in admin_users table
+        const { data: foundUser, error: adminError } = await supabase
+          .from("admin_users")
+          .select("*")
+          .eq("email", userEmail)
+          .maybeSingle();
+        setIsAdminInTable(!!foundUser);
+        console.log("DEBUG: Is admin email in admin_users table?", !!foundUser, foundUser);
+        if (!foundUser) {
+          setRlsError(
+            `Your email (${userEmail}) is NOT present in the admin_users table. 
+            Please add your admin email to the "admin_users" table in Supabase Dashboard.`
+          );
+        } else {
+          setRlsError(null);
+        }
+      } else {
+        setIsAdminInTable(null);
+      }
+      setCheckingAdminEntry(false);
     })();
   }, []);
+
+  // Function to display error UI message (visible above main panel)
+  function AdminRLSBanner() {
+    if (checkingAdminEntry) {
+      return (
+        <div className="p-2 bg-yellow-50 text-yellow-800 rounded mb-3 text-center font-bold">
+          Checking admin status...
+        </div>
+      );
+    }
+    if (rlsError) {
+      return (
+        <div className="p-2 bg-red-100 text-red-700 rounded mb-3 text-center font-bold">
+          {rlsError}
+        </div>
+      );
+    }
+    return null;
+  }
 
   // Map students/fees for CSV: Reuse rows creation from FeesTable logic
   const rows = Array.isArray(students)
@@ -92,6 +142,14 @@ export default function FeesManagerPanel() {
 
   return (
     <div>
+      <AdminRLSBanner />
+      {/* Show admin email and admin_users lookup for debugging */}
+      <div className="mb-2 text-xs text-gray-400">
+        <span>Session email: <b>{adminEmail || "none"}</b> </span>
+        | <span>
+          In admin_users? <b>{isAdminInTable === null ? "..." : isAdminInTable ? "✅" : "❌"}</b>
+        </span>
+      </div>
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-2">
         <FeeSummaryCard fees={fees || []} loading={loadingFees} />
         <button
@@ -134,6 +192,7 @@ export default function FeesManagerPanel() {
           fee={editFee}
           month={filterMonth}
           year={filterYear}
+          // Patch: propagate RLS error up if detected (optional, for FeeEditModal)
         />
       )}
       {/* Payment History Drawer */}
@@ -146,8 +205,13 @@ export default function FeesManagerPanel() {
         />
       )}
       <div className="mt-3 text-xs text-gray-600">
-        {/* Inline error suggestion for RLS issues */}
         <b>Having trouble saving fee?</b> Make sure you are signed in as an admin and your email exists in the <b>admin_users</b> table in Supabase.
+        <br />
+        <b>Common issues:</b> <ul className="inline-block ml-2 text-xs">
+          <li>(1) You are not logged in, or session is expired (log out and retry)</li>
+          <li>(2) Your email is not present in "admin_users" table</li>
+          <li>(3) You are logging in with a typo in your email</li>
+        </ul>
       </div>
     </div>
   );
