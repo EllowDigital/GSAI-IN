@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,8 +7,6 @@ import FeeEditModal from "./FeeEditModal";
 import FeeHistoryDrawer from "./FeeHistoryDrawer";
 import FeeSummaryCard from "./FeeSummaryCard";
 import FeesTable from "./FeesTable";
-// Removed FeesAdminInfoBar import
-import FeesFilterBar from "./FeesFilterBar";
 import { exportFeesToCsv } from "@/utils/exportToCsv";
 
 // Main Fees Management Controller panel
@@ -118,7 +115,6 @@ export default function FeesManagerPanel() {
 
   return (
     <div>
-      {/* Removed admin info/debug bar */}
       {/* Summary / Export */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-2">
         <FeeSummaryCard fees={fees || []} loading={loadingFees} />
@@ -130,7 +126,8 @@ export default function FeesManagerPanel() {
           Export CSV
         </button>
       </div>
-      {/* Filters */}
+
+      {/* Filters - ONLY rendered here */}
       <FeesFilterBar
         filterMonth={filterMonth}
         filterYear={filterYear}
@@ -141,22 +138,17 @@ export default function FeesManagerPanel() {
         setFilterStatus={setFilterStatus}
         setFilterName={setFilterName}
       />
-      {/* Fee Table */}
+
+      {/* Fee Table - NO filter UI, only filtered data */}
       <FeesTable
         students={students}
         fees={fees}
         isLoading={loadingStudents || loadingFees}
-        filterMonth={filterMonth}
-        filterYear={filterYear}
-        filterStatus={filterStatus}
-        filterName={filterName}
-        setFilterMonth={setFilterMonth}
-        setFilterYear={setFilterYear}
-        setFilterStatus={setFilterStatus}
-        setFilterName={setFilterName}
+        // Removed any filter UI props from FeesTable, keep only necessary data/handlers for display
         onEditFee={handleEditFee}
         onShowHistory={handleShowHistory}
       />
+
       {/* Fee Edit Modal */}
       {modalOpen && (
         <FeeEditModal
@@ -181,7 +173,7 @@ export default function FeesManagerPanel() {
           allFees={allFees}
         />
       )}
-      {/* Removed admin troubleshooting help and any debug info */}
+      {/* Removed all admin/debug/troubleshooting UI */}
     </div>
   );
 }
