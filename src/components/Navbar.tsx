@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Menu, X, LogIn } from "lucide-react";
 import {
@@ -118,42 +119,45 @@ export default function Navbar() {
           <DropdownMenu open={mobileOpen} onOpenChange={setMobileOpen}>
             <DropdownMenuTrigger asChild>
               <button
-                className="p-2 rounded focus:outline-none text-gray-800 hover:bg-yellow-100 transition h-10 w-10 flex items-center justify-center"
+                className={`p-2 rounded focus:outline-none text-gray-800 hover:bg-yellow-100 transition h-11 w-11 flex items-center justify-center
+                  ${mobileOpen ? "ring-2 ring-yellow-300" : ""}`}
                 aria-label="Open mobile menu"
               >
-                {mobileOpen ? <X size={28} /> : <Menu size={28} />}
+                {mobileOpen ? <X size={30} /> : <Menu size={30} />}
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="start"
-              className="z-[99] w-[88vw] max-w-xs bg-white border border-yellow-200 rounded-xl shadow-2xl mt-2 ml-[-8px] p-0 overflow-hidden animate-fade-in"
-              sideOffset={8}
+              className="z-[99] w-[92vw] max-w-[350px] bg-white rounded-2xl border border-yellow-300 shadow-2xl mt-3 ml-[-8px] px-0 py-0 overflow-hidden animate-fade-in"
+              sideOffset={10}
             >
-              <div className="flex items-center gap-2 xs:gap-3 px-4 pt-5 pb-2 border-b border-yellow-100 bg-white">
+              <div className="flex items-center gap-3 px-5 pt-6 pb-2 border-b border-yellow-100 bg-white">
                 <img
                   src="/assets/img/logo.webp"
                   alt="GSAI Logo"
-                  className="w-8 h-8 xs:w-9 xs:h-9 rounded-full border border-yellow-400"
+                  className="w-10 h-10 rounded-full border border-yellow-400"
                 />
-                <span className="font-bold text-base text-black">GSAI</span>
-                <span className="text-xs font-semibold text-yellow-700 ml-2 xs:ml-3 border-l border-yellow-200 pl-1 xs:pl-2">
+                <span className="font-extrabold text-lg text-black tracking-tight">GSAI</span>
+                <span className="text-sm font-semibold text-yellow-700 ml-4 border-l border-yellow-200 pl-3">
                   Ghatak Sports Academy India
                 </span>
               </div>
-              <div className="flex flex-col py-2 px-4 xs:px-6 gap-2 xs:gap-4 bg-white">
+              <div className="flex flex-col py-4 px-6 gap-3 bg-white">
                 {navLinks.map((link) => (
                   <a
                     key={link.name}
                     href={link.href}
-                    className="text-gray-800 font-medium py-2 rounded hover:bg-yellow-100 transition text-sm xs:text-base px-2 w-full"
+                    className="flex items-center gap-3 text-gray-800 font-semibold py-3 px-3 rounded-xl transition-all duration-200 hover:bg-yellow-100 active:bg-yellow-200 text-base"
                     onClick={() => setMobileOpen(false)}
                   >
-                    {link.name}
+                    {/* Add circle bullet */}
+                    <span className="inline-block w-2 h-2 rounded-full bg-yellow-400 mr-2" />
+                    <span>{link.name}</span>
                   </a>
                 ))}
                 <a
                   href="/admin/login"
-                  className="flex items-center gap-2 px-4 py-2 rounded-md bg-yellow-400 text-black font-semibold shadow hover:bg-yellow-500 transition mt-2"
+                  className="flex items-center gap-2 justify-center px-6 py-3 rounded-xl bg-yellow-400 text-black font-semibold shadow hover:bg-yellow-500 active:bg-yellow-600 transition-all mt-2 text-base"
                   onClick={() => setMobileOpen(false)}
                 >
                   <LogIn className="w-5 h-5" /> Admin Panel
