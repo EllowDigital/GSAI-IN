@@ -1,17 +1,16 @@
-
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowDownCircle } from "lucide-react";
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowDownCircle } from 'lucide-react';
 
 const bgImages = [
-  "/assets/slider/slider6.png",
-  "/assets/slider/slider.png",
-  "/assets/slider/slider.webp",
-  "/assets/slider/slider1.png",
-  "/assets/slider/slider2.png",
-  "/assets/slider/slider3.png",
-  "/assets/slider/slider4.png",
-  "/assets/slider/slider5.png",
+  '/assets/slider/slider6.png',
+  '/assets/slider/slider.png',
+  '/assets/slider/slider.webp',
+  '/assets/slider/slider1.png',
+  '/assets/slider/slider2.png',
+  '/assets/slider/slider3.png',
+  '/assets/slider/slider4.png',
+  '/assets/slider/slider5.png',
 ];
 
 const variants = {
@@ -40,7 +39,7 @@ export default function HeroSection() {
     <section
       // Responsive height: always fill screen, on md+ taller for desktop hero
       className="relative min-h-[100svh] md:min-h-[78vh] flex items-center justify-center overflow-x-hidden overflow-y-hidden"
-      style={{ WebkitOverflowScrolling: "touch" }} // for mobile smooth
+      style={{ WebkitOverflowScrolling: 'touch' }} // for mobile smooth
     >
       {/* Background Image Slider */}
       <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
@@ -54,8 +53,8 @@ export default function HeroSection() {
             className="absolute inset-0 w-full h-full"
             style={{
               backgroundImage: `linear-gradient(to top, rgba(10,10,10,0.85), rgba(10,10,10,0.2) 60%, transparent), url('${bgImages[imgIndex]}')`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
             }}
             aria-hidden="true"
           />
@@ -69,7 +68,7 @@ export default function HeroSection() {
           animate="animate"
           variants={variants}
         >
-          Unleash Your Strength with{" "}
+          Unleash Your Strength with{' '}
           <span className="text-yellow-400">Ghatak Sports Academy India™</span>
         </motion.h1>
         <motion.p
@@ -79,7 +78,7 @@ export default function HeroSection() {
           variants={variants}
           transition={{ delay: 0.3 }}
         >
-          Government-Recognized |{" "}
+          Government-Recognized |{' '}
           <span className="text-yellow-400">ISO 9001:2015</span> | Martial Arts
           | Fitness | Self-Defense
         </motion.p>
@@ -111,7 +110,7 @@ export default function HeroSection() {
           pointer-events-none
           select-none
         "
-        style={{ width: "auto" }}
+        style={{ width: 'auto' }}
       >
         <div className="flex flex-col items-center pointer-events-auto">
           <ArrowDownCircle className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400 animate-bounce" />
@@ -124,13 +123,15 @@ export default function HeroSection() {
             <button
               key={idx}
               className={`w-2.5 h-2.5 xs:w-3 xs:h-3 rounded-full border border-white transition-all duration-300 focus:outline-yellow-400 ${
-                imgIndex === idx ? "bg-yellow-400 shadow-lg scale-110" : "bg-white/30"
+                imgIndex === idx
+                  ? 'bg-yellow-400 shadow-lg scale-110'
+                  : 'bg-white/30'
               }`}
               onClick={() => setImgIndex(idx)}
               aria-label={`Go to slide ${idx + 1}`}
               style={{
-                outline: imgIndex === idx ? "2px solid #facc15" : undefined,
-                pointerEvents: "auto",
+                outline: imgIndex === idx ? '2px solid #facc15' : undefined,
+                pointerEvents: 'auto',
               }}
               tabIndex={0}
             />

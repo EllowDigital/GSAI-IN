@@ -1,8 +1,7 @@
-
-import React, { useRef, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Loader2, UploadCloud, Trash2 } from "lucide-react";
+import React, { useRef, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Loader2, UploadCloud, Trash2 } from 'lucide-react';
 
 type Props = {
   feeId: string;
@@ -12,7 +11,7 @@ type Props = {
 
 export function FeeReceiptUploader({ feeId, initialUrl, onUploaded }: Props) {
   const [uploading, setUploading] = useState(false);
-  const [fileUrl, setFileUrl] = useState(initialUrl || "");
+  const [fileUrl, setFileUrl] = useState(initialUrl || '');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,14 +22,14 @@ export function FeeReceiptUploader({ feeId, initialUrl, onUploaded }: Props) {
     const filePath = `fee_${feeId}.${fileExt}`;
     // Upload file to Supabase
     const { error } = await supabase.storage
-      .from("fees")
+      .from('fees')
       .upload(filePath, file, { upsert: true });
     if (error) {
-      alert("Error uploading file: " + error.message);
+      alert('Error uploading file: ' + error.message);
       setUploading(false);
       return;
     }
-    const { data } = supabase.storage.from("fees").getPublicUrl(filePath);
+    const { data } = supabase.storage.from('fees').getPublicUrl(filePath);
     if (data?.publicUrl) {
       setFileUrl(data.publicUrl);
       onUploaded(data.publicUrl);
@@ -40,11 +39,11 @@ export function FeeReceiptUploader({ feeId, initialUrl, onUploaded }: Props) {
 
   const handleRemove = async () => {
     if (!fileUrl) return;
-    const fileName = fileUrl.split("/").pop();
+    const fileName = fileUrl.split('/').pop();
     if (!fileName) return;
     setUploading(true);
-    await supabase.storage.from("fees").remove([fileName]);
-    setFileUrl("");
+    await supabase.storage.from('fees').remove([fileName]);
+    setFileUrl('');
     onUploaded(null);
     setUploading(false);
   };
@@ -64,7 +63,7 @@ export function FeeReceiptUploader({ feeId, initialUrl, onUploaded }: Props) {
       <input
         type="file"
         accept="image/*,application/pdf"
-        style={{ display: "none" }}
+        style={{ display: 'none' }}
         ref={fileInputRef}
         onChange={handleUpload}
       />
@@ -76,8 +75,12 @@ export function FeeReceiptUploader({ feeId, initialUrl, onUploaded }: Props) {
         onClick={() => fileInputRef.current?.click()}
         className="flex gap-1"
       >
-        {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
-        {fileUrl ? "Replace" : "Upload"}
+        {uploading ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
+          <UploadCloud className="w-4 h-4" />
+        )}
+        {fileUrl ? 'Replace' : 'Upload'}
       </Button>
       {fileUrl && (
         <Button

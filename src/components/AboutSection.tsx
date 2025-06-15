@@ -1,6 +1,5 @@
-
-import React from "react";
-import { Users, Info, Sparkles } from "lucide-react";
+import React from 'react';
+import { Users, Info, Sparkles } from 'lucide-react';
 
 export default function AboutSection() {
   return (
@@ -43,8 +42,12 @@ export default function AboutSection() {
         {/* Right: Content */}
         <div className="w-full md:w-3/5 space-y-5 xs:space-y-7">
           <p className="text-base xs:text-lg leading-relaxed text-gray-800 font-semibold text-center xs:text-justify">
-            <span className="text-yellow-500 font-bold">Empowering Champions Since Inception:</span>{" "}
-            We are dedicated to building confident, disciplined, and skilled individuals through the transformative power of martial arts and personal development.
+            <span className="text-yellow-500 font-bold">
+              Empowering Champions Since Inception:
+            </span>{' '}
+            We are dedicated to building confident, disciplined, and skilled
+            individuals through the transformative power of martial arts and
+            personal development.
           </p>
           <ul className="list-none pl-0 mb-3 flex flex-col gap-3">
             <li className="flex items-start xs:items-center p-2 rounded-lg transition-all hover:bg-yellow-50/50">
@@ -52,7 +55,15 @@ export default function AboutSection() {
                 ✔
               </span>
               <span className="text-gray-800">
-                <strong>Holistic Training:</strong> Merging <span className="text-red-500 font-medium">traditional martial arts</span> and <span className="text-yellow-500 font-medium">modern fitness</span> for total self-improvement.
+                <strong>Holistic Training:</strong> Merging{' '}
+                <span className="text-red-500 font-medium">
+                  traditional martial arts
+                </span>{' '}
+                and{' '}
+                <span className="text-yellow-500 font-medium">
+                  modern fitness
+                </span>{' '}
+                for total self-improvement.
               </span>
             </li>
             <li className="flex items-start xs:items-center p-2 rounded-lg transition-all hover:bg-yellow-50/50">
@@ -60,7 +71,11 @@ export default function AboutSection() {
                 ✔
               </span>
               <span className="text-gray-800">
-                <strong>Values-Driven Growth:</strong> Fostering <span className="text-yellow-400 font-medium">respect, confidence, and personal excellence</span>.
+                <strong>Values-Driven Growth:</strong> Fostering{' '}
+                <span className="text-yellow-400 font-medium">
+                  respect, confidence, and personal excellence
+                </span>
+                .
               </span>
             </li>
             <li className="flex items-start xs:items-center p-2 rounded-lg transition-all hover:bg-yellow-50/50">
@@ -68,12 +83,18 @@ export default function AboutSection() {
                 ✔
               </span>
               <span className="text-gray-800">
-                <strong>Empowerment for All:</strong> Programs tailored for <span className="text-red-500 font-medium">every age and skill level</span>, guiding you on a journey of <em>self-mastery</em> and <em>empowerment</em>.
+                <strong>Empowerment for All:</strong> Programs tailored for{' '}
+                <span className="text-red-500 font-medium">
+                  every age and skill level
+                </span>
+                , guiding you on a journey of <em>self-mastery</em> and{' '}
+                <em>empowerment</em>.
               </span>
             </li>
           </ul>
           <blockquote className="border-l-4 border-yellow-400 pl-4 italic text-base xs:text-lg font-semibold bg-yellow-50/60 rounded text-center xs:text-left shadow p-3">
-            "Join our thriving community and discover your true potential—physically, mentally, and morally!"
+            "Join our thriving community and discover your true
+            potential—physically, mentally, and morally!"
           </blockquote>
         </div>
       </div>

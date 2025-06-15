@@ -1,13 +1,19 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
-import { useAdminAuth } from "./AdminAuthProvider";
-import { AppSidebar } from "@/components/admin/AppSidebar";
-import { useQueryClient } from "@tanstack/react-query";
-import { RefreshCw, Menu } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import { useAdminAuth } from './AdminAuthProvider';
+import { AppSidebar } from '@/components/admin/AppSidebar';
+import { useQueryClient } from '@tanstack/react-query';
+import { RefreshCw, Menu } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 // Drawer overlay that closes sidebar when you click it
-const DrawerOverlay = ({ isOpen, onClick }: { isOpen: boolean; onClick: () => void }) =>
+const DrawerOverlay = ({
+  isOpen,
+  onClick,
+}: {
+  isOpen: boolean;
+  onClick: () => void;
+}) =>
   isOpen ? (
     <div
       className="fixed inset-0 z-40 bg-black/30 md:hidden transition-opacity animate-fade-in"
@@ -16,7 +22,7 @@ const DrawerOverlay = ({ isOpen, onClick }: { isOpen: boolean; onClick: () => vo
     />
   ) : null;
 
-const SIDEBAR_WIDTH = "16rem"; // Equal to AppSidebar width
+const SIDEBAR_WIDTH = '16rem'; // Equal to AppSidebar width
 
 // Modern admin layout with responsive sidebar and content
 const AdminLayout: React.FC = () => {
@@ -26,17 +32,22 @@ const AdminLayout: React.FC = () => {
   const { toast } = useToast();
 
   const handleRefresh = () => {
-    toast({ title: "Refreshing data...", description: "Fetching the latest information." });
+    toast({
+      title: 'Refreshing data...',
+      description: 'Fetching the latest information.',
+    });
     queryClient.invalidateQueries();
   };
 
   React.useEffect(() => {
     if (sidebarOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = "";
+      document.body.style.overflow = '';
     }
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [sidebarOpen]);
 
   if (isLoading || !isAdmin) {
@@ -60,7 +71,9 @@ const AdminLayout: React.FC = () => {
         />
       )}
       {/* Main content */}
-      <div className={`flex-1 flex flex-col h-full min-h-screen transition-all duration-300`}>
+      <div
+        className={`flex-1 flex flex-col h-full min-h-screen transition-all duration-300`}
+      >
         {/* Header bar */}
         <div className="flex items-center justify-between px-4 py-4 bg-white shadow-md border-b sticky top-0 z-30">
           <div className="flex items-center gap-2">
@@ -85,7 +98,11 @@ const AdminLayout: React.FC = () => {
               <RefreshCw className="w-5 h-5 text-yellow-600" />
             </button>
             <div className="w-8 h-8 md:w-11 md:h-11 rounded-full bg-yellow-200 flex items-center justify-center shadow-inner border border-yellow-300">
-              <img src="/favicon.ico" alt="Avatar" className="w-6 h-6 md:w-10 md:h-10 object-cover rounded-full" />
+              <img
+                src="/favicon.ico"
+                alt="Avatar"
+                className="w-6 h-6 md:w-10 md:h-10 object-cover rounded-full"
+              />
             </div>
           </div>
         </div>

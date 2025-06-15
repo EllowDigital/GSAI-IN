@@ -1,8 +1,14 @@
-import React, { createContext, useEffect, useState, useContext, ReactNode } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Session } from "@supabase/supabase-js";
-import { toast } from "@/components/ui/sonner";
-import { useNavigate } from "react-router-dom";
+import React, {
+  createContext,
+  useEffect,
+  useState,
+  useContext,
+  ReactNode,
+} from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Session } from '@supabase/supabase-js';
+import { toast } from '@/components/ui/sonner';
+import { useNavigate } from 'react-router-dom';
 
 type AdminAuthContextType = {
   session: Session | null;
@@ -22,7 +28,7 @@ const AdminAuthContext = createContext<AdminAuthContextType>({
   signOut: async () => {},
 });
 
-const ADMIN_EMAIL = "ghatakgsai@gmail.com";
+const ADMIN_EMAIL = 'ghatakgsai@gmail.com';
 
 function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -41,7 +47,9 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Listen for changes in auth state
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
       setUserEmail(newSession?.user?.email ?? null);
       setIsAdmin(newSession?.user?.email === ADMIN_EMAIL);
@@ -49,11 +57,11 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
 
       // Redirect if not admin (no reload)
       if (
-        !_event.startsWith("INITIAL") &&
+        !_event.startsWith('INITIAL') &&
         (!newSession || newSession?.user?.email !== ADMIN_EMAIL)
       ) {
         clearAdminState();
-        navigate("/admin/login", { replace: true });
+        navigate('/admin/login', { replace: true });
       }
     });
 
@@ -67,7 +75,7 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
       // If not admin, redirect to login (no reload)
       if (!session?.user || session.user.email !== ADMIN_EMAIL) {
         clearAdminState();
-        navigate("/admin/login", { replace: true });
+        navigate('/admin/login', { replace: true });
       }
     });
 
@@ -79,27 +87,32 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
   // Sign in as admin only
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
-    const { error, data } = await supabase.auth.signInWithPassword({ email, password });
+    const { error, data } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
     if (error) {
-      toast.error("Login failed: " + error.message);
+      toast.error('Login failed: ' + error.message);
       clearAdminState();
       setIsLoading(false);
       return;
     }
     if (data.user.email !== ADMIN_EMAIL) {
-      toast.error("Only the designated admin account can access the dashboard.");
+      toast.error(
+        'Only the designated admin account can access the dashboard.'
+      );
       await supabase.auth.signOut();
       clearAdminState();
       setIsLoading(false);
       return;
     }
-    toast.success("Logged in as admin.");
+    toast.success('Logged in as admin.');
     setIsAdmin(true);
     setSession(data.session ?? null);
     setUserEmail(data.user.email);
     setIsLoading(false);
     // Redirect to dashboard on successful login
-    navigate("/admin/dashboard", { replace: true });
+    navigate('/admin/dashboard', { replace: true });
   };
 
   // Logout: always clear state & redirect to homepage
@@ -107,13 +120,15 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
     await supabase.auth.signOut();
     clearAdminState();
 
-    toast.success("Logged out.");
+    toast.success('Logged out.');
     // Redirect to homepage and prevent back navigation.
-    window.location.replace("/");
+    window.location.replace('/');
   };
 
   return (
-    <AdminAuthContext.Provider value={{ session, userEmail, isAdmin, isLoading, signIn, signOut }}>
+    <AdminAuthContext.Provider
+      value={{ session, userEmail, isAdmin, isLoading, signIn, signOut }}
+    >
       {children}
     </AdminAuthContext.Provider>
   );

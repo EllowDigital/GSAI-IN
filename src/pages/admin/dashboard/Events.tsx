@@ -1,19 +1,18 @@
-
-import React, { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Tables } from "@/integrations/supabase/types";
-import { Button } from "@/components/ui/button";
-import { useAdminAuth } from "../AdminAuthProvider";
-import { Plus } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
-import EventCard from "@/components/admin/EventCard";
-import AdminEventFormModal from "@/components/admin/AdminEventFormModal";
-import EventDeleteDialog from "@/components/admin/EventDeleteDialog";
-import { Card, CardHeader } from "@/components/ui/card";
-import Spinner from "@/components/ui/spinner";
+import React, { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Tables } from '@/integrations/supabase/types';
+import { Button } from '@/components/ui/button';
+import { useAdminAuth } from '../AdminAuthProvider';
+import { Plus } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+import EventCard from '@/components/admin/EventCard';
+import AdminEventFormModal from '@/components/admin/AdminEventFormModal';
+import EventDeleteDialog from '@/components/admin/EventDeleteDialog';
+import { Card, CardHeader } from '@/components/ui/card';
+import Spinner from '@/components/ui/spinner';
 
 // EventRow typing stays the same
-type EventRow = Tables<"events">;
+type EventRow = Tables<'events'>;
 
 const Events = () => {
   const { isAdmin } = useAdminAuth();
@@ -28,13 +27,13 @@ const Events = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from("events")
-        .select("*")
-        .order("from_date", { ascending: true });
+        .from('events')
+        .select('*')
+        .order('from_date', { ascending: true });
       if (error) throw error;
       setEvents(data ?? []);
     } catch (err: any) {
-      toast.error("Failed to load events", err.message);
+      toast.error('Failed to load events', err.message);
     }
     setLoading(false);
   }, []);
@@ -43,10 +42,10 @@ const Events = () => {
     fetchEvents();
     // Real-time sync
     const channel = supabase
-      .channel("events-db-changes")
+      .channel('events-db-changes')
       .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "events" },
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'events' },
         fetchEvents
       )
       .subscribe();
@@ -75,7 +74,9 @@ const Events = () => {
       <Card className="max-w-md mx-auto mt-16 p-8 text-center">
         <CardHeader>
           <h1 className="text-2xl font-bold mb-2">Not Authorized</h1>
-          <p className="text-muted-foreground">You must be an admin to view this page.</p>
+          <p className="text-muted-foreground">
+            You must be an admin to view this page.
+          </p>
         </CardHeader>
       </Card>
     );
@@ -86,8 +87,12 @@ const Events = () => {
       {/* Header & Add Event */}
       <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4 sm:gap-3">
         <div className="flex-1 min-w-0">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-yellow-800 tracking-tight leading-snug mb-1">Event Manager</h1>
-          <div className="hidden sm:block text-muted-foreground text-sm">View, add, update, or delete events. Optimized for all devices.</div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-yellow-800 tracking-tight leading-snug mb-1">
+            Event Manager
+          </h1>
+          <div className="hidden sm:block text-muted-foreground text-sm">
+            View, add, update, or delete events. Optimized for all devices.
+          </div>
         </div>
         <Button
           variant="default"

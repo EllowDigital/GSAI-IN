@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
@@ -18,8 +17,10 @@ type StudentRow = {
 export function useStudents() {
   const [students, setStudents] = useState<StudentRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [sortCol, setSortCol] = useState<"name" | "program" | "join_date">("join_date");
+  const [search, setSearch] = useState('');
+  const [sortCol, setSortCol] = useState<'name' | 'program' | 'join_date'>(
+    'join_date'
+  );
   const [sortAsc, setSortAsc] = useState(false);
 
   useEffect(() => {
@@ -27,12 +28,14 @@ export function useStudents() {
     const fetchStudents = async () => {
       setLoading(true);
       const { data, error } = await supabase
-        .from("students")
-        .select("id, name, aadhar_number, program, join_date, parent_name, parent_contact, profile_image_url, created_at")
-        .order("created_at", { ascending: false });
+        .from('students')
+        .select(
+          'id, name, aadhar_number, program, join_date, parent_name, parent_contact, profile_image_url, created_at'
+        )
+        .order('created_at', { ascending: false });
       if (!ignore) {
         if (error) {
-          toast.error("Failed to fetch students: " + error.message);
+          toast.error('Failed to fetch students: ' + error.message);
         }
         setStudents((data || []) as StudentRow[]);
         setLoading(false);
@@ -41,14 +44,14 @@ export function useStudents() {
     fetchStudents();
 
     const channel = supabase
-      .channel("gsai-students-admin-realtime-hook")
+      .channel('gsai-students-admin-realtime-hook')
       .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "students" },
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'students' },
         fetchStudents
       )
       .subscribe();
-      
+
     return () => {
       ignore = true;
       supabase.removeChannel(channel);
@@ -60,19 +63,19 @@ export function useStudents() {
     if (search.trim()) {
       const q = search.trim().toLowerCase();
       filtered = filtered.filter(
-        s =>
+        (s) =>
           s.name.toLowerCase().includes(q) ||
           s.program.toLowerCase().includes(q)
       );
     }
     filtered = [...filtered].sort((a, b) => {
-      if (sortCol === "join_date") {
+      if (sortCol === 'join_date') {
         return sortAsc
           ? new Date(a.join_date).getTime() - new Date(b.join_date).getTime()
           : new Date(b.join_date).getTime() - new Date(a.join_date).getTime();
       }
-      const aV = (a[sortCol] ?? "").toLowerCase();
-      const bV = (b[sortCol] ?? "").toLowerCase();
+      const aV = (a[sortCol] ?? '').toLowerCase();
+      const bV = (b[sortCol] ?? '').toLowerCase();
       if (aV < bV) return sortAsc ? -1 : 1;
       if (aV > bV) return sortAsc ? 1 : -1;
       return 0;
@@ -80,13 +83,24 @@ export function useStudents() {
     return filtered;
   }, [students, search, sortCol, sortAsc]);
 
-  const requestSort = (key: "name" | "program" | "join_date") => {
+  const requestSort = (key: 'name' | 'program' | 'join_date') => {
     const isAsc = sortCol === key ? !sortAsc : true;
     setSortCol(key);
     setSortAsc(isAsc);
   };
-  
-  const sortConfig = { key: sortCol, direction: (sortAsc ? 'asc' : 'desc') as 'asc' | 'desc' };
 
-  return { students, loading, filteredStudents, search, setSearch, sortConfig, requestSort };
+  const sortConfig = {
+    key: sortCol,
+    direction: (sortAsc ? 'asc' : 'desc') as 'asc' | 'desc',
+  };
+
+  return {
+    students,
+    loading,
+    filteredStudents,
+    search,
+    setSearch,
+    sortConfig,
+    requestSort,
+  };
 }

@@ -1,28 +1,27 @@
-
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import HomePageWrapper from "./pages/HomePageWrapper";
-import NotFound from "./pages/NotFound";
-import { AdminAuthProvider } from "./pages/admin/AdminAuthProvider";
-import AdminLogin from "./pages/admin/AdminLogin";
-import AdminLayout from "./pages/admin/AdminLayout";
-import StatsHome from "./pages/admin/dashboard/StatsHome";
-import Blogs from "./pages/admin/dashboard/Blogs";
-import News from "./pages/admin/dashboard/News";
-import Gallery from "./pages/admin/dashboard/Gallery";
-import Students from "./pages/admin/dashboard/Students";
-import NotFoundAdmin from "./pages/admin/NotFoundAdmin";
-import FeesManager from "./pages/admin/dashboard/FeesManager";
-import Events from "./pages/admin/dashboard/Events";
-import Preloader from "./components/Preloader";
-import React from "react";
-import PrivacyPage from "./pages/PrivacyPage";
-import TermsPage from "./pages/TermsPage";
-import OfflineBanner from "./components/OfflineBanner";
-import InstallPWAButton from "./components/InstallPWAButton";
+import { Toaster } from '@/components/ui/toaster';
+import { Toaster as Sonner } from '@/components/ui/sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import HomePageWrapper from './pages/HomePageWrapper';
+import NotFound from './pages/NotFound';
+import { AdminAuthProvider } from './pages/admin/AdminAuthProvider';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminLayout from './pages/admin/AdminLayout';
+import StatsHome from './pages/admin/dashboard/StatsHome';
+import Blogs from './pages/admin/dashboard/Blogs';
+import News from './pages/admin/dashboard/News';
+import Gallery from './pages/admin/dashboard/Gallery';
+import Students from './pages/admin/dashboard/Students';
+import NotFoundAdmin from './pages/admin/NotFoundAdmin';
+import FeesManager from './pages/admin/dashboard/FeesManager';
+import Events from './pages/admin/dashboard/Events';
+import Preloader from './components/Preloader';
+import React from 'react';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
+import OfflineBanner from './components/OfflineBanner';
+import InstallPWAButton from './components/InstallPWAButton';
 
 const queryClient = new QueryClient();
 
@@ -33,7 +32,7 @@ const App = () => {
 
   React.useEffect(() => {
     const timeout = setTimeout(() => setLoading(false), 1300); // fade out after 1.3s
-    
+
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
 
@@ -64,7 +63,10 @@ const App = () => {
   };
 
   const isPWAInstalled = () => {
-    return window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+    return (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone
+    );
   };
 
   return (
@@ -74,7 +76,10 @@ const App = () => {
         <Sonner />
         {loading && <Preloader />}
 
-        <div style={{ visibility: loading ? 'hidden' : 'visible' }} className="h-full">
+        <div
+          style={{ visibility: loading ? 'hidden' : 'visible' }}
+          className="h-full"
+        >
           {!isOnline && <OfflineBanner />}
           {installPrompt && !isPWAInstalled() && (
             <InstallPWAButton onInstall={handleInstallClick} />

@@ -1,5 +1,4 @@
-
-import React from "react";
+import React from 'react';
 
 /**
  * Seo component manages HTML titles, meta, structured data, canonical, and more.
@@ -14,7 +13,7 @@ type SeoProps = {
   structuredData?: object[];
 };
 
-const defaultSiteUrl = "https://ghatakgsai.netlify.app";
+const defaultSiteUrl = 'https://ghatakgsai.netlify.app';
 
 export function Seo({
   title,

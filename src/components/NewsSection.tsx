@@ -1,9 +1,9 @@
-import React from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Newspaper, Image as ImageIcon } from "lucide-react";
+import React from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Newspaper, Image as ImageIcon } from 'lucide-react';
 
 function formatDate(dt: string) {
-  return new Date(dt).toLocaleDateString(undefined, { dateStyle: "medium" });
+  return new Date(dt).toLocaleDateString(undefined, { dateStyle: 'medium' });
 }
 
 type News = {
@@ -23,10 +23,10 @@ export default function NewsSection() {
     async function fetchNews() {
       setLoading(true);
       const { data, error } = await supabase
-        .from("news")
-        .select("id, title, short_description, date, image_url, status")
-        .eq("status", "Published")
-        .order("date", { ascending: false })
+        .from('news')
+        .select('id, title, short_description, date, image_url, status')
+        .eq('status', 'Published')
+        .order('date', { ascending: false })
         .limit(6);
       if (!error && data && isMounted) {
         setNews(data as News[]);
@@ -37,10 +37,10 @@ export default function NewsSection() {
 
     // Subscribe to re-fetch if changes in news (real-time)
     const channel = supabase
-      .channel("news-public")
+      .channel('news-public')
       .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "news" },
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'news' },
         () => fetchNews()
       )
       .subscribe();
@@ -65,7 +65,8 @@ export default function NewsSection() {
             </h2>
           </div>
           <p className="text-base md:text-lg font-medium text-gray-500 text-center max-w-xl">
-            Stay updated with the most recent announcements, achievements, and moments from Ghatak Sports Academy.
+            Stay updated with the most recent announcements, achievements, and
+            moments from Ghatak Sports Academy.
           </p>
         </div>
         <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-6">
@@ -100,18 +101,22 @@ export default function NewsSection() {
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center gap-1">
                       <ImageIcon size={36} className="text-yellow-300" />
-                      <span className="text-yellow-300 text-sm font-semibold">No Image</span>
+                      <span className="text-yellow-300 text-sm font-semibold">
+                        No Image
+                      </span>
                     </div>
                   )}
                   <div className="absolute bottom-2 left-2 bg-white/90 rounded px-2 py-0.5 text-xs font-bold text-yellow-500 shadow">
-                    {item.date ? formatDate(item.date) : "--"}
+                    {item.date ? formatDate(item.date) : '--'}
                   </div>
                 </div>
                 <div className="flex-1 flex flex-col p-5">
                   <h3 className="text-lg md:text-xl font-bold mb-2 line-clamp-2 group-hover:text-red-600 transition-colors">
                     {item.title}
                   </h3>
-                  <p className="text-gray-700 text-sm line-clamp-3 flex-1">{item.short_description ?? ""}</p>
+                  <p className="text-gray-700 text-sm line-clamp-3 flex-1">
+                    {item.short_description ?? ''}
+                  </p>
                 </div>
               </div>
             ))
@@ -119,8 +124,12 @@ export default function NewsSection() {
             <div className="col-span-full max-w-xl mx-auto text-center pt-8 pb-10">
               <div className="flex flex-col items-center gap-2">
                 <Newspaper size={34} className="text-gray-300 mb-1" />
-                <h4 className="text-gray-400 text-lg font-semibold">No news published yet.</h4>
-                <p className="text-gray-500 text-sm max-w-xs">We'll post updates and highlights here soon. Stay tuned!</p>
+                <h4 className="text-gray-400 text-lg font-semibold">
+                  No news published yet.
+                </h4>
+                <p className="text-gray-500 text-sm max-w-xs">
+                  We'll post updates and highlights here soon. Stay tuned!
+                </p>
               </div>
             </div>
           )}

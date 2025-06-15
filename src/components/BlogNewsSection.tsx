@@ -1,9 +1,9 @@
-import React from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { BookOpenText } from "lucide-react";
+import React from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { BookOpenText } from 'lucide-react';
 
 function formatDate(dt: string) {
-  return new Date(dt).toLocaleDateString(undefined, { dateStyle: "medium" });
+  return new Date(dt).toLocaleDateString(undefined, { dateStyle: 'medium' });
 }
 
 type Blog = {
@@ -23,9 +23,9 @@ export default function BlogNewsSection() {
     async function fetchBlogs() {
       setLoading(true);
       const { data, error } = await supabase
-        .from("blogs")
-        .select("id, image_url, title, description, published_at")
-        .order("published_at", { ascending: false })
+        .from('blogs')
+        .select('id, image_url, title, description, published_at')
+        .order('published_at', { ascending: false })
         .limit(6);
       if (!error && data && isMounted) {
         setPosts(data as Blog[]);
@@ -36,10 +36,10 @@ export default function BlogNewsSection() {
 
     // Subscribe to re-fetch if changes in blogs (real-time)
     const channel = supabase
-      .channel("blogs-public")
+      .channel('blogs-public')
       .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "blogs" },
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'blogs' },
         () => fetchBlogs()
       )
       .subscribe();
@@ -51,7 +51,10 @@ export default function BlogNewsSection() {
   }, []);
 
   return (
-    <section id="blog" className="py-12 xs:py-16 md:py-20 px-2 xs:px-4 md:px-6 bg-gradient-to-br from-yellow-50 via-white to-red-50 border-b border-yellow-100">
+    <section
+      id="blog"
+      className="py-12 xs:py-16 md:py-20 px-2 xs:px-4 md:px-6 bg-gradient-to-br from-yellow-50 via-white to-red-50 border-b border-yellow-100"
+    >
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col items-center mb-7 gap-2">
           <div className="flex items-center gap-2 justify-center w-full">
@@ -61,7 +64,8 @@ export default function BlogNewsSection() {
             </h2>
           </div>
           <p className="text-base md:text-lg font-medium text-gray-500 text-center max-w-xl">
-            Explore stories, tips, and inspiration from Ghatak Sports Academy—expert advice, community highlights, and athlete journeys.
+            Explore stories, tips, and inspiration from Ghatak Sports
+            Academy—expert advice, community highlights, and athlete journeys.
           </p>
         </div>
         <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-5 md:gap-8">
@@ -99,7 +103,7 @@ export default function BlogNewsSection() {
                     </div>
                   )}
                   <div className="absolute bottom-2 left-2 bg-white/90 rounded px-2 py-0.5 text-xs font-bold text-yellow-500 shadow">
-                    {post.published_at ? formatDate(post.published_at) : "--"}
+                    {post.published_at ? formatDate(post.published_at) : '--'}
                   </div>
                 </div>
                 <div className="flex-1 flex flex-col p-5">
@@ -107,7 +111,7 @@ export default function BlogNewsSection() {
                     {post.title}
                   </h3>
                   <p className="text-gray-700 text-sm line-clamp-3 flex-1">
-                    {post.description ?? ""}
+                    {post.description ?? ''}
                   </p>
                 </div>
               </div>
@@ -116,8 +120,12 @@ export default function BlogNewsSection() {
             <div className="col-span-full max-w-xl mx-auto text-center pt-8 pb-10">
               <div className="flex flex-col items-center gap-2">
                 <BookOpenText size={34} className="text-gray-300 mb-1" />
-                <h4 className="text-gray-400 text-lg font-semibold">No blogs published yet.</h4>
-                <p className="text-gray-500 text-sm max-w-xs">Stay tuned for our latest insights and updates!</p>
+                <h4 className="text-gray-400 text-lg font-semibold">
+                  No blogs published yet.
+                </h4>
+                <p className="text-gray-500 text-sm max-w-xs">
+                  Stay tuned for our latest insights and updates!
+                </p>
               </div>
             </div>
           )}

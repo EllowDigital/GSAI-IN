@@ -99,7 +99,8 @@
     @apply border-border;
   }
 
-  html, body {
+  html,
+  body {
     @apply bg-background text-foreground overflow-x-hidden;
   }
 }
@@ -137,5 +138,6 @@ html {
 /* End Custom Scrollbar Styling */
 
 .font-montserrat {
-  font-family: 'Montserrat', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family:
+    'Montserrat', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }

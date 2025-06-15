@@ -1,31 +1,36 @@
-
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Star } from "lucide-react";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@/components/ui/card';
+import { Star } from 'lucide-react';
 
 const testimonials = [
   {
-    name: "Shriti Yadav",
+    name: 'Shriti Yadav',
     quote:
-      "Joining Ghatak Sports Academy India has been a life-changing experience. The coaches are highly skilled and motivating. Proud to be part of the GSAI family!",
-    role: "Taekwondo Student",
+      'Joining Ghatak Sports Academy India has been a life-changing experience. The coaches are highly skilled and motivating. Proud to be part of the GSAI family!',
+    role: 'Taekwondo Student',
   },
   {
-    name: "Sandeep Yadav",
+    name: 'Sandeep Yadav',
     quote:
-      "As a parent, I appreciate the focus on discipline, fitness, and resilience. My child has grown so much since joining. Highly recommended for all ages.",
-    role: "Parent of Young Athlete",
+      'As a parent, I appreciate the focus on discipline, fitness, and resilience. My child has grown so much since joining. Highly recommended for all ages.',
+    role: 'Parent of Young Athlete',
   },
   {
-    name: "Sarwan Yadav",
+    name: 'Sarwan Yadav',
     quote:
-      "The range of programs and the supportive environment make every session enjoyable. I’ve gained new skills and lifelong friends!",
-    role: "Kalarippayattu Practitioner",
+      'The range of programs and the supportive environment make every session enjoyable. I’ve gained new skills and lifelong friends!',
+    role: 'Kalarippayattu Practitioner',
   },
   {
-    name: "Shivansh Yadav",
+    name: 'Shivansh Yadav',
     quote:
-      "The training, events, and community spirit at GSAI are unmatched. I feel stronger and more confident every day.",
-    role: "Martial Arts Enthusiast",
+      'The training, events, and community spirit at GSAI are unmatched. I feel stronger and more confident every day.',
+    role: 'Martial Arts Enthusiast',
   },
 ];
 
@@ -48,7 +53,8 @@ export default function TestimonialSection() {
             </h2>
           </div>
           <p className="text-base md:text-lg font-medium text-gray-500 text-center max-w-xl">
-            Hear from students and parents about their journey with Ghatak Sports Academy India.
+            Hear from students and parents about their journey with Ghatak
+            Sports Academy India.
           </p>
         </div>
         <div className="grid gap-6 xs:gap-8 md:gap-10 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
@@ -59,8 +65,12 @@ export default function TestimonialSection() {
               aria-label={`Testimonial by ${t.name}`}
             >
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-bold text-red-500">{t.name}</CardTitle>
-                <CardDescription className="text-yellow-500 font-medium">{t.role}</CardDescription>
+                <CardTitle className="text-lg font-bold text-red-500">
+                  {t.name}
+                </CardTitle>
+                <CardDescription className="text-yellow-500 font-medium">
+                  {t.role}
+                </CardDescription>
               </CardHeader>
               <CardContent className="text-gray-700 italic text-base flex-1 flex items-center">
                 <span>“{t.quote}”</span>

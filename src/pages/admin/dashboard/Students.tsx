@@ -1,7 +1,6 @@
-
-import React from "react";
-import StudentManager from "@/components/admin/StudentManager";
-import { Users } from "lucide-react";
+import React from 'react';
+import StudentManager from '@/components/admin/StudentManager';
+import { Users } from 'lucide-react';
 
 export default function Students() {
   return (

@@ -1,7 +1,13 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Edit, Trash2 } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
 
@@ -15,7 +21,13 @@ interface BlogsTableProps {
   formatDate: (date: string) => string;
 }
 
-export default function BlogsTable({ blogs, onEdit, onDelete, isDeleting, formatDate }: BlogsTableProps) {
+export default function BlogsTable({
+  blogs,
+  onEdit,
+  onDelete,
+  isDeleting,
+  formatDate,
+}: BlogsTableProps) {
   return (
     <Table className="min-w-[680px]">
       <TableHeader>
@@ -36,7 +48,7 @@ export default function BlogsTable({ blogs, onEdit, onDelete, isDeleting, format
                   src={blog.image_url}
                   alt={blog.title}
                   className="h-14 w-24 object-cover rounded-lg shadow"
-                  style={{ minWidth: "96px" }}
+                  style={{ minWidth: '96px' }}
                 />
               ) : (
                 <span className="italic text-gray-400">No Image</span>
@@ -46,9 +58,12 @@ export default function BlogsTable({ blogs, onEdit, onDelete, isDeleting, format
               {blog.title}
             </TableCell>
             <TableCell className="whitespace-nowrap">
-              {blog.published_at ? formatDate(blog.published_at) : "--"}
+              {blog.published_at ? formatDate(blog.published_at) : '--'}
             </TableCell>
-            <TableCell className="max-w-[220px] truncate" title={blog.description ?? ''}>
+            <TableCell
+              className="max-w-[220px] truncate"
+              title={blog.description ?? ''}
+            >
               {blog.description}
             </TableCell>
             <TableCell className="text-right">

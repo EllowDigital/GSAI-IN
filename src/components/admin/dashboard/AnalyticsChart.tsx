@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   BarChart,
@@ -8,7 +7,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-} from "recharts";
+} from 'recharts';
 
 type AnalyticsData = {
   name: string;
@@ -31,25 +30,25 @@ export default function AnalyticsChart({ analyticsData }: Props) {
             <CartesianGrid strokeDasharray="3 3" className="text-gray-100" />
             <XAxis
               dataKey="name"
-              tick={{ fontWeight: 600, fontSize: 10, fill: "#a16207" }} // yellow-700
+              tick={{ fontWeight: 600, fontSize: 10, fill: '#a16207' }} // yellow-700
               axisLine={false}
             />
             <YAxis
               allowDecimals={false}
-              tick={{ fontWeight: 600, fontSize: 11, fill: "#78716c" }}
+              tick={{ fontWeight: 600, fontSize: 11, fill: '#78716c' }}
               axisLine={false}
               width={30}
             />
             <Tooltip
-              cursor={{ fill: "rgba(251, 191, 36, 0.13)" }}
+              cursor={{ fill: 'rgba(251, 191, 36, 0.13)' }}
               contentStyle={{
-                borderRadius: "0.5rem",
-                borderColor: "#fde68a",
-                backgroundColor: "#fff",
+                borderRadius: '0.5rem',
+                borderColor: '#fde68a',
+                backgroundColor: '#fff',
                 fontWeight: 600,
               }}
               labelStyle={{
-                color: "#ca8a04", // yellow-600
+                color: '#ca8a04', // yellow-600
                 fontWeight: 700,
               }}
             />

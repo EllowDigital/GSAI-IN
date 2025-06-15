@@ -1,15 +1,22 @@
-
-import React from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, List, Users, BookOpen, Newspaper, Image, Calendar } from "lucide-react";
+import React from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  DollarSign,
+  List,
+  Users,
+  BookOpen,
+  Newspaper,
+  Image,
+  Calendar,
+} from 'lucide-react';
 import {
   aggregateFees,
   studentsByProgram,
   getLatestTitlesAll,
   safeCount,
-  getNextEvent
-} from "@/utils/dashboardStats";
+  getNextEvent,
+} from '@/utils/dashboardStats';
 
 function useAdvancedStats() {
   const [data, setData] = React.useState<any>({});
@@ -20,14 +27,24 @@ function useAdvancedStats() {
     async function getStats() {
       setLoading(true);
       // Fetch all data in batches and only aggregate after fetch
-      const [feesRes, studentsRes, blogsRes, newsRes, galleryRes, eventsRes] = await Promise.all([
-        supabase.from("fees").select("*"),
-        supabase.from("students").select("program"),
-        supabase.from("blogs").select("title, published_at").order("published_at", { ascending: false }),
-        supabase.from("news").select("title, date").order("date", { ascending: false }),
-        supabase.from("gallery_images").select("id"),
-        supabase.from("events").select("title, date").order("date", { ascending: true }),
-      ]);
+      const [feesRes, studentsRes, blogsRes, newsRes, galleryRes, eventsRes] =
+        await Promise.all([
+          supabase.from('fees').select('*'),
+          supabase.from('students').select('program'),
+          supabase
+            .from('blogs')
+            .select('title, published_at')
+            .order('published_at', { ascending: false }),
+          supabase
+            .from('news')
+            .select('title, date')
+            .order('date', { ascending: false }),
+          supabase.from('gallery_images').select('id'),
+          supabase
+            .from('events')
+            .select('title, date')
+            .order('date', { ascending: true }),
+        ]);
 
       const fees = Array.isArray(feesRes.data) ? feesRes.data : [];
       const students = Array.isArray(studentsRes.data) ? studentsRes.data : [];
@@ -59,7 +76,9 @@ function useAdvancedStats() {
       }
     }
     getStats();
-    return () => { ignore = true; };
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   return { data, loading };
@@ -70,7 +89,9 @@ export default function AdvancedStats() {
 
   return (
     <div>
-      <div className="text-xl font-bold mb-2 mt-6 text-gray-700">Advanced Stats</div>
+      <div className="text-xl font-bold mb-2 mt-6 text-gray-700">
+        Advanced Stats
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Fees block */}
         <Card>
@@ -81,12 +102,22 @@ export default function AdvancedStats() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {loading ? "Loading..." : (
+            {loading ? (
+              'Loading...'
+            ) : (
               <ul className="text-sm space-y-1">
-                <li><b>Total Fee Records:</b> {data.total}</li>
-                <li><b>Total Paid:</b> ₹{data.paidSum}</li>
-                <li><b>Partial Paid:</b> ₹{data.partialSum}</li>
-                <li><b>Completely Unpaid Count:</b> {data.unpaidCount}</li>
+                <li>
+                  <b>Total Fee Records:</b> {data.total}
+                </li>
+                <li>
+                  <b>Total Paid:</b> ₹{data.paidSum}
+                </li>
+                <li>
+                  <b>Partial Paid:</b> ₹{data.partialSum}
+                </li>
+                <li>
+                  <b>Completely Unpaid Count:</b> {data.unpaidCount}
+                </li>
               </ul>
             )}
           </CardContent>
@@ -100,23 +131,33 @@ export default function AdvancedStats() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {loading ? "Loading..." : data.total === 0 ? (
+            {loading ? (
+              'Loading...'
+            ) : data.total === 0 ? (
               <div>No students</div>
             ) : (
               <div>
                 <ul className="text-sm space-y-1">
-                  <li><b>Total Students:</b> {data.total}</li>
-                  <li><b>By Program:</b></li>
+                  <li>
+                    <b>Total Students:</b> {data.total}
+                  </li>
+                  <li>
+                    <b>By Program:</b>
+                  </li>
                   <ul className="ml-4 list-disc">
-                    {data && data.byProgram
-                      ? Object.entries(data.byProgram).length === 0 ? (
-                          <li>No programs</li>
-                        ) : (
-                          Object.entries(data.byProgram).map(([prog, count]) => (
-                            <li key={prog}>{String(prog)}: {String(count)}</li>
-                          ))
-                        )
-                      : <li>No programs</li>}
+                    {data && data.byProgram ? (
+                      Object.entries(data.byProgram).length === 0 ? (
+                        <li>No programs</li>
+                      ) : (
+                        Object.entries(data.byProgram).map(([prog, count]) => (
+                          <li key={prog}>
+                            {String(prog)}: {String(count)}
+                          </li>
+                        ))
+                      )
+                    ) : (
+                      <li>No programs</li>
+                    )}
                   </ul>
                 </ul>
               </div>
@@ -132,14 +173,18 @@ export default function AdvancedStats() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {loading ? "Loading..." : (
+            {loading ? (
+              'Loading...'
+            ) : (
               <ol className="list-decimal ml-4 text-sm">
-                {Array.isArray(data.latestBlogs) && data.latestBlogs.length > 0
-                  ? data.latestBlogs.map((b: string, idx: number) => (
-                      <li key={b + idx}>{b}</li>
-                    ))
-                  : <li>No blogs found.</li>
-                }
+                {Array.isArray(data.latestBlogs) &&
+                data.latestBlogs.length > 0 ? (
+                  data.latestBlogs.map((b: string, idx: number) => (
+                    <li key={b + idx}>{b}</li>
+                  ))
+                ) : (
+                  <li>No blogs found.</li>
+                )}
               </ol>
             )}
           </CardContent>
@@ -153,14 +198,18 @@ export default function AdvancedStats() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {loading ? "Loading..." : (
+            {loading ? (
+              'Loading...'
+            ) : (
               <ol className="list-decimal ml-4 text-sm">
-                {Array.isArray(data.latestNews) && data.latestNews.length > 0
-                  ? data.latestNews.map((n: string, idx: number) => (
-                      <li key={n + idx}>{n}</li>
-                    ))
-                  : <li>No news found.</li>
-                }
+                {Array.isArray(data.latestNews) &&
+                data.latestNews.length > 0 ? (
+                  data.latestNews.map((n: string, idx: number) => (
+                    <li key={n + idx}>{n}</li>
+                  ))
+                ) : (
+                  <li>No news found.</li>
+                )}
               </ol>
             )}
           </CardContent>
@@ -174,9 +223,12 @@ export default function AdvancedStats() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {loading ? "Loading..." : (
+            {loading ? (
+              'Loading...'
+            ) : (
               <div>
-                <span className="font-bold text-lg">{data.galleryCount}</span> images
+                <span className="font-bold text-lg">{data.galleryCount}</span>{' '}
+                images
               </div>
             )}
           </CardContent>
@@ -190,10 +242,16 @@ export default function AdvancedStats() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {loading ? "Loading..." : (
+            {loading ? (
+              'Loading...'
+            ) : (
               <ul className="text-sm space-y-1">
-                <li><b>Total Events:</b> {data.eventCount ?? 0}</li>
-                <li><b>Next Event:</b> {data.nextEvent || "No upcoming"}</li>
+                <li>
+                  <b>Total Events:</b> {data.eventCount ?? 0}
+                </li>
+                <li>
+                  <b>Next Event:</b> {data.nextEvent || 'No upcoming'}
+                </li>
               </ul>
             )}
           </CardContent>

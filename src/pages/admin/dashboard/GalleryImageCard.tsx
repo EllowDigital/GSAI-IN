@@ -1,8 +1,7 @@
-
-import React, { useState } from "react";
-import { Trash2, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import toast from "react-hot-toast";
+import React, { useState } from 'react';
+import { Trash2, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import toast from 'react-hot-toast';
 
 // CARD: responsive, adaptive overlays/texts and mobile-friendly interaction areas
 type Props = {
@@ -27,20 +26,26 @@ export default function GalleryImageCard({ image, onDeleteSuccess }: Props) {
   }
 
   async function handleDelete() {
-    if (!window.confirm("Delete this image? This action cannot be undone.")) return;
+    if (!window.confirm('Delete this image? This action cannot be undone.'))
+      return;
     setDeleting(true);
 
     const storagePath = getStoragePath(image.image_url);
     let storageErr: any = null;
     if (storagePath) {
-      const { error: deleteError } = await supabase.storage.from("gallery").remove([storagePath]);
+      const { error: deleteError } = await supabase.storage
+        .from('gallery')
+        .remove([storagePath]);
       if (deleteError) storageErr = deleteError;
     }
 
     // Always try DB delete anyway (avoid orphaned metadata)
-    const { error: dbError } = await supabase.from("gallery_images").delete().eq("id", image.id);
+    const { error: dbError } = await supabase
+      .from('gallery_images')
+      .delete()
+      .eq('id', image.id);
     if (dbError || storageErr) {
-      toast.error("Failed to delete image.");
+      toast.error('Failed to delete image.');
       setDeleting(false);
       return;
     }
@@ -60,15 +65,15 @@ export default function GalleryImageCard({ image, onDeleteSuccess }: Props) {
     >
       <img
         src={image.image_url}
-        alt={image.caption || "Gallery"}
+        alt={image.caption || 'Gallery'}
         className="w-full h-auto object-cover rounded-2xl duration-200 block aspect-[4/3] min-h-[128px]"
         loading="lazy"
-        style={{ width: "100%" }}
+        style={{ width: '100%' }}
       />
       {/* Overlay for delete button - show on hover/focus or always on mobile */}
       <div
         className={`absolute top-2 right-2 z-20 transition-opacity duration-200 ${
-          hover ? "opacity-100" : "opacity-0"
+          hover ? 'opacity-100' : 'opacity-0'
         } sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus:opacity-100 xs:opacity-100 xs:group-hover:opacity-100`}
       >
         <button
@@ -77,7 +82,11 @@ export default function GalleryImageCard({ image, onDeleteSuccess }: Props) {
           disabled={deleting}
           aria-label="Delete image"
         >
-          {deleting ? <Loader2 className="animate-spin" size={20} /> : <Trash2 size={18} />}
+          {deleting ? (
+            <Loader2 className="animate-spin" size={20} />
+          ) : (
+            <Trash2 size={18} />
+          )}
         </button>
       </div>
       {/* Caption & tag - adaptive for mobile */}

@@ -1,12 +1,11 @@
-
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BadgeDollarSign, Clock, Ban } from "lucide-react";
-import { summarizeFees } from "@/utils/feeStatusUtils";
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BadgeDollarSign, Clock, Ban } from 'lucide-react';
+import { summarizeFees } from '@/utils/feeStatusUtils';
 
 export default function FeeSummaryCard({
   fees,
-  loading
+  loading,
 }: {
   fees: any[];
   loading: boolean;
@@ -23,8 +22,12 @@ export default function FeeSummaryCard({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <span className="text-2xl font-bold">{loading ? "..." : `₹${summary.paidAmount}`}</span>
-          <div className="text-xs text-green-900">{loading ? "" : `${summary.paidCount} payment(s)`}</div>
+          <span className="text-2xl font-bold">
+            {loading ? '...' : `₹${summary.paidAmount}`}
+          </span>
+          <div className="text-xs text-green-900">
+            {loading ? '' : `${summary.paidCount} payment(s)`}
+          </div>
         </CardContent>
       </Card>
       <Card className="shadow flex-1">
@@ -35,8 +38,12 @@ export default function FeeSummaryCard({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <span className="text-2xl font-bold">{loading ? "..." : `₹${summary.partialAmount}`}</span>
-          <div className="text-xs text-yellow-900">{loading ? "" : `${summary.partialCount} partial`}</div>
+          <span className="text-2xl font-bold">
+            {loading ? '...' : `₹${summary.partialAmount}`}
+          </span>
+          <div className="text-xs text-yellow-900">
+            {loading ? '' : `${summary.partialCount} partial`}
+          </div>
         </CardContent>
       </Card>
       <Card className="shadow flex-1">
@@ -47,8 +54,12 @@ export default function FeeSummaryCard({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <span className="text-2xl font-bold">{loading ? "..." : `₹${summary.overdueAmount}`}</span>
-          <div className="text-xs text-red-900">{loading ? "" : `${summary.overdueCount} overdue`}</div>
+          <span className="text-2xl font-bold">
+            {loading ? '...' : `₹${summary.overdueAmount}`}
+          </span>
+          <div className="text-xs text-red-900">
+            {loading ? '' : `${summary.overdueCount} overdue`}
+          </div>
         </CardContent>
       </Card>
     </div>

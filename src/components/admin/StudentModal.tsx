@@ -1,36 +1,65 @@
-import React, { useEffect } from "react";
-import { Dialog, DialogContent, DialogTitle, DialogHeader } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/components/ui/sonner";
-import StudentAvatarUploader from "./StudentAvatarUploader";
+import React, { useEffect } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogHeader,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from '@/components/ui/select';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/sonner';
+import StudentAvatarUploader from './StudentAvatarUploader';
 
 // List of valid programs
 const programOptions = [
-  { value: "Karate", label: "🥋 Karate - Traditional strikes & self-discipline" },
-  { value: "Taekwondo", label: "🦵 Taekwondo - Dynamic kicks & sparring" },
-  { value: "Boxing", label: "🥊 Boxing - Build stamina & precision" },
-  { value: "Kickboxing", label: "🥋 Kickboxing - Cardio meets combat" },
-  { value: "Grappling", label: "🤼 Grappling - Ground control tactics" },
-  { value: "MMA", label: "🥋 MMA - Striking & grappling combined" },
-  { value: "Kalaripayattu", label: "🕉️ Kalaripayattu - India’s ancient warrior art" },
-  { value: "Self-Defense", label: "🛡️ Self-Defense - Practical safety training" },
-  { value: "Fat Loss", label: "🏋️ Fat Loss - Burn fat, build agility" },
+  {
+    value: 'Karate',
+    label: '🥋 Karate - Traditional strikes & self-discipline',
+  },
+  { value: 'Taekwondo', label: '🦵 Taekwondo - Dynamic kicks & sparring' },
+  { value: 'Boxing', label: '🥊 Boxing - Build stamina & precision' },
+  { value: 'Kickboxing', label: '🥋 Kickboxing - Cardio meets combat' },
+  { value: 'Grappling', label: '🤼 Grappling - Ground control tactics' },
+  { value: 'MMA', label: '🥋 MMA - Striking & grappling combined' },
+  {
+    value: 'Kalaripayattu',
+    label: '🕉️ Kalaripayattu - India’s ancient warrior art',
+  },
+  {
+    value: 'Self-Defense',
+    label: '🛡️ Self-Defense - Practical safety training',
+  },
+  { value: 'Fat Loss', label: '🏋️ Fat Loss - Burn fat, build agility' },
 ];
 
 const StudentSchema = z.object({
-  name: z.string().min(2, "Name is required"),
-  aadhar_number: z.string().length(12, "Aadhar Number must be 12 digits"),
-  program: z.string().min(2, "Program is required"),
+  name: z.string().min(2, 'Name is required'),
+  aadhar_number: z.string().length(12, 'Aadhar Number must be 12 digits'),
+  program: z.string().min(2, 'Program is required'),
   join_date: z.string(),
-  parent_name: z.string().min(2, "Parent Name is required"),
-  parent_contact: z.string().regex(/^\d{10}$/, "Contact Number must be 10 digits"),
+  parent_name: z.string().min(2, 'Parent Name is required'),
+  parent_contact: z
+    .string()
+    .regex(/^\d{10}$/, 'Contact Number must be 10 digits'),
   profile_image_url: z.string().nullable(),
 });
 
@@ -42,16 +71,20 @@ interface StudentModalProps {
   student?: any;
 }
 
-export default function StudentModal({ open, onOpenChange, student }: StudentModalProps) {
+export default function StudentModal({
+  open,
+  onOpenChange,
+  student,
+}: StudentModalProps) {
   const form = useForm<StudentFormValues>({
     resolver: zodResolver(StudentSchema),
     defaultValues: {
-      name: "",
-      aadhar_number: "",
-      program: "",
-      join_date: "",
-      parent_name: "",
-      parent_contact: "",
+      name: '',
+      aadhar_number: '',
+      program: '',
+      join_date: '',
+      parent_name: '',
+      parent_contact: '',
       profile_image_url: null,
     },
   });
@@ -60,22 +93,22 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
   useEffect(() => {
     if (student) {
       form.reset({
-        name: student.name || "",
-        aadhar_number: student.aadhar_number || "",
-        program: student.program || "",
-        join_date: student.join_date ? student.join_date.slice(0, 10) : "",
-        parent_name: student.parent_name || "",
-        parent_contact: student.parent_contact || "",
+        name: student.name || '',
+        aadhar_number: student.aadhar_number || '',
+        program: student.program || '',
+        join_date: student.join_date ? student.join_date.slice(0, 10) : '',
+        parent_name: student.parent_name || '',
+        parent_contact: student.parent_contact || '',
         profile_image_url: student.profile_image_url || null,
       });
     } else {
       form.reset({
-        name: "",
-        aadhar_number: "",
-        program: "",
-        join_date: "",
-        parent_name: "",
-        parent_contact: "",
+        name: '',
+        aadhar_number: '',
+        program: '',
+        join_date: '',
+        parent_name: '',
+        parent_contact: '',
         profile_image_url: null,
       });
     }
@@ -83,25 +116,32 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
 
   // Avatar Upload
   const handleAvatarUpload = (url: string) => {
-    form.setValue("profile_image_url", url);
+    form.setValue('profile_image_url', url);
   };
 
   // Submit Handler
   const onSubmit = async (values: StudentFormValues) => {
     try {
-      if (!values.name || !values.aadhar_number || !values.program || !values.join_date || !values.parent_name || !values.parent_contact) {
-        toast.error("Please fill all required fields.");
+      if (
+        !values.name ||
+        !values.aadhar_number ||
+        !values.program ||
+        !values.join_date ||
+        !values.parent_name ||
+        !values.parent_contact
+      ) {
+        toast.error('Please fill all required fields.');
         return;
       }
       // Uniqueness check for Aadhar Number on create
       if (!student) {
         const { data: existing, error: err1 } = await supabase
-          .from("students")
-          .select("id")
-          .eq("aadhar_number", values.aadhar_number);
+          .from('students')
+          .select('id')
+          .eq('aadhar_number', values.aadhar_number);
         if (err1) throw err1;
         if (existing && existing.length > 0) {
-          toast.error("A student with this Aadhar Number already exists.");
+          toast.error('A student with this Aadhar Number already exists.');
           return;
         }
       }
@@ -117,19 +157,19 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
       };
       if (student) {
         const { error } = await supabase
-          .from("students")
+          .from('students')
           .update(payload)
-          .eq("id", student.id);
+          .eq('id', student.id);
         if (error) throw error;
-        toast.success("Student updated.");
+        toast.success('Student updated.');
       } else {
-        const { error } = await supabase.from("students").insert([payload]);
+        const { error } = await supabase.from('students').insert([payload]);
         if (error) throw error;
-        toast.success("Student created.");
+        toast.success('Student created.');
       }
       onOpenChange(false);
     } catch (err: any) {
-      toast.error("Error saving student: " + err.message);
+      toast.error('Error saving student: ' + err.message);
     }
   };
 
@@ -137,12 +177,12 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{student ? "Edit Student" : "Add Student"}</DialogTitle>
+          <DialogTitle>{student ? 'Edit Student' : 'Add Student'}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <StudentAvatarUploader
-              url={form.watch("profile_image_url")}
+              url={form.watch('profile_image_url')}
               onUploaded={handleAvatarUpload}
             />
             <FormField
@@ -165,7 +205,12 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
                 <FormItem>
                   <FormLabel>Aadhar Number</FormLabel>
                   <FormControl>
-                    <Input placeholder="12 digit Aadhar" maxLength={12} {...field} required />
+                    <Input
+                      placeholder="12 digit Aadhar"
+                      maxLength={12}
+                      {...field}
+                      required
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -187,7 +232,7 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
                         <SelectValue placeholder="Select program" />
                       </SelectTrigger>
                       <SelectContent>
-                        {programOptions.map(opt => (
+                        {programOptions.map((opt) => (
                           <SelectItem key={opt.value} value={opt.value}>
                             {opt.label}
                           </SelectItem>
@@ -245,10 +290,14 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
             />
 
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
                 Cancel
               </Button>
-              <Button type="submit">{student ? "Update" : "Create"}</Button>
+              <Button type="submit">{student ? 'Update' : 'Create'}</Button>
             </div>
           </form>
         </Form>

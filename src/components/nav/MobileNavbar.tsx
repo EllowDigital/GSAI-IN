@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Menu, X, LogIn } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -22,7 +21,7 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
         <DropdownMenuTrigger asChild>
           <button
             className={`p-2 rounded focus:outline-none text-gray-800 hover:bg-yellow-100 transition h-11 w-11 flex items-center justify-center
-              ${mobileOpen ? "ring-2 ring-yellow-300" : ""}`}
+              ${mobileOpen ? 'ring-2 ring-yellow-300' : ''}`}
             aria-label="Open mobile menu"
           >
             {mobileOpen ? <X size={30} /> : <Menu size={30} />}
@@ -39,7 +38,9 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
               alt="GSAI Logo"
               className="w-10 h-10 rounded-full border border-yellow-400"
             />
-            <span className="font-extrabold text-lg text-black tracking-tight">GSAI</span>
+            <span className="font-extrabold text-lg text-black tracking-tight">
+              GSAI
+            </span>
             <span className="text-sm font-semibold text-yellow-700 ml-4 border-l border-yellow-200 pl-3">
               Ghatak Sports Academy India
             </span>

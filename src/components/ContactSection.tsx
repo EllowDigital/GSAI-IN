@@ -1,8 +1,8 @@
-import React from "react";
-import { Sparkles, Mail } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import React from 'react';
+import { Sparkles, Mail } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 
 export default function ContactSection() {
   return (
@@ -24,7 +24,8 @@ export default function ContactSection() {
             </h2>
           </div>
           <p className="text-base md:text-lg font-medium text-gray-500 text-center max-w-2xl">
-            Have questions or want to get in touch? Fill out the form below, and our team will reach out to you soon.
+            Have questions or want to get in touch? Fill out the form below, and
+            our team will reach out to you soon.
           </p>
         </div>
 
@@ -34,7 +35,10 @@ export default function ContactSection() {
           className="space-y-5 bg-white bg-opacity-80 p-5 xs:p-8 rounded-2xl shadow-lg border border-yellow-100"
         >
           <div>
-            <label htmlFor="name" className="block font-semibold text-gray-700 mb-1">
+            <label
+              htmlFor="name"
+              className="block font-semibold text-gray-700 mb-1"
+            >
               Name<span className="text-red-500">*</span>
             </label>
             <Input
@@ -48,7 +52,10 @@ export default function ContactSection() {
           </div>
 
           <div>
-            <label htmlFor="email" className="block font-semibold text-gray-700 mb-1">
+            <label
+              htmlFor="email"
+              className="block font-semibold text-gray-700 mb-1"
+            >
               Email<span className="text-red-500">*</span>
             </label>
             <Input
@@ -62,7 +69,10 @@ export default function ContactSection() {
           </div>
 
           <div>
-            <label htmlFor="phone" className="block font-semibold text-gray-700 mb-1">
+            <label
+              htmlFor="phone"
+              className="block font-semibold text-gray-700 mb-1"
+            >
               Phone Number<span className="text-red-500">*</span>
             </label>
             <Input
@@ -76,7 +86,10 @@ export default function ContactSection() {
           </div>
 
           <div>
-            <label htmlFor="message" className="block font-semibold text-gray-700 mb-1">
+            <label
+              htmlFor="message"
+              className="block font-semibold text-gray-700 mb-1"
+            >
               Your Message<span className="text-red-500">*</span>
             </label>
             <Textarea
@@ -95,11 +108,15 @@ export default function ContactSection() {
             value="New Contact Form Submission from Ghatak Sports Academy"
           />
           <input type="hidden" name="_captcha" value="false" />
-          <input type="hidden" name="_next" value="https://ghatakgsai.netlify.app/pages/success.html" />
+          <input
+            type="hidden"
+            name="_next"
+            value="https://ghatakgsai.netlify.app/pages/success.html"
+          />
           <input
             type="text"
             name="_honey"
-            style={{ display: "none" }}
+            style={{ display: 'none' }}
             tabIndex={-1}
           />
 

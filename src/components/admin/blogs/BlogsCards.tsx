@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -15,11 +14,20 @@ interface BlogsCardsProps {
   formatDate: (date: string) => string;
 }
 
-export default function BlogsCards({ blogs, onEdit, onDelete, isDeleting, formatDate }: BlogsCardsProps) {
+export default function BlogsCards({
+  blogs,
+  onEdit,
+  onDelete,
+  isDeleting,
+  formatDate,
+}: BlogsCardsProps) {
   return (
     <div className="grid xs:grid-cols-2 gap-4 sm:gap-6">
       {blogs.map((blog) => (
-        <Card key={blog.id} className="rounded-xl shadow-lg bg-white flex flex-col gap-3 p-4 relative">
+        <Card
+          key={blog.id}
+          className="rounded-xl shadow-lg bg-white flex flex-col gap-3 p-4 relative"
+        >
           {blog.image_url ? (
             <img
               src={blog.image_url}
@@ -27,12 +35,18 @@ export default function BlogsCards({ blogs, onEdit, onDelete, isDeleting, format
               className="w-full h-28 xs:h-28 sm:h-32 object-cover rounded-md shadow mb-2"
             />
           ) : (
-            <div className="w-full h-28 xs:h-28 sm:h-32 bg-yellow-50 text-yellow-300 rounded-md flex items-center justify-center mb-2">No Image</div>
+            <div className="w-full h-28 xs:h-28 sm:h-32 bg-yellow-50 text-yellow-300 rounded-md flex items-center justify-center mb-2">
+              No Image
+            </div>
           )}
           <div className="flex items-start gap-2 justify-between mb-1 mt-1">
             <div>
-              <div className="font-bold text-base leading-tight mb-0.5 text-gray-800 truncate">{blog.title}</div>
-              <div className="text-xs text-gray-500 mb-1">{blog.published_at ? formatDate(blog.published_at) : "--"}</div>
+              <div className="font-bold text-base leading-tight mb-0.5 text-gray-800 truncate">
+                {blog.title}
+              </div>
+              <div className="text-xs text-gray-500 mb-1">
+                {blog.published_at ? formatDate(blog.published_at) : '--'}
+              </div>
               <div className="text-sm text-gray-700">{blog.description}</div>
             </div>
             <div className="flex flex-col gap-2 ml-auto">

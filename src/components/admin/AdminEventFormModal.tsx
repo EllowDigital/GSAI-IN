@@ -1,31 +1,30 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import EventImageUploader from "./EventImageUploader";
-import Spinner from "@/components/ui/spinner";
-import { Tables } from "@/integrations/supabase/types";
-import { format } from "date-fns";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import EventImageUploader from './EventImageUploader';
+import Spinner from '@/components/ui/spinner';
+import { Tables } from '@/integrations/supabase/types';
+import { format } from 'date-fns';
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "@/components/ui/popover";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/popover';
+import { Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
 
-type EventRow = Tables<"events">;
+type EventRow = Tables<'events'>;
 
 interface ModalProps {
   open: boolean;
@@ -34,12 +33,12 @@ interface ModalProps {
 }
 
 const EMPTY: Partial<EventRow> = {
-  title: "",
-  description: "",
-  image_url: "",
-  from_date: "",
-  end_date: "",
-  tag: "",
+  title: '',
+  description: '',
+  image_url: '',
+  from_date: '',
+  end_date: '',
+  tag: '',
 };
 
 const AdminEventFormModal: React.FC<ModalProps> = ({
@@ -67,8 +66,11 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
     setForm((f) => ({ ...f, [key]: value }));
   };
 
-  const handleDateChange = (key: "from_date" | "end_date", date: Date | undefined) => {
-    handleChange(key, date ? date.toISOString().slice(0, 10) : "");
+  const handleDateChange = (
+    key: 'from_date' | 'end_date',
+    date: Date | undefined
+  ) => {
+    handleChange(key, date ? date.toISOString().slice(0, 10) : '');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -79,47 +81,50 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
       !form.from_date ||
       !form.end_date
     ) {
-      toast.error("All fields are required.");
+      toast.error('All fields are required.');
       return;
     }
 
     setLoading(true);
     try {
-      let image_url = form.image_url ?? "";
+      let image_url = form.image_url ?? '';
 
       // If new image selected, upload
       if (imageFile) {
         const filename = `${Date.now()}-${imageFile.name}`;
         const { data, error } = await supabase.storage
-          .from("events")
+          .from('events')
           .upload(filename, imageFile, { upsert: true });
         if (error) {
-          toast.error("Image upload failed: " + error.message);
+          toast.error('Image upload failed: ' + error.message);
           setLoading(false);
-          console.error("Image upload error:", error);
+          console.error('Image upload error:', error);
           return; // Abort submission if the upload fails
         }
         const { data: publicUrlData } = supabase.storage
-          .from("events")
+          .from('events')
           .getPublicUrl(filename);
         if (publicUrlData?.publicUrl) {
           image_url = publicUrlData.publicUrl;
         } else {
-          toast.error("Failed to retrieve image URL after upload.");
+          toast.error('Failed to retrieve image URL after upload.');
           setLoading(false);
-          console.error("Missing publicUrl after upload");
+          console.error('Missing publicUrl after upload');
           return;
         }
       }
 
       // DEBUGGING: LOG THE SESSION EMAIL BEFORE SAVE
       const { data: sessionData } = await supabase.auth.getSession();
-      console.log("DEBUG: Current Supabase session email:", sessionData?.session?.user?.email);
+      console.log(
+        'DEBUG: Current Supabase session email:',
+        sessionData?.session?.user?.email
+      );
 
       if (editingEvent) {
         // Update
         const { error } = await supabase
-          .from("events")
+          .from('events')
           .update({
             title: form.title,
             description: form.description,
@@ -128,17 +133,17 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
             end_date: form.end_date,
             tag: form.tag,
           })
-          .eq("id", editingEvent.id);
+          .eq('id', editingEvent.id);
         if (error) {
-          toast.error("Failed to update event: " + error.message);
-          console.error("DEBUG: Update error:", error);
+          toast.error('Failed to update event: ' + error.message);
+          console.error('DEBUG: Update error:', error);
           setLoading(false);
           return;
         }
-        toast.success("Event updated.");
+        toast.success('Event updated.');
       } else {
         // Create (fix: provide date)
-        const { error } = await supabase.from("events").insert([
+        const { error } = await supabase.from('events').insert([
           {
             title: form.title,
             description: form.description,
@@ -150,17 +155,17 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
           },
         ]);
         if (error) {
-          toast.error("Failed to create event: " + error.message);
-          console.error("DEBUG: Insert error:", error);
+          toast.error('Failed to create event: ' + error.message);
+          console.error('DEBUG: Insert error:', error);
           setLoading(false);
           return;
         }
-        toast.success("Event created.");
+        toast.success('Event created.');
       }
       onOpenChange(false);
     } catch (err: any) {
-      toast.error("Failed to save event.", err.message);
-      console.error("UNCAUGHT ERROR in event submit:", err);
+      toast.error('Failed to save event.', err.message);
+      console.error('UNCAUGHT ERROR in event submit:', err);
     }
     setLoading(false);
   };
@@ -170,7 +175,7 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
     label,
     value,
     onChange,
-    placeholder = "Pick a date",
+    placeholder = 'Pick a date',
     minDate,
     maxDate,
   }: {
@@ -188,15 +193,19 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
         <Popover>
           <PopoverTrigger asChild>
             <Button
-              variant={"outline"}
+              variant={'outline'}
               className={cn(
-                "w-full sm:w-[200px] justify-start text-left font-normal",
-                !parsedVal && "text-muted-foreground"
+                'w-full sm:w-[200px] justify-start text-left font-normal',
+                !parsedVal && 'text-muted-foreground'
               )}
               type="button"
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {parsedVal ? format(parsedVal, "PPP") : <span>{placeholder}</span>}
+              {parsedVal ? (
+                format(parsedVal, 'PPP')
+              ) : (
+                <span>{placeholder}</span>
+              )}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
@@ -205,7 +214,7 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
               selected={parsedVal}
               onSelect={onChange}
               initialFocus
-              className={cn("p-3 pointer-events-auto")}
+              className={cn('p-3 pointer-events-auto')}
               disabled={undefined}
             />
           </PopoverContent>
@@ -218,7 +227,9 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{editingEvent ? "Edit Event" : "Add New Event"}</DialogTitle>
+          <DialogTitle>
+            {editingEvent ? 'Edit Event' : 'Add New Event'}
+          </DialogTitle>
           <DialogDescription>All fields required.</DialogDescription>
         </DialogHeader>
         <form
@@ -233,8 +244,8 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
             <Input
               id="event-title"
               placeholder="Title"
-              value={form.title ?? ""}
-              onChange={(e) => handleChange("title", e.target.value)}
+              value={form.title ?? ''}
+              onChange={(e) => handleChange('title', e.target.value)}
               required
             />
           </div>
@@ -246,8 +257,8 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
               id="event-description"
               placeholder="Description"
               rows={4}
-              value={form.description ?? ""}
-              onChange={(e) => handleChange("description", e.target.value)}
+              value={form.description ?? ''}
+              onChange={(e) => handleChange('description', e.target.value)}
               required
             />
           </div>
@@ -259,19 +270,19 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
             onRemoveImage={() => {
               setImageFile(null);
               setImagePreview(null);
-              setForm((f) => ({ ...f, image_url: "" }));
+              setForm((f) => ({ ...f, image_url: '' }));
             }}
           />
           <div className="flex flex-col sm:flex-row gap-4 justify-between">
             <DatePickerField
               label="From Date"
               value={form.from_date}
-              onChange={(date) => handleDateChange("from_date", date)}
+              onChange={(date) => handleDateChange('from_date', date)}
             />
             <DatePickerField
               label="End Date"
               value={form.end_date}
-              onChange={(date) => handleDateChange("end_date", date)}
+              onChange={(date) => handleDateChange('end_date', date)}
               minDate={form.from_date ? new Date(form.from_date) : undefined}
             />
           </div>
@@ -282,14 +293,24 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
             <Input
               id="event-tag"
               placeholder="Tag (e.g. Seminar, Tournament)"
-              value={form.tag ?? ""}
-              onChange={(e) => handleChange("tag", e.target.value)}
+              value={form.tag ?? ''}
+              onChange={(e) => handleChange('tag', e.target.value)}
               maxLength={32}
             />
           </div>
           <div className="flex justify-end mt-1">
-            <Button type="submit" disabled={loading} className="rounded-xl min-w-[110px]">
-              {loading ? <Spinner size={16} /> : editingEvent ? "Update" : "Create"}
+            <Button
+              type="submit"
+              disabled={loading}
+              className="rounded-xl min-w-[110px]"
+            >
+              {loading ? (
+                <Spinner size={16} />
+              ) : editingEvent ? (
+                'Update'
+              ) : (
+                'Create'
+              )}
             </Button>
           </div>
         </form>
@@ -299,4 +320,3 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
 };
 
 export default AdminEventFormModal;
-

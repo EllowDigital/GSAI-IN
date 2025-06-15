@@ -1,16 +1,15 @@
-
-import React from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Plus, ArrowUp, BookOpen } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import BlogEditorModal from "@/components/admin/BlogEditorModal";
-import { useToast } from "@/hooks/use-toast";
-import { Tables } from "@/integrations/supabase/types";
-import BlogsTable from "@/components/admin/blogs/BlogsTable";
-import BlogsCards from "@/components/admin/blogs/BlogsCards";
-import BlogDeleteConfirmationDialog from "@/components/admin/blogs/BlogDeleteConfirmationDialog";
+import React from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Plus, ArrowUp, BookOpen } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import BlogEditorModal from '@/components/admin/BlogEditorModal';
+import { useToast } from '@/hooks/use-toast';
+import { Tables } from '@/integrations/supabase/types';
+import BlogsTable from '@/components/admin/blogs/BlogsTable';
+import BlogsCards from '@/components/admin/blogs/BlogsCards';
+import BlogDeleteConfirmationDialog from '@/components/admin/blogs/BlogDeleteConfirmationDialog';
 
 type Blog = Tables<'blogs'>;
 
@@ -19,12 +18,12 @@ function useBlogs() {
 
   React.useEffect(() => {
     const channel = supabase
-      .channel("blogs-realtime")
+      .channel('blogs-realtime')
       .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "blogs" },
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'blogs' },
         () => {
-          queryClient.invalidateQueries({ queryKey: ["blogs"] });
+          queryClient.invalidateQueries({ queryKey: ['blogs'] });
         }
       )
       .subscribe();
@@ -35,12 +34,12 @@ function useBlogs() {
   }, [queryClient]);
 
   return useQuery({
-    queryKey: ["blogs"],
+    queryKey: ['blogs'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("blogs")
-        .select("*")
-        .order("published_at", { ascending: false });
+        .from('blogs')
+        .select('*')
+        .order('published_at', { ascending: false });
       if (error) throw new Error(error.message);
       return data ?? [];
     },
@@ -50,26 +49,32 @@ function useBlogs() {
 export default function Blogs() {
   const { data: blogs, isLoading, error } = useBlogs();
   const [openModal, setOpenModal] = React.useState<null | {
-    mode: "create" | "edit";
+    mode: 'create' | 'edit';
     blog?: Blog;
   }>(null);
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
-  const [confirmDeleteId, setConfirmDeleteId] = React.useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = React.useState<string | null>(
+    null
+  );
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const deleteBlogMutation = useMutation({
     mutationFn: async (id: string) => {
       setDeletingId(id);
-      const { error } = await supabase.from("blogs").delete().eq("id", id);
+      const { error } = await supabase.from('blogs').delete().eq('id', id);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
-      toast({ title: "Blog deleted" });
-      queryClient.invalidateQueries({ queryKey: ["blogs"] });
+      toast({ title: 'Blog deleted' });
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
     },
     onError: (err: any) => {
-      toast({ title: "Error deleting blog", description: err.message, variant: "error" });
+      toast({
+        title: 'Error deleting blog',
+        description: err.message,
+        variant: 'error',
+      });
     },
     onSettled: () => {
       setDeletingId(null);
@@ -80,8 +85,8 @@ export default function Blogs() {
   const [showBackTop, setShowBackTop] = React.useState(false);
   React.useEffect(() => {
     const onScroll = () => setShowBackTop(window.scrollY > 200);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const [isClient, setIsClient] = React.useState(false);
@@ -92,12 +97,14 @@ export default function Blogs() {
   function formatDate(dt: string | null) {
     if (!dt) return '--';
     try {
-      return new Date(dt).toLocaleDateString(undefined, { dateStyle: "medium" });
+      return new Date(dt).toLocaleDateString(undefined, {
+        dateStyle: 'medium',
+      });
     } catch {
-      return "--";
+      return '--';
     }
   }
-  
+
   const handleConfirmDelete = () => {
     if (confirmDeleteId) {
       deleteBlogMutation.mutate(confirmDeleteId);
@@ -114,17 +121,23 @@ export default function Blogs() {
     }
 
     if (error) {
-      return <div className="col-span-full text-red-500 mt-6">{error.message}</div>;
+      return (
+        <div className="col-span-full text-red-500 mt-6">{error.message}</div>
+      );
     }
-    
+
     if (!blogs || blogs.length === 0) {
-      return <div className="col-span-full text-gray-400 mt-10 font-semibold text-center">No blog posts found.</div>
+      return (
+        <div className="col-span-full text-gray-400 mt-10 font-semibold text-center">
+          No blog posts found.
+        </div>
+      );
     }
 
     const isMdUp = isClient && window.innerWidth >= 768;
 
     return isMdUp ? (
-       <Card className="rounded-2xl shadow-lg overflow-x-auto w-full">
+      <Card className="rounded-2xl shadow-lg overflow-x-auto w-full">
         <CardContent className="p-0">
           <BlogsTable
             blogs={blogs}
@@ -144,7 +157,7 @@ export default function Blogs() {
         formatDate={formatDate}
       />
     );
-  }
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-4 bg-white rounded-2xl shadow-lg">
@@ -155,7 +168,7 @@ export default function Blogs() {
         <Button
           className="rounded-xl shadow-lg flex items-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-black px-4 py-2 text-sm xs:text-base w-full sm:w-auto"
           size="sm"
-          onClick={() => setOpenModal({ mode: "create" })}
+          onClick={() => setOpenModal({ mode: 'create' })}
         >
           <Plus /> Add New Blog
         </Button>
@@ -165,7 +178,7 @@ export default function Blogs() {
 
       <BlogEditorModal
         open={!!openModal}
-        mode={openModal?.mode ?? "create"}
+        mode={openModal?.mode ?? 'create'}
         blog={openModal?.blog}
         onClose={() => setOpenModal(null)}
       />
@@ -179,7 +192,7 @@ export default function Blogs() {
 
       {showBackTop && (
         <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="fixed bottom-6 right-6 bg-yellow-400 hover:bg-yellow-300 rounded-full shadow-xl p-3 z-40"
           aria-label="Back to Top"
         >

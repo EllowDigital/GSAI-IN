@@ -1,6 +1,5 @@
-
-import React, { useRef } from "react";
-import { Button } from "@/components/ui/button";
+import React, { useRef } from 'react';
+import { Button } from '@/components/ui/button';
 
 interface Props {
   imageFile: File | null;
@@ -60,7 +59,7 @@ export default function EventImageUploader({
         onClick={() => ref.current?.click()}
         className="w-fit"
       >
-        {imagePreview ? "Change Image" : "Upload Image"}
+        {imagePreview ? 'Change Image' : 'Upload Image'}
       </Button>
     </div>
   );

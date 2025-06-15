@@ -1,62 +1,63 @@
-import Seo from "../components/Seo";
-import Navbar from "../components/Navbar";
+import Seo from '../components/Seo';
+import Navbar from '../components/Navbar';
 
-import HeroSection from "../components/HeroSection";
-import AboutSection from "../components/AboutSection";
-import FounderSection from "../components/FounderSection";
-import ProgramsSection from "../components/ProgramsSection";
-import AchievementSection from "../components/AchievementSection";
-import TestimonialSection from "../components/TestimonialSection";
+import HeroSection from '../components/HeroSection';
+import AboutSection from '../components/AboutSection';
+import FounderSection from '../components/FounderSection';
+import ProgramsSection from '../components/ProgramsSection';
+import AchievementSection from '../components/AchievementSection';
+import TestimonialSection from '../components/TestimonialSection';
 
-import EventsSection from "../components/EventsSection";
-import GallerySection from "../components/GallerySection";
+import EventsSection from '../components/EventsSection';
+import GallerySection from '../components/GallerySection';
 
-import NewsSection from "../components/NewsSection";
-import BlogNewsSection from "../components/BlogNewsSection";
+import NewsSection from '../components/NewsSection';
+import BlogNewsSection from '../components/BlogNewsSection';
 
-import FaqSection, { faqs as faqData } from "../components/FaqSection";
-import ContactSection from "../components/ContactSection";
-import LocationSection from "../components/LocationSection";
+import FaqSection, { faqs as faqData } from '../components/FaqSection';
+import ContactSection from '../components/ContactSection';
+import LocationSection from '../components/LocationSection';
 
-import RecognitionAffiliationsSection from "../components/RecognitionAffiliationsSection";
-import FooterSection from "../components/FooterSection";
+import RecognitionAffiliationsSection from '../components/RecognitionAffiliationsSection';
+import FooterSection from '../components/FooterSection';
 
 // Structured data for SEO rich snippets
 const orgStructuredData = {
-  "@context": "https://schema.org",
-  "@type": "SportsOrganization",
-  "name": "Ghatak Sports Academy India",
-  "alternateName": "GSAI",
-  "url": "https://ghatakgsai.netlify.app/",
-  "logo": "https://ghatakgsai.netlify.app/assets/img/logo.webp",
-  "description": "A multi-sport, martial arts, fitness and self-development academy in India. Programs for all ages.",
-  "contactPoint": [
+  '@context': 'https://schema.org',
+  '@type': 'SportsOrganization',
+  name: 'Ghatak Sports Academy India',
+  alternateName: 'GSAI',
+  url: 'https://ghatakgsai.netlify.app/',
+  logo: 'https://ghatakgsai.netlify.app/assets/img/logo.webp',
+  description:
+    'A multi-sport, martial arts, fitness and self-development academy in India. Programs for all ages.',
+  contactPoint: [
     {
-      "@type": "ContactPoint",
-      "telephone": "+91 63941 35988",
-      "contactType": "customer service",
-      "email": "ghatakgsai@gmail.com"
-    }
+      '@type': 'ContactPoint',
+      telephone: '+91 63941 35988',
+      contactType: 'customer service',
+      email: 'ghatakgsai@gmail.com',
+    },
   ],
-  "address": {
-    "@type": "PostalAddress",
-    "addressCountry": "IN"
+  address: {
+    '@type': 'PostalAddress',
+    addressCountry: 'IN',
   },
-  "sameAs": [
-    "https://instagram.com/ghatakgsai",
-    "https://facebook.com/ghatakgsai"
-  ]
+  sameAs: [
+    'https://instagram.com/ghatakgsai',
+    'https://facebook.com/ghatakgsai',
+  ],
 };
 
 const faqStructuredData = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": faqData.map(faq => ({
-    "@type": "Question",
-    "name": faq.question,
-    "acceptedAnswer": {
-      "@type": "Answer",
-      "text": faq.answer,
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqData.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.answer,
     },
   })),
 };

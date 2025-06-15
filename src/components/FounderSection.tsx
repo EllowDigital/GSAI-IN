@@ -1,8 +1,7 @@
-
-import React from "react";
-import { Medal, User, Sparkles } from "lucide-react";
-import { motion, Variants } from "framer-motion";
-const founderImg = "/assets/img/founder.webp";
+import React from 'react';
+import { Medal, User, Sparkles } from 'lucide-react';
+import { motion, Variants } from 'framer-motion';
+const founderImg = '/assets/img/founder.webp';
 
 const containerVariants: Variants = {
   offscreen: {},
@@ -19,7 +18,7 @@ const itemVariants: Variants = {
     opacity: 1,
     y: 0,
     transition: {
-      type: "spring",
+      type: 'spring',
       bounce: 0.3,
       duration: 0.8,
     },
@@ -83,16 +82,24 @@ export default function FounderSection() {
             </span>
           </div>
           <p className="text-sm xs:text-base md:text-lg text-gray-700 mb-3 xs:mb-4 text-center md:text-justify">
-            With a lifetime devoted to martial arts excellence, Mr. Nitesh Yadav <strong>inspires champions</strong> and empowers individuals to unlock their hidden potential. His unwavering dedication as a mentor instills discipline, confidence, and resilience in every student who steps into the academy.
+            With a lifetime devoted to martial arts excellence, Mr. Nitesh Yadav{' '}
+            <strong>inspires champions</strong> and empowers individuals to
+            unlock their hidden potential. His unwavering dedication as a mentor
+            instills discipline, confidence, and resilience in every student who
+            steps into the academy.
           </p>
           <blockquote className="border-l-4 border-yellow-400 pl-4 py-2 italic text-base xs:text-lg font-semibold text-yellow-900 bg-yellow-100/60 rounded mb-4 text-center md:text-left shadow">
             <span>
-              &ldquo;With decades of experience, I remain dedicated to the art of martial mastery and mentoring the champions of tomorrow.&rdquo;
+              &ldquo;With decades of experience, I remain dedicated to the art
+              of martial mastery and mentoring the champions of tomorrow.&rdquo;
             </span>
           </blockquote>
           <div className="text-sm xs:text-base text-gray-700 mt-2 text-center md:text-left">
-            <span className="font-bold text-yellow-600">Champion values, lifelong growth:</span>{" "}
-            Your journey to strength, honor, and self-mastery begins at <strong>Ghatak Sports Academy India™</strong>.
+            <span className="font-bold text-yellow-600">
+              Champion values, lifelong growth:
+            </span>{' '}
+            Your journey to strength, honor, and self-mastery begins at{' '}
+            <strong>Ghatak Sports Academy India™</strong>.
           </div>
         </motion.div>
       </motion.div>

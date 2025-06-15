@@ -1,13 +1,12 @@
-
-import { Youtube, Mail, MapPin, Instagram } from "lucide-react";
+import { Youtube, Mail, MapPin, Instagram } from 'lucide-react';
 
 const quickLinks = [
-  { name: "Home", href: "/" },
-  { name: "Programs", href: "#programs" },
-  { name: "Gallery", href: "#gallery" },
-  { name: "Contact", href: "#contact" },
-  { name: "Privacy", href: "/privacy" },
-  { name: "Terms", href: "/terms" },
+  { name: 'Home', href: '/' },
+  { name: 'Programs', href: '#programs' },
+  { name: 'Gallery', href: '#gallery' },
+  { name: 'Contact', href: '#contact' },
+  { name: 'Privacy', href: '/privacy' },
+  { name: 'Terms', href: '/terms' },
 ];
 
 export default function FooterSection() {
@@ -26,12 +25,16 @@ export default function FooterSection() {
             Ghatak Sports Academy India™
           </div>
           <p className="text-gray-400 text-sm xs:text-base leading-relaxed max-w-xs">
-            Empowering youth and athletes through structured training, discipline, and innovation. Join our thriving community to unlock your strength and potential.
+            Empowering youth and athletes through structured training,
+            discipline, and innovation. Join our thriving community to unlock
+            your strength and potential.
           </p>
         </div>
         {/* Column 2: Quick Links */}
         <div className="mb-6 md:mb-0 flex-1 min-w-[150px] flex flex-col items-center md:items-start">
-          <div className="font-semibold text-lg mb-2 text-gray-100">Quick Links</div>
+          <div className="font-semibold text-lg mb-2 text-gray-100">
+            Quick Links
+          </div>
           <ul className="flex flex-row md:flex-col gap-3 md:gap-2 flex-wrap w-full justify-center md:justify-start">
             {quickLinks.map((link) => (
               <li key={link.name}>
@@ -47,11 +50,18 @@ export default function FooterSection() {
         </div>
         {/* Column 3: Contact & Social */}
         <div className="flex-1 min-w-[160px] flex flex-col items-center md:items-end">
-          <div className="font-semibold text-lg mb-2 text-gray-100">Contact & Social</div>
+          <div className="font-semibold text-lg mb-2 text-gray-100">
+            Contact & Social
+          </div>
           <div className="flex flex-col gap-1 text-sm xs:text-base text-gray-400 mb-2 items-center md:items-end">
             <span className="inline-flex items-center gap-1">
               <Mail className="w-4 h-4 text-yellow-300" />
-              <a href="mailto:ghatakgsai@gmail.com" className="hover:text-yellow-400 underline">ghatakgsai@gmail.com</a>
+              <a
+                href="mailto:ghatakgsai@gmail.com"
+                className="hover:text-yellow-400 underline"
+              >
+                ghatakgsai@gmail.com
+              </a>
             </span>
             <span className="inline-flex items-center gap-1">
               <MapPin className="w-4 h-4 text-yellow-300" />
@@ -88,7 +98,8 @@ export default function FooterSection() {
         <div className="h-[1px] w-full bg-gradient-to-r from-yellow-400/20 via-transparent to-yellow-400/20 opacity-60" />
         <div className="flex flex-col xs:flex-row gap-1 xs:gap-4 items-center justify-center bg-gradient-to-r from-gray-950 via-gray-900 to-gray-950 py-5 px-2">
           <span className="text-xs xs:text-sm text-gray-400 tracking-wide block mb-0.5 xs:mb-0 text-center">
-            &copy; {new Date().getFullYear()} Ghatak Sports Academy India™. All rights reserved.
+            &copy; {new Date().getFullYear()} Ghatak Sports Academy India™. All
+            rights reserved.
           </span>
           <span className="inline-flex items-center gap-1 text-xs xs:text-sm bg-gradient-to-r from-yellow-400/10 via-transparent to-red-500/10 px-2.5 py-1 rounded shadow-sm text-yellow-300 font-medium transition ring-1 ring-yellow-400/10 hover:ring-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-400">
             Crafted with

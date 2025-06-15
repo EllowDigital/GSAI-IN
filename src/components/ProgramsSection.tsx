@@ -1,17 +1,20 @@
-
-import { motion, Variants } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { motion, Variants } from 'framer-motion';
+import { Sparkles } from 'lucide-react';
 
 const programs = [
-  { icon: "🥋", title: "Karate", desc: "Traditional strikes & self-discipline" },
-  { icon: "🦵", title: "Taekwondo", desc: "Dynamic kicks & sparring" },
-  { icon: "🥊", title: "Boxing", desc: "Build stamina & precision" },
-  { icon: "🥋", title: "Kickboxing", desc: "Cardio meets combat" },
-  { icon: "🤼", title: "Grappling", desc: "Ground control tactics" },
-  { icon: "🥋", title: "MMA", desc: "Striking & grappling combined" },
-  { icon: "🕉️", title: "Kalaripayattu", desc: "India’s ancient warrior art" },
-  { icon: "🛡️", title: "Self-Defense", desc: "Practical safety training" },
-  { icon: "🏋️", title: "Fat Loss", desc: "Burn fat, build agility" },
+  {
+    icon: '🥋',
+    title: 'Karate',
+    desc: 'Traditional strikes & self-discipline',
+  },
+  { icon: '🦵', title: 'Taekwondo', desc: 'Dynamic kicks & sparring' },
+  { icon: '🥊', title: 'Boxing', desc: 'Build stamina & precision' },
+  { icon: '🥋', title: 'Kickboxing', desc: 'Cardio meets combat' },
+  { icon: '🤼', title: 'Grappling', desc: 'Ground control tactics' },
+  { icon: '🥋', title: 'MMA', desc: 'Striking & grappling combined' },
+  { icon: '🕉️', title: 'Kalaripayattu', desc: 'India’s ancient warrior art' },
+  { icon: '🛡️', title: 'Self-Defense', desc: 'Practical safety training' },
+  { icon: '🏋️', title: 'Fat Loss', desc: 'Burn fat, build agility' },
 ];
 
 const containerVariants: Variants = {
@@ -29,7 +32,7 @@ const cardVariants: Variants = {
     opacity: 1,
     y: 0,
     transition: {
-      type: "spring",
+      type: 'spring',
       bounce: 0.4,
       duration: 0.6,
     },
@@ -38,7 +41,10 @@ const cardVariants: Variants = {
 
 export default function ProgramsSection() {
   return (
-    <section id="programs" className="bg-gray-900 py-10 xs:py-14 md:py-20 px-2 xs:px-3 md:px-4 relative overflow-hidden">
+    <section
+      id="programs"
+      className="bg-gray-900 py-10 xs:py-14 md:py-20 px-2 xs:px-3 md:px-4 relative overflow-hidden"
+    >
       {/* Decorative spark left top */}
       <Sparkles className="absolute left-1 top-4 w-14 h-14 text-yellow-400 opacity-10 z-0 pointer-events-none" />
       {/* Spark right bottom */}
@@ -67,8 +73,12 @@ export default function ProgramsSection() {
               variants={cardVariants}
             >
               <span className="text-4xl xs:text-5xl mb-3">{prog.icon}</span>
-              <h3 className="font-extrabold text-base xs:text-lg text-gray-800 mb-1 text-center">{prog.title}</h3>
-              <p className="text-gray-600 font-medium text-center text-sm xs:text-base">{prog.desc}</p>
+              <h3 className="font-extrabold text-base xs:text-lg text-gray-800 mb-1 text-center">
+                {prog.title}
+              </h3>
+              <p className="text-gray-600 font-medium text-center text-sm xs:text-base">
+                {prog.desc}
+              </p>
             </motion.div>
           ))}
         </motion.div>
