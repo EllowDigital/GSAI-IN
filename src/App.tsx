@@ -15,6 +15,7 @@ import Gallery from "./pages/admin/dashboard/Gallery";
 import Students from "./pages/admin/dashboard/Students";
 import NotFoundAdmin from "./pages/admin/NotFoundAdmin";
 import FeesManager from "./pages/admin/dashboard/FeesManager";
+import Events from "./pages/admin/dashboard/Events";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
                     <Route path="news" element={<News />} />
                     <Route path="gallery" element={<Gallery />} />
                     <Route path="students" element={<Students />} />
+                    <Route path="events" element={<Events />} />
                     <Route path="*" element={<NotFoundAdmin />} />
                   </Route>
                   <Route path="*" element={<NotFoundAdmin />} />
