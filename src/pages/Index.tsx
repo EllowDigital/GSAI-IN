@@ -10,6 +10,7 @@ import FaqSection from "../components/FaqSection";
 import LocationSection from "../components/LocationSection";
 import FooterSection from "../components/FooterSection";
 import NewsSection from "../components/NewsSection";
+import EventsSection from "../components/EventsSection";
 
 // Main page for Ghatak Sports Academy India™
 const Index = () => {
@@ -18,6 +19,7 @@ const Index = () => {
       <Navbar />
       <main className="pt-16 md:pt-20 flex-1 flex flex-col gap-0">
         <HeroSection />
+        <EventsSection />
         <AboutSection />
         <FounderSection />
         <ProgramsSection />
