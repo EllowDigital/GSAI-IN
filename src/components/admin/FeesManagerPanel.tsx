@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -120,7 +119,6 @@ export default function FeesManagerPanel() {
     <div>
       {/* Info / Debug Bar */}
       <FeesAdminInfoBar
-        adminEmail={adminEmail}
         isAdminInTable={isAdminInTable}
         canSubmitFeeEdits={canSubmitFeeEdits}
         rlsError={rlsError}
@@ -137,7 +135,7 @@ export default function FeesManagerPanel() {
           Export CSV
         </button>
       </div>
-      {/* Filters */}
+      {/* Filters - ensure only shown here, never anywhere else */}
       <FeesFilterBar
         filterMonth={filterMonth}
         filterYear={filterYear}
@@ -148,7 +146,7 @@ export default function FeesManagerPanel() {
         setFilterStatus={setFilterStatus}
         setFilterName={setFilterName}
       />
-      {/* Fee Table */}
+      {/* Fee Table - remove any filter duplicated in FeesTable itself */}
       <FeesTable
         students={students}
         fees={fees}
@@ -174,7 +172,6 @@ export default function FeesManagerPanel() {
           month={filterMonth}
           year={filterYear}
           adminDebug={{
-            adminEmail,
             isAdminInTable,
             canSubmitFeeEdits: canSubmitFeeEdits(),
           }}
