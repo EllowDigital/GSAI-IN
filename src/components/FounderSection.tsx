@@ -1,7 +1,30 @@
 
 import React from "react";
 import { Medal, User, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 const founderImg = "/assets/img/founder.webp";
+
+const containerVariants = {
+  offscreen: {},
+  onscreen: {
+    transition: {
+      staggerChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  offscreen: { opacity: 0, y: 30 },
+  onscreen: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      bounce: 0.3,
+      duration: 0.8,
+    },
+  },
+};
 
 export default function FounderSection() {
   return (
@@ -15,8 +38,17 @@ export default function FounderSection() {
       <div className="absolute top-6 right-5 xs:top-8 xs:right-16 opacity-25 z-0 pointer-events-none">
         <Sparkles className="w-16 h-16 text-yellow-300 animate-pulse" />
       </div>
-      <div className="max-w-3xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12 bg-white/90 shadow-lg rounded-2xl p-6 xs:p-8 md:p-10 z-10 relative">
-        <div className="relative w-full flex justify-center md:block md:w-auto">
+      <motion.div
+        className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12 bg-white/90 shadow-lg rounded-2xl p-6 xs:p-8 md:p-10 z-10 relative"
+        initial="offscreen"
+        whileInView="onscreen"
+        viewport={{ once: true, amount: 0.3 }}
+        variants={containerVariants}
+      >
+        <motion.div
+          className="relative w-full flex justify-center md:block md:w-auto"
+          variants={itemVariants}
+        >
           <span className="absolute -top-4 -left-4 xs:-top-6 xs:-left-6 z-10 hidden md:block">
             <Medal size={42} className="text-yellow-400 drop-shadow" />
           </span>
@@ -31,9 +63,9 @@ export default function FounderSection() {
           <span className="absolute -bottom-3 -right-2 xs:-bottom-4 xs:-right-4 z-0">
             <Sparkles className="text-red-300/60 w-8 h-8 md:w-10 md:h-10" />
           </span>
-        </div>
+        </motion.div>
         {/* Founder Details */}
-        <div className="flex-1 w-full md:w-auto">
+        <motion.div className="flex-1 w-full md:w-auto" variants={itemVariants}>
           <div className="flex items-center justify-center md:justify-start mb-2 xs:mb-3 gap-2">
             <User className="text-yellow-400" size={24} />
             <h2 className="text-2xl xs:text-3xl md:text-4xl font-extrabold text-gray-800 tracking-tight text-center md:text-left relative">
@@ -62,8 +94,8 @@ export default function FounderSection() {
             <span className="font-bold text-yellow-600">Champion values, lifelong growth:</span>{" "}
             Your journey to strength, honor, and self-mastery begins at <strong>Ghatak Sports Academy India™</strong>.
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }

@@ -14,6 +14,15 @@ const programs = [
   { icon: "🏋️", title: "Fat Loss", desc: "Burn fat, build agility" },
 ];
 
+const containerVariants = {
+  offscreen: {},
+  onscreen: {
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
 const cardVariants = {
   offscreen: { opacity: 0, y: 40 },
   onscreen: {
@@ -21,8 +30,8 @@ const cardVariants = {
     y: 0,
     transition: {
       type: "spring" as const,
-      bounce: 0.36,
-      duration: 0.5,
+      bounce: 0.4,
+      duration: 0.6,
     },
   },
 };
@@ -44,22 +53,25 @@ export default function ProgramsSection() {
             </span>
           </h2>
         </div>
-        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-3 xs:gap-5 md:gap-8">
-          {programs.map((prog, i) => (
+        <motion.div
+          className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-3 xs:gap-5 md:gap-8"
+          initial="offscreen"
+          whileInView="onscreen"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
+          {programs.map((prog) => (
             <motion.div
               key={prog.title}
-              className="bg-white rounded-2xl shadow-md p-5 xs:p-7 flex flex-col items-center justify-center transition-transform hover:scale-105 hover:shadow-lg cursor-pointer border-t-4 border-yellow-200/50 hover:border-yellow-400 duration-150"
-              initial="offscreen"
-              whileInView="onscreen"
-              viewport={{ once: true, amount: 0.35 }}
+              className="bg-white rounded-2xl shadow-lg p-5 xs:p-7 flex flex-col items-center justify-center transition-transform hover:scale-105 hover:shadow-xl cursor-pointer border-t-4 border-yellow-200/50 hover:border-yellow-400 duration-200"
               variants={cardVariants}
             >
-              <span className="text-3xl xs:text-4xl mb-2">{prog.icon}</span>
+              <span className="text-4xl xs:text-5xl mb-3">{prog.icon}</span>
               <h3 className="font-extrabold text-base xs:text-lg text-gray-800 mb-1 text-center">{prog.title}</h3>
-              <p className="text-gray-500 font-medium text-center text-xs xs:text-sm">{prog.desc}</p>
+              <p className="text-gray-600 font-medium text-center text-sm xs:text-base">{prog.desc}</p>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
