@@ -14,6 +14,7 @@ export default function AdminLogin() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
+    // If already admin, redirect to dashboard. (no need to ever show login when logged in)
     if (isAdmin) {
       navigate("/admin/dashboard", { replace: true });
     }
@@ -22,7 +23,7 @@ export default function AdminLogin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    await signIn(email.trim(), password);
+    await signIn(email.trim(), password); // signIn already triggers admin/dashboard redirect
   };
 
   return (
@@ -79,4 +80,3 @@ export default function AdminLogin() {
     </div>
   );
 }
-
