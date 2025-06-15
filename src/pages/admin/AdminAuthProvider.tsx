@@ -103,21 +103,6 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
     setSession(null);
     setUserEmail(null);
 
-    // Unregister all service workers and delete all caches to ensure no offline page is served
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(registrations => {
-        for (let reg of registrations) {
-          reg.unregister();
-        }
-      });
-    }
-    if ('caches' in window) {
-      // Clear all caches
-      caches.keys().then((names) => {
-        for (let name of names) caches.delete(name);
-      });
-    }
-
     toast.success("Logged out.");
     console.log("[Admin SignOut]");
     // Hard redirect to avoid cached/restricted views
