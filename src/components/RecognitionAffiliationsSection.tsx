@@ -35,9 +35,20 @@ export default function RecognitionAffiliationsSection() {
   return (
     <section
       id="recognitions"
-      className="py-14 px-2 xs:px-4 md:px-6 bg-gradient-to-br from-yellow-50 via-white to-red-50 border-t border-b border-yellow-100"
+      className="py-14 px-2 xs:px-4 md:px-6 bg-gradient-to-br from-yellow-50 via-white to-red-50 border-t border-b border-yellow-100 relative overflow-hidden"
     >
-      <div className="max-w-6xl mx-auto">
+      {/* Decorative BG sparkles and lines */}
+      <div className="absolute left-2 top-8">
+        <span className="block w-14 h-1 bg-gradient-to-r from-yellow-300 to-yellow-50 rounded-full mb-1 opacity-20" />
+      </div>
+      <div className="absolute right-0 bottom-8">
+        <span className="block w-14 h-1 bg-gradient-to-l from-red-300 to-yellow-100 rounded-full mb-1 opacity-20" />
+      </div>
+      <div className="absolute left-10 top-1/2 -translate-y-1/2 opacity-15 z-0 pointer-events-none">
+        <span className="block w-12 h-12 rounded-full bg-yellow-300 blur-2xl" />
+      </div>
+      {/* Section content */}
+      <div className="max-w-6xl mx-auto relative z-10">
         <div className="flex flex-col items-center mb-7 gap-2">
           <div className="flex items-center gap-3 justify-center w-full">
             <span className="text-3xl md:text-4xl text-yellow-500">
@@ -45,8 +56,9 @@ export default function RecognitionAffiliationsSection() {
                 🏆
               </span>
             </span>
-            <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-500 tracking-tight drop-shadow text-center w-full">
+            <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-500 tracking-tight drop-shadow text-center w-full relative">
               Recognitions &amp; Affiliations
+              <span className="block h-1 w-14 bg-gradient-to-r from-yellow-400 to-red-300 rounded-full mx-auto mt-1" />
             </h2>
           </div>
           <p className="text-base md:text-lg font-medium text-gray-500 text-center max-w-2xl">

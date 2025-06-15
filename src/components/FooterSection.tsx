@@ -1,4 +1,3 @@
-
 import { Youtube } from "lucide-react";
 
 const quickLinks = [
@@ -10,8 +9,11 @@ const quickLinks = [
 
 export default function FooterSection() {
   return (
-    <footer className="bg-gray-950 text-white mt-8 xs:mt-16 border-t border-gray-900 font-montserrat">
-      <div className="max-w-6xl mx-auto px-3 md:px-4 py-10 flex flex-col md:flex-row gap-8 md:gap-0 justify-between">
+    <footer className="bg-gradient-to-t from-gray-950 via-gray-900 to-gray-950 text-white mt-8 xs:mt-16 border-t border-gray-900 font-montserrat relative overflow-hidden">
+      {/* Decorative sparkle */}
+      <span className="absolute left-8 top-2 w-9 h-9 bg-yellow-200/30 rounded-full blur-2xl pointer-events-none" />
+      <span className="absolute right-8 bottom-2 w-10 h-10 bg-yellow-400/20 rounded-full blur-2xl pointer-events-none" />
+      <div className="max-w-6xl mx-auto px-3 md:px-4 py-10 flex flex-col md:flex-row gap-8 md:gap-0 justify-between relative z-10">
         {/* Column 1: About/Brand */}
         <div className="mb-6 md:mb-0 flex-1 min-w-[180px]">
           <div className="text-2xl font-bold text-yellow-400 mb-2 tracking-wider">
