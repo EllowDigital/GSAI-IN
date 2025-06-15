@@ -7,14 +7,14 @@ export default function AboutSection() {
     <section
       id="about"
       className="relative px-2 xs:px-4 py-14 xs:py-20 md:py-28
-        bg-gradient-to-br from-yellow-50 via-[#ffe7ba] via-15% to-red-50 border-b border-gray-100
+        bg-gradient-to-br from-white via-yellow-50 to-red-50 border-b border-gray-100
         overflow-hidden"
     >
       {/* Soft Sparkle BG */}
       <div className="pointer-events-none absolute inset-0 z-0 flex justify-end items-start">
-        <Sparkles className="opacity-20 text-yellow-300 mt-3 mr-8 xs:mr-14 md:mr-36 w-20 h-20 md:w-32 md:h-32" />
+        <Sparkles className="opacity-20 text-yellow-200 mt-3 mr-8 xs:mr-14 md:mr-36 w-20 h-20 md:w-32 md:h-32" />
       </div>
-      <div className="absolute inset-0 w-full h-full bg-gradient-radial from-yellow-100/30 via-transparent to-white/0 pointer-events-none z-0" />
+      <div className="absolute inset-0 w-full h-full bg-gradient-radial from-yellow-50/30 via-transparent to-white/0 pointer-events-none z-0" />
 
       {/* Decorative Icon */}
       <div className="absolute top-5 right-6 xs:top-4 xs:right-10 opacity-10 pointer-events-none hidden md:block">
