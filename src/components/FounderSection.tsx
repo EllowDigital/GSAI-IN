@@ -1,10 +1,10 @@
 
 import React from "react";
 import { Medal, User, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 const founderImg = "/assets/img/founder.webp";
 
-const containerVariants = {
+const containerVariants: Variants = {
   offscreen: {},
   onscreen: {
     transition: {
@@ -13,7 +13,7 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   offscreen: { opacity: 0, y: 30 },
   onscreen: {
     opacity: 1,

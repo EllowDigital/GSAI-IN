@@ -1,5 +1,5 @@
 
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Sparkles } from "lucide-react";
 
 const programs = [
@@ -14,7 +14,7 @@ const programs = [
   { icon: "🏋️", title: "Fat Loss", desc: "Burn fat, build agility" },
 ];
 
-const containerVariants = {
+const containerVariants: Variants = {
   offscreen: {},
   onscreen: {
     transition: {
@@ -23,13 +23,13 @@ const containerVariants = {
   },
 };
 
-const cardVariants = {
+const cardVariants: Variants = {
   offscreen: { opacity: 0, y: 40 },
   onscreen: {
     opacity: 1,
     y: 0,
     transition: {
-      type: "spring" as const,
+      type: "spring",
       bounce: 0.4,
       duration: 0.6,
     },
