@@ -1,6 +1,6 @@
-
 import React, { useState } from "react";
 import { Menu, X, LogIn } from "lucide-react";
+import PWAInstallButton from "./PWAInstallButton";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -71,6 +71,7 @@ export default function Navbar() {
           >
             <LogIn className="w-5 h-5" /> <span className="hidden sm:inline">Admin Panel</span>
           </a>
+          <PWAInstallButton />
         </div>
         {/* Tablet/Mid-Size Horizontal Nav */}
         <div className="hidden md:flex lg:hidden gap-2 xs:gap-3 items-center">
@@ -110,6 +111,7 @@ export default function Navbar() {
                 >
                   <LogIn className="w-5 h-5" /> Admin Panel
                 </a>
+                <PWAInstallButton />
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -162,6 +164,7 @@ export default function Navbar() {
                 >
                   <LogIn className="w-5 h-5" /> Admin Panel
                 </a>
+                <PWAInstallButton />
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
