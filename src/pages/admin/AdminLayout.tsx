@@ -6,12 +6,10 @@ import { AppSidebar } from "@/components/admin/AppSidebar";
 import AdminTopbar from "@/components/admin/AdminTopbar";
 import AdminBackToTopButton from "@/components/admin/AdminBackToTopButton";
 
+const SIDEBAR_WIDTH = "16rem"; // Equal to AppSidebar width
+
 /**
- * Admin Layout with fully responsive sidebar:
- * - Sidebar is sticky and flush left, with max height and scrollable if needed.
- * - Uses Flexbox for app shell.
- * - Sidebar overlays as a drawer on mobile.
- * - Main content adapts and has consistent padding.
+ * Admin Layout with left/top fixed sidebar.
  */
 const AdminLayout: React.FC = () => {
   const { isAdmin, isLoading } = useAdminAuth();
@@ -37,21 +35,32 @@ const AdminLayout: React.FC = () => {
 
   return (
     <SidebarProvider>
-      <div className="
-        min-h-screen w-full flex flex-row bg-gradient-to-br from-yellow-50/70 via-white to-yellow-100 font-montserrat
-        overflow-hidden
-      ">
-        {/* Sidebar: sticky, flush left, scrollable if needed */}
-        <aside className="
-          hidden md:flex sticky top-0 z-30 h-screen min-h-screen
-        ">
+      <div
+        className="
+          min-h-screen w-full flex flex-row bg-gradient-to-br from-yellow-50/70 via-white to-yellow-100 font-montserrat
+          overflow-hidden
+        "
+      >
+        {/* Sidebar: FIXED, flush left/top, always visible on desktop */}
+        <aside
+          className={`
+            hidden md:block
+            fixed top-0 left-0 z-30
+            h-screen
+            w-[${SIDEBAR_WIDTH}]
+            bg-transparent
+          `}
+          style={{
+            width: SIDEBAR_WIDTH,
+          }}
+        >
           <AppSidebar />
         </aside>
-        {/* Mobile sidebar/hamburger trigger: show only on mobile */}
+        {/* Mobile sidebar trigger (unchanged) */}
         <div className="md:hidden fixed top-3 left-3 z-40">
           <SidebarTrigger />
         </div>
-        {/* Main content area */}
+        {/* Main content: has left margin == sidebar width, so it never underlaps */}
         <main
           className="
             flex-1 min-w-0 max-w-full flex flex-col
@@ -60,6 +69,12 @@ const AdminLayout: React.FC = () => {
             transition-all
             overflow-x-auto
           "
+          style={{
+            marginLeft: undefined,
+            paddingLeft: undefined,
+            // On desktop, pad so main content doesn't go under fixed sidebar
+            ...(window.innerWidth >= 768 ? { marginLeft: SIDEBAR_WIDTH } : {}),
+          }}
         >
           <AdminTopbar />
           <section
@@ -69,7 +84,11 @@ const AdminLayout: React.FC = () => {
               xl:mx-auto
               flex flex-col gap-4
               transition-all duration-300
+              overflow-y-auto
             "
+            style={{
+              minHeight: "calc(100vh - 56px)", // helps fill viewport
+            }}
           >
             <Outlet />
           </section>
