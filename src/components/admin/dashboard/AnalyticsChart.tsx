@@ -21,7 +21,7 @@ type Props = {
 
 export default function AnalyticsChart({ analyticsData }: Props) {
   return (
-    <section className="rounded-2xl shadow bg-white/90 px-2 xs:px-4 sm:px-6 py-5 mb-8 sm:mb-10">
+    <section className="rounded-2xl shadow bg-white/90 px-2 xs:px-4 sm:px-6 py-5 h-full">
       <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-yellow-600">
         Analytics
       </h2>
