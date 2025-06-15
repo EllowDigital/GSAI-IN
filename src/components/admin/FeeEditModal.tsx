@@ -26,7 +26,6 @@ export default function FeeEditModal({
   const [carryForward, setCarryForward] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
 
-  // Compute carry forward: previous month's unpaid
   useEffect(() => {
     async function fetchPrevious() {
       if (!student?.id) return;
@@ -45,19 +44,22 @@ export default function FeeEditModal({
     fetchPrevious();
   }, [student?.id, month, year, open]);
 
-  const form = useForm({
+  const form = useForm<{
+    monthly_fee: number;
+    paid_amount: number;
+    notes: string;
+  }>({
     defaultValues: {
       monthly_fee: fee?.monthly_fee ?? student?.default_monthly_fee ?? 2000,
-      paid_amount: fee?.paid_amount ?? "",
+      paid_amount: fee?.paid_amount ?? 0,
       notes: fee?.notes ?? "",
     }
   });
 
-  // Refill form with provided fee data
   useEffect(() => {
     form.reset({
       monthly_fee: fee?.monthly_fee ?? student?.default_monthly_fee ?? 2000,
-      paid_amount: fee?.paid_amount ?? "",
+      paid_amount: fee?.paid_amount ?? 0,
       notes: fee?.notes ?? "",
     });
   }, [fee, student, open]);
@@ -71,8 +73,7 @@ export default function FeeEditModal({
     return bal;
   };
 
-  // Save handler
-  async function onSubmit(values: any) {
+  async function onSubmit(values: { monthly_fee: number; paid_amount: number; notes: string }) {
     if (!student || typeof student.id !== "string") {
       toast({
         title: "Student data missing",
@@ -90,15 +91,13 @@ export default function FeeEditModal({
       return;
     }
     setLoading(true);
-    // Build mutation: upsert by unique constraint!
     let result, error;
     if (fee && fee.id) {
-      // Update
       ({ error, data: result } = await supabase
         .from("fees")
         .update({
-          monthly_fee: monthly_fee,
-          paid_amount: paid_amount,
+          monthly_fee,
+          paid_amount,
           balance_due: calcBalance(),
           notes: values.notes || null,
           updated_at: new Date().toISOString()
@@ -107,7 +106,6 @@ export default function FeeEditModal({
         .select()
         .maybeSingle());
     } else {
-      // Insert/upsert
       ({ error, data: result } = await supabase
         .from("fees")
         .upsert([{
@@ -161,11 +159,17 @@ export default function FeeEditModal({
           </div>
           <div>
             <label className="text-xs font-semibold">Monthly Fee</label>
-            <Input type="number" {...form.register("monthly_fee", { required: true, min: 0 })} />
+            <Input
+              type="number"
+              {...form.register("monthly_fee", { required: true, min: 0, valueAsNumber: true })}
+            />
           </div>
           <div>
             <label className="text-xs font-semibold">Paid Amount</label>
-            <Input type="number" {...form.register("paid_amount", { required: true, min: 0 })} />
+            <Input
+              type="number"
+              {...form.register("paid_amount", { required: true, min: 0, valueAsNumber: true })}
+            />
           </div>
           {carryForward ? (
             <div className="text-xs text-yellow-800">

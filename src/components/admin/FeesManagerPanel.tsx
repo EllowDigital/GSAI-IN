@@ -79,7 +79,7 @@ export default function FeesManagerPanel() {
     canSubmitFeeEdits,
   } = useAdminRLS();
 
-  // Fetch all students (for sidebar and to ensure all included in table even with no fee entry)
+  // Fetch all students
   const { data: students, isLoading: loadingStudents } = useQuery({
     queryKey: ["students"],
     queryFn: async () => {
@@ -91,7 +91,7 @@ export default function FeesManagerPanel() {
     },
   });
 
-  // Fetch all fees for selected month/year, plus whole history for payment drawer
+  // Fetch all fees for selected month/year
   const { data: fees, isLoading: loadingFees } = useQuery({
     queryKey: ["fees", filterMonth, filterYear],
     queryFn: async () => {
@@ -103,10 +103,10 @@ export default function FeesManagerPanel() {
       if (error) throw error;
       return data || [];
     },
-    refetchInterval: 2000, // Near-realtime sync!
+    refetchInterval: 2000,
   });
 
-  // For full history drawer, fetch *all* fees per student
+  // For history, fetch *all* fees per student
   const { data: allFees } = useQuery({
     queryKey: ["fees", "all"],
     queryFn: async () => {
@@ -120,7 +120,7 @@ export default function FeesManagerPanel() {
     refetchInterval: historyDrawerOpen ? 2000 : false,
   });
 
-  // Map students/fees for CSV: Reuse rows creation from FeesTable logic
+  // Map students/fees for CSV: merge rows
   const rows = Array.isArray(students)
     ? students
         .map((student) => {
