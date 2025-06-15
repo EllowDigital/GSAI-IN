@@ -7,7 +7,6 @@ import {
   BookOpen,
   Newspaper,
   Image,
-  List,
   Calendar,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,7 +31,10 @@ export default function FastStats() {
       setLoading(true);
       const results: Record<string, number> = {};
       for (const ent of entities) {
-        const { count } = await supabase.from(ent.table).select("id", { count: "exact", head: true });
+        // table param must be one of the fixed string values, so we must typecast it here
+        const { count } = await supabase
+          .from(ent.table as "fees" | "students" | "blogs" | "news" | "gallery_images" | "events")
+          .select("id", { count: "exact", head: true });
         results[ent.name] = count ?? 0;
       }
       if (!ignore) {
@@ -41,7 +43,6 @@ export default function FastStats() {
       }
     }
     fetchCounts();
-    // Optionally, add polling or subscibe to changes for live stats
     return () => { ignore = true; };
   }, []);
 

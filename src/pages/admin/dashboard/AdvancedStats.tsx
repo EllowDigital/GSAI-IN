@@ -17,8 +17,8 @@ function useAdvancedStats() {
       {
         const { data: fees } = await supabase.from("fees").select("*");
         if (Array.isArray(fees)) {
-          paidSum = fees.filter(f => f.status === "paid").reduce((sum, f) => sum + Number(f.amount ?? 0), 0);
-          unpaidCount = fees.filter(f => f.status !== "paid").length;
+          paidSum = fees.filter((f: any) => f.status === "paid").reduce((sum: number, f: any) => sum + Number(f.paid_amount ?? 0), 0);
+          unpaidCount = fees.filter((f: any) => f.status !== "paid").length;
           totalFees = fees.length;
         }
       }
