@@ -30,9 +30,7 @@ export default function AboutSection() {
         <div className="w-full md:w-3/5 space-y-5 xs:space-y-7">
           <p className="text-base xs:text-lg leading-relaxed text-justify text-gray-800 font-semibold">
             <span className="text-yellow-500 font-bold">Empowering Champions Since Inception:</span>{" "}
-            Ghatak Sports Academy India™ (GSAI) is a{" "}
-            <span className="text-yellow-400 font-bold">Government-recognized</span> and{" "}
-            <span className="text-red-600 font-bold">ISO 9001:2015 certified</span> institution dedicated to building confident, disciplined, and skilled individuals through martial arts.
+            We are dedicated to building confident, disciplined, and skilled individuals through the transformative power of martial arts and personal development.
           </p>
           <ul className="list-none pl-0 mb-3 flex flex-col gap-2">
             <li className="flex items-start">
