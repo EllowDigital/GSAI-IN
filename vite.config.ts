@@ -1,3 +1,4 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -68,9 +69,16 @@ export default defineConfig(({ mode }) => ({
         globIgnores: ["**/node_modules/**/*"],
         navigateFallback: "/offline.html",
         runtimeCaching: [
-          // Strongly exclude all admin pages from cache (including base and nested)
+          // STRONGLY EXCLUDE all /admin pages (base and nested) from caching!
           {
-            urlPattern: /^\/admin($|\/.*)/,
+            urlPattern: ({ url }) => {
+              // Only match same-origin requests to /admin, /admin/, /admin/login, /admin/anything
+              // Handles both with and without trailing slash, and nested admin routes
+              return (
+                url.origin === self.location.origin &&
+                /^\/admin(\/|$)/.test(url.pathname)
+              );
+            },
             handler: "NetworkOnly",
             options: {
               cacheName: "no-cache-admin",
