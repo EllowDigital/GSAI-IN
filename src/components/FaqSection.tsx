@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { Help } from "lucide-react";
+import { help as Help } from "lucide-react";
 
 const faqs = [
   {
