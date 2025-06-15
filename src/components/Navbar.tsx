@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Menu, X, LogIn } from "lucide-react";
 
@@ -14,6 +15,18 @@ const navLinks = [
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Trap scroll underneath menus
+  React.useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
 
   return (
     <nav className="w-full fixed z-50 top-0 left-0 bg-white/90 backdrop-blur border-b border-yellow-100 shadow-md transition-all">
@@ -62,11 +75,11 @@ export default function Navbar() {
               {link.name}
             </a>
           ))}
-          {/* Hamburger menu for remaining + admin */}
+          {/* Hamburger menu for remaining + admin (tablet) */}
           <button
             className="p-2 rounded hover:bg-yellow-100 transition h-10 w-10 flex items-center justify-center"
             onClick={() => setMobileOpen((p) => !p)}
-            aria-label="Toggle mobile navigation"
+            aria-label="Toggle menu"
           >
             {mobileOpen ? <X size={26} /> : <Menu size={26} />}
           </button>
@@ -75,26 +88,36 @@ export default function Navbar() {
         <button
           className="md:hidden p-2 rounded focus:outline-none text-gray-800 hover:bg-yellow-100 transition h-10 w-10 flex items-center justify-center"
           onClick={() => setMobileOpen((p) => !p)}
-          aria-label="Open menu"
+          aria-label="Open mobile menu"
         >
           {mobileOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
       </div>
-      {/* Mobile & Tablet Slide Panel */}
-      {(mobileOpen && (
-        <div className="md:hidden bg-white border-t border-yellow-200 animate-fade-in shadow-lg">
-          <div className="flex flex-col py-5 px-4 xs:px-6 gap-2 xs:gap-4">
-            <div className="flex items-center gap-2 xs:gap-3 mb-2">
-              <img
-                src="/assets/img/logo.webp"
-                alt="GSAI Logo"
-                className="w-8 h-8 xs:w-9 xs:h-9 rounded-full border border-yellow-400"
-              />
-              <span className="font-bold text-base text-black">GSAI</span>
-              <span className="text-xs font-semibold text-yellow-700 ml-2 xs:ml-3 border-l border-yellow-200 pl-1 xs:pl-2">
-                Ghatak Sports Academy India
-              </span>
-            </div>
+      {/* Menus */}
+      {/* Mobile: <md */}
+      <div className={`
+        fixed inset-0 z-40 flex md:hidden transition
+        ${mobileOpen ? "visible opacity-100" : "invisible opacity-0"}
+      `} style={{ pointerEvents: mobileOpen ? "auto" : "none" }}>
+        <div
+          className={`
+            w-full max-w-xs bg-white border-r border-yellow-200 shadow-lg h-full overflow-y-auto flex flex-col
+            transform transition-transform duration-300
+            ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
+          `}
+        >
+          <div className="flex items-center gap-2 xs:gap-3 mb-2 px-4 pt-5">
+            <img
+              src="/assets/img/logo.webp"
+              alt="GSAI Logo"
+              className="w-8 h-8 xs:w-9 xs:h-9 rounded-full border border-yellow-400"
+            />
+            <span className="font-bold text-base text-black">GSAI</span>
+            <span className="text-xs font-semibold text-yellow-700 ml-2 xs:ml-3 border-l border-yellow-200 pl-1 xs:pl-2">
+              Ghatak Sports Academy India
+            </span>
+          </div>
+          <div className="flex flex-col py-2 px-4 xs:px-6 gap-2 xs:gap-4">
             {navLinks.map((link) => (
               <a
                 key={link.name}
@@ -114,16 +137,42 @@ export default function Navbar() {
             </a>
           </div>
         </div>
-      )) ||
-        // Expanded tablet dropdown for mid-size menu
-        (mobileOpen && (
-          <div className="hidden md:flex lg:hidden flex-col bg-white border-t border-yellow-200 animate-fade-in shadow-lg px-4 pt-2 pb-4">
-            {/* Display remaining links and admin */}
+        {/* overlay - clicking closes */}
+        <div
+          className={`flex-1 bg-black/30 transition`}
+          onClick={() => setMobileOpen(false)}
+          aria-label="Close mobile menu"
+        />
+      </div>
+      {/* Tablet-only drawer: md <= width < lg */}
+      <div className={`
+        fixed inset-0 z-40 hidden md:flex lg:hidden transition
+        ${mobileOpen ? "visible opacity-100" : "invisible opacity-0"}
+      `} style={{ pointerEvents: mobileOpen ? "auto" : "none" }}>
+        <div
+          className={`
+            ml-auto w-full max-w-xs bg-white shadow-xl border-l border-yellow-200 h-full overflow-y-auto flex flex-col
+            transform transition-transform duration-300
+            ${mobileOpen ? "translate-x-0" : "translate-x-full"}
+          `}
+        >
+          <div className="flex items-center gap-2 xs:gap-3 mb-2 px-4 pt-5">
+            <img
+              src="/assets/img/logo.webp"
+              alt="GSAI Logo"
+              className="w-8 h-8 xs:w-9 xs:h-9 rounded-full border border-yellow-400"
+            />
+            <span className="font-bold text-base text-black">GSAI</span>
+            <span className="text-xs font-semibold text-yellow-700 ml-2 xs:ml-3 border-l border-yellow-200 pl-1 xs:pl-2">
+              Ghatak Sports Academy India
+            </span>
+          </div>
+          <div className="flex flex-col py-2 px-4 xs:px-6 gap-2 xs:gap-4">
             {navLinks.slice(4).map((link) => (
               <a
                 key={link.name}
                 href={link.href}
-                className="text-gray-800 font-medium py-2 rounded hover:bg-yellow-100 transition text-sm xs:text-base px-2"
+                className="text-gray-800 font-medium py-2 rounded hover:bg-yellow-100 transition text-sm xs:text-base px-2 w-full"
                 onClick={() => setMobileOpen(false)}
               >
                 {link.name}
@@ -137,7 +186,15 @@ export default function Navbar() {
               <LogIn className="w-5 h-5" /> Admin Panel
             </a>
           </div>
-        ))}
+        </div>
+        {/* overlay - clicking closes */}
+        <div
+          className={`flex-1 bg-black/30 transition`}
+          onClick={() => setMobileOpen(false)}
+          aria-label="Close tablet menu"
+        />
+      </div>
     </nav>
   );
 }
+
