@@ -1,32 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Tables } from "@/integrations/supabase/types";
+
+import React from "react";
 import Spinner from "@/components/ui/spinner";
 import { motion, AnimatePresence } from "framer-motion";
-
-type EventRow = Tables<"events">;
+import { useEventsQuery } from "@/hooks/useEventsQuery";
 
 const EventsSection: React.FC = () => {
-  const [events, setEvents] = useState<EventRow[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchEvents = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("events")
-        .select("*")
-        .order("from_date", { ascending: false })
-        .limit(6);
-      if (error) {
-        console.error("Error fetching events:", error);
-      }
-      setEvents(data ?? []);
-      setLoading(false);
-    };
-
-    fetchEvents();
-  }, []);
+  const { data: events, isLoading, error, isFetching } = useEventsQuery();
 
   return (
     <section className="w-full py-14 px-2 xs:px-4 md:px-8 bg-gradient-to-br from-yellow-50 via-white to-red-50 border-b border-yellow-100" id="events">
@@ -34,11 +13,22 @@ const EventsSection: React.FC = () => {
         <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold mb-7 text-yellow-500 text-center font-montserrat tracking-tight drop-shadow">
           Upcoming Events & Highlights
         </h2>
-        {loading ? (
+        {(isLoading || isFetching) ? (
           <div className="flex justify-center py-12">
             <Spinner />
           </div>
-        ) : events.length === 0 ? (
+        ) : error ? (
+          <div className="text-center text-red-500 py-16">
+            <div className="font-semibold mb-2">Could not load events.</div>
+            <div className="text-sm">{error.message}</div>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-6 inline-block px-4 py-2 bg-red-100 text-red-800 rounded-lg shadow hover:bg-red-200 transition"
+            >
+              Retry Now
+            </button>
+          </div>
+        ) : events && events.length === 0 ? (
           <div className="text-center text-muted-foreground mt-10 mb-6 text-lg font-semibold py-12">
             No events available at the moment.<br />
             <span className="text-yellow-400">Stay tuned for new updates!</span>
@@ -46,7 +36,7 @@ const EventsSection: React.FC = () => {
         ) : (
           <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
             <AnimatePresence>
-              {events.map((event, idx) => (
+              {events?.map((event, idx) => (
                 <motion.div
                   key={event.id}
                   className="rounded-2xl shadow-xl border bg-white overflow-hidden flex flex-col hover:scale-[1.03] transition-transform duration-200 group"
