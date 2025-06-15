@@ -1,3 +1,4 @@
+
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
@@ -9,11 +10,13 @@ import {
   Users,
   Calendar,
   LogOut,
+  Globe,
 } from "lucide-react";
 import { useAdminAuth } from "@/pages/admin/AdminAuthProvider";
 
 // Modern sidebar nav items
 const navItems = [
+  { title: "Homepage", url: "/", icon: Globe },
   { title: "Dashboard", url: "/admin/dashboard", icon: Home },
   { title: "Fees", url: "/admin/dashboard/fees", icon: BadgeDollarSign },
   { title: "Blogs", url: "/admin/dashboard/blogs", icon: BookOpen },
@@ -65,6 +68,7 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
             <li key={title}>
               <NavLink
                 to={url}
+                end={url === "/"}
                 onClick={() => {
                   // Close sidebar on mobile after nav click
                   if (window.innerWidth < 768 && setOpen) setOpen(false);
