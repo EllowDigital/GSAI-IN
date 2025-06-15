@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   Dialog,
@@ -92,12 +93,22 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
         const { data, error } = await supabase.storage
           .from("events")
           .upload(filename, imageFile, { upsert: true });
-        if (error) throw error;
+        if (error) {
+          toast.error("Image upload failed: " + error.message);
+          setLoading(false);
+          console.error("Image upload error:", error);
+          return; // Abort submission if the upload fails
+        }
         const { data: publicUrlData } = supabase.storage
           .from("events")
           .getPublicUrl(filename);
         if (publicUrlData?.publicUrl) {
           image_url = publicUrlData.publicUrl;
+        } else {
+          toast.error("Failed to retrieve image URL after upload.");
+          setLoading(false);
+          console.error("Missing publicUrl after upload");
+          return;
         }
       }
 
@@ -119,8 +130,10 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
           })
           .eq("id", editingEvent.id);
         if (error) {
+          toast.error("Failed to update event: " + error.message);
           console.error("DEBUG: Update error:", error);
-          throw error;
+          setLoading(false);
+          return;
         }
         toast.success("Event updated.");
       } else {
@@ -137,14 +150,17 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
           },
         ]);
         if (error) {
+          toast.error("Failed to create event: " + error.message);
           console.error("DEBUG: Insert error:", error);
-          throw error;
+          setLoading(false);
+          return;
         }
         toast.success("Event created.");
       }
       onOpenChange(false);
     } catch (err: any) {
       toast.error("Failed to save event.", err.message);
+      console.error("UNCAUGHT ERROR in event submit:", err);
     }
     setLoading(false);
   };
@@ -283,3 +299,4 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
 };
 
 export default AdminEventFormModal;
+
