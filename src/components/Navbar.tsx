@@ -20,10 +20,10 @@ const navLinks = [
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Trap scroll underneath menus
+  // Trap scroll underneath menus (removed for dropdown)
   React.useEffect(() => {
     if (mobileOpen) {
-      document.body.style.overflow = "hidden";
+      // No scroll trap for dropdown
     } else {
       document.body.style.overflow = "";
     }
@@ -31,6 +31,8 @@ export default function Navbar() {
       document.body.style.overflow = "";
     };
   }, [mobileOpen]);
+
+  // Accessible close on route change – not handled here, but could listen for hash changes.
 
   return (
     <nav className="w-full fixed z-50 top-0 left-0 bg-white/90 backdrop-blur border-b border-yellow-100 shadow-md transition-all">
@@ -90,7 +92,7 @@ export default function Navbar() {
                 <Menu size={26} />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="z-50 mt-2 mr-2 w-56 bg-white rounded shadow-xl border border-yellow-100">
+            <DropdownMenuContent className="z-[60] mt-2 mr-2 w-56 bg-white rounded shadow-xl border border-yellow-100">
               <div className="flex flex-col py-2 px-2 gap-1">
                 {navLinks.slice(4).map((link) => (
                   <a
@@ -112,67 +114,55 @@ export default function Navbar() {
           </DropdownMenu>
         </div>
         {/* Mobile Hamburger */}
-        <button
-          className="md:hidden p-2 rounded focus:outline-none text-gray-800 hover:bg-yellow-100 transition h-10 w-10 flex items-center justify-center"
-          onClick={() => setMobileOpen((p) => !p)}
-          aria-label="Open mobile menu"
-        >
-          {mobileOpen ? <X size={28} /> : <Menu size={28} />}
-        </button>
-      </div>
-      {/* Menus */}
-      {/* Mobile: <md */}
-      <div className={`
-        fixed inset-0 z-40 flex md:hidden transition
-        ${mobileOpen ? "visible opacity-100" : "invisible opacity-0"}
-      `} style={{ pointerEvents: mobileOpen ? "auto" : "none" }}>
-        <div
-          className={`
-            w-full max-w-xs bg-white border-r border-yellow-200 shadow-lg h-full overflow-y-auto flex flex-col
-            transform transition-transform duration-300
-            ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
-          `}
-        >
-          <div className="flex items-center gap-2 xs:gap-3 mb-2 px-4 pt-5">
-            <img
-              src="/assets/img/logo.webp"
-              alt="GSAI Logo"
-              className="w-8 h-8 xs:w-9 xs:h-9 rounded-full border border-yellow-400"
-            />
-            <span className="font-bold text-base text-black">GSAI</span>
-            <span className="text-xs font-semibold text-yellow-700 ml-2 xs:ml-3 border-l border-yellow-200 pl-1 xs:pl-2">
-              Ghatak Sports Academy India
-            </span>
-          </div>
-          <div className="flex flex-col py-2 px-4 xs:px-6 gap-2 xs:gap-4">
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="text-gray-800 font-medium py-2 rounded hover:bg-yellow-100 transition text-sm xs:text-base px-2 w-full"
-                onClick={() => setMobileOpen(false)}
+        <div className="md:hidden flex items-center">
+          <DropdownMenu open={mobileOpen} onOpenChange={setMobileOpen}>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="p-2 rounded focus:outline-none text-gray-800 hover:bg-yellow-100 transition h-10 w-10 flex items-center justify-center"
+                aria-label="Open mobile menu"
               >
-                {link.name}
-              </a>
-            ))}
-            <a
-              href="/admin/login"
-              className="flex items-center gap-2 px-4 py-2 rounded-md bg-yellow-400 text-black font-semibold shadow hover:bg-yellow-500 transition mt-2"
-              onClick={() => setMobileOpen(false)}
+                {mobileOpen ? <X size={28} /> : <Menu size={28} />}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="start"
+              className="z-[99] w-[88vw] max-w-xs bg-white border border-yellow-200 rounded-xl shadow-2xl mt-2 ml-[-8px] p-0 overflow-hidden animate-fade-in"
+              sideOffset={8}
             >
-              <LogIn className="w-5 h-5" /> Admin Panel
-            </a>
-          </div>
+              <div className="flex items-center gap-2 xs:gap-3 px-4 pt-5 pb-2 border-b border-yellow-100 bg-white">
+                <img
+                  src="/assets/img/logo.webp"
+                  alt="GSAI Logo"
+                  className="w-8 h-8 xs:w-9 xs:h-9 rounded-full border border-yellow-400"
+                />
+                <span className="font-bold text-base text-black">GSAI</span>
+                <span className="text-xs font-semibold text-yellow-700 ml-2 xs:ml-3 border-l border-yellow-200 pl-1 xs:pl-2">
+                  Ghatak Sports Academy India
+                </span>
+              </div>
+              <div className="flex flex-col py-2 px-4 xs:px-6 gap-2 xs:gap-4 bg-white">
+                {navLinks.map((link) => (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    className="text-gray-800 font-medium py-2 rounded hover:bg-yellow-100 transition text-sm xs:text-base px-2 w-full"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {link.name}
+                  </a>
+                ))}
+                <a
+                  href="/admin/login"
+                  className="flex items-center gap-2 px-4 py-2 rounded-md bg-yellow-400 text-black font-semibold shadow hover:bg-yellow-500 transition mt-2"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <LogIn className="w-5 h-5" /> Admin Panel
+                </a>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-        {/* overlay - clicking closes */}
-        <div
-          className={`flex-1 bg-black/30 transition`}
-          onClick={() => setMobileOpen(false)}
-          aria-label="Close mobile menu"
-        />
       </div>
-      {/* Tablet-only drawer: md <= width < lg */}
-      {/* Removed slide-out drawer for tablets */}
     </nav>
   );
 }
