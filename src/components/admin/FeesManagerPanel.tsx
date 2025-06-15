@@ -1,11 +1,12 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import FeesTable from "./FeesTable";
 import FeeEditModal from "./FeeEditModal";
 import FeeHistoryDrawer from "./FeeHistoryDrawer";
 import { toast } from "@/hooks/use-toast";
+import FeeSummaryCard from "./FeeSummaryCard";
+import { exportFeesToCsv } from "@/utils/exportToCsv";
 
 export default function FeesManagerPanel() {
   // Centralized filter state
@@ -65,9 +66,43 @@ export default function FeesManagerPanel() {
     refetchInterval: historyDrawerOpen ? 2000 : false,
   });
 
-  // Filtered fee table presentation
+  // Debug: Check if user is logged in and has correct email for admin access
+  // We'll log these for better RLS issue tracking
+  React.useEffect(() => {
+    (async () => {
+      const session = await supabase.auth.getSession();
+      console.log("Supabase session:", session);
+    })();
+  }, []);
+
+  // Map students/fees for CSV: Reuse rows creation from FeesTable logic
+  const rows = Array.isArray(students)
+    ? students.map((student) => {
+        const fee = fees?.find((f) => f.student_id === student.id) || null;
+        return { student, fee };
+      }).filter(row => {
+        if (filterName && !row.student.name.toLowerCase().includes(filterName.toLowerCase())) return false;
+        if (filterStatus) {
+          const status = row.fee ? (row.fee.status || "unpaid").toLowerCase() : "unpaid";
+          return status === filterStatus.toLowerCase();
+        }
+        return true;
+      })
+    : [];
+
   return (
     <div>
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-2">
+        <FeeSummaryCard fees={fees || []} loading={loadingFees} />
+        <button
+          onClick={() => exportFeesToCsv(rows, filterMonth, filterYear)}
+          className="border border-yellow-400 px-4 py-2 rounded-full bg-yellow-50 text-yellow-700 font-medium hover:bg-yellow-200 transition text-sm ml-auto"
+          disabled={!Array.isArray(rows) || rows.length === 0}
+        >
+          Export CSV
+        </button>
+      </div>
+      {/* Filters and table */}
       <FeesTable
         students={students}
         fees={fees}
@@ -110,6 +145,10 @@ export default function FeesManagerPanel() {
           allFees={allFees}
         />
       )}
+      <div className="mt-3 text-xs text-gray-600">
+        {/* Inline error suggestion for RLS issues */}
+        <b>Having trouble saving fee?</b> Make sure you are signed in as an admin and your email exists in the <b>admin_users</b> table in Supabase.
+      </div>
     </div>
   );
 }
