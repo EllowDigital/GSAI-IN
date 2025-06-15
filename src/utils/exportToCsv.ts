@@ -1,4 +1,3 @@
-
 export function exportFeesToCsv(items: any[], month: number, year: number) {
   if (!Array.isArray(items) || items.length === 0) return;
 
@@ -35,5 +34,38 @@ export function exportFeesToCsv(items: any[], month: number, year: number) {
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
   link.download = `fees_${month}_${year}.csv`;
+  link.click();
+}
+
+export function exportStudentsToCsv(students: any[]) {
+  if (!Array.isArray(students) || students.length === 0) return;
+
+  const headers = [
+    "Name",
+    "Aadhar Number",
+    "Program",
+    "Join Date",
+    "Parent Name",
+    "Parent Contact"
+  ];
+
+  const csvRows = [
+    headers.join(","),
+    ...students.map(stu =>
+      [
+        `"${stu.name || ""}"`,
+        `"${stu.aadhar_number || ""}"`,
+        `"${stu.program || ""}"`,
+        `"${stu.join_date || ""}"`,
+        `"${stu.parent_name || ""}"`,
+        `"${stu.parent_contact || ""}"`
+      ].join(",")
+    )
+  ];
+
+  const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `students.csv`;
   link.click();
 }
