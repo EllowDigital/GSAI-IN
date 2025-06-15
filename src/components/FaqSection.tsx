@@ -1,6 +1,7 @@
+
 import React from "react";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { HelpCircle } from "lucide-react"; // Correct icon import
+import { HelpCircle, Sparkles } from "lucide-react"; // Correct icon import
 
 const faqs = [
   {
@@ -33,14 +34,18 @@ export default function FaqSection() {
   return (
     <section
       id="faq"
-      className="py-12 xs:py-20 px-2 xs:px-4 bg-gradient-to-br from-yellow-50 via-white to-red-50 border-b border-yellow-100 animate-fade-in"
+      className="py-12 xs:py-20 px-2 xs:px-4 bg-gradient-to-br from-yellow-50 via-white to-red-50 border-b border-yellow-100 animate-fade-in relative overflow-hidden"
     >
-      <div className="max-w-2xl mx-auto">
+      {/* Decorative sparkles */}
+      <Sparkles className="absolute left-2 top-2 w-14 h-14 text-yellow-400 opacity-10 z-0 pointer-events-none" />
+      <Sparkles className="absolute right-0 bottom-10 w-14 h-14 text-yellow-600 opacity-15 z-0 pointer-events-none animate-pulse" />
+      <div className="max-w-2xl mx-auto relative z-10">
         <div className="flex flex-col items-center mb-8 gap-2">
           <div className="flex items-center gap-2 justify-center w-full">
             <HelpCircle className="w-6 h-6 text-gray-600" aria-hidden="true" />
-            <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-500 tracking-tight drop-shadow font-montserrat text-center w-full">
+            <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-500 tracking-tight drop-shadow font-montserrat text-center w-full relative">
               Frequently Asked Questions
+              <span className="block h-1 w-14 bg-gradient-to-r from-yellow-400 to-red-200 rounded-full mx-auto mt-1" />
             </h2>
           </div>
           <p className="text-base md:text-lg font-medium text-gray-500 text-center max-w-2xl">
