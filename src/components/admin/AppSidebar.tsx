@@ -41,11 +41,15 @@ export function AppSidebar() {
   return (
     <Sidebar variant="sidebar">
       <SidebarHeader className="mt-2 px-4">
-        <span className="text-lg font-bold text-yellow-400">GSAI Admin</span>
+        <span className="text-lg font-bold text-yellow-400 tracking-tight font-montserrat">
+          GSAI Admin
+        </span>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[#f59e42] font-semibold">Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-[#f59e42] font-semibold">
+            Navigation
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -62,12 +66,12 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="mt-auto px-4 pb-4">
+      <SidebarFooter className="mt-auto px-4 pb-6 flex flex-col items-stretch gap-3">
         <Button
-          variant="secondary"
+          variant="destructive"
           size="sm"
           onClick={signOut}
-          className="flex items-center gap-2 w-full rounded-full"
+          className="flex items-center gap-2 w-full rounded-full text-base font-semibold"
         >
           <LogOut size={18} /> Logout
         </Button>
