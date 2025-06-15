@@ -219,7 +219,7 @@ export default function FeesManagerPanel() {
               title: "RLS Error",
               description:
                 "Your admin email is not in admin_users; you cannot edit or add fees.",
-              variant: "destructive",
+              variant: "error",
             });
             return;
           }
