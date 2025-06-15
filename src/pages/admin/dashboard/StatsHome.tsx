@@ -106,39 +106,43 @@ export default function StatsHome() {
       </div>
 
       {/* Responsive card stats grid */}
-      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
+      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 mb-8">
         {cardsConfig.map(({ key, label, icon: Icon, color }) => (
-          <div key={key} className={`flex flex-col items-center justify-center rounded-2xl shadow-md p-5 ${color}`}>
-            <Icon className="w-8 h-8 mb-2" />
-            <span className="text-2xl font-extrabold">
+          <div
+            key={key}
+            className={`flex flex-col items-center justify-center rounded-2xl shadow-md p-4 sm:p-5 min-h-[120px] w-full ${color}`}
+          >
+            <Icon className="w-7 h-7 sm:w-8 sm:h-8 mb-2" />
+            <span className="text-xl sm:text-2xl font-extrabold">
               {loading ? <span className="animate-pulse">...</span> : counts[key] ?? 0}
             </span>
-            <span className="text-sm font-bold opacity-80 text-center">{label}</span>
+            <span className="text-xs sm:text-sm font-bold opacity-80 text-center">{label}</span>
           </div>
         ))}
       </div>
 
       {/* Analytics Chart */}
-      <section className="rounded-2xl shadow bg-white/90 px-4 sm:px-6 py-6 mb-10">
-        <h2 className="text-xl font-bold mb-4 text-yellow-600">
+      <section className="rounded-2xl shadow bg-white/90 px-2 xs:px-4 sm:px-6 py-5 mb-8 sm:mb-10">
+        <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-yellow-600">
           Analytics
         </h2>
-        <div className="w-full h-[340px] md:h-[380px] flex items-center justify-center">
+        <div className="w-full h-[240px] xs:h-[300px] md:h-[380px] flex items-center justify-center">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={analyticsData}>
               <CartesianGrid strokeDasharray="3 3" className="text-gray-100" />
               <XAxis
                 dataKey="name"
-                tick={{ fontWeight: 600, fontSize: 12, fill: "#a16207" }} // yellow-700
+                tick={{ fontWeight: 600, fontSize: 10, fill: "#a16207" }} // yellow-700
                 axisLine={false}
               />
               <YAxis
                 allowDecimals={false}
-                tick={{ fontWeight: 600, fontSize: 13, fill: "#78716c" }}
+                tick={{ fontWeight: 600, fontSize: 11, fill: "#78716c" }}
                 axisLine={false}
+                width={30}
               />
               <Tooltip
-                cursor={{ fill: "rgba(251, 191, 36, 0.14)" }}
+                cursor={{ fill: "rgba(251, 191, 36, 0.13)" }}
                 contentStyle={{
                   borderRadius: "0.5rem",
                   borderColor: "#fde68a",
@@ -150,40 +154,31 @@ export default function StatsHome() {
                   fontWeight: 700,
                 }}
               />
-              <Bar dataKey="count" fill="#FACC15" radius={[16, 16, 0, 0]} />
+              <Bar dataKey="count" fill="#FACC15" radius={[12, 12, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </section>
 
-      {/* Example Advanced Panel */}
-      <section className="rounded-2xl shadow bg-white/90 px-4 sm:px-6 py-6">
-        <h2 className="text-xl font-bold mb-4 text-yellow-600">Dashboard Overview</h2>
-        <div className="flex flex-col lg:flex-row gap-7">
-          <div className="flex-1 flex flex-col gap-4">
-            <div className="rounded-lg p-5 bg-gradient-to-br from-yellow-100/70 to-yellow-50 border border-yellow-200 shadow-sm">
-              <h3 className="font-bold mb-2 text-yellow-800">Quick Tips</h3>
-              <ul className="list-disc ml-4 text-gray-700 text-sm space-y-1">
+      {/* Improved Advanced Panel */}
+      <section className="rounded-2xl shadow bg-white/90 px-2 xs:px-4 sm:px-6 py-5">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-7">
+          <div className="flex-1 flex flex-col gap-3">
+            <div className="rounded-lg p-4 sm:p-5 bg-gradient-to-br from-yellow-100/70 to-yellow-50 border border-yellow-200 shadow-sm">
+              <h3 className="font-bold mb-2 text-yellow-800 text-sm sm:text-base">Quick Tips</h3>
+              <ul className="list-disc ml-4 text-gray-700 text-xs sm:text-sm space-y-1">
                 <li>Use the sidebar to access all main modules.</li>
                 <li>Data is updated in real-time.</li>
                 <li>All sections are mobile friendly.</li>
                 <li>Contact support for any issues.</li>
               </ul>
             </div>
-            <div className="rounded-lg p-4 bg-yellow-50 border border-yellow-100 shadow">
-              <h4 className="font-bold text-yellow-700 mb-1">Latest Announcements</h4>
-              <ul className="text-sm text-gray-700 list-disc ml-4">
+            <div className="rounded-lg p-3 sm:p-4 bg-yellow-50 border border-yellow-100 shadow">
+              <h4 className="font-bold text-yellow-700 mb-1 text-xs sm:text-base">Latest Announcements</h4>
+              <ul className="text-xs sm:text-sm text-gray-700 list-disc ml-4">
                 <li className="mb-1">Website redesign launched 🎉</li>
                 <li>More dashboard analytics coming soon!</li>
               </ul>
-            </div>
-          </div>
-          <div className="flex-1 flex flex-col gap-4">
-            <div className="rounded-xl p-6 bg-gradient-to-tr from-yellow-100 via-white to-yellow-50 border border-yellow-200 shadow">
-              <h3 className="text-base font-bold text-gray-800 mb-2">Analytics (Coming Soon)</h3>
-              <div className="h-32 flex items-center justify-center text-gray-400 text-sm">
-                [Charts & Data Visualizations]
-              </div>
             </div>
           </div>
         </div>
