@@ -1,50 +1,64 @@
-import React from "react";
 
-const AboutSection = () => {
+import React from "react";
+import { Users, Info } from "lucide-react";
+
+export default function AboutSection() {
   return (
-    <section id="about" className="px-2 xs:px-4 py-14 xs:py-20 md:py-28 bg-white border-b border-gray-100">
-      <div className="max-w-6xl mx-auto space-y-5 xs:space-y-6">
-        <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-400 mb-2 xs:mb-4 text-center xs:text-left">
-          About GSAI
-        </h2>
-        <p className="text-base xs:text-lg leading-relaxed text-justify text-gray-800 mb-2 xs:mb-4">
-          Ghatak Sports Academy India™ (GSAI) is a{" "}
-          <span className="text-yellow-400 font-semibold">
-            Government-recognized
-          </span>{" "}
-          and{" "}
-          <span className="text-red-500 font-semibold">
-            ISO 9001:2015 certified
-          </span>{" "}
-          institution committed to empowering individuals through{" "}
-          <strong>martial arts and self-defense</strong>. 💪✨
-        </p>
-        <p className="mb-2 xs:mb-4 text-justify text-gray-700">
-          We seamlessly blend{" "}
-          <span className="text-red-500 font-medium">
-            traditional martial arts
-          </span>{" "}
-          with modern fitness techniques, unlocking your{" "}
-          <span className="text-yellow-400 font-medium">
-            physical strength
-          </span>
-          ,{" "}
-          <span className="text-yellow-400 font-medium">
-            mental focus
-          </span>
-          , and{" "}
-          <span className="text-yellow-400 font-medium">
-            moral discipline
-          </span>
-          . 🌟
-        </p>
-        <p className="text-justify text-gray-700">
-          At GSAI, we foster a spirit of <strong>respect, confidence, and excellence</strong>, guiding every student
-          on a journey of <em>self-mastery</em> and <em>empowerment</em>. 💖
-        </p>
+    <section
+      id="about"
+      className="relative px-2 xs:px-4 py-14 xs:py-20 md:py-28 bg-gradient-to-br from-yellow-50 via-white to-red-50 border-b border-gray-100"
+    >
+      {/* Decorative Icon */}
+      <div className="absolute top-5 right-6 xs:top-4 xs:right-10 opacity-10 pointer-events-none hidden md:block">
+        <Users size={82} />
+      </div>
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8 md:gap-14 items-center">
+        {/* Left: Logo/Icon or illustration */}
+        <div className="w-full md:w-2/5 flex flex-col items-center justify-center">
+          <div className="bg-yellow-400 rounded-full shadow-md flex items-center justify-center mb-5 p-4">
+            <Info size={44} className="text-white" />
+          </div>
+          <div className="font-extrabold text-xl xs:text-2xl text-yellow-400 text-center mb-2">
+            About Ghatak Sports Academy India™
+          </div>
+          <div className="text-base xs:text-lg font-medium text-gray-700 text-center mb-1">
+            <span className="block">Where Tradition meets Excellence</span>
+            <span className="block text-red-500 font-semibold mt-1">Martial Arts &amp; Self-Development</span>
+          </div>
+        </div>
+        {/* Right: Content */}
+        <div className="w-full md:w-3/5 space-y-5 xs:space-y-7">
+          <p className="text-base xs:text-lg leading-relaxed text-justify text-gray-800 font-semibold">
+            <span className="text-yellow-500 font-bold">Empowering Champions Since Inception:</span>{" "}
+            Ghatak Sports Academy India™ (GSAI) is a{" "}
+            <span className="text-yellow-400 font-bold">Government-recognized</span> and{" "}
+            <span className="text-red-600 font-bold">ISO 9001:2015 certified</span> institution dedicated to building confident, disciplined, and skilled individuals through martial arts.
+          </p>
+          <ul className="list-none pl-0 mb-3 flex flex-col gap-2">
+            <li className="flex items-start">
+              <span className="inline-block w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center mr-2 text-lg font-bold">✔</span>
+              <span className="text-gray-800">
+                <strong>Holistic Training:</strong> Merging <span className="text-red-500 font-medium">traditional martial arts</span> and <span className="text-yellow-500 font-medium">modern fitness</span> for total self-improvement.
+              </span>
+            </li>
+            <li className="flex items-start">
+              <span className="inline-block w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center mr-2 text-lg font-bold">✔</span>
+              <span className="text-gray-800">
+                <strong>Values-Driven Growth:</strong> Fostering <span className="text-yellow-400 font-medium">respect, confidence, and personal excellence</span>.
+              </span>
+            </li>
+            <li className="flex items-start">
+              <span className="inline-block w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center mr-2 text-lg font-bold">✔</span>
+              <span className="text-gray-800">
+                <strong>Empowerment for All:</strong> Programs tailored for <span className="text-red-500 font-medium">every age and skill level</span>, guiding you on a journey of <em>self-mastery</em> and <em>empowerment</em>.
+              </span>
+            </li>
+          </ul>
+          <blockquote className="border-l-4 border-yellow-400 pl-4 italic text-base xs:text-lg font-semibold bg-yellow-50/60 rounded">
+            "Join our thriving community and discover your true potential—physically, mentally, and morally!"
+          </blockquote>
+        </div>
       </div>
     </section>
   );
-};
-
-export default AboutSection;
+}
