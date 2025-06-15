@@ -8,6 +8,7 @@ import FeeHistoryDrawer from "./FeeHistoryDrawer";
 import FeeSummaryCard from "./FeeSummaryCard";
 import FeesTable from "./FeesTable";
 import { exportFeesToCsv } from "@/utils/exportToCsv";
+import FeesFilterBar from "./FeesFilterBar";
 
 // Main Fees Management Controller panel
 export default function FeesManagerPanel() {
@@ -144,7 +145,6 @@ export default function FeesManagerPanel() {
         students={students}
         fees={fees}
         isLoading={loadingStudents || loadingFees}
-        // Removed any filter UI props from FeesTable, keep only necessary data/handlers for display
         onEditFee={handleEditFee}
         onShowHistory={handleShowHistory}
       />
