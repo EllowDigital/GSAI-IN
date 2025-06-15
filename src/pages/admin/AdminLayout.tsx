@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Outlet } from "react-router-dom";
 import { useAdminAuth } from "./AdminAuthProvider";
@@ -38,9 +37,14 @@ const AdminLayout: React.FC = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen w-full flex flex-row bg-gradient-to-br from-yellow-50/70 via-white to-yellow-100 font-montserrat">
-        {/* Sidebar: sticky on desktop, overlays as drawer mobile */}
-        <aside className="hidden md:block h-screen sticky top-0 z-30">
+      <div className="
+        min-h-screen w-full flex flex-row bg-gradient-to-br from-yellow-50/70 via-white to-yellow-100 font-montserrat
+        overflow-hidden
+      ">
+        {/* Sidebar: sticky, flush left, scrollable if needed */}
+        <aside className="
+          hidden md:flex sticky top-0 z-30 h-screen min-h-screen
+        ">
           <AppSidebar />
         </aside>
         {/* Mobile sidebar/hamburger trigger: show only on mobile */}
@@ -51,17 +55,17 @@ const AdminLayout: React.FC = () => {
         <main
           className="
             flex-1 min-w-0 max-w-full flex flex-col
-            m-1 md:m-4 rounded-2xl bg-white/90 shadow-2xl border border-yellow-100
+            m-0 md:m-4 rounded-none md:rounded-2xl bg-white/90 shadow-2xl border border-yellow-100
             min-h-screen
             transition-all
+            overflow-x-auto
           "
         >
           <AdminTopbar />
-          {/* Responsive grid wrapper for sections: stack on mobile, side-by-side on desktop */}
           <section
             className="
               flex-1 w-full max-w-full
-              px-1 sm:px-2 md:px-5 xl:px-12 py-3 md:py-6 
+              px-2 sm:px-3 md:px-5 xl:px-12 py-3 md:py-6 
               xl:mx-auto
               flex flex-col gap-4
               transition-all duration-300

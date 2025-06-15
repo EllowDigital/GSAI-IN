@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   Sidebar,
@@ -41,7 +42,6 @@ export function AppSidebar() {
     { title: "Events", url: "/admin/dashboard/events", icon: Calendar },
   ];
 
-  // Close sidebar on mobile when clicking a menu item
   const handleNavClick = () => {
     if (isMobile) setOpenMobile(false);
   };
@@ -52,9 +52,12 @@ export function AppSidebar() {
       className={`
         bg-gradient-to-b from-yellow-50 to-white border-r border-yellow-200 shadow-xl
         md:rounded-tr-none rounded-tr-3xl
-        h-full sticky top-0
+        w-64 md:min-w-[16rem] md:max-w-[16rem]
+        h-full sticky top-0 left-0
         flex flex-col
+        overflow-y-auto
       `}
+      style={{ minHeight: "100vh", maxHeight: "100vh" }}
     >
       <SidebarHeader className="mb-4 px-6 flex flex-col items-center justify-center">
         <img src="/favicon.ico" alt="Logo" className="w-11 h-11 mb-2 drop-shadow-lg" />
