@@ -21,16 +21,32 @@ import Preloader from "./components/Preloader";
 import React from "react";
 import PrivacyPage from "./pages/PrivacyPage";
 import TermsPage from "./pages/TermsPage";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { WifiOff } from "lucide-react";
 // Removed: import PWAInstallButton from "@/components/PWAInstallButton";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const [loading, setLoading] = React.useState(true);
+  const [isOffline, setIsOffline] = React.useState(!navigator.onLine);
 
   React.useEffect(() => {
     const timeout = setTimeout(() => setLoading(false), 1300); // fade out after 1.3s
     return () => clearTimeout(timeout);
+  }, []);
+
+  React.useEffect(() => {
+    const handleOffline = () => setIsOffline(true);
+    const handleOnline = () => setIsOffline(false);
+
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+
+    return () => {
+      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", handleOnline);
+    };
   }, []);
 
   return (
@@ -38,6 +54,17 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        {isOffline && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-background/80 backdrop-blur-sm">
+            <Alert variant="destructive" className="max-w-sm border-2">
+              <WifiOff className="h-5 w-5" />
+              <AlertTitle className="font-bold">You are offline</AlertTitle>
+              <AlertDescription>
+                This app requires an internet connection. Please check your network.
+              </AlertDescription>
+            </Alert>
+          </div>
+        )}
         {loading && <Preloader />}
         {!loading && (
           <>
@@ -82,4 +109,3 @@ const App = () => {
 };
 
 export default App;
-
