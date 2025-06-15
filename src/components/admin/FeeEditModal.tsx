@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -15,6 +14,7 @@ export default function FeeEditModal({
   fee,
   month,
   year,
+  adminDebug, // Add adminDebug prop
 }: {
   open: boolean;
   onClose: () => void;
@@ -22,6 +22,11 @@ export default function FeeEditModal({
   fee: any | null;
   month: number;
   year: number;
+  adminDebug?: {
+    adminEmail?: string | null;
+    isAdminInTable?: boolean | null;
+    canSubmitFeeEdits?: boolean;
+  };
 }) {
   const [carryForward, setCarryForward] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
@@ -92,23 +97,15 @@ export default function FeeEditModal({
     }
     setLoading(true);
     let result, error;
-    if (fee && fee.id) {
-      ({ error, data: result } = await supabase
-        .from("fees")
-        .update({
+    const payload = fee && fee.id
+      ? {
           monthly_fee,
           paid_amount,
           balance_due: calcBalance(),
           notes: values.notes || null,
           updated_at: new Date().toISOString()
-        })
-        .eq("id", fee.id)
-        .select()
-        .maybeSingle());
-    } else {
-      ({ error, data: result } = await supabase
-        .from("fees")
-        .upsert([{
+        }
+      : {
           student_id: student.id,
           month,
           year,
@@ -118,16 +115,29 @@ export default function FeeEditModal({
           notes: values.notes || null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
-        }],
-        { onConflict: 'student_id,month,year' })
+        };
+    console.log("[DEBUG] Submitting fee payload:", payload);
+
+    if (fee && fee.id) {
+      ({ error, data: result } = await supabase
+        .from("fees")
+        .update(payload)
+        .eq("id", fee.id)
+        .select()
+        .maybeSingle());
+    } else {
+      ({ error, data: result } = await supabase
+        .from("fees")
+        .upsert([payload], { onConflict: 'student_id,month,year' })
         .select()
         .maybeSingle());
     }
     setLoading(false);
     if (error) {
+      console.log("[DEBUG] Supabase error during fee save:", error);
       toast({
         title: "Failed to save fee",
-        description: error.message || "",
+        description: (error.message || "") + " (see console for RLS info)",
         variant: "error"
       });
     } else {
@@ -145,6 +155,17 @@ export default function FeeEditModal({
         <DialogHeader>
           <DialogTitle>{fee ? "Edit Payment" : "Add Payment"}</DialogTitle>
         </DialogHeader>
+
+        {/* ADD DEBUG UI */}
+        <div className="mb-2">
+          <span className="text-[11px] text-gray-500">
+            <b>Admin Debug:</b>{" "}
+            Email: <span className="font-bold">{adminDebug?.adminEmail || "N/A"}</span>
+            {" | "}In admin_users: <span className="font-bold">{adminDebug?.isAdminInTable ? "✅" : "❌"}</span>
+            {" | "}canSubmitFeeEdits: <span className="font-bold">{adminDebug?.canSubmitFeeEdits ? "✅" : "❌"}</span>
+          </span>
+        </div>
+
         <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
           <div>
             <span className="block font-bold text-sm">Student: {student?.name}</span>
@@ -186,7 +207,7 @@ export default function FeeEditModal({
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="secondary" type="button" onClick={onClose}>Cancel</Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading || adminDebug?.canSubmitFeeEdits === false}>
               {loading ? <Loader2 className="animate-spin w-4 h-4" /> : "Save"}
             </Button>
           </div>
