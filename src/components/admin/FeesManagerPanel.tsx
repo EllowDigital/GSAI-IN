@@ -8,6 +8,8 @@ import { toast } from "@/hooks/use-toast";
 import FeeSummaryCard from "./FeeSummaryCard";
 import { exportFeesToCsv } from "@/utils/exportToCsv";
 import { useAdminRLS } from "./useAdminRLS";
+import FeesFilterBar from "./FeesFilterBar";
+import FeesAdminInfoBar from "./FeesAdminInfoBar";
 
 // ---- REMOVE THIS OLD/INNER FUNCTION ----
 // (It started like this, remove all lines down to before `export default function FeesManagerPanel() {`)
@@ -145,37 +147,21 @@ export default function FeesManagerPanel() {
 
   return (
     <div>
+      {/* Admin Session/Debug Bar */}
       <AdminRLSBanner
         adminEmail={adminEmail}
         checkingAdminEntry={checkingAdminEntry}
         rlsError={rlsError}
         isAdminInTable={isAdminInTable}
       />
-      <div className="mb-2 text-xs text-gray-400 flex flex-wrap items-center gap-2">
-        <span>
-          Session email: <b>{adminEmail || "none"}</b>
-        </span>
-        <span>
-          In admin_users? <b>{isAdminInTable === null ? "..." : isAdminInTable ? "✅" : "❌"}</b>
-        </span>
-        <span>
-          canSubmitFeeEdits: <b>{canSubmitFeeEdits() ? "✅" : "❌"}</b>
-        </span>
-        {rlsError && <span className="text-red-700 ml-2">RLS Error: {rlsError}</span>}
-      </div>
-      {/* DEV DEBUG: Print-to-console for admin troubleshooting */}
-      <button
-        onClick={() => {
-          console.log("[DEBUG] adminEmail", adminEmail);
-          console.log("[DEBUG] isAdminInTable", isAdminInTable);
-          console.log("[DEBUG] canSubmitFeeEdits", canSubmitFeeEdits());
-          alert("Debug info printed to console.");
-        }}
-        className="text-xs px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-600 mb-2"
-        type="button"
-      >
-        Print Admin Info to Console
-      </button>
+      <FeesAdminInfoBar
+        adminEmail={adminEmail}
+        isAdminInTable={isAdminInTable}
+        canSubmitFeeEdits={canSubmitFeeEdits}
+        rlsError={rlsError}
+        checkingAdminEntry={checkingAdminEntry}
+      />
+      {/* Summary and Export */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-2">
         <FeeSummaryCard fees={fees || []} loading={loadingFees} />
         <button
@@ -186,7 +172,18 @@ export default function FeesManagerPanel() {
           Export CSV
         </button>
       </div>
-      {/* Filters and table */}
+      {/* Filters */}
+      <FeesFilterBar
+        filterMonth={filterMonth}
+        filterYear={filterYear}
+        filterStatus={filterStatus}
+        filterName={filterName}
+        setFilterMonth={setFilterMonth}
+        setFilterYear={setFilterYear}
+        setFilterStatus={setFilterStatus}
+        setFilterName={setFilterName}
+      />
+      {/* Table */}
       <FeesTable
         students={students}
         fees={fees}
