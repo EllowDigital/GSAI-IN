@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowDownCircle } from "lucide-react";
@@ -52,10 +53,9 @@ export default function HeroSection() {
             transition={{ duration: 0.85, ease: [0.4, 0, 0.2, 1] }}
             className="absolute inset-0 w-full h-full"
             style={{
-              backgroundImage: `linear-gradient(rgba(23,23,23,0.76),rgba(30,16,28,0.62)),url('${bgImages[imgIndex]}')`,
+              backgroundImage: `linear-gradient(to top, rgba(10,10,10,0.85), rgba(10,10,10,0.2) 60%, transparent), url('${bgImages[imgIndex]}')`,
               backgroundSize: "cover",
               backgroundPosition: "center",
-              transition: "background-image 1s linear",
             }}
             aria-hidden="true"
           />
@@ -105,7 +105,7 @@ export default function HeroSection() {
           pb-4
           xs:pb-3
           sm:pb-5
-          flex flex-col items-center gap-2
+          flex flex-col items-center gap-3
           z-50
           w-auto
           pointer-events-none
@@ -115,16 +115,16 @@ export default function HeroSection() {
       >
         <div className="flex flex-col items-center pointer-events-auto">
           <ArrowDownCircle className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400 animate-bounce" />
-          <span className="text-xs text-white mt-1 mb-0.5 tracking-widest font-medium">
+          <span className="text-sm text-white/90 mt-1 mb-0.5 tracking-wider font-medium">
             Scroll
           </span>
         </div>
-        <div className="flex justify-center gap-2 xs:gap-2.5 mt-1 pointer-events-auto">
+        <div className="flex justify-center gap-2.5 xs:gap-3 mt-1 pointer-events-auto">
           {bgImages.map((_, idx) => (
             <button
               key={idx}
-              className={`w-3 h-3 xs:w-4 xs:h-4 rounded-full border-2 border-white transition focus:outline-yellow-400 ${
-                imgIndex === idx ? "bg-yellow-400 shadow-lg" : "bg-white/30"
+              className={`w-2.5 h-2.5 xs:w-3 xs:h-3 rounded-full border border-white transition-all duration-300 focus:outline-yellow-400 ${
+                imgIndex === idx ? "bg-yellow-400 shadow-lg scale-110" : "bg-white/30"
               }`}
               onClick={() => setImgIndex(idx)}
               aria-label={`Go to slide ${idx + 1}`}

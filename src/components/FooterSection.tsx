@@ -1,4 +1,3 @@
-
 import { Youtube, Mail, MapPin, Instagram } from "lucide-react";
 
 const quickLinks = [
@@ -47,7 +46,7 @@ export default function FooterSection() {
         </div>
         {/* Column 3: Contact & Social */}
         <div className="flex-1 min-w-[160px] flex flex-col items-center md:items-end">
-          <div className="font-semibold text-lg mb-2 text-gray-100">Contact</div>
+          <div className="font-semibold text-lg mb-2 text-gray-100">Contact & Social</div>
           <div className="flex flex-col gap-1 text-sm xs:text-base text-gray-400 mb-2 items-center md:items-end">
             <span className="inline-flex items-center gap-1">
               <Mail className="w-4 h-4 text-yellow-300" />
@@ -59,24 +58,24 @@ export default function FooterSection() {
             </span>
           </div>
           <div>
-            <div className="flex gap-4 items-center mt-2">
+            <div className="flex gap-3 items-center mt-3">
               <a
                 href="https://www.youtube.com/@ghatakgsai"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="YouTube"
-                className="hover:text-red-500 transition rounded-full border border-transparent hover:border-red-500 p-1"
+                className="text-gray-400 hover:text-white hover:bg-red-600 p-2.5 rounded-full transition-all duration-300"
               >
-                <Youtube size={26} />
+                <Youtube size={28} />
               </a>
               <a
                 href="https://www.instagram.com/ghatakgsai"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="hover:text-pink-500 transition rounded-full border border-transparent hover:border-pink-500 p-1"
+                className="text-gray-400 hover:text-white hover:bg-pink-500 p-2.5 rounded-full transition-all duration-300"
               >
-                <Instagram size={26} />
+                <Instagram size={28} />
               </a>
               {/* Additional social icons can be added here */}
             </div>
@@ -95,4 +94,3 @@ export default function FooterSection() {
     </footer>
   );
 }
-
