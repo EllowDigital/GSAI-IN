@@ -9,6 +9,46 @@ import FeeSummaryCard from "./FeeSummaryCard";
 import { exportFeesToCsv } from "@/utils/exportToCsv";
 import { useAdminRLS } from "./useAdminRLS";
 
+function AdminRLSBanner() {
+  // Access values from parent scope
+  // These will be available in closure from the parent FeesManagerPanel component
+  // (adminEmail, checkingAdminEntry, rlsError, isAdminInTable should all be in scope)
+  if (checkingAdminEntry) {
+    return (
+      <div className="p-2 bg-yellow-50 text-yellow-800 rounded mb-3 text-center font-bold">
+        Checking admin status...
+      </div>
+    );
+  }
+  if (rlsError) {
+    return (
+      <div className="p-2 bg-red-100 text-red-700 rounded mb-3 text-center font-bold">
+        {rlsError}
+        <br />
+        <span className="block text-xs mt-2">
+          <b>⚠️ Important:</b>
+          <br />
+          You will NOT be able to save or update fees unless your email is present in the <b>admin_users</b> table. 
+          <br />
+          Please check in Supabase → <b>admin_users</b> and add your login email if needed.
+        </span>
+      </div>
+    );
+  }
+  if (isAdminInTable === false) {
+    return (
+      <div className="p-2 bg-red-100 text-red-700 rounded mb-3 text-center font-bold">
+        Your admin email is <b>not</b> in the admin_users table!
+        <br />
+        You cannot save or edit fees.
+        <br />
+        See Supabase → admin_users to add your email.
+      </div>
+    );
+  }
+  return null;
+}
+
 export default function FeesManagerPanel() {
   // Centralized filter state
   const now = new Date();
