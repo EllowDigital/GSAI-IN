@@ -89,7 +89,7 @@ export default function Gallery() {
   }, []);
 
   return (
-    <div className="relative max-w-7xl mx-auto w-full pb-12">
+    <div className="relative max-w-7xl mx-auto w-full min-h-screen flex flex-col bg-white pb-12">
       <Toaster position="top-right" />
       {/* Sticky header for mobile */}
       <div className="sticky top-0 z-20 bg-gradient-to-b from-yellow-50/95 via-white/90 to-white/75 backdrop-blur-lg px-2 xs:px-4 pt-4 pb-3 mb-2 border-b border-yellow-100 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 transition-shadow shadow-xs">
@@ -140,32 +140,35 @@ export default function Gallery() {
       )}
 
       {/* Gallery grid / Masonry */}
-      {loading ? (
-        <div className="flex justify-center py-16">
-          <Loader2 className="animate-spin text-yellow-400" size={48} />
-        </div>
-      ) : (
-        <div
-          className={`transition-all duration-300 w-full space-y-4 ${masonryCols.base} ${masonryCols.md} ${masonryCols.lg} gap-x-4`}
-        >
-          {filteredImages.length ? (
-            filteredImages.map((img) => (
-              <GalleryImageCard
-                key={img.id}
-                image={img}
-                onDeleteSuccess={() => {
-                  setImages((cur) => cur.filter((i) => i.id !== img.id));
-                  toast.success("Image deleted.");
-                }}
-              />
-            ))
-          ) : (
-            <div className="text-center text-muted-foreground py-12 sm:py-16 text-lg font-semibold">
-              No images found.
-            </div>
-          )}
-        </div>
-      )}
+      <div className="flex-1 flex flex-col">
+        {loading ? (
+          <div className="flex-1 flex justify-center items-center py-16 min-h-[60vh]">
+            <Loader2 className="animate-spin text-yellow-400" size={48} />
+          </div>
+        ) : (
+          <div
+            className={`transition-all duration-300 w-full space-y-4 ${masonryCols.base} ${masonryCols.md} ${masonryCols.lg} gap-x-4 flex-1`}
+            style={{ minHeight: "40vh" }} // Ensures grid fills available space
+          >
+            {filteredImages.length ? (
+              filteredImages.map((img) => (
+                <GalleryImageCard
+                  key={img.id}
+                  image={img}
+                  onDeleteSuccess={() => {
+                    setImages((cur) => cur.filter((i) => i.id !== img.id));
+                    toast.success("Image deleted.");
+                  }}
+                />
+              ))
+            ) : (
+              <div className="text-center text-muted-foreground py-12 sm:py-16 text-lg font-semibold min-h-[30vh] flex items-center justify-center">
+                No images found.
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Upload drawer for image uploads */}
       <GalleryUploadDrawer
