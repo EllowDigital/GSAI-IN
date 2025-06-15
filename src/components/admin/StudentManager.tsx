@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -65,7 +66,6 @@ export default function StudentManager() {
         if (error) {
           toast.error("Failed to fetch students: " + error.message);
         }
-        // All fields now align -- safe cast
         setStudents((data || []) as StudentRow[]);
         setLoading(false);
       }
@@ -113,71 +113,69 @@ export default function StudentManager() {
   }, [students, search, sortCol, sortAsc]);
 
   return (
-    <div>
-      <div className="flex flex-col md:flex-row items-center justify-between gap-2 mb-2">
+    <div className="max-w-[98vw] mx-auto w-full">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-3">
         <div className="w-full">
           <StudentSummaryCard students={students} loading={loading} />
         </div>
         <button
           onClick={() => exportStudentsToCsv(filteredStudents)}
-          className="border border-blue-400 px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-medium hover:bg-blue-200 transition text-sm ml-0 md:ml-auto"
+          className="border border-blue-400 px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-medium hover:bg-blue-200 transition text-xs sm:text-sm ml-0 md:ml-auto min-w-[120px]"
           disabled={!Array.isArray(filteredStudents) || filteredStudents.length === 0}
-          style={{ minWidth: 140 }}
           title="Download as CSV"
         >
           Download CSV
         </button>
       </div>
       {/* Search/Add */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-2 mb-4">
-        <div className="flex items-center space-x-2 w-full md:w-auto">
-          <input
-            type="text"
-            className="border rounded px-2 py-1 text-sm w-full md:w-56"
-            placeholder="Search by Name or Program"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-        </div>
+      <div className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-4 mb-4 w-full">
+        <input
+          type="text"
+          className="border rounded px-2 py-2 text-sm w-full xs:w-auto flex-1"
+          placeholder="Search by Name or Program"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
         <Button
           onClick={() => { setEditingStudent(null); setShowModal(true); }}
           variant="default"
-          className="flex gap-2 rounded-full"
+          className="flex gap-2 rounded-full w-full xs:w-auto justify-center"
         >
-          <Plus size={18} /> Add Student
+          <Plus size={18} /> <span className="hidden xs:inline">Add Student</span>
+          <span className="inline xs:hidden">Add</span>
         </Button>
       </div>
       {/* Table */}
-      <div className="rounded-2xl shadow-lg overflow-x-auto bg-white">
-        <Table>
+      <div className="rounded-2xl shadow-lg overflow-x-auto bg-white scrollbar-thin scrollbar-thumb-yellow-200 scrollbar-track-yellow-50">
+        <Table className="min-w-[700px]">
           <TableHeader>
             <TableRow>
-              <TableHead>Avatar</TableHead>
+              <TableHead className="min-w-[60px]">Avatar</TableHead>
               <TableHead
-                className="cursor-pointer"
+                className="cursor-pointer min-w-[110px]"
                 onClick={() => {
                   if (sortCol !== "name") setSortCol("name");
                   else setSortAsc(a => !a);
                 }}
               >Name</TableHead>
-              <TableHead>Aadhar Number</TableHead>
+              <TableHead className="min-w-[130px]">Aadhar Number</TableHead>
               <TableHead
-                className="cursor-pointer"
+                className="cursor-pointer min-w-[120px]"
                 onClick={() => {
                   if (sortCol !== "program") setSortCol("program");
                   else setSortAsc(a => !a);
                 }}
               >Program</TableHead>
               <TableHead
-                className="cursor-pointer"
+                className="cursor-pointer min-w-[115px]"
                 onClick={() => {
                   if (sortCol !== "join_date") setSortCol("join_date");
                   else setSortAsc(a => !a);
                 }}
               >Join Date</TableHead>
-              <TableHead>Parent Name</TableHead>
-              <TableHead>Parent Contact</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="min-w-[120px]">Parent Name</TableHead>
+              <TableHead className="min-w-[120px]">Parent Contact</TableHead>
+              <TableHead className="min-w-[90px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -211,22 +209,28 @@ export default function StudentManager() {
                       {stu.profile_image_url ? (
                         <AvatarImage src={stu.profile_image_url} alt={stu.name} className="object-cover" />
                       ) : (
-                        <AvatarFallback>
-                          <User size={18} />
+                        <AvatarFallback className="bg-yellow-100">
+                          <User size={18} className="text-yellow-600" />
                         </AvatarFallback>
                       )}
                     </Avatar>
                   </TableCell>
                   <TableCell className="font-semibold">{stu.name}</TableCell>
                   <TableCell>{stu.aadhar_number}</TableCell>
-                  <TableCell>{stu.program}</TableCell>
+                  <TableCell>
+                    <span className="block max-w-[100px] truncate">{stu.program}</span>
+                  </TableCell>
                   <TableCell>
                     {stu.join_date
                       ? new Date(stu.join_date).toLocaleDateString()
                       : ""}
                   </TableCell>
-                  <TableCell>{stu.parent_name}</TableCell>
-                  <TableCell>{stu.parent_contact}</TableCell>
+                  <TableCell>
+                    <span className="block max-w-[110px] truncate">{stu.parent_name}</span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="block max-w-[110px] truncate">{stu.parent_contact}</span>
+                  </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
                       <Button
@@ -273,3 +277,6 @@ export default function StudentManager() {
     </div>
   );
 }
+
+// This file is now getting quite long (over 240 lines). Consider refactoring into smaller components if you frequently modify or extend this functionality.
+

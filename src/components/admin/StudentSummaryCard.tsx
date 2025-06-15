@@ -14,7 +14,6 @@ export default function StudentSummaryCard({
   students: Student[];
   loading?: boolean;
 }) {
-  // Count per program
   const total = students?.length || 0;
   const byProgram: Record<string, number> = {};
   if (Array.isArray(students)) {
@@ -25,8 +24,8 @@ export default function StudentSummaryCard({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-      <Card className="shadow flex-1">
+    <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-3 w-full">
+      <Card className="shadow flex-1 min-w-0">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-blue-700 text-base">
             <Users className="w-5 h-5" />
@@ -37,7 +36,7 @@ export default function StudentSummaryCard({
           <span className="text-2xl font-bold">{loading ? "..." : total}</span>
         </CardContent>
       </Card>
-      <Card className="shadow flex-1 col-span-2">
+      <Card className="shadow flex-1 min-w-0 col-span-1 xs:col-span-2">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-yellow-700 text-base">
             <List className="w-5 h-5" />
@@ -50,7 +49,7 @@ export default function StudentSummaryCard({
             : Object.keys(byProgram).length === 0
             ? <span className="text-muted-foreground">No programs</span>
             : Object.entries(byProgram).map(([prog, count]) => (
-                <div key={prog} className="text-xs font-medium text-gray-800 bg-yellow-50 rounded px-2 py-1">
+                <div key={prog} className="text-xs font-medium text-gray-800 bg-yellow-50 rounded px-2 py-1 mb-1">
                   {prog}: <b>{count}</b>
                 </div>
               ))}
