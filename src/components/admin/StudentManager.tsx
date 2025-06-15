@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -16,6 +15,8 @@ import StudentDeleteDialog from "./StudentDeleteDialog";
 import { toast } from "@/components/ui/sonner";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import clsx from "clsx";
+import StudentSummaryCard from "./StudentSummaryCard";
+import { exportStudentsToCsv } from "@/utils/exportToCsv";
 
 // --- All required columns now reflected ---
 type StudentRow = {
@@ -113,6 +114,21 @@ export default function StudentManager() {
 
   return (
     <div>
+      <div className="flex flex-col md:flex-row items-center justify-between gap-2 mb-2">
+        <div className="w-full">
+          <StudentSummaryCard students={students} loading={loading} />
+        </div>
+        <button
+          onClick={() => exportStudentsToCsv(filteredStudents)}
+          className="border border-blue-400 px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-medium hover:bg-blue-200 transition text-sm ml-0 md:ml-auto"
+          disabled={!Array.isArray(filteredStudents) || filteredStudents.length === 0}
+          style={{ minWidth: 140 }}
+          title="Download as CSV"
+        >
+          Download CSV
+        </button>
+      </div>
+      {/* Search/Add */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-2 mb-4">
         <div className="flex items-center space-x-2 w-full md:w-auto">
           <input
@@ -131,7 +147,7 @@ export default function StudentManager() {
           <Plus size={18} /> Add Student
         </Button>
       </div>
-
+      {/* Table */}
       <div className="rounded-2xl shadow-lg overflow-x-auto bg-white">
         <Table>
           <TableHeader>
@@ -239,7 +255,6 @@ export default function StudentManager() {
           </TableBody>
         </Table>
       </div>
-
       {/* Add/Edit Modal */}
       {showModal && (
         <StudentModal
@@ -248,7 +263,6 @@ export default function StudentManager() {
           student={editingStudent}
         />
       )}
-
       {/* Delete dialog */}
       {deleteStudent && (
         <StudentDeleteDialog
