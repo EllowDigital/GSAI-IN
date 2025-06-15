@@ -2,14 +2,12 @@
 import React from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  DollarSign,
-  Users,
-  BookOpen,
-  Newspaper,
-  Image,
-  Calendar,
+  DollarSign, Users, BookOpen, Newspaper, Image, Calendar,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  safeCount,
+} from "@/utils/dashboardStats";
 
 const entities = [
   { name: "Fees", icon: DollarSign, table: "fees", color: "text-green-600" },
@@ -26,7 +24,6 @@ export default function FastStats() {
 
   React.useEffect(() => {
     let ignore = false;
-
     async function fetchCounts() {
       setLoading(true);
       const results: Record<string, number> = {};

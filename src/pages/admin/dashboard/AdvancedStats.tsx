@@ -1,7 +1,15 @@
+
 import React from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, List, Users, BookOpen, Newspaper, Image, Calendar } from "lucide-react";
+import {
+  aggregateFees,
+  studentsByProgram,
+  getLatestTitlesAll,
+  safeCount,
+  getNextEvent
+} from "@/utils/dashboardStats";
 
 function useAdvancedStats() {
   const [data, setData] = React.useState<any>({});
@@ -11,66 +19,36 @@ function useAdvancedStats() {
     let ignore = false;
     async function getStats() {
       setLoading(true);
-      // Fees breakdown
-      let paidSum = 0, unpaidCount = 0, totalFees = 0;
-      {
-        const { data: fees } = await supabase.from("fees").select("*");
-        if (Array.isArray(fees)) {
-          paidSum = fees.filter((f: any) => f.status === "paid").reduce((sum: number, f: any) => sum + Number(f.paid_amount ?? 0), 0);
-          unpaidCount = fees.filter((f: any) => f.status !== "paid").length;
-          totalFees = fees.length;
-        }
-      }
-      // Student by program
-      let programCounts: Record<string, number> = {};
-      let studentTotal = 0;
-      {
-        const { data: studs } = await supabase.from("students").select("program");
-        if (Array.isArray(studs)) {
-          studentTotal = studs.length;
-          for (const s of studs) {
-            if (!s.program) continue;
-            programCounts[s.program] = (programCounts[s.program] || 0) + 1;
-          }
-        }
-      }
-      // Blogs recent
-      let latestBlogs: string[] = [];
-      {
-        const { data: blogs } = await supabase.from("blogs").select("title").order("published_at", { ascending: false }).limit(3);
-        if (Array.isArray(blogs)) latestBlogs = blogs.map((b: any) => b.title);
-      }
-      // News recent
-      let latestNews: string[] = [];
-      {
-        const { data: news } = await supabase.from("news").select("title").order("date", { ascending: false }).limit(3);
-        if (Array.isArray(news)) latestNews = news.map((n: any) => n.title);
-      }
-      // Gallery images count
-      let galleryCount = 0;
-      {
-        const { count } = await supabase.from("gallery_images").select("id", { count: "exact", head: true });
-        galleryCount = count ?? 0;
-      }
-      // Events latest
-      let eventCount = 0;
-      let nextEvent: string | null = null;
-      {
-        const { data: events } = await supabase.from("events").select("title, date").order("date", { ascending: true });
-        if (Array.isArray(events)) {
-          eventCount = events.length;
-          const now = new Date();
-          const next = events.find((e: any) => new Date(e.date) >= now);
-          if (next) nextEvent = `${next.title} (${next.date})`;
-        }
-      }
+      // Fetch all data in batches and only aggregate after fetch
+      const [feesRes, studentsRes, blogsRes, newsRes, galleryRes, eventsRes] = await Promise.all([
+        supabase.from("fees").select("*"),
+        supabase.from("students").select("program"),
+        supabase.from("blogs").select("title, published_at").order("published_at", { ascending: false }),
+        supabase.from("news").select("title, date").order("date", { ascending: false }),
+        supabase.from("gallery_images").select("id"),
+        supabase.from("events").select("title, date").order("date", { ascending: true }),
+      ]);
+
+      const fees = Array.isArray(feesRes.data) ? feesRes.data : [];
+      const students = Array.isArray(studentsRes.data) ? studentsRes.data : [];
+      const blogs = Array.isArray(blogsRes.data) ? blogsRes.data : [];
+      const news = Array.isArray(newsRes.data) ? newsRes.data : [];
+      const gallery = Array.isArray(galleryRes.data) ? galleryRes.data : [];
+      const events = Array.isArray(eventsRes.data) ? eventsRes.data : [];
+
+      // Perform robust/advanced aggregation
+      const feesAgg = aggregateFees(fees);
+      const studentsProg = studentsByProgram(students);
+      const latestBlogs = getLatestTitlesAll(blogs, 3);
+      const latestNews = getLatestTitlesAll(news, 3);
+      const galleryCount = safeCount(gallery);
+      const eventCount = safeCount(events);
+      const nextEvent = getNextEvent(events);
+
       if (!ignore) {
         setData({
-          paidSum,
-          unpaidCount,
-          totalFees,
-          programCounts,
-          studentTotal,
+          ...feesAgg,
+          ...studentsProg,
           latestBlogs,
           latestNews,
           galleryCount,
@@ -105,9 +83,10 @@ export default function AdvancedStats() {
           <CardContent>
             {loading ? "Loading..." : (
               <ul className="text-sm space-y-1">
-                <li><b>Total Fee Records:</b> {data.totalFees}</li>
+                <li><b>Total Fee Records:</b> {data.total}</li>
                 <li><b>Total Paid:</b> ₹{data.paidSum}</li>
-                <li><b>Unpaid/Other:</b> {data.unpaidCount}</li>
+                <li><b>Partial Paid:</b> ₹{data.partialSum}</li>
+                <li><b>Completely Unpaid Count:</b> {data.unpaidCount}</li>
               </ul>
             )}
           </CardContent>
@@ -121,19 +100,19 @@ export default function AdvancedStats() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {loading ? "Loading..." : data.studentTotal === 0 ? (
+            {loading ? "Loading..." : data.total === 0 ? (
               <div>No students</div>
             ) : (
               <div>
                 <ul className="text-sm space-y-1">
-                  <li><b>Total Students:</b> {data.studentTotal}</li>
+                  <li><b>Total Students:</b> {data.total}</li>
                   <li><b>By Program:</b></li>
                   <ul className="ml-4 list-disc">
-                    {data && data.programCounts
-                      ? Object.entries(data.programCounts).length === 0 ? (
+                    {data && data.byProgram
+                      ? Object.entries(data.byProgram).length === 0 ? (
                           <li>No programs</li>
                         ) : (
-                          Object.entries(data.programCounts).map(([prog, count]) => (
+                          Object.entries(data.byProgram).map(([prog, count]) => (
                             <li key={prog}>{String(prog)}: {String(count)}</li>
                           ))
                         )
