@@ -95,7 +95,7 @@ export default function ContactSection() {
             value="New Contact Form Submission from Ghatak Sports Academy"
           />
           <input type="hidden" name="_captcha" value="false" />
-          <input type="hidden" name="_next" value="https://ghatakgsai.netlify.app/assets/pages/success.html" />
+          <input type="hidden" name="_next" value="https://ghatakgsai.netlify.app/pages/success.html" />
           <input
             type="text"
             name="_honey"
