@@ -1,23 +1,27 @@
-
+import Seo from "../components/Seo";
 import Navbar from "../components/Navbar";
+
 import HeroSection from "../components/HeroSection";
 import AboutSection from "../components/AboutSection";
 import FounderSection from "../components/FounderSection";
 import ProgramsSection from "../components/ProgramsSection";
+import AchievementSection from "../components/AchievementSection";
+import TestimonialSection from "../components/TestimonialSection";
+
 import EventsSection from "../components/EventsSection";
+import GallerySection from "../components/GallerySection";
+
 import NewsSection from "../components/NewsSection";
 import BlogNewsSection from "../components/BlogNewsSection";
-import GallerySection from "../components/GallerySection";
-import RecognitionAffiliationsSection from "../components/RecognitionAffiliationsSection";
-import FaqSection from "../components/FaqSection";
-import LocationSection from "../components/LocationSection";
-import FooterSection from "../components/FooterSection";
-import ContactSection from "../components/ContactSection";
-import Seo from "../components/Seo";
-import TestimonialSection from "../components/TestimonialSection";
-import AchievementSection from "../components/AchievementSection";
 
-// Organization Structured Data for homepage rich snippet
+import FaqSection from "../components/FaqSection";
+import ContactSection from "../components/ContactSection";
+import LocationSection from "../components/LocationSection";
+
+import RecognitionAffiliationsSection from "../components/RecognitionAffiliationsSection";
+import FooterSection from "../components/FooterSection";
+
+// Structured data for SEO rich snippets
 const orgStructuredData = {
   "@context": "https://schema.org",
   "@type": "SportsOrganization",
@@ -47,35 +51,37 @@ const orgStructuredData = {
 export default function Index() {
   return (
     <div className="bg-background w-full min-h-screen flex flex-col font-montserrat">
-      {/* SEO: Title, meta, canonical, JSON-LD. */}
+      {/* SEO Meta Tags & Structured Data */}
       <Seo
         title="Ghatak Sports Academy India™ | Martial Arts, Fitness & Personal Excellence"
         description="Join Ghatak Sports Academy India™ for world-class martial arts, fitness, and self-development programs. Explore training, events, latest news and a vibrant sports community."
         canonical="https://ghatakgsai.netlify.app/"
         image="https://ghatakgsai.netlify.app/assets/img/logo.webp"
-        structuredData={[
-          orgStructuredData
-        ]}
+        structuredData={[orgStructuredData]}
       />
-      {/* Sticky Navbar */}
+
+      {/* Navbar */}
       <Navbar />
+
+      {/* Main Content */}
       <main className="pt-16 md:pt-20 flex-1 flex flex-col gap-0">
-        {/* Use semantic sections and proper heading order (SEO best practice) */}
         <HeroSection />
-        <ProgramsSection />
         <AboutSection />
         <FounderSection />
+        <ProgramsSection />
         <AchievementSection />
+        <TestimonialSection />
         <EventsSection />
         <GallerySection />
-        <TestimonialSection />
-        <RecognitionAffiliationsSection />
         <NewsSection />
         <BlogNewsSection />
         <FaqSection />
         <ContactSection />
         <LocationSection />
+        <RecognitionAffiliationsSection />
       </main>
+
+      {/* Footer */}
       <FooterSection />
     </div>
   );
