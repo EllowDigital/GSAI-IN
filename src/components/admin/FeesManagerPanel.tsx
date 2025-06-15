@@ -1,6 +1,6 @@
 
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import FeeSummaryCard from "./FeeSummaryCard";
@@ -21,6 +21,22 @@ export default function FeesManagerPanel() {
   const [editFee, setEditFee] = useState<any | null>(null);
   const [historyDrawerOpen, setHistoryDrawerOpen] = useState(false);
   const [historyStudent, setHistoryStudent] = useState<any | null>(null);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("public:fees:fees-manager")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "fees" },
+        () => queryClient.invalidateQueries({ queryKey: ["fees"] })
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   // Fetch students
   const { data: students, isLoading: loadingStudents } = useQuery({
@@ -46,7 +62,6 @@ export default function FeesManagerPanel() {
       if (error) throw error;
       return data || [];
     },
-    refetchInterval: 2000,
   });
 
   // All fees for history drawer
@@ -58,7 +73,6 @@ export default function FeesManagerPanel() {
       return data || [];
     },
     enabled: historyDrawerOpen,
-    refetchInterval: historyDrawerOpen ? 2000 : false,
   });
 
   // Compose filtered rows
