@@ -18,6 +18,8 @@ import FeesManager from "./pages/admin/dashboard/FeesManager";
 import Events from "./pages/admin/dashboard/Events";
 import Preloader from "./components/Preloader";
 import React from "react";
+import PrivacyPage from "./pages/PrivacyPage";
+import TermsPage from "./pages/TermsPage";
 
 const queryClient = new QueryClient();
 
@@ -61,6 +63,9 @@ const App = () => {
                   </AdminAuthProvider>
                 }
               />
+              {/* CUSTOM ROUTES */}
+              <Route path="/privacy" element={<PrivacyPage />} />
+              <Route path="/terms" element={<TermsPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
