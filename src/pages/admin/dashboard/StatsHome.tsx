@@ -1,3 +1,4 @@
+
 import React from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -18,42 +19,42 @@ const cardsConfig = [
     key: "fees",
     label: "Fee Records",
     icon: BadgeDollarSign,
-    color: "bg-green-100 text-green-800",
+    color: "from-green-100 to-green-200/80 text-green-800 border-green-200",
     table: "fees",
   },
   {
     key: "students",
     label: "Students",
     icon: Users,
-    color: "bg-yellow-100 text-yellow-800",
+    color: "from-yellow-100 to-yellow-200/80 text-yellow-800 border-yellow-200",
     table: "students",
   },
   {
     key: "blogs",
     label: "Blogs",
     icon: BookOpen,
-    color: "bg-blue-100 text-blue-800",
+    color: "from-blue-100 to-blue-200/80 text-blue-800 border-blue-200",
     table: "blogs",
   },
   {
     key: "news",
     label: "News",
     icon: Newspaper,
-    color: "bg-orange-100 text-orange-700",
+    color: "from-orange-100 to-orange-200/80 text-orange-800 border-orange-200",
     table: "news",
   },
   {
     key: "gallery",
     label: "Gallery Images",
     icon: GalleryIcon,
-    color: "bg-pink-100 text-pink-700",
+    color: "from-pink-100 to-pink-200/80 text-pink-800 border-pink-200",
     table: "gallery_images",
   },
   {
     key: "events",
     label: "Events",
     icon: Calendar,
-    color: "bg-purple-100 text-purple-800",
+    color: "from-purple-100 to-purple-200/80 text-purple-800 border-purple-200",
     table: "events",
   },
 ];
@@ -114,11 +115,15 @@ export default function StatsHome() {
       {/* Responsive card stats grid */}
       <StatsCards cardsConfig={cardsConfig} counts={counts} loading={loading} />
 
-      {/* Analytics Chart */}
-      <AnalyticsChart analyticsData={analyticsData} />
-
-      {/* Improved Advanced Panel */}
-      <AdvancedPanel />
+      {/* Main dashboard section with Chart and Advanced Panel */}
+      <div className="mt-8 sm:mt-10 grid grid-cols-1 lg:grid-cols-5 gap-8 sm:gap-10">
+        <div className="lg:col-span-3">
+          <AnalyticsChart analyticsData={analyticsData} />
+        </div>
+        <div className="lg:col-span-2">
+          <AdvancedPanel />
+        </div>
+      </div>
     </div>
   );
 }
