@@ -1,3 +1,4 @@
+
 import { Youtube, Mail, MapPin, Instagram } from "lucide-react";
 
 const quickLinks = [
@@ -5,6 +6,8 @@ const quickLinks = [
   { name: "Programs", href: "#programs" },
   { name: "Gallery", href: "#gallery" },
   { name: "Contact", href: "#contact" },
+  { name: "Privacy", href: "/privacy" },
+  { name: "Terms", href: "/terms" },
 ];
 
 export default function FooterSection() {
@@ -92,3 +95,4 @@ export default function FooterSection() {
     </footer>
   );
 }
+
