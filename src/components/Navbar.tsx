@@ -8,7 +8,7 @@ import {
 
 // Only keep essential links for navigation clarity
 const navLinks = [
-  { name: "Home", href: "#" },
+  { name: "Home", href: "/" },
   { name: "About", href: "#about" },
   { name: "Programs", href: "#programs" },
   { name: "Gallery", href: "#gallery" },
@@ -35,14 +35,15 @@ export default function Navbar() {
   return (
     <nav className="w-full fixed z-50 top-0 left-0 bg-white/90 backdrop-blur border-b border-yellow-100 shadow-md transition-all">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-2 xs:px-3 sm:px-5 md:px-8 lg:px-10 py-2 md:py-3">
-        {/* Logo/Brand name and Title */}
+        {/* SEO: logo img uses descriptive alt */}
         <a
-          href="#"
+          href="/"
           className="flex items-center gap-2 xs:gap-3 font-black text-base xs:text-lg md:text-xl tracking-wider text-red-700 select-none"
         >
           <img
             src="/assets/img/logo.webp"
-            alt="GSAI Logo"
+            alt="Ghatak Sports Academy India™ official logo"
+            loading="eager"
             className="w-9 h-9 xs:w-10 xs:h-10 rounded-full border-2 border-yellow-400 shadow-sm"
           />
           <span className="hidden xs:inline font-extrabold text-base xs:text-lg tracking-tighter">GSAI</span>

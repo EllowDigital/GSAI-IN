@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Users, Info, Sparkles } from "lucide-react";
 
@@ -6,8 +5,10 @@ export default function AboutSection() {
   return (
     <section
       id="about"
+      role="region"
+      aria-label="About Ghatak Sports Academy India"
       className="relative px-2 xs:px-4 py-14 xs:py-20 md:py-28
-        bg-gradient-to-br from-white via-yellow-50 to-red-50 border-b border-gray-100
+        bg-white border-b border-gray-100 shadow-sm
         overflow-hidden"
     >
       {/* Soft Sparkle BG */}
@@ -31,6 +32,9 @@ export default function AboutSection() {
             </span>
           </div>
           <div className="font-extrabold text-xl xs:text-2xl text-yellow-400 text-center mb-2">
+            <h2>
+              About <span className="sr-only">Ghatak Sports Academy India™</span>
+            </h2>
             About Ghatak Sports Academy India™
           </div>
           <div className="h-[5px] w-16 xs:w-20 mx-auto bg-gradient-to-r from-yellow-400 via-yellow-200 to-red-300 rounded-full shadow" />

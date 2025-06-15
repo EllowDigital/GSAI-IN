@@ -55,9 +55,9 @@ export default function GallerySection() {
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col items-center mb-7 gap-2">
           <div className="flex items-center gap-2 justify-center w-full">
-            <GalleryHorizontal size={32} className="text-yellow-400" />
+            <GalleryHorizontal size={32} className="text-yellow-400" aria-hidden="true" />
             <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-500 tracking-tight drop-shadow text-center w-full">
-              Academy Photo Gallery
+              <span>Academy Photo Gallery</span>
             </h2>
           </div>
           <p className="text-base md:text-lg font-medium text-gray-500 text-center max-w-xl">
@@ -76,9 +76,9 @@ export default function GallerySection() {
               <img
                 key={img.id}
                 src={img.image_url}
-                alt={img.caption || `Gallery ${i + 1}`}
-                className="w-full aspect-[4/3] rounded-xl shadow hover:scale-105 transition-transform object-cover cursor-pointer"
+                alt={img.caption ? `GSAI photo: ${img.caption}` : `Academy event/training photo ${i + 1}`}
                 loading="lazy"
+                className="w-full aspect-[4/3] rounded-xl shadow hover:scale-105 transition-transform object-cover cursor-pointer"
                 onClick={() => setSelected(img.image_url)}
               />
             ))}
