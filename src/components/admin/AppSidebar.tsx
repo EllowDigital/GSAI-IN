@@ -1,6 +1,6 @@
 
 import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   Home,
   BadgeDollarSign,
@@ -33,7 +33,6 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
-  const location = useLocation();
   const { signOut } = useAdminAuth();
   const APP_VERSION = "1.0.0";
 
@@ -68,25 +67,41 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
         <ul className="space-y-1">
           {navItems.map(({ title, url, icon: Icon }) => (
             <li key={title}>
-              <NavLink
-                to={url}
-                end={url === "/"}
-                onClick={() => {
-                  // Close sidebar on mobile after nav click
-                  if (window.innerWidth < 768 && setOpen) setOpen(false);
-                }}
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-2 rounded-lg gap-3 transition-all font-medium
-                   hover:bg-yellow-100/80 ${
-                     isActive
-                       ? "bg-yellow-100 text-yellow-800"
-                       : "text-gray-700"
-                   }`
-                }
-              >
-                <Icon className="w-6 h-6 text-yellow-400" />
-                <span className="truncate">{title}</span>
-              </NavLink>
+              {url === "/" ? (
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center px-4 py-2 rounded-lg gap-3 transition-all font-medium hover:bg-yellow-100/80 text-gray-700"
+                  onClick={() => {
+                    // Close sidebar on mobile after nav click
+                    if (window.innerWidth < 768 && setOpen) setOpen(false);
+                  }}
+                >
+                  <Icon className="w-6 h-6 text-yellow-400" />
+                  <span className="truncate">{title}</span>
+                </a>
+              ) : (
+                <NavLink
+                  to={url}
+                  end
+                  onClick={() => {
+                    // Close sidebar on mobile after nav click
+                    if (window.innerWidth < 768 && setOpen) setOpen(false);
+                  }}
+                  className={({ isActive }) =>
+                    `flex items-center px-4 py-2 rounded-lg gap-3 transition-all font-medium
+                     hover:bg-yellow-100/80 ${
+                       isActive
+                         ? "bg-yellow-100 text-yellow-800"
+                         : "text-gray-700"
+                     }`
+                  }
+                >
+                  <Icon className="w-6 h-6 text-yellow-400" />
+                  <span className="truncate">{title}</span>
+                </NavLink>
+              )}
             </li>
           ))}
         </ul>
