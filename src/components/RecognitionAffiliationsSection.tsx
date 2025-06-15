@@ -7,7 +7,7 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "./ui/carousel";
-import { award } from "lucide-react";
+import { Award } from "lucide-react";
 
 const logos = [
   { name: "Government of India", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Emblem_of_India.svg/200px-Emblem_of_India.svg.png" },
@@ -28,6 +28,8 @@ export default function RecognitionAffiliationsSection() {
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col items-center mb-7 gap-2">
           <div className="flex items-center gap-3">
+            {/* Optionally, use the Award icon instead of an emoji */}
+            {/* <Award size={36} className="text-yellow-500 drop-shadow" /> */}
             <span className="text-3xl md:text-4xl text-yellow-500"><span role="img" aria-label="Awards">🏆</span></span>
             <h2 className="text-3xl md:text-4xl font-bold text-yellow-500 tracking-tight drop-shadow">
               Recognitions &amp; Affiliations
