@@ -1,5 +1,4 @@
-
-import { Youtube, Mail, MapPin } from "lucide-react";
+import { Youtube, Mail, MapPin, Instagram } from "lucide-react";
 
 const quickLinks = [
   { name: "Home", href: "/" },
@@ -66,6 +65,15 @@ export default function FooterSection() {
                 className="hover:text-red-500 transition rounded-full border border-transparent hover:border-red-500 p-1"
               >
                 <Youtube size={26} />
+              </a>
+              <a
+                href="https://www.instagram.com/ghatakgsai"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="hover:text-pink-500 transition rounded-full border border-transparent hover:border-pink-500 p-1"
+              >
+                <Instagram size={26} />
               </a>
               {/* Additional social icons can be added here */}
             </div>
