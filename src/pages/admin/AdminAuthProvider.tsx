@@ -1,3 +1,4 @@
+
 import React, { createContext, useEffect, useState, useContext, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
@@ -31,19 +32,28 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Force clear all session and admin state
+  function clearAdminState() {
+    setIsAdmin(false);
+    setSession(null);
+    setUserEmail(null);
+    setIsLoading(false);
+  }
+
   useEffect(() => {
-    // Listen for changes in auth state (login, logout, refresh)
+    // Listen for changes in auth state
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
       setUserEmail(newSession?.user?.email ?? null);
       setIsAdmin(newSession?.user?.email === ADMIN_EMAIL);
       setIsLoading(false);
 
-      // Only redirect in needed scenarios (no full reload)
+      // Redirect if not admin (no reload)
       if (
         !_event.startsWith("INITIAL") &&
         (!newSession || newSession?.user?.email !== ADMIN_EMAIL)
       ) {
+        clearAdminState();
         navigate("/admin/login", { replace: true });
       }
 
@@ -56,8 +66,10 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
       setUserEmail(session?.user?.email ?? null);
       setIsAdmin(session?.user?.email === ADMIN_EMAIL);
       setIsLoading(false);
-      // If not admin, redirect to login page with routing (not refresh)
+
+      // If not admin, redirect to login (no reload)
       if (!session?.user || session.user.email !== ADMIN_EMAIL) {
+        clearAdminState();
         navigate("/admin/login", { replace: true });
       }
       console.log("[Supabase Session Init]", session);
@@ -74,15 +86,14 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
     const { error, data } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       toast.error("Login failed: " + error.message);
+      clearAdminState();
       setIsLoading(false);
       return;
     }
     if (data.user.email !== ADMIN_EMAIL) {
       toast.error("Only the designated admin account can access the dashboard.");
       await supabase.auth.signOut();
-      setIsAdmin(false);
-      setSession(null);
-      setUserEmail(null);
+      clearAdminState();
       setIsLoading(false);
       return;
     }
@@ -96,16 +107,13 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
     navigate("/admin/dashboard", { replace: true });
   };
 
-  // Logout with redirect to home ("/"), use react-router navigation
+  // Logout: always clear state & redirect home
   const signOut = async () => {
     await supabase.auth.signOut();
-    setIsAdmin(false);
-    setSession(null);
-    setUserEmail(null);
+    clearAdminState();
 
     toast.success("Logged out.");
     console.log("[Admin SignOut]");
-    // Redirect to homepage after logout
     navigate("/", { replace: true });
   };
 
@@ -124,3 +132,4 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 export function useAdminAuth() {
   return useContext(AdminAuthContext);
 }
+
