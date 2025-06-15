@@ -19,7 +19,8 @@ export default function PWAInstallButton() {
     const isAdminRoute = window.location.pathname.startsWith("/admin");
     if (
       (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
-      window.navigator.standalone === true ||
+      // Fix: use type assertion to avoid TS error
+      (window.navigator as any).standalone === true ||
       isAdminRoute
     ) {
       setShowButton(false);
@@ -61,3 +62,4 @@ export default function PWAInstallButton() {
     </div>
   );
 }
+
