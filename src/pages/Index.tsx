@@ -11,6 +11,7 @@ import RecognitionAffiliationsSection from "../components/RecognitionAffiliation
 import FaqSection from "../components/FaqSection";
 import LocationSection from "../components/LocationSection";
 import FooterSection from "../components/FooterSection";
+import ContactSection from "../components/ContactSection";
 
 // Main page for Ghatak Sports Academy India™
 const Index = () => {
@@ -46,6 +47,9 @@ const Index = () => {
 
         {/* Frequently Asked Questions */}
         <FaqSection />
+
+        {/* Contact Form Section */}
+        <ContactSection />
 
         {/* Academy Location */}
         <LocationSection />
