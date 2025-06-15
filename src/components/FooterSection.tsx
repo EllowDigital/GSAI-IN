@@ -1,3 +1,4 @@
+
 import { Youtube, Mail, MapPin, Instagram } from "lucide-react";
 
 const quickLinks = [
@@ -83,13 +84,26 @@ export default function FooterSection() {
         </div>
       </div>
       {/* Footer bottom row */}
-      <div className="border-t border-gray-800 text-center py-5 px-2 text-xs xs:text-sm text-gray-500 bg-gray-950/90 flex flex-col xs:flex-row gap-2 xs:gap-4 items-center justify-center">
-        <span>
-          &copy; {new Date().getFullYear()} Ghatak Sports Academy India™. All rights reserved.
-        </span>
-        <span className="block">
-          Crafted by <span className="text-yellow-400 font-medium"><a href="https://ellowdigitals.me" target="_blank" rel="noopener noreferrer">EllowDigital</a></span>
-        </span>
+      <div className="relative z-10">
+        <div className="h-[1px] w-full bg-gradient-to-r from-yellow-400/20 via-transparent to-yellow-400/20 opacity-60" />
+        <div className="flex flex-col xs:flex-row gap-1 xs:gap-4 items-center justify-center bg-gradient-to-r from-gray-950 via-gray-900 to-gray-950 py-5 px-2">
+          <span className="text-xs xs:text-sm text-gray-400 tracking-wide block mb-0.5 xs:mb-0 text-center">
+            &copy; {new Date().getFullYear()} Ghatak Sports Academy India™. All rights reserved.
+          </span>
+          <span className="inline-flex items-center gap-1 text-xs xs:text-sm bg-gradient-to-r from-yellow-400/10 via-transparent to-red-500/10 px-2.5 py-1 rounded shadow-sm text-yellow-300 font-medium transition ring-1 ring-yellow-400/10 hover:ring-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+            Crafted with
+            <span className="animate-pulse text-yellow-400">&#9733;</span>
+            by
+            <a
+              href="https://ellowdigitals.me"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-yellow-400 font-bold transition-colors"
+            >
+              EllowDigital
+            </a>
+          </span>
+        </div>
       </div>
     </footer>
   );
