@@ -33,7 +33,7 @@ export default function FeeEditModal({
       if (!student?.id) return;
       const prevMonth = month === 1 ? 12 : month - 1;
       const prevYear = month === 1 ? year - 1 : year;
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("fees")
         .select("*")
         .eq("student_id", student.id)

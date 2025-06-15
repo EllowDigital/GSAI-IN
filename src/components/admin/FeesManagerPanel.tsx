@@ -1,16 +1,15 @@
+
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { useAdminRLS } from "./useAdminRLS";
-import FeeEditModal from "./FeeEditModal";
-import FeeHistoryDrawer from "./FeeHistoryDrawer";
 import FeeSummaryCard from "./FeeSummaryCard";
 import FeesTable from "./FeesTable";
-import { exportFeesToCsv } from "@/utils/exportToCsv";
+import FeeEditModal from "./FeeEditModal";
+import FeeHistoryDrawer from "./FeeHistoryDrawer";
 import FeesFilterBar from "./FeesFilterBar";
+import { exportFeesToCsv } from "@/utils/exportToCsv";
 
-// Main Fees Management Controller panel
 export default function FeesManagerPanel() {
   const now = new Date();
   const [filterMonth, setFilterMonth] = useState(now.getMonth() + 1);
@@ -23,21 +22,13 @@ export default function FeesManagerPanel() {
   const [historyDrawerOpen, setHistoryDrawerOpen] = useState(false);
   const [historyStudent, setHistoryStudent] = useState<any | null>(null);
 
-  const {
-    adminEmail,
-    isAdminInTable,
-    rlsError,
-    checkingAdminEntry,
-    canSubmitFeeEdits,
-  } = useAdminRLS();
-
   // Fetch students
   const { data: students, isLoading: loadingStudents } = useQuery({
     queryKey: ["students"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("students")
-        .select("id, name, program, default_monthly_fee");
+        .select("id, name, program, default_monthly_fee, profile_image_url");
       if (error) throw error;
       return data || [];
     },
@@ -58,7 +49,7 @@ export default function FeesManagerPanel() {
     refetchInterval: 2000,
   });
 
-  // All fees for history drawer (for selected student)
+  // All fees for history drawer
   const { data: allFees } = useQuery({
     queryKey: ["fees", "all"],
     queryFn: async () => {
@@ -70,45 +61,34 @@ export default function FeesManagerPanel() {
     refetchInterval: historyDrawerOpen ? 2000 : false,
   });
 
-  // Compose table rows (student + fees)
+  // Compose filtered rows
   const rows = Array.isArray(students)
     ? students
-        .map((student) => {
-          const fee = fees?.find((f) => f.student_id === student.id) || null;
-          return { student, fee };
-        })
-        .filter((row) => {
-          if (
-            filterName &&
-            !row.student.name.toLowerCase().includes(filterName.toLowerCase())
-          )
-            return false;
-          if (filterStatus) {
-            const status = row.fee
-              ? (row.fee.status || "unpaid").toLowerCase()
-              : "unpaid";
-            return status === filterStatus.toLowerCase();
-          }
-          return true;
-        })
+      .map((student) => {
+        const fee = fees?.find((f) => f.student_id === student.id) || null;
+        return { student, fee };
+      })
+      .filter((row) => {
+        if (
+          filterName &&
+          !row.student.name.toLowerCase().includes(filterName.toLowerCase())
+        ) return false;
+        if (filterStatus) {
+          const status = row.fee
+            ? (row.fee.status || "unpaid").toLowerCase()
+            : "unpaid";
+          return status === filterStatus.toLowerCase();
+        }
+        return true;
+      })
     : [];
 
-  // Handler for editing fee (edit or add)
+  // Handlers
   const handleEditFee = ({ student, fee }: { student: any; fee?: any }) => {
-    if (!canSubmitFeeEdits()) {
-      toast({
-        title: "RLS Error",
-        description: "You're not authorized to save or edit fees.",
-        variant: "error",
-      });
-      return;
-    }
     setEditStudent(student);
     setEditFee(fee);
     setModalOpen(true);
   };
-
-  // Handler for showing fee history
   const handleShowHistory = (student: any) => {
     setHistoryStudent(student);
     setHistoryDrawerOpen(true);
@@ -116,7 +96,6 @@ export default function FeesManagerPanel() {
 
   return (
     <div>
-      {/* Summary / Export */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-2">
         <FeeSummaryCard fees={fees || []} loading={loadingFees} />
         <button
@@ -127,8 +106,6 @@ export default function FeesManagerPanel() {
           Export CSV
         </button>
       </div>
-
-      {/* Filters - ONLY rendered here */}
       <FeesFilterBar
         filterMonth={filterMonth}
         filterYear={filterYear}
@@ -139,8 +116,6 @@ export default function FeesManagerPanel() {
         setFilterStatus={setFilterStatus}
         setFilterName={setFilterName}
       />
-
-      {/* Fee Table - NO filter UI, only filtered data */}
       <FeesTable
         students={students}
         fees={fees}
@@ -148,8 +123,6 @@ export default function FeesManagerPanel() {
         onEditFee={handleEditFee}
         onShowHistory={handleShowHistory}
       />
-
-      {/* Fee Edit Modal */}
       {modalOpen && (
         <FeeEditModal
           open={modalOpen}
@@ -158,13 +131,8 @@ export default function FeesManagerPanel() {
           fee={editFee}
           month={filterMonth}
           year={filterYear}
-          adminDebug={{
-            isAdminInTable,
-            canSubmitFeeEdits: canSubmitFeeEdits(),
-          }}
         />
       )}
-      {/* Payment History Drawer */}
       {historyDrawerOpen && (
         <FeeHistoryDrawer
           open={historyDrawerOpen}
@@ -173,7 +141,6 @@ export default function FeesManagerPanel() {
           allFees={allFees}
         />
       )}
-      {/* Removed all admin/debug/troubleshooting UI */}
     </div>
   );
 }

@@ -105,7 +105,7 @@ export type Database = {
           monthly_fee: number
           notes: string | null
           paid_amount: number
-          status: string
+          status: string | null
           student_id: string
           updated_at: string | null
           year: number
@@ -115,13 +115,13 @@ export type Database = {
           created_at?: string | null
           id?: string
           month: number
-          monthly_fee?: number
+          monthly_fee: number
           notes?: string | null
           paid_amount?: number
-          status?: string
+          status?: string | null
           student_id: string
           updated_at?: string | null
-          year?: number
+          year: number
         }
         Update: {
           balance_due?: number
@@ -131,7 +131,7 @@ export type Database = {
           monthly_fee?: number
           notes?: string | null
           paid_amount?: number
-          status?: string
+          status?: string | null
           student_id?: string
           updated_at?: string | null
           year?: number

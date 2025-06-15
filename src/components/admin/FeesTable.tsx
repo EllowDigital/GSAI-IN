@@ -33,14 +33,9 @@ export default function FeesTable({
   onEditFee: (args: { student: any, fee?: any }) => void;
   onShowHistory: (student: any) => void;
 }) {
-  // Defensive: loading or no data
-  if (isLoading) {
-    return <div className="w-full py-10 flex items-center justify-center">Loading students & fees...</div>;
-  }
-  if (!Array.isArray(students) || students.length === 0) {
+  if (isLoading) return <div className="w-full py-10 flex items-center justify-center">Loading students & fees...</div>;
+  if (!Array.isArray(students) || students.length === 0)
     return <div className="w-full py-10 text-center text-gray-400">No students found.</div>;
-  }
-  // Map: For current month, merge fees into student rows
   const rows = students.map((student) => {
     const fee = fees?.find(f => f.student_id === student.id) || null;
     return { student, fee };
@@ -48,7 +43,6 @@ export default function FeesTable({
 
   return (
     <div className="w-full">
-      {/* Table */}
       <div className="rounded-2xl shadow-lg overflow-x-auto bg-white">
         <Table>
           <TableHeader>
