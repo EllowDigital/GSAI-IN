@@ -6,6 +6,8 @@ import { useEventsQuery } from "@/hooks/useEventsQuery";
 
 const EventsSection: React.FC = () => {
   const { data: events, isLoading, error, isFetching } = useEventsQuery();
+  // Make sure we always deal with an array
+  const eventList = events ?? [];
 
   return (
     <section className="w-full py-14 px-2 xs:px-4 md:px-8 bg-gradient-to-br from-yellow-50 via-white to-red-50 border-b border-yellow-100" id="events">
@@ -28,7 +30,7 @@ const EventsSection: React.FC = () => {
               Retry Now
             </button>
           </div>
-        ) : events && events.length === 0 ? (
+        ) : eventList.length === 0 ? (
           <div className="text-center text-muted-foreground mt-10 mb-6 text-lg font-semibold py-12">
             No events available at the moment.<br />
             <span className="text-yellow-400">Stay tuned for new updates!</span>
@@ -36,7 +38,7 @@ const EventsSection: React.FC = () => {
         ) : (
           <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
             <AnimatePresence>
-              {events?.map((event, idx) => (
+              {eventList.map((event, idx) => (
                 <motion.div
                   key={event.id}
                   className="rounded-2xl shadow-xl border bg-white overflow-hidden flex flex-col hover:scale-[1.03] transition-transform duration-200 group"
