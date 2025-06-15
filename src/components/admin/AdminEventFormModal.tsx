@@ -1,5 +1,12 @@
+
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,7 +15,15 @@ import { supabase } from "@/integrations/supabase/client";
 import EventImageUploader from "./EventImageUploader";
 import Spinner from "@/components/ui/spinner";
 import { Tables } from "@/integrations/supabase/types";
+import { format } from "date-fns";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 
 type EventRow = Tables<"events">;
 
@@ -27,7 +42,11 @@ const EMPTY: Partial<EventRow> = {
   tag: "",
 };
 
-const AdminEventFormModal: React.FC<ModalProps> = ({ open, onOpenChange, editingEvent }) => {
+const AdminEventFormModal: React.FC<ModalProps> = ({
+  open,
+  onOpenChange,
+  editingEvent,
+}) => {
   const [form, setForm] = useState<Partial<EventRow>>(EMPTY);
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -121,6 +140,55 @@ const AdminEventFormModal: React.FC<ModalProps> = ({ open, onOpenChange, editing
     setLoading(false);
   };
 
+  // Helper for date buttons
+  function DatePickerField({
+    label,
+    value,
+    onChange,
+    placeholder = "Pick a date",
+    minDate,
+    maxDate,
+  }: {
+    label: string;
+    value: string | null | undefined;
+    onChange: (d: Date | undefined) => void;
+    placeholder?: string;
+    minDate?: Date;
+    maxDate?: Date;
+  }) {
+    const parsedVal = value ? new Date(value) : undefined;
+    return (
+      <div className="flex flex-col">
+        <span className="font-medium mb-1 text-sm">{label}</span>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant={"outline"}
+              className={cn(
+                "w-full sm:w-[200px] justify-start text-left font-normal",
+                !parsedVal && "text-muted-foreground"
+              )}
+              type="button"
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {parsedVal ? format(parsedVal, "PPP") : <span>{placeholder}</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={parsedVal}
+              onSelect={onChange}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+              disabled={undefined}
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
+    );
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -128,20 +196,36 @@ const AdminEventFormModal: React.FC<ModalProps> = ({ open, onOpenChange, editing
           <DialogTitle>{editingEvent ? "Edit Event" : "Add New Event"}</DialogTitle>
           <DialogDescription>All fields required.</DialogDescription>
         </DialogHeader>
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <Input
-            placeholder="Title"
-            value={form.title ?? ""}
-            onChange={(e) => handleChange("title", e.target.value)}
-            required
-          />
-          <Textarea
-            placeholder="Description"
-            rows={4}
-            value={form.description ?? ""}
-            onChange={(e) => handleChange("description", e.target.value)}
-            required
-          />
+        <form
+          className="space-y-5 pt-1 px-1"
+          onSubmit={handleSubmit}
+          autoComplete="off"
+        >
+          <div className="flex flex-col gap-4">
+            <label className="font-medium text-sm" htmlFor="event-title">
+              Title
+            </label>
+            <Input
+              id="event-title"
+              placeholder="Title"
+              value={form.title ?? ""}
+              onChange={(e) => handleChange("title", e.target.value)}
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-4">
+            <label className="font-medium text-sm" htmlFor="event-description">
+              Description
+            </label>
+            <Textarea
+              id="event-description"
+              placeholder="Description"
+              rows={4}
+              value={form.description ?? ""}
+              onChange={(e) => handleChange("description", e.target.value)}
+              required
+            />
+          </div>
           <EventImageUploader
             imageFile={imageFile}
             setImageFile={setImageFile}
@@ -153,34 +237,33 @@ const AdminEventFormModal: React.FC<ModalProps> = ({ open, onOpenChange, editing
               setForm((f) => ({ ...f, image_url: "" }));
             }}
           />
-          <div className="flex gap-3">
-            <div>
-              <div className="font-medium mb-1 text-sm">From Date</div>
-              <Calendar
-                mode="single"
-                selected={form.from_date ? new Date(form.from_date) : undefined}
-                onSelect={(date) => handleDateChange("from_date", date)}
-                initialFocus
-              />
-            </div>
-            <div>
-              <div className="font-medium mb-1 text-sm">End Date</div>
-              <Calendar
-                mode="single"
-                selected={form.end_date ? new Date(form.end_date) : undefined}
-                onSelect={(date) => handleDateChange("end_date", date)}
-                initialFocus
-              />
-            </div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-between">
+            <DatePickerField
+              label="From Date"
+              value={form.from_date}
+              onChange={(date) => handleDateChange("from_date", date)}
+            />
+            <DatePickerField
+              label="End Date"
+              value={form.end_date}
+              onChange={(date) => handleDateChange("end_date", date)}
+              minDate={form.from_date ? new Date(form.from_date) : undefined}
+            />
           </div>
-          <Input
-            placeholder="Tag (optional, e.g. Seminar, Tournament)"
-            value={form.tag ?? ""}
-            onChange={(e) => handleChange("tag", e.target.value)}
-            maxLength={32}
-          />
-          <div className="flex justify-end">
-            <Button type="submit" disabled={loading} className="rounded-xl">
+          <div className="flex flex-col gap-4">
+            <label className="font-medium text-sm" htmlFor="event-tag">
+              Tag <span className="text-xs text-gray-400">(optional)</span>
+            </label>
+            <Input
+              id="event-tag"
+              placeholder="Tag (e.g. Seminar, Tournament)"
+              value={form.tag ?? ""}
+              onChange={(e) => handleChange("tag", e.target.value)}
+              maxLength={32}
+            />
+          </div>
+          <div className="flex justify-end mt-1">
+            <Button type="submit" disabled={loading} className="rounded-xl min-w-[110px]">
               {loading ? <Spinner size={16} /> : editingEvent ? "Update" : "Create"}
             </Button>
           </div>
@@ -191,3 +274,4 @@ const AdminEventFormModal: React.FC<ModalProps> = ({ open, onOpenChange, editing
 };
 
 export default AdminEventFormModal;
+
