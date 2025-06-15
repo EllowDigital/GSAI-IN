@@ -51,7 +51,7 @@ export default function GallerySection() {
   }, []);
 
   return (
-    <section id="gallery" className="py-10 xs:py-16 px-2 xs:px-4 bg-gray-50">
+    <section id="gallery" className="py-10 xs:py-16 md:py-20 px-2 xs:px-3 md:px-4 bg-gray-50">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-400 mb-6 xs:mb-8 text-center">🖼️ Gallery</h2>
         {loading ? (
@@ -61,13 +61,13 @@ export default function GallerySection() {
         ) : images.length === 0 ? (
           <div className="text-gray-400 text-center py-16 font-semibold">No images yet.</div>
         ) : (
-          <div className="columns-2 xs:columns-3 md:columns-4 gap-2 xs:gap-4 space-y-2 xs:space-y-4">
+          <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 gap-3 xs:gap-5 md:gap-7">
             {images.map((img, i) => (
               <img
                 key={img.id}
                 src={img.image_url}
                 alt={img.caption || `Gallery ${i + 1}`}
-                className="w-full rounded-lg shadow-sm cursor-pointer mb-2 xs:mb-4 hover:opacity-90 transition"
+                className="w-full aspect-[4/3] rounded-lg shadow-sm cursor-pointer hover:opacity-85 transition object-cover"
                 loading="lazy"
                 onClick={() => setSelected(img.image_url)}
               />

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -52,12 +51,12 @@ export default function NewsSection() {
   }, []);
 
   return (
-    <section id="news" className="py-10 xs:py-16 px-2 xs:px-4 bg-background">
+    <section id="news" className="py-10 xs:py-14 md:py-20 px-2 xs:px-4 md:px-6 bg-background">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold mb-6 xs:mb-8 text-yellow-400 text-center">
+        <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold mb-5 xs:mb-8 text-yellow-400 text-center">
           🗞️ News
         </h2>
-        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-5 xs:gap-8">
+        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-4 xs:gap-6 md:gap-9">
           {loading ? (
             Array.from({ length: 3 }).map((_, idx) => (
               <div key={idx} className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col animate-pulse h-60" />
@@ -84,9 +83,7 @@ export default function NewsSection() {
                   <h3 className="text-base xs:text-lg font-bold mb-1 group-hover:text-red-600 transition">
                     {item.title}
                   </h3>
-                  <p className="text-gray-600 text-sm">
-                    {item.short_description ?? ""}
-                  </p>
+                  <p className="text-gray-600 text-sm">{item.short_description ?? ""}</p>
                 </div>
               </div>
             ))
