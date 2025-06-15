@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Sidebar,
@@ -61,10 +60,7 @@ export function AppSidebar() {
         flex-shrink-0
         transition-all duration-300
         flex flex-col
-        pt-4
         px-0
-        md:pt-4
-        md:px-0
         overflow-y-auto
       `}
       style={{
