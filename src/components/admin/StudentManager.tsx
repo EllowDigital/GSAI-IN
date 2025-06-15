@@ -1,23 +1,15 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, User } from "lucide-react";
+import { Plus } from "lucide-react";
 import StudentModal from "./StudentModal";
 import StudentDeleteDialog from "./StudentDeleteDialog";
 import { toast } from "@/components/ui/sonner";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import clsx from "clsx";
 import StudentSummaryCard from "./StudentSummaryCard";
 import { exportStudentsToCsv } from "@/utils/exportToCsv";
+import StudentsTable from "./students/StudentsTable";
+import StudentsCards from "./students/StudentsCards";
 
 // --- All required columns now reflected ---
 type StudentRow = {
@@ -32,17 +24,6 @@ type StudentRow = {
   created_at: string | null;
 };
 
-const TABLE_HEAD = [
-  "Avatar",
-  "Name",
-  "Aadhar Number",
-  "Program",
-  "Join Date",
-  "Parent Name",
-  "Parent Contact",
-  "Actions",
-];
-
 export default function StudentManager() {
   const [students, setStudents] = useState<StudentRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,6 +33,11 @@ export default function StudentManager() {
   const [search, setSearch] = useState("");
   const [sortCol, setSortCol] = useState<"name" | "program" | "join_date">("join_date");
   const [sortAsc, setSortAsc] = useState(false);
+
+  const [isClient, setIsClient] = React.useState(false);
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Realtime fetch with all required columns
   useEffect(() => {
@@ -112,6 +98,37 @@ export default function StudentManager() {
     return filtered;
   }, [students, search, sortCol, sortAsc]);
 
+  const requestSort = (key: "name" | "program" | "join_date") => {
+    const isAsc = sortCol === key ? !sortAsc : true;
+    setSortCol(key);
+    setSortAsc(isAsc);
+  };
+
+  const renderContent = () => {
+    const isMdUp = isClient && window.innerWidth >= 768;
+
+    if (isMdUp) {
+      return (
+        <StudentsTable
+          students={filteredStudents}
+          loading={loading}
+          onEdit={(student) => { setEditingStudent(student); setShowModal(true); }}
+          onDelete={setDeleteStudent}
+          sortConfig={{ key: sortCol, direction: sortAsc ? 'asc' : 'desc' }}
+          requestSort={requestSort}
+        />
+      );
+    }
+    return (
+      <StudentsCards
+        students={filteredStudents}
+        loading={loading}
+        onEdit={(student) => { setEditingStudent(student); setShowModal(true); }}
+        onDelete={setDeleteStudent}
+      />
+    );
+  }
+
   return (
     <div className="max-w-[98vw] mx-auto w-full">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-3">
@@ -145,120 +162,10 @@ export default function StudentManager() {
           <span className="inline xs:hidden">Add</span>
         </Button>
       </div>
-      {/* Table */}
-      <div className="rounded-2xl shadow-lg overflow-x-auto bg-white scrollbar-thin scrollbar-thumb-yellow-200 scrollbar-track-yellow-50">
-        <Table className="min-w-[700px]">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="min-w-[60px]">Avatar</TableHead>
-              <TableHead
-                className="cursor-pointer min-w-[110px]"
-                onClick={() => {
-                  if (sortCol !== "name") setSortCol("name");
-                  else setSortAsc(a => !a);
-                }}
-              >Name</TableHead>
-              <TableHead className="min-w-[130px]">Aadhar Number</TableHead>
-              <TableHead
-                className="cursor-pointer min-w-[120px]"
-                onClick={() => {
-                  if (sortCol !== "program") setSortCol("program");
-                  else setSortAsc(a => !a);
-                }}
-              >Program</TableHead>
-              <TableHead
-                className="cursor-pointer min-w-[115px]"
-                onClick={() => {
-                  if (sortCol !== "join_date") setSortCol("join_date");
-                  else setSortAsc(a => !a);
-                }}
-              >Join Date</TableHead>
-              <TableHead className="min-w-[120px]">Parent Name</TableHead>
-              <TableHead className="min-w-[120px]">Parent Contact</TableHead>
-              <TableHead className="min-w-[90px]">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={8}>
-                  <div className="py-8 flex items-center justify-center">
-                    <span className="animate-spin w-7 h-7 rounded-full border-4 border-yellow-300 border-t-transparent inline-block mr-2" />
-                    Loading students...
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : filteredStudents.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={8}>
-                  <div className="py-10 text-center text-gray-400">No students found.</div>
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredStudents.map(stu => (
-                <TableRow
-                  key={stu.id}
-                  className={clsx(
-                    "transition",
-                    "hover:bg-yellow-50",
-                    (filteredStudents.indexOf(stu) % 2 === 1) ? "bg-gray-50" : "bg-white"
-                  )}
-                >
-                  <TableCell>
-                    <Avatar className="h-9 w-9">
-                      {stu.profile_image_url ? (
-                        <AvatarImage src={stu.profile_image_url} alt={stu.name} className="object-cover" />
-                      ) : (
-                        <AvatarFallback className="bg-yellow-100">
-                          <User size={18} className="text-yellow-600" />
-                        </AvatarFallback>
-                      )}
-                    </Avatar>
-                  </TableCell>
-                  <TableCell className="font-semibold">{stu.name}</TableCell>
-                  <TableCell>{stu.aadhar_number}</TableCell>
-                  <TableCell>
-                    <span className="block max-w-[100px] truncate">{stu.program}</span>
-                  </TableCell>
-                  <TableCell>
-                    {stu.join_date
-                      ? new Date(stu.join_date).toLocaleDateString()
-                      : ""}
-                  </TableCell>
-                  <TableCell>
-                    <span className="block max-w-[110px] truncate">{stu.parent_name}</span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="block max-w-[110px] truncate">{stu.parent_contact}</span>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => { setEditingStudent(stu); setShowModal(true); }}
-                        className="rounded-full"
-                        aria-label="Edit"
-                      >
-                        <Edit size={16} />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => setDeleteStudent(stu)}
-                        className="rounded-full"
-                        aria-label="Delete"
-                      >
-                        <Trash2 size={16} />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+
+      {/* Table or Cards */}
+      {renderContent()}
+
       {/* Add/Edit Modal */}
       {showModal && (
         <StudentModal
@@ -277,6 +184,3 @@ export default function StudentManager() {
     </div>
   );
 }
-
-// This file is now getting quite long (over 240 lines). Consider refactoring into smaller components if you frequently modify or extend this functionality.
-
