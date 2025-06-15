@@ -67,14 +67,17 @@ export default defineConfig(({ mode }) => ({
         globIgnores: ['**/node_modules/**/*'],
         runtimeCaching: [
           {
-            urlPattern: /^\/admin(\/.*)?$/i,
+            urlPattern: /^\/admin($|\/.*)/,
             handler: "NetworkOnly",
             options: {
-              cacheName: "admin-pages",
+              cacheName: "no-cache-admin",
             },
           },
           {
-            urlPattern: ({ request }) => request.destination === "document" || request.destination === "script" || request.destination === "style",
+            urlPattern: ({ request }) =>
+              request.destination === "document" ||
+              request.destination === "script" ||
+              request.destination === "style",
             handler: "NetworkFirst",
             options: {
               cacheName: "app-shell",
