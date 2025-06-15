@@ -13,6 +13,7 @@ import LocationSection from "../components/LocationSection";
 import FooterSection from "../components/FooterSection";
 import ContactSection from "../components/ContactSection";
 import Seo from "../components/Seo";
+import TestimonialSection from "../components/TestimonialSection";
 
 // Organization Structured Data for homepage rich snippet
 const orgStructuredData = {
@@ -66,6 +67,7 @@ export default function Index() {
         <NewsSection />
         <BlogNewsSection />
         <GallerySection />
+        <TestimonialSection />
         <FaqSection />
         <ContactSection />
         <LocationSection />
