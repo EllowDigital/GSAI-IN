@@ -97,25 +97,33 @@ export default function FeeEditModal({
     }
     setLoading(true);
     let result, error;
-    const payload = fee && fee.id
-      ? {
-          monthly_fee,
-          paid_amount,
-          balance_due: calcBalance(),
-          notes: values.notes || null,
-          updated_at: new Date().toISOString()
-        }
-      : {
-          student_id: student.id,
-          month,
-          year,
-          monthly_fee,
-          paid_amount,
-          balance_due: calcBalance(),
-          notes: values.notes || null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        };
+
+    // Always include all required fields in payload
+    const basePayload = {
+      student_id: student.id,
+      month,
+      year,
+      monthly_fee,
+      paid_amount,
+      balance_due: calcBalance(),
+      notes: values.notes || null,
+      updated_at: new Date().toISOString()
+    };
+
+    let payload;
+    if (fee && fee.id) {
+      // For update: send all required fields!
+      payload = {
+        ...basePayload,
+      };
+      // created_at excluded/unchanged
+    } else {
+      // For create/upsert: need created_at and all required fields
+      payload = {
+        ...basePayload,
+        created_at: new Date().toISOString()
+      };
+    }
     console.log("[DEBUG] Submitting fee payload:", payload);
 
     if (fee && fee.id) {
