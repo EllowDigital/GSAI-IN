@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { FeeReceiptUploader } from "./FeeReceiptUploader";
 
 type Props = {
   student: any;
@@ -22,16 +24,20 @@ type Props = {
   onClose: () => void;
 };
 
-export function FeeForm({ student, fee, carryForward, month, year, adminDebug, loading, setLoading, onClose }: Props) {
+export function FeeForm({
+  student, fee, carryForward, month, year, adminDebug, loading, setLoading, onClose
+}: Props) {
   const form = useForm<{
     monthly_fee: number;
     paid_amount: number;
     notes: string;
+    receipt_url: string | null;
   }>({
     defaultValues: {
       monthly_fee: fee?.monthly_fee ?? student?.default_monthly_fee ?? 2000,
       paid_amount: fee?.paid_amount ?? 0,
       notes: fee?.notes ?? "",
+      receipt_url: fee?.receipt_url || null,
     }
   });
 
@@ -40,6 +46,7 @@ export function FeeForm({ student, fee, carryForward, month, year, adminDebug, l
       monthly_fee: fee?.monthly_fee ?? student?.default_monthly_fee ?? 2000,
       paid_amount: fee?.paid_amount ?? 0,
       notes: fee?.notes ?? "",
+      receipt_url: fee?.receipt_url || null,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fee, student]);
@@ -53,7 +60,7 @@ export function FeeForm({ student, fee, carryForward, month, year, adminDebug, l
     return bal;
   };
 
-  async function onSubmit(values: { monthly_fee: number; paid_amount: number; notes: string }) {
+  async function onSubmit(values: { monthly_fee: number; paid_amount: number; notes: string; receipt_url?: string | null; }) {
     if (!student || typeof student.id !== "string") {
       toast({
         title: "Student data missing",
@@ -80,6 +87,7 @@ export function FeeForm({ student, fee, carryForward, month, year, adminDebug, l
       paid_amount,
       balance_due: calcBalance(),
       notes: values.notes || null,
+      receipt_url: values.receipt_url ?? null,
       updated_at: now
     };
     const payload = fee && fee.id
@@ -118,6 +126,11 @@ export function FeeForm({ student, fee, carryForward, month, year, adminDebug, l
     }
   }
 
+  // Handler when a file is uploaded via uploader component
+  const handleReceiptUploaded = (url: string | null) => {
+    form.setValue("receipt_url", url ?? "");
+  };
+
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
       <div>
@@ -153,6 +166,14 @@ export function FeeForm({ student, fee, carryForward, month, year, adminDebug, l
       <div>
         <label className="text-xs font-semibold">Notes</label>
         <Input {...form.register("notes")} />
+      </div>
+      <div>
+        <label className="text-xs font-semibold">Receipt File</label>
+        <FeeReceiptUploader
+          feeId={fee?.id || "temp"}
+          initialUrl={form.watch("receipt_url")}
+          onUploaded={handleReceiptUploaded}
+        />
       </div>
       <div>
         <span className="font-semibold text-xs">Balance:</span>{" "}
