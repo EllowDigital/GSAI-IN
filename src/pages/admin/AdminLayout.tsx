@@ -1,9 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import { useAdminAuth } from "./AdminAuthProvider";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/admin/AppSidebar";
-import AdminBackToTopButton from "@/components/admin/AdminBackToTopButton";
 
 // Drawer overlay that closes sidebar when you click it
 const DrawerOverlay = ({ isOpen, onClick }: { isOpen: boolean; onClick: () => void }) =>
@@ -31,20 +29,10 @@ const AdminLayout: React.FC = () => {
     return () => { document.body.style.overflow = ""; };
   }, [sidebarOpen]);
 
-  if (isLoading) {
+  if (isLoading || !isAdmin) {
     return (
       <div className="flex items-center justify-center h-screen w-screen bg-background">
         <div className="animate-spin h-10 w-10 border-4 border-yellow-400 rounded-full border-t-transparent" />
-      </div>
-    );
-  }
-  if (!isAdmin) {
-    return (
-      <div className="flex items-center justify-center h-screen w-screen bg-background">
-        <div className="rounded-2xl shadow-lg p-6 bg-white text-gray-700 max-w-xs w-full flex flex-col items-center">
-          <span className="text-lg font-semibold">Access Denied</span>
-          <span className="mb-4 text-sm text-muted-foreground">You are not authorized to view this page.</span>
-        </div>
       </div>
     );
   }
