@@ -32,7 +32,9 @@ export default function HeroSection() {
 
   return (
     <section
-      className="relative min-h-[68vh] md:min-h-[78vh] flex items-center justify-center overflow-x-hidden overflow-y-hidden"
+      // Responsive height: always fill screen, on md+ taller for desktop hero
+      className="relative min-h-[100svh] md:min-h-[78vh] flex items-center justify-center overflow-x-hidden overflow-y-hidden"
+      style={{ WebkitOverflowScrolling: "touch" }} // for mobile smooth
     >
       {/* Background Image Slider */}
       <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
@@ -86,44 +88,43 @@ export default function HeroSection() {
         >
           Join Now
         </motion.a>
-        {/* Scroll Down Indicator and Slider dots */}
-        <div
-          className="
-            absolute
-            left-1/2
-            -translate-x-1/2
-            bottom-4
-            xs:bottom-3
-            sm:bottom-5
-            flex flex-col items-center gap-1
-            z-50
-            pointer-events-none
-          "
-        >
-          <motion.div
-            className="flex flex-col items-center pointer-events-auto"
-            initial={{ opacity: 0, y: 32 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2, type: "spring" }}
-          >
-            <ArrowDownCircle className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400 animate-bounce" />
-            <span className="text-xs text-white mt-1 tracking-widest font-medium">Scroll</span>
-          </motion.div>
-          <div className="flex justify-center gap-2 xs:gap-2.5 mt-1 pointer-events-auto">
-            {bgImages.map((_, idx) => (
-              <button
-                key={idx}
-                className={`w-3 h-3 xs:w-4 xs:h-4 rounded-full border-2 border-white transition focus:outline-yellow-400 ${imgIndex === idx ? "bg-yellow-400 shadow-lg" : "bg-white/30"}`}
-                onClick={() => setImgIndex(idx)}
-                aria-label={`Go to slide ${idx + 1}`}
-                style={{
-                  outline: imgIndex === idx ? "2px solid #facc15" : undefined,
-                  pointerEvents: "auto"
-                }}
-                tabIndex={0}
-              />
-            ))}
-          </div>
+      </div>
+      {/* Scroll Down Indicator and Slider dots */}
+      <div
+        className="
+          absolute
+          left-1/2
+          -translate-x-1/2
+          bottom-0
+          pb-4
+          xs:pb-3
+          sm:pb-5
+          flex flex-col items-center gap-2
+          z-50
+          w-auto
+          pointer-events-none
+          select-none
+        "
+        style={{ width: "auto" }}
+      >
+        <div className="flex flex-col items-center pointer-events-auto">
+          <ArrowDownCircle className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400 animate-bounce" />
+          <span className="text-xs text-white mt-1 mb-0.5 tracking-widest font-medium">Scroll</span>
+        </div>
+        <div className="flex justify-center gap-2 xs:gap-2.5 mt-1 pointer-events-auto">
+          {bgImages.map((_, idx) => (
+            <button
+              key={idx}
+              className={`w-3 h-3 xs:w-4 xs:h-4 rounded-full border-2 border-white transition focus:outline-yellow-400 ${imgIndex === idx ? "bg-yellow-400 shadow-lg" : "bg-white/30"}`}
+              onClick={() => setImgIndex(idx)}
+              aria-label={`Go to slide ${idx + 1}`}
+              style={{
+                outline: imgIndex === idx ? "2px solid #facc15" : undefined,
+                pointerEvents: "auto"
+              }}
+              tabIndex={0}
+            />
+          ))}
         </div>
       </div>
     </section>
