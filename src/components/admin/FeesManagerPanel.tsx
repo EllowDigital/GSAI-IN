@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,6 +9,9 @@ import FeeSummaryCard from "./FeeSummaryCard";
 import { exportFeesToCsv } from "@/utils/exportToCsv";
 import { useAdminRLS } from "./useAdminRLS";
 
+// ---- REMOVE THIS OLD/INNER FUNCTION ----
+// (It started like this, remove all lines down to before `export default function FeesManagerPanel() {`)
+/*
 function AdminRLSBanner() {
   // Access values from parent scope
   // These will be available in closure from the parent FeesManagerPanel component
@@ -49,6 +51,7 @@ function AdminRLSBanner() {
   }
   return null;
 }
+*/
 
 export default function FeesManagerPanel() {
   // Centralized filter state
@@ -266,7 +269,7 @@ export default function FeesManagerPanel() {
   );
 }
 
-// ---- Move AdminRLSBanner as a prop-based presentational component ---- //
+// ---- Keep this PROP-BASED version ONLY ---- //
 function AdminRLSBanner({
   adminEmail,
   checkingAdminEntry,
