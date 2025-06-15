@@ -1,3 +1,6 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -101,8 +104,8 @@
     @apply bg-background text-foreground overflow-x-hidden;
   }
 }
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap');
-
 .font-montserrat {
   font-family: 'Montserrat', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
+
+
