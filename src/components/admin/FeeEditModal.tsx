@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,7 @@ export default function FeeEditModal({
   fee,
   month,
   year,
-  adminDebug, // Add adminDebug prop
+  adminDebug,
 }: {
   open: boolean;
   onClose: () => void;
@@ -79,6 +80,15 @@ export default function FeeEditModal({
   };
 
   async function onSubmit(values: { monthly_fee: number; paid_amount: number; notes: string }) {
+    // Defensive: enforce admin and session status
+    if (!adminDebug?.canSubmitFeeEdits) {
+      toast({
+        title: "No admin access.",
+        description: "Your admin email is not authorized. Please ask a system administrator.",
+        variant: "error"
+      });
+      return;
+    }
     if (!student || typeof student.id !== "string") {
       toast({
         title: "Student data missing",
@@ -96,9 +106,9 @@ export default function FeeEditModal({
       return;
     }
     setLoading(true);
-    let result, error;
 
-    // Always include all required fields in payload
+    // Always include all required fields
+    const now = new Date().toISOString();
     const basePayload = {
       student_id: student.id,
       month,
@@ -107,25 +117,33 @@ export default function FeeEditModal({
       paid_amount,
       balance_due: calcBalance(),
       notes: values.notes || null,
-      updated_at: new Date().toISOString()
+      updated_at: now
     };
 
     let payload;
     if (fee && fee.id) {
-      // For update: send all required fields!
       payload = {
-        ...basePayload,
+        ...basePayload
+        // 'created_at' is omitted intentionally when updating
       };
-      // created_at excluded/unchanged
     } else {
-      // For create/upsert: need created_at and all required fields
       payload = {
         ...basePayload,
-        created_at: new Date().toISOString()
+        created_at: now
       };
     }
-    console.log("[DEBUG] Submitting fee payload:", payload);
+    console.log("[FEE DEBUG]", {
+      adminDebug,
+      payload,
+      student,
+      fee,
+      month,
+      year,
+      paid_amount,
+      carryForward
+    });
 
+    let result, error;
     if (fee && fee.id) {
       ({ error, data: result } = await supabase
         .from("fees")
@@ -142,7 +160,7 @@ export default function FeeEditModal({
     }
     setLoading(false);
     if (error) {
-      console.log("[DEBUG] Supabase error during fee save:", error);
+      console.log("[FEE SUPABASE ERROR]", error);
       toast({
         title: "Failed to save fee",
         description: (error.message || "") + " (see console for RLS info)",
@@ -157,6 +175,11 @@ export default function FeeEditModal({
     }
   }
 
+  const cannotSubmitReason =
+    !adminDebug?.canSubmitFeeEdits
+      ? "You are not authorized to add/edit fees. Check your admin_users table and logged-in email."
+      : "";
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
@@ -164,14 +187,19 @@ export default function FeeEditModal({
           <DialogTitle>{fee ? "Edit Payment" : "Add Payment"}</DialogTitle>
         </DialogHeader>
 
-        {/* ADD DEBUG UI */}
-        <div className="mb-2">
-          <span className="text-[11px] text-gray-500">
-            <b>Admin Debug:</b>{" "}
-            Email: <span className="font-bold">{adminDebug?.adminEmail || "N/A"}</span>
-            {" | "}In admin_users: <span className="font-bold">{adminDebug?.isAdminInTable ? "✅" : "❌"}</span>
-            {" | "}canSubmitFeeEdits: <span className="font-bold">{adminDebug?.canSubmitFeeEdits ? "✅" : "❌"}</span>
-          </span>
+        {/* DEBUG INFO for admin/session */}
+        <div className="mb-2 px-2 py-1 rounded bg-gray-50 border text-xs text-gray-700">
+          <div>
+            <b>Debug Info:</b>{" "}
+            <span>Email:</span> <span className="font-mono">{adminDebug?.adminEmail || "N/A"}</span>
+            {" | "}
+            <span>In admin_users:</span> <span className="font-bold">{adminDebug?.isAdminInTable ? "✅" : "❌"}</span>
+            {" | "}
+            <span>Can submit fees:</span> <span className="font-bold">{adminDebug?.canSubmitFeeEdits ? "✅" : "❌"}</span>
+          </div>
+          {!adminDebug?.canSubmitFeeEdits && (
+            <div className="text-red-600 mt-1">{cannotSubmitReason}</div>
+          )}
         </div>
 
         <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
@@ -191,6 +219,7 @@ export default function FeeEditModal({
             <Input
               type="number"
               {...form.register("monthly_fee", { required: true, min: 0, valueAsNumber: true })}
+              disabled={!adminDebug?.canSubmitFeeEdits}
             />
           </div>
           <div>
@@ -198,6 +227,7 @@ export default function FeeEditModal({
             <Input
               type="number"
               {...form.register("paid_amount", { required: true, min: 0, valueAsNumber: true })}
+              disabled={!adminDebug?.canSubmitFeeEdits}
             />
           </div>
           {carryForward ? (
@@ -207,7 +237,7 @@ export default function FeeEditModal({
           ) : null}
           <div>
             <label className="text-xs font-semibold">Notes</label>
-            <Input {...form.register("notes")} />
+            <Input {...form.register("notes")} disabled={!adminDebug?.canSubmitFeeEdits} />
           </div>
           <div>
             <span className="font-semibold text-xs">Balance:</span>{" "}
@@ -215,7 +245,7 @@ export default function FeeEditModal({
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="secondary" type="button" onClick={onClose}>Cancel</Button>
-            <Button type="submit" disabled={loading || adminDebug?.canSubmitFeeEdits === false}>
+            <Button type="submit" disabled={loading || !adminDebug?.canSubmitFeeEdits}>
               {loading ? <Loader2 className="animate-spin w-4 h-4" /> : "Save"}
             </Button>
           </div>
@@ -224,3 +254,5 @@ export default function FeeEditModal({
     </Dialog>
   );
 }
+
+// ... End of file
