@@ -39,12 +39,12 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
       setIsAdmin(newSession?.user?.email === ADMIN_EMAIL);
       setIsLoading(false);
 
-      // Redirect if not admin anymore or after logout
+      // Only redirect in needed scenarios (no full reload)
       if (
         !_event.startsWith("INITIAL") &&
         (!newSession || newSession?.user?.email !== ADMIN_EMAIL)
       ) {
-        window.location.replace("/admin/login");
+        navigate("/admin/login", { replace: true });
       }
 
       console.log("[Supabase Auth Change]", _event, newSession);
@@ -56,9 +56,9 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
       setUserEmail(session?.user?.email ?? null);
       setIsAdmin(session?.user?.email === ADMIN_EMAIL);
       setIsLoading(false);
-      // If not admin, redirect away right away (avoids brief "offline")
+      // If not admin, redirect to login page with routing (not refresh)
       if (!session?.user || session.user.email !== ADMIN_EMAIL) {
-        window.location.replace("/admin/login");
+        navigate("/admin/login", { replace: true });
       }
       console.log("[Supabase Session Init]", session);
     });
@@ -66,7 +66,7 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [navigate]);
 
   // Sign in as admin only
   const signIn = async (email: string, password: string) => {
@@ -92,11 +92,11 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
     setUserEmail(data.user.email);
     setIsLoading(false);
     console.log("[Admin SignIn] session/user", data.session, data.user);
-    // Always redirect to dashboard on successful login
+    // Redirect to dashboard on successful login
     navigate("/admin/dashboard", { replace: true });
   };
 
-  // Logout with redirect to home
+  // Logout with redirect to home ("/"), use react-router navigation
   const signOut = async () => {
     await supabase.auth.signOut();
     setIsAdmin(false);
@@ -105,8 +105,8 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
 
     toast.success("Logged out.");
     console.log("[Admin SignOut]");
-    // Hard redirect to avoid cached/restricted views
-    window.location.replace("/admin/login");
+    // Redirect to homepage after logout
+    navigate("/", { replace: true });
   };
 
   return (
