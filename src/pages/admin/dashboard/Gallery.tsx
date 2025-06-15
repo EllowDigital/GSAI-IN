@@ -1,6 +1,7 @@
+
 import React, { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { BadgePlus, Trash2, Loader2, ArrowUp } from "lucide-react";
+import { BadgePlus, Loader2, ArrowUp } from "lucide-react";
 import GalleryUploadDrawer from "./GalleryUploadDrawer";
 import GalleryImageCard from "./GalleryImageCard";
 import toast, { Toaster } from "react-hot-toast";
@@ -14,8 +15,7 @@ type GalleryImage = {
 };
 
 const masonryCols = {
-  base: "columns-2",
-  sm: "sm:columns-2",
+  base: "columns-1 sm:columns-2",
   md: "md:columns-3",
   lg: "lg:columns-4",
 };
@@ -55,8 +55,7 @@ export default function Gallery() {
           schema: "public",
           table: "gallery_images",
         },
-        (payload) => {
-          // Re-fetch for simplicity to keep client in sync
+        () => {
           fetchGallery();
         }
       )
@@ -84,35 +83,42 @@ export default function Gallery() {
   // Back to Top Button
   const [showBackToTop, setShowBackToTop] = useState(false);
   useEffect(() => {
-    const handler = () => setShowBackToTop(window.scrollY > 300);
+    const handler = () => setShowBackToTop(window.scrollY > 200);
     window.addEventListener("scroll", handler);
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
   return (
-    <div className="relative max-w-7xl mx-auto w-full">
+    <div className="relative max-w-7xl mx-auto w-full pb-12">
       <Toaster position="top-right" />
-      <div className="mb-2 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+      {/* Sticky header for mobile */}
+      <div className="sticky top-0 z-20 bg-gradient-to-b from-yellow-50/95 via-white/90 to-white/75 backdrop-blur-lg px-2 xs:px-4 pt-4 pb-3 mb-2 border-b border-yellow-100 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 transition-shadow shadow-xs">
         <div>
-          <h3 className="font-bold text-xl mb-1 text-yellow-500 font-montserrat">
+          <h3 className="font-bold text-xl sm:text-2xl mb-1 text-yellow-500 font-montserrat leading-tight">
             🖼️ Gallery Manager
           </h3>
-          <p className="text-muted-foreground mb-2 text-sm">
+          <p className="text-muted-foreground mb-2 text-xs sm:text-sm">
             Upload, tag, organize, and delete images in your public gallery.
           </p>
         </div>
         <button
-          className="flex items-center gap-2 bg-yellow-400 text-black px-4 py-2 font-semibold rounded-2xl shadow-lg hover:bg-yellow-500 transition"
+          className="flex items-center gap-2 bg-yellow-400 text-black px-4 py-2 font-semibold rounded-2xl shadow-lg hover:bg-yellow-500 transition text-base w-full sm:w-auto justify-center"
           onClick={() => setUploadDrawerOpen(true)}
         >
-          <BadgePlus /> Upload Image
+          <BadgePlus /> <span className="hidden xs:inline">Upload Image</span>
+          <span className="inline xs:hidden">Upload</span>
         </button>
       </div>
 
+      {/* Tags/Filters bar */}
       {tags.length > 0 && (
-        <div className="flex gap-2 pb-3 flex-wrap">
+        <div className="w-full flex gap-x-2 gap-y-2 pb-3 flex-wrap overflow-x-auto px-1 sm:px-0 min-h-[40px]">
           <button
-            className={`chip px-3 py-1 rounded-full font-inter shadow ${!filterTag ? "bg-yellow-400 text-black" : "bg-gray-200 hover:bg-yellow-100"}`}
+            className={`chip px-3 py-1 rounded-full font-inter shadow hover:shadow-lg focus:ring-2 transition border border-yellow-200 ${
+              !filterTag
+                ? "bg-yellow-400 text-black"
+                : "bg-gray-100 hover:bg-yellow-100 text-gray-700"
+            }`}
             onClick={() => setFilterTag(null)}
           >
             All
@@ -120,7 +126,11 @@ export default function Gallery() {
           {tags.map((tag) => (
             <button
               key={tag}
-              className={`chip px-3 py-1 rounded-full font-inter shadow ${filterTag === tag ? "bg-yellow-400 text-black" : "bg-gray-200 hover:bg-yellow-100"}`}
+              className={`chip px-3 py-1 rounded-full font-inter shadow hover:shadow-lg focus:ring-2 transition border border-yellow-200 ${
+                filterTag === tag
+                  ? "bg-yellow-400 text-black"
+                  : "bg-gray-100 hover:bg-yellow-100 text-gray-700"
+              }`}
               onClick={() => setFilterTag(tag)}
             >
               {tag}
@@ -129,12 +139,15 @@ export default function Gallery() {
         </div>
       )}
 
+      {/* Gallery grid / Masonry */}
       {loading ? (
-        <div className="flex justify-center py-14">
+        <div className="flex justify-center py-16">
           <Loader2 className="animate-spin text-yellow-400" size={48} />
         </div>
       ) : (
-        <div className={`w-full space-y-4 ${masonryCols.base} ${masonryCols.sm} ${masonryCols.md} ${masonryCols.lg}`}>
+        <div
+          className={`transition-all duration-300 w-full space-y-4 ${masonryCols.base} ${masonryCols.md} ${masonryCols.lg} gap-x-4`}
+        >
           {filteredImages.length ? (
             filteredImages.map((img) => (
               <GalleryImageCard
@@ -143,30 +156,33 @@ export default function Gallery() {
                 onDeleteSuccess={() => {
                   setImages((cur) => cur.filter((i) => i.id !== img.id));
                   toast.success("Image deleted.");
-                  // No need to re-fetch, realtime will keep it in sync
                 }}
               />
             ))
           ) : (
-            <div className="text-center text-muted-foreground py-8">
+            <div className="text-center text-muted-foreground py-12 sm:py-16 text-lg font-semibold">
               No images found.
             </div>
           )}
         </div>
       )}
 
+      {/* Upload drawer for image uploads */}
       <GalleryUploadDrawer
         open={uploadDrawerOpen}
         onClose={() => setUploadDrawerOpen(false)}
       />
 
+      {/* Back to top button (better position for mobile view) */}
       {showBackToTop && (
         <button
-          className="fixed bottom-8 right-6 bg-yellow-400 hover:bg-yellow-500 rounded-full shadow-lg p-3 z-50 transition"
+          className="fixed bottom-6 right-4 xs:right-6 sm:right-8 bg-yellow-400 hover:bg-yellow-500 rounded-full shadow-2xl p-3 z-50 transition flex items-center"
           aria-label="Back to Top"
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          onClick={() =>
+            window.scrollTo({ top: 0, behavior: "smooth" })
+          }
         >
-          <ArrowUp className="text-black" />
+          <ArrowUp className="text-black" size={22} />
         </button>
       )}
     </div>

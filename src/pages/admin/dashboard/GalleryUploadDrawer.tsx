@@ -55,13 +55,11 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
       tag: tag || null,
     };
 
-    // Debug log: show what's being inserted
     console.log("Uploading image, inserting metadata:", meta);
 
     const { error: insertError } = await supabase.from("gallery_images").insert([meta]);
     if (insertError) {
       toast.error("Upload failed (DB): " + insertError.message);
-      // Debug log for troubleshooting policy error
       console.error("Insert error details:", insertError);
       setUploading(false);
       return;
@@ -95,30 +93,50 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
   return (
     <Drawer open={open} onOpenChange={open => !open ? onClose() : undefined}>
       <DrawerContent>
-        <form onSubmit={handleUpload} className="p-4 space-y-6">
+        <form onSubmit={handleUpload} className="px-2 xs:px-4 py-4 space-y-6 w-full max-w-lg mx-auto">
           <DrawerHeader>
-            <DrawerTitle>Add Image to Gallery</DrawerTitle>
+            <DrawerTitle className="text-lg sm:text-xl text-yellow-500 font-bold">
+              Add Image to Gallery
+            </DrawerTitle>
           </DrawerHeader>
           <div
-            className={`rounded-xl border-2 border-dashed p-4 text-center bg-gray-50 relative flex flex-col items-center justify-center cursor-pointer transition ${file ? "border-yellow-400 bg-yellow-50" : "hover:bg-yellow-100"}`}
+            className={`rounded-xl border-2 border-dashed p-4 xs:p-6 text-center bg-gray-50 relative flex flex-col items-center justify-center cursor-pointer transition ${
+              file ? "border-yellow-400 bg-yellow-50" : "hover:bg-yellow-100"
+            }`}
             onDrop={onDrop}
             onDragOver={onDragOver}
           >
             {!file ? (
               <>
-                <span className="mb-2 block text-lg font-semibold text-gray-700 font-montserrat">Drag &amp; drop or select image</span>
-                <Input type="file" accept="image/*" className="w-full mx-auto" onChange={onFileInput} disabled={uploading} />
+                <span className="mb-2 block text-base xs:text-lg font-semibold text-gray-700 font-montserrat">
+                  Drag &amp; drop or select image
+                </span>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  className="w-full mx-auto"
+                  onChange={onFileInput}
+                  disabled={uploading}
+                />
               </>
             ) : (
-              <div className="flex flex-col items-center">
-                <img src={URL.createObjectURL(file)} alt="preview" className="w-40 h-32 object-contain rounded-lg border shadow mt-1 mb-2" />
-                <button type="button" onClick={() => setFile(null)} className="bg-red-300 rounded px-3 py-1 text-black hover:bg-red-400 mt-2">
+              <div className="flex flex-col items-center w-full">
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt="preview"
+                  className="w-32 xs:w-40 h-28 xs:h-32 object-contain rounded-lg border shadow mt-1 mb-2"
+                />
+                <button
+                  type="button"
+                  onClick={() => setFile(null)}
+                  className="bg-red-300 rounded px-3 py-1 text-black hover:bg-red-400 mt-2 transition"
+                >
                   Remove
                 </button>
               </div>
             )}
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 w-full">
             <Input
               type="text"
               placeholder="Caption (optional)"
@@ -126,6 +144,7 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
               onChange={e => setCaption(e.target.value)}
               maxLength={100}
               disabled={uploading}
+              className="w-full"
             />
             <Input
               type="text"
@@ -134,16 +153,40 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
               onChange={e => setTag(e.target.value.replace(/\s/g, ""))}
               maxLength={20}
               disabled={uploading}
+              className="w-full"
             />
           </div>
-          <DrawerFooter>
+          <DrawerFooter className="flex flex-col gap-3 w-full">
             <Button
               type="submit"
-              className="w-full font-bold rounded-xl"
+              className="w-full font-bold rounded-xl text-base h-12"
               disabled={!file || uploading}
             >
               {uploading ? (
-                <span className="flex items-center gap-2 justify-center"><span>Uploading...</span><span className="animate-spin"><svg width={18} height={18} viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" stroke="#eab308" strokeWidth="4" fill="none" strokeDasharray="40" strokeDashoffset="20"><animate attributeName="stroke-dashoffset" values="40;0" dur="1s" repeatCount="indefinite" /></circle></svg></span></span>
+                <span className="flex items-center gap-2 justify-center">
+                  <span>Uploading...</span>
+                  <span className="animate-spin">
+                    <svg width={18} height={18} viewBox="0 0 24 24">
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="8"
+                        stroke="#eab308"
+                        strokeWidth="4"
+                        fill="none"
+                        strokeDasharray="40"
+                        strokeDashoffset="20"
+                      >
+                        <animate
+                          attributeName="stroke-dashoffset"
+                          values="40;0"
+                          dur="1s"
+                          repeatCount="indefinite"
+                        />
+                      </circle>
+                    </svg>
+                  </span>
+                </span>
               ) : (
                 "Upload"
               )}
@@ -151,7 +194,7 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
             <Button
               type="button"
               variant="secondary"
-              className="w-full rounded-xl"
+              className="w-full rounded-xl text-base"
               onClick={onClose}
               disabled={uploading}
             >
