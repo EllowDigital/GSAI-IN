@@ -83,43 +83,34 @@ export type Database = {
       }
       fees: {
         Row: {
-          balance_due: number
+          amount: number
           created_at: string | null
+          due_date: string | null
           id: string
-          month: number
-          monthly_fee: number
+          month: string
           notes: string | null
-          paid_amount: number
-          status: string | null
+          status: string
           student_id: string
-          updated_at: string | null
-          year: number
         }
         Insert: {
-          balance_due?: number
+          amount: number
           created_at?: string | null
+          due_date?: string | null
           id?: string
-          month: number
-          monthly_fee: number
+          month: string
           notes?: string | null
-          paid_amount?: number
-          status?: string | null
+          status?: string
           student_id: string
-          updated_at?: string | null
-          year: number
         }
         Update: {
-          balance_due?: number
+          amount?: number
           created_at?: string | null
+          due_date?: string | null
           id?: string
-          month?: number
-          monthly_fee?: number
+          month?: string
           notes?: string | null
-          paid_amount?: number
-          status?: string | null
+          status?: string
           student_id?: string
-          updated_at?: string | null
-          year?: number
         }
         Relationships: [
           {
