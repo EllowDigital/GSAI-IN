@@ -5,8 +5,6 @@ const quickLinks = [
   { name: "Programs", href: "#programs" },
   { name: "Gallery", href: "#gallery" },
   { name: "Contact", href: "#contact" },
-  { name: "Privacy Policy", href: "/privacy" },
-  { name: "Terms & Conditions", href: "/terms" },
 ];
 
 export default function FooterSection() {

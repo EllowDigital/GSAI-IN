@@ -41,45 +41,22 @@ export function AppSidebar() {
     { title: "Events", url: "/admin/dashboard/events", icon: Calendar },
   ];
 
+  // Close sidebar on mobile when clicking a menu item
   const handleNavClick = () => {
     if (isMobile) setOpenMobile(false);
   };
 
   return (
-    <Sidebar
-      variant="sidebar"
-      className={`
-        fixed md:static left-0 top-0 bottom-0
-        h-full md:h-auto
-        bg-gradient-to-b from-yellow-100/80 to-white
-        border-r border-yellow-200 shadow-xl
-        md:rounded-tr-3xl
-        min-h-screen md:min-h-[calc(100vh-2rem)]
-        w-72
-        z-30
-        flex-shrink-0
-        transition-all duration-300
-        flex flex-col
-        px-0
-        overflow-y-auto
-      `}
-      style={{
-        boxShadow: "0 6px 32px 0 rgba(245, 181, 66, 0.13)",
-      }}
-    >
-      <SidebarHeader className="mb-4 px-6 flex flex-col items-center justify-center">
-        <div className="rounded-full bg-yellow-50 shadow-lg p-2 mb-2">
-          <img src="/favicon.ico" alt="Logo" className="w-12 h-12 drop-shadow-xl" />
-        </div>
-        <span className="text-2xl font-extrabold text-yellow-500 tracking-tight font-montserrat text-center select-none drop-shadow">
-          GSAI Admin
-        </span>
-        <span className="text-[13px] mt-0.5 text-gray-500 font-semibold">Professional Dashboard</span>
+    <Sidebar variant="sidebar" className="bg-gradient-to-b from-yellow-50 to-white border-r border-yellow-200 shadow-xl rounded-tr-3xl md:rounded-tr-none">
+      <SidebarHeader className="mt-4 mb-4 px-6 flex flex-col items-center justify-center">
+        <img src="/favicon.ico" alt="Logo" className="w-11 h-11 mb-2 drop-shadow-lg" />
+        <span className="text-xl font-extrabold text-yellow-500 tracking-tight font-montserrat text-center select-none">GSAI Admin</span>
+        <span className="text-xs mt-0.5 text-gray-500 font-semibold">Professional Dashboard</span>
       </SidebarHeader>
-      <SidebarContent className="flex-1 px-0 md:px-2 pb-4">
+      <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-yellow-600/90 font-bold text-xs pl-6 pt-0 mb-2 uppercase tracking-wider">
-            Menu
+          <SidebarGroupLabel className="text-yellow-500 font-semibold pl-5 pt-2 mb-1">
+            Navigation
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -88,19 +65,12 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={location.pathname === item.url}
-                    className={`
-                      rounded-xl font-semibold tracking-tight
-                      text-gray-700 hover:bg-yellow-200/70 focus-visible:ring-yellow-400
-                      data-[active=true]:bg-yellow-300/80 data-[active=true]:shadow-md
-                      group px-4 py-2 w-full flex items-center gap-3
-                      text-base
-                      transition-all duration-200
-                    `}
+                    className="transition-all rounded-lg font-semibold tracking-tight text-gray-700 hover:bg-yellow-100/80 data-[active=true]:bg-yellow-100 group"
                     onClick={handleNavClick}
                   >
-                    <NavLink to={item.url} className="flex items-center gap-3 w-full">
-                      <item.icon className="w-6 h-6 text-yellow-400 group-data-[active=true]:text-yellow-600 transition-colors drop-shadow" />
-                      <span>{item.title}</span>
+                    <NavLink to={item.url} className="flex items-center gap-3 px-2 py-2">
+                      <item.icon className="w-6 h-6 text-yellow-400 group-data-[active=true]:text-yellow-600 transition-colors" />
+                      <span className="text-base">{item.title}</span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -109,7 +79,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="mt-auto px-6 pb-8 flex flex-col items-stretch gap-3">
+      <SidebarFooter className="mt-auto px-6 pb-8 flex flex-col items-stretch gap-2">
         <Button
           variant="destructive"
           size="lg"
@@ -120,8 +90,6 @@ export function AppSidebar() {
         </Button>
         <span className="text-[11px] text-gray-400 mt-2 select-none text-center">© 2025 GSAI Dashboard</span>
       </SidebarFooter>
-      {/* Decorative vertical bar accent */}
-      <div className="absolute top-0 left-0 h-full w-1 bg-gradient-to-b from-yellow-400 via-yellow-200 to-yellow-50 rounded-tr-3xl rounded-br-2xl opacity-90 pointer-events-none shadow" aria-hidden />
     </Sidebar>
   );
 }
