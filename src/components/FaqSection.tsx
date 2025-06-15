@@ -3,7 +3,7 @@ import React from "react";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { HelpCircle, Sparkles } from "lucide-react"; // Correct icon import
 
-const faqs = [
+export const faqs = [
   {
     question: "What are the enrollment fees?",
     answer:
@@ -28,6 +28,18 @@ const faqs = [
     question: "Do you offer personal coaching?",
     answer: "Yes, we provide personal coaching and small group sessions for focused learning.",
   },
+  {
+    question: "Are trial classes available?",
+    answer: "Yes, we encourage prospective students to attend a trial class to experience our training firsthand. Please contact us to schedule your free trial session."
+  },
+  {
+    question: "What should I wear for my first class?",
+    answer: "For your first few classes, comfortable athletic wear like a t-shirt and track pants is perfectly fine. Once you enroll in a specific program, we will provide guidance on the required uniform (Gi, gloves, etc.)."
+  },
+  {
+    question: "What are the qualifications of the coaches?",
+    answer: "Our coaches are certified, experienced professionals with national and international achievements in their respective sports. They are dedicated to providing safe, high-quality instruction."
+  }
 ];
 
 export default function FaqSection() {

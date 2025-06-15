@@ -14,7 +14,7 @@ A tailored checklist for this project's React/Tailwind/SPA codebase.
 ## Structured Data Types
 - [x] Organization (`SportsOrganization`)
 - [ ] Article (for news/blog pages: implement if/when editable)
-- [x] FAQ (for FAQSection)
+- [x] FAQ (for FAQSection — **Implemented via JSON-LD on homepage**)
 - [ ] Event (for EventsSection: recommend on future update)
 
 ## Images
@@ -44,6 +44,14 @@ A tailored checklist for this project's React/Tailwind/SPA codebase.
 - [ ] sitemap.xml (suggest: add via deployment/server level)
 - [ ] Google Analytics/Search Console verified
 - [ ] Lighthouse: Run before/after deploy, resolve major warnings
+
+---
+
+## Proposed Content & Documentation Roadmap
+- [ ] **Create Standalone FAQ Page:** Develop a dedicated `/faq` page to host all questions, allowing for categorization and better user navigation.
+- [ ] **Develop Program-Specific Pages:** Build out detailed pages for each core program (e.g., `/programs/karate`, `/programs/mma`), covering curriculum, coach profiles, and schedules.
+- [ ] **"Getting Started" Guide:** Create a comprehensive guide for new members detailing the enrollment process, what to bring, and academy etiquette.
+- [ ] **Expand Blog/News Content:** Regularly publish articles on training tips, nutrition advice for athletes, and recaps of recent events to engage the community and attract organic traffic.
 
 ---
 **Use this as part of ongoing code reviews and deployments.**
