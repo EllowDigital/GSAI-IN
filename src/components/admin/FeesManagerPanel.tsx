@@ -1,78 +1,30 @@
+
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import FeesTable from "./FeesTable";
+import { toast } from "@/hooks/use-toast";
+import { useAdminRLS } from "./useAdminRLS";
 import FeeEditModal from "./FeeEditModal";
 import FeeHistoryDrawer from "./FeeHistoryDrawer";
-import { toast } from "@/hooks/use-toast";
 import FeeSummaryCard from "./FeeSummaryCard";
-import { exportFeesToCsv } from "@/utils/exportToCsv";
-import { useAdminRLS } from "./useAdminRLS";
-import FeesFilterBar from "./FeesFilterBar";
+import FeesTable from "./FeesTable";
 import FeesAdminInfoBar from "./FeesAdminInfoBar";
+import FeesFilterBar from "./FeesFilterBar";
+import { exportFeesToCsv } from "@/utils/exportToCsv";
 
-// ---- REMOVE THIS OLD/INNER FUNCTION ----
-// (It started like this, remove all lines down to before `export default function FeesManagerPanel() {`)
-/*
-function AdminRLSBanner() {
-  // Access values from parent scope
-  // These will be available in closure from the parent FeesManagerPanel component
-  // (adminEmail, checkingAdminEntry, rlsError, isAdminInTable should all be in scope)
-  if (checkingAdminEntry) {
-    return (
-      <div className="p-2 bg-yellow-50 text-yellow-800 rounded mb-3 text-center font-bold">
-        Checking admin status...
-      </div>
-    );
-  }
-  if (rlsError) {
-    return (
-      <div className="p-2 bg-red-100 text-red-700 rounded mb-3 text-center font-bold">
-        {rlsError}
-        <br />
-        <span className="block text-xs mt-2">
-          <b>⚠️ Important:</b>
-          <br />
-          You will NOT be able to save or update fees unless your email is present in the <b>admin_users</b> table. 
-          <br />
-          Please check in Supabase → <b>admin_users</b> and add your login email if needed.
-        </span>
-      </div>
-    );
-  }
-  if (isAdminInTable === false) {
-    return (
-      <div className="p-2 bg-red-100 text-red-700 rounded mb-3 text-center font-bold">
-        Your admin email is <b>not</b> in the admin_users table!
-        <br />
-        You cannot save or edit fees.
-        <br />
-        See Supabase → admin_users to add your email.
-      </div>
-    );
-  }
-  return null;
-}
-*/
-
+// Main Fees Management Controller panel
 export default function FeesManagerPanel() {
-  // Centralized filter state
   const now = new Date();
   const [filterMonth, setFilterMonth] = useState(now.getMonth() + 1);
   const [filterYear, setFilterYear] = useState(now.getFullYear());
-  const [filterName, setFilterName] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
-
-  // Modal state
+  const [filterName, setFilterName] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [editFee, setEditFee] = useState<any | null>(null);
   const [editStudent, setEditStudent] = useState<any | null>(null);
-
-  // Drawer for payment history
+  const [editFee, setEditFee] = useState<any | null>(null);
   const [historyDrawerOpen, setHistoryDrawerOpen] = useState(false);
   const [historyStudent, setHistoryStudent] = useState<any | null>(null);
 
-  // Use centralized RLS logic
   const {
     adminEmail,
     isAdminInTable,
@@ -81,7 +33,7 @@ export default function FeesManagerPanel() {
     canSubmitFeeEdits,
   } = useAdminRLS();
 
-  // Fetch all students
+  // Fetch students
   const { data: students, isLoading: loadingStudents } = useQuery({
     queryKey: ["students"],
     queryFn: async () => {
@@ -93,7 +45,7 @@ export default function FeesManagerPanel() {
     },
   });
 
-  // Fetch all fees for selected month/year
+  // Fetch fees for filtered month/year
   const { data: fees, isLoading: loadingFees } = useQuery({
     queryKey: ["fees", filterMonth, filterYear],
     queryFn: async () => {
@@ -108,13 +60,11 @@ export default function FeesManagerPanel() {
     refetchInterval: 2000,
   });
 
-  // For history, fetch *all* fees per student
+  // All fees for history drawer (for selected student)
   const { data: allFees } = useQuery({
     queryKey: ["fees", "all"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("fees")
-        .select("*");
+      const { data, error } = await supabase.from("fees").select("*");
       if (error) throw error;
       return data || [];
     },
@@ -122,7 +72,7 @@ export default function FeesManagerPanel() {
     refetchInterval: historyDrawerOpen ? 2000 : false,
   });
 
-  // Map students/fees for CSV: merge rows
+  // Compose table rows (student + fees)
   const rows = Array.isArray(students)
     ? students
         .map((student) => {
@@ -145,15 +95,30 @@ export default function FeesManagerPanel() {
         })
     : [];
 
+  // Handler for editing fee (edit or add)
+  const handleEditFee = ({ student, fee }: { student: any; fee?: any }) => {
+    if (!canSubmitFeeEdits()) {
+      toast({
+        title: "RLS Error",
+        description: "You're not authorized to save or edit fees.",
+        variant: "error",
+      });
+      return;
+    }
+    setEditStudent(student);
+    setEditFee(fee);
+    setModalOpen(true);
+  };
+
+  // Handler for showing fee history
+  const handleShowHistory = (student: any) => {
+    setHistoryStudent(student);
+    setHistoryDrawerOpen(true);
+  };
+
   return (
     <div>
-      {/* Admin Session/Debug Bar */}
-      <AdminRLSBanner
-        adminEmail={adminEmail}
-        checkingAdminEntry={checkingAdminEntry}
-        rlsError={rlsError}
-        isAdminInTable={isAdminInTable}
-      />
+      {/* Info / Debug Bar */}
       <FeesAdminInfoBar
         adminEmail={adminEmail}
         isAdminInTable={isAdminInTable}
@@ -161,7 +126,7 @@ export default function FeesManagerPanel() {
         rlsError={rlsError}
         checkingAdminEntry={checkingAdminEntry}
       />
-      {/* Summary and Export */}
+      {/* Summary / Export */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-2">
         <FeeSummaryCard fees={fees || []} loading={loadingFees} />
         <button
@@ -183,7 +148,7 @@ export default function FeesManagerPanel() {
         setFilterStatus={setFilterStatus}
         setFilterName={setFilterName}
       />
-      {/* Table */}
+      {/* Fee Table */}
       <FeesTable
         students={students}
         fees={fees}
@@ -196,29 +161,10 @@ export default function FeesManagerPanel() {
         setFilterYear={setFilterYear}
         setFilterStatus={setFilterStatus}
         setFilterName={setFilterName}
-        onEditFee={({ student, fee }) => {
-          if (!canSubmitFeeEdits()) {
-            toast({
-              title: "RLS Error",
-              description:
-                "Your admin email is not in admin_users; you cannot edit or add fees.",
-              variant: "error",
-            });
-            return;
-          }
-          // Debug student/fee info
-          console.log("[DEBUG] Editing fee for student:", student);
-          console.log("[DEBUG] Fee record:", fee);
-          setEditStudent(student);
-          setEditFee(fee);
-          setModalOpen(true);
-        }}
-        onShowHistory={(student) => {
-          setHistoryStudent(student);
-          setHistoryDrawerOpen(true);
-        }}
+        onEditFee={handleEditFee}
+        onShowHistory={handleShowHistory}
       />
-      {/* Add/Edit Fee Modal */}
+      {/* Fee Edit Modal */}
       {modalOpen && (
         <FeeEditModal
           open={modalOpen}
@@ -244,66 +190,13 @@ export default function FeesManagerPanel() {
         />
       )}
       <div className="mt-3 text-xs text-gray-600">
-        <b>Having trouble saving fee?</b> Make sure you are signed in as an admin and your email exists in the{" "}
-        <b>admin_users</b> table in Supabase.
-        <br />
-        <b>Common issues:</b>
+        <b>Having trouble saving fee?</b> Ensure you're signed in as an admin and your email exists in the <b>admin_users</b> table in Supabase.
         <ul className="inline-block ml-2 text-xs">
-          <li>
-            (1) You are not logged in, or session is expired (log out and retry)
-          </li>
-          <li>(2) Your email is not present in "admin_users" table</li>
-          <li>(3) You are logging in with a typo in your email</li>
+          <li>1. Not logged in or session expired (try logging out and in again)</li>
+          <li>2. Email not present in admin_users table</li>
+          <li>3. Possible typo in your email address</li>
         </ul>
       </div>
     </div>
   );
-}
-
-// ---- Keep this PROP-BASED version ONLY ---- //
-function AdminRLSBanner({
-  adminEmail,
-  checkingAdminEntry,
-  rlsError,
-  isAdminInTable,
-}: {
-  adminEmail: string | null;
-  checkingAdminEntry: boolean;
-  rlsError: string | null;
-  isAdminInTable: boolean | null;
-}) {
-  if (checkingAdminEntry) {
-    return (
-      <div className="p-2 bg-yellow-50 text-yellow-800 rounded mb-3 text-center font-bold">
-        Checking admin status...
-      </div>
-    );
-  }
-  if (rlsError) {
-    return (
-      <div className="p-2 bg-red-100 text-red-700 rounded mb-3 text-center font-bold">
-        {rlsError}
-        <br />
-        <span className="block text-xs mt-2">
-          <b>⚠️ Important:</b>
-          <br />
-          You will NOT be able to save or update fees unless your email is present in the <b>admin_users</b> table. 
-          <br />
-          Please check in Supabase → <b>admin_users</b> and add your login email if needed.
-        </span>
-      </div>
-    );
-  }
-  if (isAdminInTable === false) {
-    return (
-      <div className="p-2 bg-red-100 text-red-700 rounded mb-3 text-center font-bold">
-        Your admin email is <b>not</b> in the admin_users table!
-        <br />
-        You cannot save or edit fees.
-        <br />
-        See Supabase → admin_users to add your email.
-      </div>
-    );
-  }
-  return null;
 }
