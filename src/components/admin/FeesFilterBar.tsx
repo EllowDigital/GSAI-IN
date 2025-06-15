@@ -35,14 +35,14 @@ export default function FeesFilterBar({
           className="pl-8 w-full"
         />
       </div>
-      <div className="flex flex-row gap-2 w-full sm:w-auto">
+      <div className="flex flex-col xs:flex-row gap-2 w-full sm:w-auto">
         <Input
           type="number"
           value={filterMonth}
           min={1}
           max={12}
           onChange={e => setFilterMonth(Number(e.target.value))}
-          className="w-20"
+          className="w-full xs:w-20"
           placeholder="Month"
         />
         <Input
@@ -51,13 +51,13 @@ export default function FeesFilterBar({
           min={2020}
           max={2100}
           onChange={e => setFilterYear(Number(e.target.value))}
-          className="w-28"
+          className="w-full xs:w-28"
           placeholder="Year"
         />
         <select
           value={filterStatus}
           onChange={e => setFilterStatus(e.target.value)}
-          className="border px-3 py-2 rounded text-sm bg-white w-28 min-w-[8rem]"
+          className="border px-3 py-2 rounded text-sm bg-white w-full xs:w-28 min-w-[8rem]"
         >
           <option value="">All Status</option>
           <option value="paid">Paid</option>

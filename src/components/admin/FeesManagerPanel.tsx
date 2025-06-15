@@ -2,13 +2,14 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
 import FeeSummaryCard from "./FeeSummaryCard";
 import FeesTable from "./FeesTable";
 import FeeEditModal from "./FeeEditModal";
 import FeeHistoryDrawer from "./FeeHistoryDrawer";
 import FeesFilterBar from "./FeesFilterBar";
 import { exportFeesToCsv } from "@/utils/exportToCsv";
+import { useIsMobile } from "@/hooks/use-mobile";
+import FeesCards from "./FeesCards";
 
 export default function FeesManagerPanel() {
   const now = new Date();
@@ -22,6 +23,7 @@ export default function FeesManagerPanel() {
   const [historyDrawerOpen, setHistoryDrawerOpen] = useState(false);
   const [historyStudent, setHistoryStudent] = useState<any | null>(null);
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const channel = supabase
@@ -96,6 +98,8 @@ export default function FeesManagerPanel() {
         return true;
       })
     : [];
+  
+  const isLoading = loadingStudents || loadingFees;
 
   // Handlers
   const handleEditFee = ({ student, fee }: { student: any; fee?: any }) => {
@@ -106,6 +110,24 @@ export default function FeesManagerPanel() {
   const handleShowHistory = (student: any) => {
     setHistoryStudent(student);
     setHistoryDrawerOpen(true);
+  };
+  
+  const renderContent = () => {
+    if (isLoading) {
+        return (
+            <div className="w-full py-10 flex items-center justify-center">
+                <div className="animate-spin h-8 w-8 border-4 border-yellow-400 rounded-full border-t-transparent" />
+            </div>
+        );
+    }
+    if (isMobile) {
+        return <FeesCards rows={rows} onEditFee={handleEditFee} onShowHistory={handleShowHistory} />;
+    }
+    return (
+        <div className="rounded-2xl shadow-lg overflow-x-auto bg-white animate-fade-in">
+            <FeesTable rows={rows} isLoading={false} onEditFee={handleEditFee} onShowHistory={handleShowHistory} />
+        </div>
+    );
   };
 
   return (
@@ -133,16 +155,9 @@ export default function FeesManagerPanel() {
           </button>
         </div>
       </div>
-      {/* Fees Table - responsive scroll */}
-      <div className="rounded-2xl shadow-lg overflow-x-auto bg-white animate-fade-in">
-        <FeesTable
-          students={students}
-          fees={fees}
-          isLoading={loadingStudents || loadingFees}
-          onEditFee={handleEditFee}
-          onShowHistory={handleShowHistory}
-        />
-      </div>
+      
+      {renderContent()}
+
       {/* Modals/Drawers for mobile friendly */}
       {modalOpen && (
         <FeeEditModal
@@ -165,4 +180,3 @@ export default function FeesManagerPanel() {
     </div>
   );
 }
-
