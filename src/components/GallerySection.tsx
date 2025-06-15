@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import { GalleryHorizontal } from "lucide-react";
 
 type GalleryImage = {
   id: string;
@@ -31,7 +32,6 @@ export default function GallerySection() {
       }
     };
     fetchImages();
-    // Subscribe to realtime updates
     const channel = supabase
       .channel("gsai-gallery-public-realtime")
       .on(
@@ -51,9 +51,19 @@ export default function GallerySection() {
   }, []);
 
   return (
-    <section id="gallery" className="py-10 xs:py-16 md:py-20 px-2 xs:px-3 md:px-4 bg-gray-50">
+    <section id="gallery" className="py-12 xs:py-16 md:py-20 px-2 xs:px-3 md:px-4 bg-gradient-to-br from-yellow-50 via-white to-red-50 border-b border-yellow-100">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-400 mb-6 xs:mb-8 text-center">🖼️ Gallery</h2>
+        <div className="flex flex-col items-center mb-7 gap-2">
+          <div className="flex items-center gap-2">
+            <GalleryHorizontal size={32} className="text-yellow-400" />
+            <h2 className="text-3xl md:text-4xl font-bold text-yellow-500 tracking-tight drop-shadow">
+              Academy Photo Gallery
+            </h2>
+          </div>
+          <p className="text-base md:text-lg font-medium text-gray-500 text-center max-w-xl">
+            Dive into moments of training, triumph, and togetherness! Browse photos from recent sessions, events, and community fun.
+          </p>
+        </div>
         {loading ? (
           <div className="w-full flex justify-center items-center py-20">
             <span className="animate-spin w-8 h-8 rounded-full border-4 border-yellow-300 border-t-transparent inline-block" />
@@ -67,7 +77,7 @@ export default function GallerySection() {
                 key={img.id}
                 src={img.image_url}
                 alt={img.caption || `Gallery ${i + 1}`}
-                className="w-full aspect-[4/3] rounded-lg shadow-sm cursor-pointer hover:opacity-85 transition object-cover"
+                className="w-full aspect-[4/3] rounded-xl shadow hover:scale-105 transition-transform object-cover cursor-pointer"
                 loading="lazy"
                 onClick={() => setSelected(img.image_url)}
               />
@@ -88,7 +98,7 @@ export default function GallerySection() {
               <img
                 src={selected}
                 alt="Preview"
-                className="max-w-full max-h-[80vh] rounded-xl shadow-2xl border-4 border-yellow-400"
+                className="max-w-full max-h-[80vh] rounded-2xl shadow-2xl border-4 border-yellow-400"
                 onClick={e => e.stopPropagation()}
               />
             </motion.div>
