@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Dialog,
@@ -86,6 +85,7 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
     setLoading(true);
     try {
       let image_url = form.image_url ?? "";
+
       // If new image selected, upload
       if (imageFile) {
         const filename = `${Date.now()}-${imageFile.name}`;
@@ -101,6 +101,10 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
         }
       }
 
+      // DEBUGGING: LOG THE SESSION EMAIL BEFORE SAVE
+      const { data: sessionData } = await supabase.auth.getSession();
+      console.log("DEBUG: Current Supabase session email:", sessionData?.session?.user?.email);
+
       if (editingEvent) {
         // Update
         const { error } = await supabase
@@ -112,10 +116,12 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
             from_date: form.from_date,
             end_date: form.end_date,
             tag: form.tag,
-            // Do not overwrite 'date' on update!
           })
           .eq("id", editingEvent.id);
-        if (error) throw error;
+        if (error) {
+          console.error("DEBUG: Update error:", error);
+          throw error;
+        }
         toast.success("Event updated.");
       } else {
         // Create (fix: provide date)
@@ -127,10 +133,13 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
             from_date: form.from_date,
             end_date: form.end_date,
             tag: form.tag,
-            date: form.from_date, // <-- mandatory field fix
+            date: form.from_date,
           },
         ]);
-        if (error) throw error;
+        if (error) {
+          console.error("DEBUG: Insert error:", error);
+          throw error;
+        }
         toast.success("Event created.");
       }
       onOpenChange(false);
@@ -274,4 +283,3 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
 };
 
 export default AdminEventFormModal;
-
