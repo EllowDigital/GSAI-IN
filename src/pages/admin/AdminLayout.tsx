@@ -8,8 +8,7 @@ import AdminTopbar from "@/components/admin/AdminTopbar";
 import AdminBackToTopButton from "@/components/admin/AdminBackToTopButton";
 
 const AdminLayout: React.FC = () => {
-  const { isAdmin, signOut, isLoading } = useAdminAuth();
-  const location = useLocation();
+  const { isAdmin, isLoading } = useAdminAuth();
 
   if (isLoading) {
     return (
@@ -30,13 +29,17 @@ const AdminLayout: React.FC = () => {
     );
   }
 
+  // Main responsive layout
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-[#f8fafc] font-montserrat">
+      <div className="min-h-screen w-full flex bg-[#f8fafc] font-montserrat">
         <AppSidebar />
-        <main className="flex-1 flex flex-col min-w-0">
-          <AdminTopbar onSignOut={signOut} />
-          <section className="px-2 md:px-4 py-4 md:py-6 flex-1 w-full max-w-full">
+        <main
+          className="flex-1 flex flex-col min-w-0 max-w-full bg-transparent"
+          style={{ minHeight: "100svh" }}
+        >
+          <AdminTopbar />
+          <section className="px-1 sm:px-2 md:px-5 xl:px-12 py-3 md:py-6 flex-1 w-full max-w-full lg:max-w-7xl xl:mx-auto transition-all duration-300">
             <Outlet />
           </section>
           <AdminBackToTopButton />
