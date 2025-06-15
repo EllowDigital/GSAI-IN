@@ -1,5 +1,7 @@
+
 import React from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   BadgeDollarSign,
   Users,
@@ -63,34 +65,45 @@ const cardsConfig = [
   },
 ];
 
+const fetchAllCounts = async () => {
+  const newCounts: Record<string, number> = {};
+  for (const { key, table } of cardsConfig) {
+    const { count } = await supabase
+      .from(table as any)
+      .select("id", { count: "exact", head: true });
+    newCounts[key] = count ?? 0;
+  }
+  return newCounts;
+};
+
 export default function StatsHome() {
-  const [counts, setCounts] = React.useState<Record<string, number>>({});
-  const [loading, setLoading] = React.useState(true);
+  const queryClient = useQueryClient();
+  const { data: counts, isLoading: loading } = useQuery({
+    queryKey: ["dashboardCounts"],
+    queryFn: fetchAllCounts,
+  });
 
   React.useEffect(() => {
-    let ignore = false;
-    async function fetchAllCounts() {
-      setLoading(true);
-      const newCounts: Record<string, number> = {};
-      for (const { key, table } of cardsConfig) {
-        const { count } = await supabase
-          .from(table as any)
-          .select("id", { count: "exact", head: true });
-        newCounts[key] = count ?? 0;
-      }
-      if (!ignore) {
-        setCounts(newCounts);
-        setLoading(false);
-      }
-    }
-    fetchAllCounts();
-    return () => { ignore = true; };
-  }, []);
+    const channels = cardsConfig.map(({ table }) =>
+      supabase
+        .channel(`public:${table}:stats-home`)
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: table },
+          () => queryClient.invalidateQueries({ queryKey: ["dashboardCounts"] })
+        )
+        .subscribe()
+    );
+
+    return () => {
+      channels.forEach((channel) => supabase.removeChannel(channel));
+    };
+  }, [queryClient]);
 
   // Prepare data for analytics chart
   const analyticsData = cardsConfig.map(({ key, label }) => ({
     name: label,
-    count: counts[key] ?? 0,
+    count: counts?.[key] ?? 0,
   }));
 
   return (
@@ -114,7 +127,7 @@ export default function StatsHome() {
           >
             <Icon className="w-7 h-7 sm:w-8 sm:h-8 mb-2" />
             <span className="text-xl sm:text-2xl font-extrabold">
-              {loading ? <span className="animate-pulse">...</span> : counts[key] ?? 0}
+              {loading ? <span className="animate-pulse">...</span> : counts?.[key] ?? 0}
             </span>
             <span className="text-xs sm:text-sm font-bold opacity-80 text-center">{label}</span>
           </div>
