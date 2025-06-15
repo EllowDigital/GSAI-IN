@@ -2,7 +2,6 @@
 import React from "react";
 
 type Props = {
-  adminEmail: string | null;
   isAdminInTable: boolean | null;
   canSubmitFeeEdits: () => boolean;
   rlsError: string | null;
@@ -10,7 +9,6 @@ type Props = {
 };
 
 export default function FeesAdminInfoBar({
-  // Remove adminEmail as it's no longer needed in UI
   isAdminInTable,
   canSubmitFeeEdits,
   rlsError,
@@ -27,7 +25,6 @@ export default function FeesAdminInfoBar({
       {rlsError && <span className="text-red-700 ml-2">RLS Error: {rlsError}</span>}
       <button
         onClick={() => {
-          // adminEmail is now omitted from console log
           console.log("[DEBUG] isAdminInTable", isAdminInTable);
           console.log("[DEBUG] canSubmitFeeEdits", canSubmitFeeEdits());
           alert("Debug info printed to console.");
