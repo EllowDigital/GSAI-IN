@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Menu, X, LogIn } from "lucide-react";
 
@@ -20,11 +21,11 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-2 sm:px-4 py-2 md:py-3">
         {/* Logo/Brand name */}
         <a href="#" className="font-black text-lg xs:text-xl tracking-wider text-red-700 flex items-center gap-2">
-          <img src="/assets/img/logo.webp" alt="GSAI Logo" className="w-8 h-8 rounded-full border border-yellow-400" />
+          <img src="/assets/img/logo.webp" alt="GSAI Logo" className="w-10 h-10 rounded-full border border-yellow-400" />
           <span className="hidden xs:inline">GSAI</span>
         </a>
         {/* Desktop Links */}
-        <div className="hidden md:flex gap-4 lg:gap-6 items-center">
+        <div className="hidden md:flex gap-4 lg:gap-7 items-center">
           {navLinks.map((link) => (
             <a
               key={link.name}
@@ -53,7 +54,7 @@ export default function Navbar() {
       {/* Mobile Panel */}
       {mobileOpen && (
         <div className="md:hidden bg-white border-t border-gray-200 animate-fade-in">
-          <div className="flex flex-col py-4 px-6 gap-2">
+          <div className="flex flex-col py-4 px-5 gap-3">
             {navLinks.map((link) => (
               <a
                 key={link.name}

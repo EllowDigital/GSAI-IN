@@ -11,9 +11,9 @@ const quickLinks = [
 export default function FooterSection() {
   return (
     <footer className="bg-gray-950 text-white mt-8 xs:mt-16 border-t border-gray-900 font-montserrat">
-      <div className="max-w-6xl mx-auto px-4 py-10 flex flex-col md:flex-row gap-10 md:gap-0 justify-between">
+      <div className="max-w-6xl mx-auto px-3 md:px-4 py-10 flex flex-col md:flex-row gap-8 md:gap-0 justify-between">
         {/* Column 1: About/Brand */}
-        <div className="mb-6 md:mb-0 flex-1 min-w-[200px]">
+        <div className="mb-6 md:mb-0 flex-1 min-w-[180px]">
           <div className="text-2xl font-bold text-yellow-400 mb-2 tracking-wider">
             Ghatak Sports Academy India™
           </div>
@@ -22,7 +22,7 @@ export default function FooterSection() {
           </p>
         </div>
         {/* Column 2: Quick Links */}
-        <div className="mb-6 md:mb-0 flex-1 min-w-[160px]">
+        <div className="mb-6 md:mb-0 flex-1 min-w-[140px]">
           <div className="font-semibold text-lg mb-2 text-gray-100">Quick Links</div>
           <ul className="flex flex-col gap-2">
             {quickLinks.map((link) => (
@@ -38,7 +38,7 @@ export default function FooterSection() {
           </ul>
         </div>
         {/* Column 3: Contact & Social */}
-        <div className="flex-1 min-w-[180px]">
+        <div className="flex-1 min-w-[140px]">
           <div className="font-semibold text-lg mb-2 text-gray-100">Contact</div>
           <div className="text-gray-400 text-sm mb-3">
             Email: <a href="mailto:ghatakgsai@gmail.com" className="hover:text-yellow-400 underline">ghatakgsai@gmail.com</a>
