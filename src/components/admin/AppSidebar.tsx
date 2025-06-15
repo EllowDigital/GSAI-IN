@@ -47,8 +47,12 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar variant="sidebar" className="bg-gradient-to-b from-yellow-50 to-white border-r border-yellow-200 shadow-xl rounded-tr-3xl md:rounded-tr-none">
-      <SidebarHeader className="mt-4 mb-4 px-6 flex flex-col items-center justify-center">
+    <Sidebar
+      variant="sidebar"
+      // REMOVE ANY mt-4/pt-4 etc. so sidebar is always flush with top/left
+      className="bg-gradient-to-b from-yellow-50 to-white border-r border-yellow-200 shadow-xl rounded-tr-3xl md:rounded-tr-none"
+    >
+      <SidebarHeader className="mb-4 px-6 flex flex-col items-center justify-center">
         <img src="/favicon.ico" alt="Logo" className="w-11 h-11 mb-2 drop-shadow-lg" />
         <span className="text-xl font-extrabold text-yellow-500 tracking-tight font-montserrat text-center select-none">GSAI Admin</span>
         <span className="text-xs mt-0.5 text-gray-500 font-semibold">Professional Dashboard</span>
