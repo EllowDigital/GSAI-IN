@@ -54,9 +54,9 @@ export default function GallerySection() {
     <section id="gallery" className="py-12 xs:py-16 md:py-20 px-2 xs:px-3 md:px-4 bg-gradient-to-br from-yellow-50 via-white to-red-50 border-b border-yellow-100">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col items-center mb-7 gap-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 justify-center w-full">
             <GalleryHorizontal size={32} className="text-yellow-400" />
-            <h2 className="text-3xl md:text-4xl font-bold text-yellow-500 tracking-tight drop-shadow">
+            <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-500 tracking-tight drop-shadow text-center w-full">
               Academy Photo Gallery
             </h2>
           </div>

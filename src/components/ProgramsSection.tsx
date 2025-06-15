@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 
 const programs = [
@@ -44,7 +43,7 @@ export default function ProgramsSection() {
               variants={cardVariants}
             >
               <span className="text-3xl xs:text-4xl mb-2">{prog.icon}</span>
-              <h3 className="font-extrabold text-base xs:text-lg text-gray-800 mb-1">{prog.title}</h3>
+              <h3 className="font-extrabold text-base xs:text-lg text-gray-800 mb-1 text-center">{prog.title}</h3>
               <p className="text-gray-500 font-medium text-center text-xs xs:text-sm">{prog.desc}</p>
             </motion.div>
           ))}

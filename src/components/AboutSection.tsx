@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Users, Info } from "lucide-react";
 
@@ -28,31 +27,31 @@ export default function AboutSection() {
         </div>
         {/* Right: Content */}
         <div className="w-full md:w-3/5 space-y-5 xs:space-y-7">
-          <p className="text-base xs:text-lg leading-relaxed text-justify text-gray-800 font-semibold">
+          <p className="text-base xs:text-lg leading-relaxed text-justify text-gray-800 font-semibold text-center xs:text-justify">
             <span className="text-yellow-500 font-bold">Empowering Champions Since Inception:</span>{" "}
             We are dedicated to building confident, disciplined, and skilled individuals through the transformative power of martial arts and personal development.
           </p>
           <ul className="list-none pl-0 mb-3 flex flex-col gap-2">
-            <li className="flex items-start">
+            <li className="flex items-start xs:items-center">
               <span className="inline-block w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center mr-2 text-lg font-bold">✔</span>
               <span className="text-gray-800">
                 <strong>Holistic Training:</strong> Merging <span className="text-red-500 font-medium">traditional martial arts</span> and <span className="text-yellow-500 font-medium">modern fitness</span> for total self-improvement.
               </span>
             </li>
-            <li className="flex items-start">
+            <li className="flex items-start xs:items-center">
               <span className="inline-block w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center mr-2 text-lg font-bold">✔</span>
               <span className="text-gray-800">
                 <strong>Values-Driven Growth:</strong> Fostering <span className="text-yellow-400 font-medium">respect, confidence, and personal excellence</span>.
               </span>
             </li>
-            <li className="flex items-start">
+            <li className="flex items-start xs:items-center">
               <span className="inline-block w-6 h-6 rounded-full bg-yellow-400 text-white flex items-center justify-center mr-2 text-lg font-bold">✔</span>
               <span className="text-gray-800">
                 <strong>Empowerment for All:</strong> Programs tailored for <span className="text-red-500 font-medium">every age and skill level</span>, guiding you on a journey of <em>self-mastery</em> and <em>empowerment</em>.
               </span>
             </li>
           </ul>
-          <blockquote className="border-l-4 border-yellow-400 pl-4 italic text-base xs:text-lg font-semibold bg-yellow-50/60 rounded">
+          <blockquote className="border-l-4 border-yellow-400 pl-4 italic text-base xs:text-lg font-semibold bg-yellow-50/60 rounded text-center xs:text-left">
             "Join our thriving community and discover your true potential—physically, mentally, and morally!"
           </blockquote>
         </div>

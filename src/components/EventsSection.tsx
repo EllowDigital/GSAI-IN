@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
@@ -30,9 +29,9 @@ const EventsSection: React.FC = () => {
   }, []);
 
   return (
-    <section className="w-full py-14 px-4 md:px-8 bg-gradient-to-br from-yellow-50 via-white to-red-50 border-b border-yellow-100" id="events">
+    <section className="w-full py-14 px-2 xs:px-4 md:px-8 bg-gradient-to-br from-yellow-50 via-white to-red-50 border-b border-yellow-100" id="events">
       <div className="max-w-5xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold mb-7 text-yellow-500 text-center font-montserrat tracking-tight drop-shadow">
+        <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold mb-7 text-yellow-500 text-center font-montserrat tracking-tight drop-shadow">
           Upcoming Events & Highlights
         </h2>
         {loading ? (
@@ -102,4 +101,3 @@ const EventsSection: React.FC = () => {
 };
 
 export default EventsSection;
-
