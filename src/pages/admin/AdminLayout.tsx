@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Outlet } from "react-router-dom";
 import { useAdminAuth } from "./AdminAuthProvider";
@@ -5,13 +6,35 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/admin/AppSidebar";
 import AdminBackToTopButton from "@/components/admin/AdminBackToTopButton";
 
+// Drawer overlay that closes sidebar when you click it
+const DrawerOverlay = ({ isOpen, onClick }: { isOpen: boolean; onClick: () => void }) =>
+  isOpen ? (
+    <div
+      className="fixed inset-0 z-40 bg-black/30 md:hidden transition-opacity animate-fade-in"
+      onClick={onClick}
+      aria-label="Close sidebar"
+    />
+  ) : null;
+
 const SIDEBAR_WIDTH = "16rem"; // Equal to AppSidebar width
 
-/**
- * Admin Layout with left/top fixed sidebar.
- */
 const AdminLayout: React.FC = () => {
   const { isAdmin, isLoading } = useAdminAuth();
+
+  // Mobile sidebar state
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+
+  // Disable body scroll on mobile sidebar open
+  React.useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [sidebarOpen]);
 
   if (isLoading) {
     return (
@@ -32,6 +55,11 @@ const AdminLayout: React.FC = () => {
     );
   }
 
+  // Custom handler for closing sidebar after nav click on mobile - passed down
+  const handleSidebarNav = () => {
+    if (window.innerWidth < 768) setSidebarOpen(false);
+  };
+
   return (
     <SidebarProvider>
       <div
@@ -40,25 +68,43 @@ const AdminLayout: React.FC = () => {
           overflow-hidden
         "
       >
-        {/* Sidebar: FIXED, flush left/top, always visible on desktop */}
+        {/* Mobile: Hamburger */}
+        <button
+          className="
+            md:hidden fixed top-4 left-4 z-50 bg-white/80 rounded-full shadow-lg
+            p-2 border border-yellow-300 flex items-center justify-center hover:bg-yellow-100 transition
+          "
+          aria-label="Open sidebar"
+          onClick={() => setSidebarOpen(true)}
+        >
+          {/* Hamburger icon */}
+          <div className="flex flex-col w-6 h-6 justify-center items-center">
+            <span className="block w-6 h-0.5 bg-yellow-500 rounded transition mb-1"></span>
+            <span className="block w-6 h-0.5 bg-yellow-500 rounded transition mb-1"></span>
+            <span className="block w-6 h-0.5 bg-yellow-500 rounded transition"></span>
+          </div>
+        </button>
+        {/* Sidebar: HIDES on mobile, slides in, overlay */}
+        {/* Desktop: Always visible fixed */}
+        {/* Overlay on mobile */}
+        <DrawerOverlay isOpen={sidebarOpen} onClick={() => setSidebarOpen(false)} />
         <aside
           className={`
-            hidden md:block
-            fixed top-0 left-0 z-30
-            h-screen
+            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+            md:translate-x-0
+            transition-transform duration-300
+            fixed top-0 left-0 z-50
+            h-full
+            bg-white md:bg-transparent
             w-[${SIDEBAR_WIDTH}]
-            bg-transparent
           `}
           style={{
             width: SIDEBAR_WIDTH,
+            boxShadow: '0 8px 40px 0 rgba(145,130,58,0.18)',
           }}
         >
-          <AppSidebar />
+          <AppSidebar onNavClick={handleSidebarNav} />
         </aside>
-        {/* Mobile sidebar trigger (unchanged) */}
-        <div className="md:hidden fixed top-3 left-3 z-40">
-          <SidebarTrigger />
-        </div>
         {/* Main content: has left margin == sidebar width, so it never underlaps */}
         <main
           className="
@@ -71,7 +117,6 @@ const AdminLayout: React.FC = () => {
           style={{
             marginLeft: undefined,
             paddingLeft: undefined,
-            // On desktop, pad so main content doesn't go under fixed sidebar
             ...(window.innerWidth >= 768 ? { marginLeft: SIDEBAR_WIDTH } : {}),
           }}
         >
@@ -86,7 +131,7 @@ const AdminLayout: React.FC = () => {
               overflow-y-auto
             "
             style={{
-              minHeight: "calc(100vh - 56px)", // helps fill viewport
+              minHeight: "calc(100vh - 56px)",
             }}
           >
             <Outlet />

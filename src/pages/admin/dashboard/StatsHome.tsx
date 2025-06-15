@@ -2,10 +2,9 @@
 import React from "react";
 import FastStats from "./FastStats";
 import AdvancedStats from "./AdvancedStats";
-import { LayoutDashboard, Bell, Settings } from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
 
 export default function StatsHome() {
-  // Demo admin info (replace with actual data in real app)
   const admin = {
     name: "Admin",
     avatar: "/favicon.ico",
@@ -17,8 +16,8 @@ export default function StatsHome() {
       {/* Dashboard header */}
       <div
         className="
-          flex flex-col sm:flex-row items-center justify-between gap-4 mb-7
-          px-2 md:px-6 py-6 rounded-2xl
+          flex flex-col sm:flex-row items-center justify-between gap-4
+          mb-7 px-2 md:px-6 py-6 rounded-2xl
           bg-gradient-to-br from-yellow-50 via-white to-yellow-100 shadow border border-yellow-100
           relative overflow-hidden
         "
@@ -45,15 +44,8 @@ export default function StatsHome() {
             />
             <span className="text-xs font-medium text-gray-500 rounded-md px-2 py-0.5 bg-white/60 border border-yellow-50">{admin.role}</span>
           </div>
-          <button className="ml-1 rounded-full p-2 bg-yellow-50 hover:bg-yellow-200 transition shadow" title="Notifications" type="button">
-            <Bell className="w-5 h-5 text-yellow-500" />
-          </button>
-          <button className="rounded-full p-2 bg-yellow-50 hover:bg-yellow-200 transition shadow" title="Settings" type="button">
-            <Settings className="w-5 h-5 text-yellow-500" />
-          </button>
         </div>
       </div>
-
       {/* Stats sections */}
       <div className="mb-6">
         <FastStats />
@@ -64,3 +56,4 @@ export default function StatsHome() {
     </div>
   );
 }
+
