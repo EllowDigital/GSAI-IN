@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowDownCircle } from "lucide-react";
@@ -30,9 +31,12 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative min-h-[68vh] md:min-h-[78vh] flex items-center justify-center overflow-hidden">
+    <section
+      className="relative min-h-[68vh] md:min-h-[78vh] flex items-center justify-center overflow-hidden"
+      style={{ /* Prevent unwanted scrollbars on mobile; overflow hidden only on y-axis for hero section */ overflowX: 'hidden' }}
+    >
       {/* Background Image Slider */}
-      <div className="absolute inset-0 w-full h-full z-0">
+      <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
         <AnimatePresence mode="wait">
           <motion.div
             key={bgImages[imgIndex]}
@@ -83,26 +87,39 @@ export default function HeroSection() {
         >
           Join Now
         </motion.a>
-        {/* Scroll Down Indicator and Slider dots (wrapped in a mobile-safe flex col at the bottom) */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 bottom-3 xs:bottom-5 w-full flex flex-col items-center gap-2 z-20 pointer-events-none">
+        {/* Scroll Down Indicator and Slider dots */}
+        <div
+          className="
+            absolute
+            left-1/2
+            -translate-x-1/2
+            bottom-3
+            xs:bottom-4
+            sm:bottom-6
+            flex flex-col items-center w-full z-20 pointer-events-none
+          "
+        >
           <motion.div
-            className="flex flex-col items-center pointer-events-auto"
+            className="flex flex-col items-center mb-1 pointer-events-auto"
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, type: "spring" }}
           >
-            <ArrowDownCircle className="w-8 h-8 sm:w-11 sm:h-11 text-yellow-400 animate-bounce" />
+            <ArrowDownCircle className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400 animate-bounce" />
             <span className="text-xs text-white mt-1 tracking-widest font-medium">Scroll</span>
           </motion.div>
-          {/* Slider dots */}
-          <div className="flex justify-center gap-2 mt-2 pointer-events-auto">
+          <div className="flex justify-center gap-2 xs:gap-2.5 mt-1 pointer-events-auto">
             {bgImages.map((_, idx) => (
               <button
                 key={idx}
                 className={`w-3 h-3 xs:w-4 xs:h-4 rounded-full border-2 border-white transition focus:outline-yellow-400 ${imgIndex === idx ? "bg-yellow-400 shadow-lg" : "bg-white/30"}`}
                 onClick={() => setImgIndex(idx)}
                 aria-label={`Go to slide ${idx + 1}`}
-                style={{ outline: imgIndex === idx ? "2px solid #facc15" : undefined }}
+                style={{
+                  outline: imgIndex === idx ? "2px solid #facc15" : undefined,
+                  pointerEvents: "auto" // allow tapping even if parent is none
+                }}
+                tabIndex={0}
               />
             ))}
           </div>
