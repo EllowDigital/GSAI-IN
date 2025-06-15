@@ -1,4 +1,3 @@
-
 import React from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -130,9 +129,15 @@ export default function AdvancedStats() {
                   <li><b>Total Students:</b> {data.studentTotal}</li>
                   <li><b>By Program:</b></li>
                   <ul className="ml-4 list-disc">
-                    {Object.entries(data.programCounts ?? {}).map(([prog, count]) => (
-                      <li key={prog}>{prog}: {count}</li>
-                    ))}
+                    {data && data.programCounts
+                      ? Object.entries(data.programCounts).length === 0 ? (
+                          <li>No programs</li>
+                        ) : (
+                          Object.entries(data.programCounts).map(([prog, count]) => (
+                            <li key={prog}>{String(prog)}: {String(count)}</li>
+                          ))
+                        )
+                      : <li>No programs</li>}
                   </ul>
                 </ul>
               </div>
@@ -150,8 +155,10 @@ export default function AdvancedStats() {
           <CardContent>
             {loading ? "Loading..." : (
               <ol className="list-decimal ml-4 text-sm">
-                {data.latestBlogs?.length
-                  ? data.latestBlogs.map((b: string) => <li key={b}>{b}</li>)
+                {Array.isArray(data.latestBlogs) && data.latestBlogs.length > 0
+                  ? data.latestBlogs.map((b: string, idx: number) => (
+                      <li key={b + idx}>{b}</li>
+                    ))
                   : <li>No blogs found.</li>
                 }
               </ol>
@@ -169,8 +176,10 @@ export default function AdvancedStats() {
           <CardContent>
             {loading ? "Loading..." : (
               <ol className="list-decimal ml-4 text-sm">
-                {data.latestNews?.length
-                  ? data.latestNews.map((n: string) => <li key={n}>{n}</li>)
+                {Array.isArray(data.latestNews) && data.latestNews.length > 0
+                  ? data.latestNews.map((n: string, idx: number) => (
+                      <li key={n + idx}>{n}</li>
+                    ))
                   : <li>No news found.</li>
                 }
               </ol>
