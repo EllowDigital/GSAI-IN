@@ -1,8 +1,7 @@
 
 import React from "react";
 
-const founderImg =
-  "https://images.unsplash.com/photo-1452378174528-3090a4bba7b2?auto=format&fit=crop&w=600&q=80"; // Placeholder
+const founderImg = "/assets/img/founder.webp";
 
 export default function FounderSection() {
   return (
