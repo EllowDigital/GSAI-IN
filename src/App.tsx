@@ -62,6 +62,8 @@ const App = () => {
                 }
               />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="/privacy" element={React.createElement(require("./pages/PrivacyPolicy").default)} />
+              <Route path="/terms" element={React.createElement(require("./pages/TermsAndConditions").default)} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
