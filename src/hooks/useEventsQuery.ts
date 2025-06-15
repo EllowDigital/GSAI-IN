@@ -29,7 +29,7 @@ export function useEventsQuery() {
     queryFn: fetchEvents,
     retry: 2, // Retry up to 2 times on failure
     staleTime: 1000 * 60, // 1 minute
-    cacheTime: 1000 * 60 * 3, // 3 minutes
+    // cacheTime removed due to API change
     refetchOnWindowFocus: true, // Refetch when user returns to page
   });
 
