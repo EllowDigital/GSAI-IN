@@ -3,7 +3,7 @@ import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, ArrowUp } from "lucide-react";
+import { Plus, ArrowUp, BookOpen } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import BlogEditorModal from "@/components/admin/BlogEditorModal";
 import { useToast } from "@/hooks/use-toast";
@@ -147,11 +147,13 @@ export default function Blogs() {
   }
 
   return (
-    <div className="relative w-full max-w-6xl mx-auto py-2 px-1 xs:px-2 sm:px-4 md:px-6">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-6">
-        <h3 className="font-bold text-2xl xs:text-3xl text-yellow-500 font-montserrat mb-2 md:mb-0">Blog Manager</h3>
+    <div className="max-w-7xl mx-auto p-4 bg-white rounded-2xl shadow-lg">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
+        <h2 className="text-2xl font-bold flex items-center gap-2 text-yellow-500">
+          <BookOpen className="w-7 h-7" /> Blog Management
+        </h2>
         <Button
-          className="rounded-xl shadow-lg font-montserrat flex items-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-black px-4 py-2 text-sm xs:text-base"
+          className="rounded-xl shadow-lg flex items-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-black px-4 py-2 text-sm xs:text-base w-full sm:w-auto"
           size="sm"
           onClick={() => setOpenModal({ mode: "create" })}
         >
