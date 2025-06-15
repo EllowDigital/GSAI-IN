@@ -106,15 +106,15 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
     navigate("/admin/dashboard", { replace: true });
   };
 
-  // Logout: always clear state & redirect to login
+  // Logout: always clear state & redirect to homepage
   const signOut = async () => {
     await supabase.auth.signOut();
     clearAdminState();
 
     toast.success("Logged out.");
     console.log("[Admin SignOut]");
-    // Redirect to login page and prevent back navigation, as requested.
-    window.location.replace("/admin/login");
+    // Redirect to homepage and prevent back navigation.
+    window.location.replace("/");
   };
 
   return (
