@@ -38,7 +38,7 @@ export default function LocationSection() {
         <div className="relative w-full rounded-lg shadow-md overflow-hidden h-56 xs:h-72 md:h-96 mt-8 animate-fade-in border-4 border-yellow-100/40">
           <iframe
             title="Ghatak Sports Academy Locations Map"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3557.2070978926137!2d80.99170791744385!3d26.884563330917584!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399be2b2f08e0b4b%3A0xbcf1e4c809b883cd!2sNaubasta%20Pulia%2C%20Takrohi%20Rd%2C%20Indira%20Nagar%2C%20Lucknow%2C%20Uttar%20Pradesh%20226016!5e0!3m2!1sen!2sin!4v1716628636907!5m2!1sen!2sin"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3557.7127555156358!2d81.02444217597154!3d26.912609860094033!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3999596def6ea9c7%3A0x23d2ceb539bff92!2sGhatak%20Sports%20Academy%20India!5e0!3m2!1sen!2sin!4v1739461937485!5m2!1sen!2sin"
             width="100%"
             height="100%"
             allowFullScreen={true}
