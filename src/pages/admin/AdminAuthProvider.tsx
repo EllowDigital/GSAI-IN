@@ -1,8 +1,9 @@
 
 import React, { createContext, useEffect, useState, useContext, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Session, User } from "@supabase/supabase-js";
+import { Session } from "@supabase/supabase-js";
 import { toast } from "@/components/ui/sonner";
+import { useNavigate } from "react-router-dom";
 
 type AdminAuthContextType = {
   session: Session | null;
@@ -24,13 +25,13 @@ const AdminAuthContext = createContext<AdminAuthContextType>({
 
 const ADMIN_EMAIL = "ghatakgsai@gmail.com";
 
-export function AdminAuthProvider({ children }: { children: ReactNode }) {
+function AdminAuthProviderInner({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
-  // Attach Supabase auth event listener before session check to avoid race conditions.
   useEffect(() => {
     // Listen for changes in auth state (login, logout, refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
@@ -41,7 +42,6 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       if (!newSession) {
         console.warn("Supabase session went null after event!");
       }
-      // Debug logging
       console.log("[Supabase Auth Change]", _event, newSession);
     });
 
@@ -51,7 +51,6 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       setUserEmail(session?.user?.email ?? null);
       setIsAdmin(session?.user?.email === ADMIN_EMAIL);
       setIsLoading(false);
-      // Debug
       console.log("[Supabase Session Init]", session);
     });
 
@@ -83,11 +82,10 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     setSession(data.session ?? null);
     setUserEmail(data.user.email);
     setIsLoading(false);
-    // Debug
     console.log("[Admin SignIn] session/user", data.session, data.user);
   };
 
-  // Logout
+  // Logout with redirect to home
   const signOut = async () => {
     await supabase.auth.signOut();
     setIsAdmin(false);
@@ -95,6 +93,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     setUserEmail(null);
     toast.success("Logged out.");
     console.log("[Admin SignOut]");
+    navigate("/"); // Redirect to home page after logout
   };
 
   return (
@@ -104,7 +103,11 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// Provide the navigation context by wrapping in a component
+export function AdminAuthProvider({ children }: { children: ReactNode }) {
+  return <AdminAuthProviderInner>{children}</AdminAuthProviderInner>;
+}
+
 export function useAdminAuth() {
   return useContext(AdminAuthContext);
 }
-
