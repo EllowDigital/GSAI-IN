@@ -26,16 +26,22 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="h-screen w-full bg-[#f8fafc] flex flex-col items-center justify-center font-montserrat">
+    <div className="h-screen w-full bg-gradient-to-b from-yellow-100 to-yellow-50 flex flex-col items-center justify-center font-montserrat">
       <form
-        className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full flex flex-col gap-5"
-        style={{ boxShadow: "0 2px 20px rgba(31,41,55,.07)" }}
+        className="bg-white rounded-2xl shadow-2xl p-8 px-6 md:px-10 max-w-md w-full flex flex-col gap-6 relative border border-yellow-200 animate-fade-in"
+        style={{ boxShadow: "0 4px 24px 0 rgba(245, 158, 66, 0.14)" }}
         onSubmit={handleSubmit}
       >
-        <h2 className="font-bold text-2xl mb-2 text-yellow-400 text-center">Admin Login</h2>
+        {/* Logo at Top */}
+        <div className="flex flex-col items-center justify-center mb-3 mt-1">
+          <img src="/favicon.ico" alt="Logo" className="w-12 h-12 rounded-full shadow mb-2" />
+          <h2 className="font-bold text-2xl text-yellow-400 text-center tracking-widest">
+            GSAI Admin
+          </h2>
+        </div>
         <div>
           <label htmlFor="email" className="block font-semibold mb-1 text-gray-700">
-            Email
+            Admin Email
           </label>
           <Input
             id="email"
@@ -43,7 +49,7 @@ export default function AdminLogin() {
             disabled
             value={email}
             autoComplete="username"
-            className="rounded-xl"
+            className="rounded-xl bg-gray-50 border-yellow-200 text-base"
           />
         </div>
         <div>
@@ -55,16 +61,16 @@ export default function AdminLogin() {
             type="password"
             autoComplete="current-password"
             minLength={6}
-            className="rounded-xl"
+            className="rounded-xl bg-gray-50 border-yellow-200 text-base"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
-        {error && <div className="text-red-500 text-sm">{error}</div>}
+        {error && <div className="text-red-500 text-sm text-center">{error}</div>}
         <Button
           variant="default"
-          className="mt-2 rounded-xl h-12 text-lg flex gap-2 items-center justify-center"
+          className="mt-1 rounded-xl h-12 text-lg flex gap-2 items-center justify-center bg-yellow-400 hover:bg-yellow-500 text-white font-bold shadow"
           disabled={isLoading}
         >
           {isLoading ? <Loader2 className="animate-spin" /> : "Sign In"}
@@ -73,3 +79,4 @@ export default function AdminLogin() {
     </div>
   );
 }
+

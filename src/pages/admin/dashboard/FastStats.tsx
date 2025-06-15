@@ -31,7 +31,6 @@ export default function FastStats() {
       setLoading(true);
       const results: Record<string, number> = {};
       for (const ent of entities) {
-        // table param must be one of the fixed string values, so we must typecast it here
         const { count } = await supabase
           .from(ent.table as "fees" | "students" | "blogs" | "news" | "gallery_images" | "events")
           .select("id", { count: "exact", head: true });
@@ -48,19 +47,23 @@ export default function FastStats() {
 
   return (
     <div>
-      <div className="text-xl font-bold mb-2 mt-3 text-gray-700">Fast Stats</div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-4">
+      <div className="text-lg md:text-xl font-semibold mb-3 mt-2 text-gray-700">
+        Fast Stats
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-2">
         {entities.map((e) => (
-          <Card className="shadow flex-1" key={e.name}>
-            <CardHeader className="pb-2">
-              <CardTitle className={`flex items-center gap-2 text-xs ${e.color}`}>
+          <Card className="shadow border-0 bg-gradient-to-b from-yellow-50 to-white hover:scale-105 transition-transform" key={e.name}>
+            <CardHeader className="pb-2 flex flex-row gap-2 items-center justify-center">
+              <span className={`flex items-center justify-center w-8 h-8 rounded-full bg-yellow-100 ${e.color}`}>
                 <e.icon className="w-5 h-5" />
+              </span>
+              <CardTitle className={`text-xs font-bold tracking-wide ${e.color}`}>
                 {e.name}
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <span className="text-2xl font-bold">
-                {loading ? "..." : counts[e.name] ?? 0}
+            <CardContent className="flex items-center justify-center py-3">
+              <span className="text-xl md:text-2xl font-extrabold text-gray-900 drop-shadow-sm">
+                {loading ? <span className="animate-pulse">...</span> : counts[e.name] ?? 0}
               </span>
             </CardContent>
           </Card>
