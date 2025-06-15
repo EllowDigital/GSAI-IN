@@ -1,14 +1,16 @@
-
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowDownCircle } from "lucide-react";
 
 const bgImages = [
-  "https://images.unsplash.com/photo-1615729947596-a598e5de0ab3?auto=format&fit=crop&w=1500&q=80",
-  "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=1500&q=80",
-  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1500&q=80",
-  "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1500&q=80",
-  "https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=1500&q=80",
+  "/assets/slider/slider6.png",
+  "/assets/slider/slider.png",
+  "/assets/slider/slider.webp",
+  "/assets/slider/slider1.png",
+  "/assets/slider/slider2.png",
+  "/assets/slider/slider3.png",
+  "/assets/slider/slider4.png",
+  "/assets/slider/slider5.png",
 ];
 
 const variants = {
@@ -16,7 +18,10 @@ const variants = {
   animate: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.9, ease: [0.4, 0, 0.2, 1] as [number,number,number,number] },
+    transition: {
+      duration: 0.9,
+      ease: [0.4, 0, 0.2, 1] as [number, number, number, number],
+    },
   },
 };
 
@@ -75,7 +80,8 @@ export default function HeroSection() {
           transition={{ delay: 0.3 }}
         >
           Government-Recognized |{" "}
-          <span className="text-yellow-400">ISO 9001:2015</span> | Martial Arts | Fitness | Self-Defense
+          <span className="text-yellow-400">ISO 9001:2015</span> | Martial Arts
+          | Fitness | Self-Defense
         </motion.p>
         <motion.a
           href="#programs"
@@ -109,18 +115,22 @@ export default function HeroSection() {
       >
         <div className="flex flex-col items-center pointer-events-auto">
           <ArrowDownCircle className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400 animate-bounce" />
-          <span className="text-xs text-white mt-1 mb-0.5 tracking-widest font-medium">Scroll</span>
+          <span className="text-xs text-white mt-1 mb-0.5 tracking-widest font-medium">
+            Scroll
+          </span>
         </div>
         <div className="flex justify-center gap-2 xs:gap-2.5 mt-1 pointer-events-auto">
           {bgImages.map((_, idx) => (
             <button
               key={idx}
-              className={`w-3 h-3 xs:w-4 xs:h-4 rounded-full border-2 border-white transition focus:outline-yellow-400 ${imgIndex === idx ? "bg-yellow-400 shadow-lg" : "bg-white/30"}`}
+              className={`w-3 h-3 xs:w-4 xs:h-4 rounded-full border-2 border-white transition focus:outline-yellow-400 ${
+                imgIndex === idx ? "bg-yellow-400 shadow-lg" : "bg-white/30"
+              }`}
               onClick={() => setImgIndex(idx)}
               aria-label={`Go to slide ${idx + 1}`}
               style={{
                 outline: imgIndex === idx ? "2px solid #facc15" : undefined,
-                pointerEvents: "auto"
+                pointerEvents: "auto",
               }}
               tabIndex={0}
             />
