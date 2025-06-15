@@ -17,7 +17,7 @@ import { useAdminAuth } from "@/pages/admin/AdminAuthProvider";
 
 // Modern sidebar nav items
 const navItems = [
-  { title: "Homepage", url: "/", icon: Globe },
+  { title: "Homepage", url: "https://ghatakgsai.netlify.app/", icon: Globe },
   { title: "Dashboard", url: "/admin/dashboard", icon: Home },
   { title: "Fees", url: "/admin/dashboard/fees", icon: BadgeDollarSign },
   { title: "Blogs", url: "/admin/dashboard/blogs", icon: BookOpen },

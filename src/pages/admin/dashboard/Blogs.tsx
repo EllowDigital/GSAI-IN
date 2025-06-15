@@ -69,7 +69,7 @@ export default function Blogs() {
       queryClient.invalidateQueries({ queryKey: ["blogs"] });
     },
     onError: (err: any) => {
-      toast({ title: "Error deleting blog", description: err.message, variant: "destructive" });
+      toast({ title: "Error deleting blog", description: err.message, variant: "error" });
     },
     onSettled: () => {
       setDeletingId(null);
