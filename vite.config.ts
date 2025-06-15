@@ -23,7 +23,8 @@ export default defineConfig(({ mode }) => ({
       manifest: {
         name: "Ghatak Sports Academy",
         short_name: "GSAI",
-        description: "Train at Ghatak Sports Academy, India's leading martial arts and self-defense school. Learn karate, taekwondo, fitness, and more with professional coaches.",
+        description:
+          "Train at Ghatak Sports Academy, India's leading martial arts and self-defense school. Learn karate, taekwondo, fitness, and more with professional coaches.",
         start_url: "/",
         display: "standalone",
         background_color: "#ffffff",
@@ -53,19 +54,21 @@ export default defineConfig(({ mode }) => ({
           {
             src: "/assets/favicon_io/favicon-32x32.png",
             sizes: "32x32",
-            type: "image/png"
+            type: "image/png",
           },
           {
             src: "/assets/favicon_io/favicon-16x16.png",
             sizes: "16x16",
-            type: "image/png"
-          }
-        ]
+            type: "image/png",
+          },
+        ],
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,woff2}"],
-        globIgnores: ['**/node_modules/**/*'],
+        globIgnores: ["**/node_modules/**/*"],
+        navigateFallback: "/offline.html",
         runtimeCaching: [
+          // Disable caching for admin dashboard
           {
             urlPattern: /^\/admin($|\/.*)/,
             handler: "NetworkOnly",
@@ -73,6 +76,7 @@ export default defineConfig(({ mode }) => ({
               cacheName: "no-cache-admin",
             },
           },
+          // Main app shell (for homepage and core routes)
           {
             urlPattern: ({ request }) =>
               request.destination === "document" ||
@@ -81,35 +85,49 @@ export default defineConfig(({ mode }) => ({
             handler: "NetworkFirst",
             options: {
               cacheName: "app-shell",
-              expiration: { maxEntries: 50, maxAgeSeconds: 86400 },
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 86400, // 1 day
+              },
             },
           },
+          // Remote Netlify-hosted assets
           {
             urlPattern: /^https:\/\/ghatakgsai\.netlify\.app\/.*/i,
             handler: "NetworkFirst",
             options: {
               cacheName: "site-data",
-              expiration: { maxEntries: 30, maxAgeSeconds: 86400 },
+              expiration: {
+                maxEntries: 30,
+                maxAgeSeconds: 86400,
+              },
             },
           },
+          // Images
           {
             urlPattern: /\.(?:png|jpg|jpeg|svg|webp|ico|gif)$/i,
             handler: "CacheFirst",
             options: {
               cacheName: "images",
-              expiration: { maxEntries: 60, maxAgeSeconds: 7 * 24 * 60 * 60 },
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+              },
             },
           },
+          // Fonts
           {
             urlPattern: /\.(?:woff2|woff)$/i,
             handler: "CacheFirst",
             options: {
               cacheName: "fonts",
-              expiration: { maxEntries: 30, maxAgeSeconds: 30 * 24 * 60 * 60 },
+              expiration: {
+                maxEntries: 30,
+                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+              },
             },
           },
         ],
-        navigateFallback: "/offline.html",
       },
       devOptions: {
         enabled: true,
