@@ -49,17 +49,14 @@ export function AppSidebar({ onNavClick }: { onNavClick?: () => void }) {
     if (typeof onNavClick === "function") onNavClick();
   };
 
+  // Style to apply correct background and border in both desktop/mobile sidebar
+  const sidebarBgClasses = "bg-gradient-to-b from-yellow-50 to-white border-r border-yellow-200 shadow-xl";
+
   return (
     <Sidebar
       variant="sidebar"
-      className={`
-        bg-gradient-to-b from-yellow-50 to-white border-r border-yellow-200 shadow-xl
-        md:rounded-tr-none rounded-tr-3xl
-        w-64 md:min-w-[16rem] md:max-w-[16rem]
-        h-full sticky top-0 left-0
-        flex flex-col
-        overflow-y-auto
-      `}
+      // For mobile Sheet, SheetContent uses w-full so set width via style on SidebarContent below
+      className={`md:rounded-tr-none rounded-tr-3xl w-64 md:min-w-[16rem] md:max-w-[16rem] h-full sticky top-0 left-0 flex flex-col overflow-y-auto ${sidebarBgClasses}`}
       style={{ minHeight: "100vh", maxHeight: "100vh" }}
     >
       <SidebarHeader className="mb-4 px-6 flex flex-col items-center justify-center">
@@ -67,7 +64,7 @@ export function AppSidebar({ onNavClick }: { onNavClick?: () => void }) {
         <span className="text-xl font-extrabold text-yellow-500 tracking-tight font-montserrat text-center select-none">GSAI Admin</span>
         <span className="text-xs mt-0.5 text-gray-500 font-semibold">Professional Dashboard</span>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="flex-1 p-0 w-full" style={{minWidth: "16rem", maxWidth: "16rem"}}>
         <SidebarGroup>
           <SidebarGroupLabel className="text-yellow-500 font-semibold pl-5 pt-2 mb-1">
             Navigation
@@ -107,3 +104,4 @@ export function AppSidebar({ onNavClick }: { onNavClick?: () => void }) {
     </Sidebar>
   );
 }
+
