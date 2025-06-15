@@ -1,15 +1,22 @@
-
 import React from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   BadgeDollarSign,
-  UserCheck,
+  Users,
   BookOpen,
   Newspaper,
   Image as GalleryIcon,
   Calendar,
-  Users,
 } from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 
 const cardsConfig = [
   {
@@ -57,12 +64,6 @@ const cardsConfig = [
 ];
 
 export default function StatsHome() {
-  const admin = {
-    name: "Admin",
-    avatar: "/favicon.ico",
-    role: "Super Admin",
-  };
-
   const [counts, setCounts] = React.useState<Record<string, number>>({});
   const [loading, setLoading] = React.useState(true);
 
@@ -86,28 +87,22 @@ export default function StatsHome() {
     return () => { ignore = true; };
   }, []);
 
+  // Prepare data for analytics chart
+  const analyticsData = cardsConfig.map(({ key, label }) => ({
+    name: label,
+    count: counts[key] ?? 0,
+  }));
+
   return (
     <div className="max-w-7xl mx-auto px-2 xs:px-4 sm:px-8 py-6 w-full animate-fade-in">
-      {/* Admin Greeting/Header */}
-      <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-6">
-        <div className="flex items-center gap-4">
-          <span className="flex items-center justify-center rounded-full bg-yellow-200 shadow p-3">
-            <BadgeDollarSign className="text-yellow-700 w-8 h-8" />
-          </span>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-yellow-500 drop-shadow">
-              Welcome, {admin.name}!
-            </h1>
-            <span className="mt-1 inline-block bg-yellow-100 text-yellow-700 text-xs rounded px-2 py-1 font-bold shadow">
-              {admin.role}
-            </span>
-          </div>
+      {/* Dashboard Header (clean, no logo/avatar/role) */}
+      <div className="mb-8">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-yellow-600 drop-shadow">
+          Dashboard Overview
+        </h1>
+        <div className="mt-1 text-base text-gray-500 font-medium">
+          Your admin panel analytics and quick stats.
         </div>
-        <img
-          src={admin.avatar}
-          alt="Admin Avatar"
-          className="w-14 h-14 md:w-16 md:h-16 rounded-full border-4 border-yellow-300 shadow"
-        />
       </div>
 
       {/* Responsive card stats grid */}
@@ -122,6 +117,44 @@ export default function StatsHome() {
           </div>
         ))}
       </div>
+
+      {/* Analytics Chart */}
+      <section className="rounded-2xl shadow bg-white/90 px-4 sm:px-6 py-6 mb-10">
+        <h2 className="text-xl font-bold mb-4 text-yellow-600">
+          Analytics
+        </h2>
+        <div className="w-full h-[340px] md:h-[380px] flex items-center justify-center">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={analyticsData}>
+              <CartesianGrid strokeDasharray="3 3" className="text-gray-100" />
+              <XAxis
+                dataKey="name"
+                tick={{ fontWeight: 600, fontSize: 12, fill: "#a16207" }} // yellow-700
+                axisLine={false}
+              />
+              <YAxis
+                allowDecimals={false}
+                tick={{ fontWeight: 600, fontSize: 13, fill: "#78716c" }}
+                axisLine={false}
+              />
+              <Tooltip
+                cursor={{ fill: "rgba(251, 191, 36, 0.14)" }}
+                contentStyle={{
+                  borderRadius: "0.5rem",
+                  borderColor: "#fde68a",
+                  backgroundColor: "#fff",
+                  fontWeight: 600,
+                }}
+                labelStyle={{
+                  color: "#ca8a04", // yellow-600
+                  fontWeight: 700,
+                }}
+              />
+              <Bar dataKey="count" fill="#FACC15" radius={[16, 16, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </section>
 
       {/* Example Advanced Panel */}
       <section className="rounded-2xl shadow bg-white/90 px-4 sm:px-6 py-6">
