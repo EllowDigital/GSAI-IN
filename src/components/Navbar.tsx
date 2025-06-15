@@ -20,7 +20,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-2 sm:px-4 py-2 md:py-3">
         {/* Logo/Brand name */}
         <a href="#" className="font-black text-lg xs:text-xl tracking-wider text-red-700 flex items-center gap-2">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Emblem_of_India.svg/64px-Emblem_of_India.svg.png" alt="GSAI Logo" className="w-8 h-8 rounded-full border border-yellow-400" />
+          <img src="/assets/img/logo.webp" alt="GSAI Logo" className="w-8 h-8 rounded-full border border-yellow-400" />
           <span className="hidden xs:inline">GSAI</span>
         </a>
         {/* Desktop Links */}
