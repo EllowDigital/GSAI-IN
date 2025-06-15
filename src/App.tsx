@@ -15,7 +15,6 @@ import Gallery from "./pages/admin/dashboard/Gallery";
 import Students from "./pages/admin/dashboard/Students";
 import NotFoundAdmin from "./pages/admin/NotFoundAdmin";
 import FeesManager from "./pages/admin/dashboard/FeesManager";
-import FeeRLSTest from "./pages/admin/FeeRLSTest";
 
 const queryClient = new QueryClient();
 
@@ -37,7 +36,6 @@ const App = () => (
                   <Route path="dashboard" element={<AdminLayout />}>
                     <Route index element={<StatsHome />} />
                     <Route path="fees" element={<FeesManager />} />
-                    <Route path="FeeRLSTest" element={<FeeRLSTest />} />
                     <Route path="blogs" element={<Blogs />} />
                     <Route path="news" element={<News />} />
                     <Route path="gallery" element={<Gallery />} />
