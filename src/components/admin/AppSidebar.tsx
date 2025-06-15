@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Sidebar,
@@ -21,6 +20,7 @@ import {
   Image,
   Users,
   LogOut,
+  Calendar,
 } from "lucide-react";
 import { useLocation, NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -38,6 +38,7 @@ export function AppSidebar() {
     { title: "News", url: "/admin/dashboard/news", icon: Newspaper },
     { title: "Gallery", url: "/admin/dashboard/gallery", icon: Image },
     { title: "Students", url: "/admin/dashboard/students", icon: Users },
+    { title: "Events", url: "/admin/dashboard/events", icon: Calendar },
   ];
 
   // Close sidebar on mobile when clicking a menu item
