@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -94,12 +93,13 @@ const AdminEventFormModal: React.FC<ModalProps> = ({ open, onOpenChange, editing
             from_date: form.from_date,
             end_date: form.end_date,
             tag: form.tag,
+            // Do not overwrite 'date' on update!
           })
           .eq("id", editingEvent.id);
         if (error) throw error;
         toast.success("Event updated.");
       } else {
-        // Create
+        // Create (fix: provide date)
         const { error } = await supabase.from("events").insert([
           {
             title: form.title,
@@ -108,6 +108,7 @@ const AdminEventFormModal: React.FC<ModalProps> = ({ open, onOpenChange, editing
             from_date: form.from_date,
             end_date: form.end_date,
             tag: form.tag,
+            date: form.from_date, // <-- mandatory field fix
           },
         ]);
         if (error) throw error;
