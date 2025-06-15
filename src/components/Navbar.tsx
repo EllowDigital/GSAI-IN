@@ -1,12 +1,12 @@
 
 import React, { useState } from "react";
 import { Menu, X, LogIn } from "lucide-react";
-// Removed: import PWAInstallButton from "./PWAInstallButton";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
 } from "../components/ui/dropdown-menu";
+import { Link } from "react-router-dom"; // ADD THIS
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -35,8 +35,8 @@ export default function Navbar() {
   return (
     <nav className="w-full fixed z-50 top-0 left-0 bg-white/90 backdrop-blur border-b border-yellow-100 shadow-md transition-all">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-2 xs:px-3 sm:px-5 md:px-8 lg:px-10 py-2 md:py-3">
-        <a
-          href="/"
+        <Link
+          to="/"
           className="flex items-center gap-2 xs:gap-3 font-black text-base xs:text-lg md:text-xl tracking-wider text-red-700 select-none"
         >
           <img
@@ -49,35 +49,54 @@ export default function Navbar() {
           <span className="hidden md:inline text-gray-900 font-bold text-sm md:text-base lg:text-xl ml-1 xs:ml-2 pl-2 md:pl-3 border-l border-yellow-300 tracking-tight">
             Ghatak Sports Academy India
           </span>
-        </a>
+        </Link>
         <div className="hidden lg:flex gap-5 xl:gap-8 items-center">
-          {navLinks.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              className="text-gray-800 font-medium hover:text-red-700 hover:underline underline-offset-8 transition-all duration-150 text-sm md:text-base lg:text-lg px-1 tracking-wide"
-            >
-              {link.name}
-            </a>
-          ))}
-          <a
-            href="/admin/login"
+          {navLinks.map((link) =>
+            link.href.startsWith("/") ? (
+              <Link
+                key={link.name}
+                to={link.href}
+                className="text-gray-800 font-medium hover:text-red-700 hover:underline underline-offset-8 transition-all duration-150 text-sm md:text-base lg:text-lg px-1 tracking-wide"
+              >
+                {link.name}
+              </Link>
+            ) : (
+              <a
+                key={link.name}
+                href={link.href}
+                className="text-gray-800 font-medium hover:text-red-700 hover:underline underline-offset-8 transition-all duration-150 text-sm md:text-base lg:text-lg px-1 tracking-wide"
+              >
+                {link.name}
+              </a>
+            )
+          )}
+          <Link
+            to="/admin/login"
             className="flex items-center gap-2 px-4 py-2 rounded-md bg-yellow-400 text-black font-semibold shadow hover:bg-yellow-500 transition ml-1 md:ml-2"
           >
             <LogIn className="w-5 h-5" /> <span className="hidden sm:inline">Admin Panel</span>
-          </a>
-          {/* Removed: <PWAInstallButton /> */}
+          </Link>
         </div>
         <div className="hidden md:flex lg:hidden gap-2 xs:gap-3 items-center">
-          {navLinks.slice(0, 4).map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              className="text-gray-800 font-medium hover:text-red-700 hover:underline underline-offset-8 transition-all duration-150 text-xs xs:text-sm md:text-base px-1 tracking-wide"
-            >
-              {link.name}
-            </a>
-          ))}
+          {navLinks.slice(0, 4).map((link) =>
+            link.href.startsWith("/") ? (
+              <Link
+                key={link.name}
+                to={link.href}
+                className="text-gray-800 font-medium hover:text-red-700 hover:underline underline-offset-8 transition-all duration-150 text-xs xs:text-sm md:text-base px-1 tracking-wide"
+              >
+                {link.name}
+              </Link>
+            ) : (
+              <a
+                key={link.name}
+                href={link.href}
+                className="text-gray-800 font-medium hover:text-red-700 hover:underline underline-offset-8 transition-all duration-150 text-xs xs:text-sm md:text-base px-1 tracking-wide"
+              >
+                {link.name}
+              </a>
+            )
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
@@ -89,22 +108,31 @@ export default function Navbar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="z-[60] mt-2 mr-2 w-56 bg-white rounded shadow-xl border border-yellow-100">
               <div className="flex flex-col py-2 px-2 gap-1">
-                {navLinks.slice(4).map((link) => (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    className="block text-gray-800 font-medium py-2 rounded hover:bg-yellow-100 transition text-sm xs:text-base px-2 w-full"
-                  >
-                    {link.name}
-                  </a>
-                ))}
-                <a
-                  href="/admin/login"
+                {navLinks.slice(4).map((link) =>
+                  link.href.startsWith("/") ? (
+                    <Link
+                      key={link.name}
+                      to={link.href}
+                      className="block text-gray-800 font-medium py-2 rounded hover:bg-yellow-100 transition text-sm xs:text-base px-2 w-full"
+                    >
+                      {link.name}
+                    </Link>
+                  ) : (
+                    <a
+                      key={link.name}
+                      href={link.href}
+                      className="block text-gray-800 font-medium py-2 rounded hover:bg-yellow-100 transition text-sm xs:text-base px-2 w-full"
+                    >
+                      {link.name}
+                    </a>
+                  )
+                )}
+                <Link
+                  to="/admin/login"
                   className="flex items-center gap-2 px-4 py-2 rounded-md bg-yellow-400 text-black font-semibold shadow hover:bg-yellow-500 transition mt-2"
                 >
                   <LogIn className="w-5 h-5" /> Admin Panel
-                </a>
-                {/* Removed: <PWAInstallButton /> */}
+                </Link>
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -137,25 +165,36 @@ export default function Navbar() {
                 </span>
               </div>
               <div className="flex flex-col py-4 px-6 gap-3 bg-white">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    className="flex items-center gap-3 text-gray-800 font-semibold py-3 px-3 rounded-xl transition-all duration-200 hover:bg-yellow-100 active:bg-yellow-200 text-base"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    <span className="inline-block w-2 h-2 rounded-full bg-yellow-400 mr-2" />
-                    <span>{link.name}</span>
-                  </a>
-                ))}
-                <a
-                  href="/admin/login"
+                {navLinks.map((link) =>
+                  link.href.startsWith("/") ? (
+                    <Link
+                      key={link.name}
+                      to={link.href}
+                      className="flex items-center gap-3 text-gray-800 font-semibold py-3 px-3 rounded-xl transition-all duration-200 hover:bg-yellow-100 active:bg-yellow-200 text-base"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <span className="inline-block w-2 h-2 rounded-full bg-yellow-400 mr-2" />
+                      <span>{link.name}</span>
+                    </Link>
+                  ) : (
+                    <a
+                      key={link.name}
+                      href={link.href}
+                      className="flex items-center gap-3 text-gray-800 font-semibold py-3 px-3 rounded-xl transition-all duration-200 hover:bg-yellow-100 active:bg-yellow-200 text-base"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <span className="inline-block w-2 h-2 rounded-full bg-yellow-400 mr-2" />
+                      <span>{link.name}</span>
+                    </a>
+                  )
+                )}
+                <Link
+                  to="/admin/login"
                   className="flex items-center gap-2 justify-center px-6 py-3 rounded-xl bg-yellow-400 text-black font-semibold shadow hover:bg-yellow-500 active:bg-yellow-600 transition-all mt-2 text-base"
                   onClick={() => setMobileOpen(false)}
                 >
                   <LogIn className="w-5 h-5" /> Admin Panel
-                </a>
-                {/* Removed: <PWAInstallButton /> */}
+                </Link>
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
