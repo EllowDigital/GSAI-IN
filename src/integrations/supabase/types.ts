@@ -105,6 +105,7 @@ export type Database = {
           monthly_fee: number
           notes: string | null
           paid_amount: number
+          receipt_url: string | null
           status: string | null
           student_id: string
           updated_at: string | null
@@ -118,6 +119,7 @@ export type Database = {
           monthly_fee: number
           notes?: string | null
           paid_amount?: number
+          receipt_url?: string | null
           status?: string | null
           student_id: string
           updated_at?: string | null
@@ -131,6 +133,7 @@ export type Database = {
           monthly_fee?: number
           notes?: string | null
           paid_amount?: number
+          receipt_url?: string | null
           status?: string | null
           student_id?: string
           updated_at?: string | null

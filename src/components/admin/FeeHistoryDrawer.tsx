@@ -40,13 +40,14 @@ export default function FeeHistoryDrawer({
                 <TableHead>Paid</TableHead>
                 <TableHead>Balance</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Receipt</TableHead>
                 <TableHead>Notes</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {rows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-gray-400">No payment history.</TableCell>
+                  <TableCell colSpan={8} className="text-center text-gray-400">No payment history.</TableCell>
                 </TableRow>
               ) : (
                 rows.map(fee => (
@@ -64,6 +65,20 @@ export default function FeeHistoryDrawer({
                       }>
                         {fee.status?.toUpperCase()}
                       </span>
+                    </TableCell>
+                    <TableCell>
+                      {fee.receipt_url ? (
+                        <a
+                          href={fee.receipt_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-700 underline text-xs"
+                        >
+                          View
+                        </a>
+                      ) : (
+                        <span className="text-gray-400 text-xs">-</span>
+                      )}
                     </TableCell>
                     <TableCell className="max-w-[140px] truncate">{fee.notes ?? ""}</TableCell>
                   </TableRow>
