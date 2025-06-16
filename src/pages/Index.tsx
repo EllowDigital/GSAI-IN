@@ -1,3 +1,4 @@
+
 import Seo from '../components/Seo';
 import Navbar from '../components/Navbar';
 
@@ -64,11 +65,11 @@ const faqStructuredData = {
 
 export default function Index() {
   return (
-    <div className="bg-background w-full min-h-screen flex flex-col font-montserrat">
+    <div className="bg-background w-full min-h-screen flex flex-col font-sans antialiased">
       {/* SEO Meta Tags & Structured Data */}
       <Seo
-        title="Ghatak Sports Academy India™ | Martial Arts, Fitness & Personal Excellence"
-        description="Join Ghatak Sports Academy India™ for world-class martial arts, fitness, and self-development programs. Explore training, events, latest news and a vibrant sports community."
+        title="Ghatak Sports Academy India™ | Modern Martial Arts, Fitness & Excellence"
+        description="Experience world-class martial arts training at Ghatak Sports Academy India™. Modern facilities, expert coaching, and comprehensive programs for all ages and skill levels."
         canonical="https://ghatakgsai.netlify.app/"
         image="https://ghatakgsai.netlify.app/assets/img/logo.webp"
         structuredData={[orgStructuredData, faqStructuredData]}
