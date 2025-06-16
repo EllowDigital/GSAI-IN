@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap');
 
 @tailwind base;
@@ -102,6 +103,13 @@
   html,
   body {
     @apply bg-background text-foreground overflow-x-hidden;
+  }
+}
+
+/* Custom gradient utilities */
+@layer utilities {
+  .bg-gradient-radial {
+    background: radial-gradient(circle, var(--tw-gradient-stops));
   }
 }
 
