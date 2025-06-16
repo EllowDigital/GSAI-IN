@@ -90,7 +90,7 @@ export default function GallerySection() {
       scale: 1,
       transition: {
         duration: 0.6,
-        type: "spring",
+        type: "spring" as const,
         damping: 20,
         stiffness: 100
       }
