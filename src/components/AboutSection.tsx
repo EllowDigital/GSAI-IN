@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Users, Target, Award, Heart } from 'lucide-react';
@@ -7,25 +6,28 @@ const features = [
   {
     icon: Target,
     title: 'Holistic Training',
-    description: 'Merging traditional martial arts with modern fitness for total self-improvement and mastery.'
+    description:
+      'Merging traditional martial arts with modern fitness for total self-improvement and mastery.',
   },
   {
     icon: Heart,
     title: 'Values-Driven Growth',
-    description: 'Fostering respect, confidence, and personal excellence in every student who walks through our doors.'
+    description:
+      'Fostering respect, confidence, and personal excellence in every student who walks through our doors.',
   },
   {
     icon: Award,
     title: 'Empowerment for All',
-    description: 'Programs tailored for every age and skill level, guiding you on a journey of self-mastery.'
-  }
+    description:
+      'Programs tailored for every age and skill level, guiding you on a journey of self-mastery.',
+  },
 ];
 
 const stats = [
-  { number: '500+', label: 'Active Students' },
-  { number: '15+', label: 'Years Experience' },
-  { number: '10+', label: 'Programs Offered' },
-  { number: '50+', label: 'Awards Won' }
+  { number: '50+', label: 'Active Students' },
+  { number: '⭐ 5.0', label: 'Google Rating' },
+  { number: '12+', label: 'Professional Programs' },
+  { number: 'Mar 2025', label: 'Established' },
 ];
 
 export default function AboutSection() {
@@ -51,19 +53,22 @@ export default function AboutSection() {
         >
           <div className="inline-flex items-center justify-center p-3 mb-8 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-full backdrop-blur-sm border border-yellow-200/30">
             <Users className="w-6 h-6 text-yellow-600 mr-3" />
-            <span className="text-sm font-semibold text-yellow-600 uppercase tracking-wider">About Us</span>
+            <span className="text-sm font-semibold text-yellow-600 uppercase tracking-wider">
+              About Us
+            </span>
           </div>
-          
+
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-gray-900 mb-8 leading-tight">
             Where Tradition Meets{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500">
               Excellence
             </span>
           </h2>
-          
+
           <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed font-medium">
-            Empowering champions since inception through the transformative power of martial arts, 
-            personal development, and unwavering dedication to excellence.
+            Empowering champions since inception through the transformative
+            power of martial arts, personal development, and unwavering
+            dedication to excellence.
           </p>
         </motion.div>
 
@@ -82,9 +87,10 @@ export default function AboutSection() {
                 Building Confident, Disciplined & Skilled Individuals
               </h3>
               <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
-                At Ghatak Sports Academy India, we don't just teach martial arts – we transform lives. 
-                Our comprehensive approach combines ancient wisdom with modern training methods to create 
-                champions both inside and outside the dojo.
+                At Ghatak Sports Academy India, we don't just teach martial arts
+                – we transform lives. Our comprehensive approach combines
+                ancient wisdom with modern training methods to create champions
+                both inside and outside the dojo.
               </p>
             </div>
 
@@ -104,8 +110,12 @@ export default function AboutSection() {
                     <feature.icon className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold text-gray-900 mb-2">{feature.title}</h4>
-                    <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">
+                      {feature.title}
+                    </h4>
+                    <p className="text-gray-600 leading-relaxed">
+                      {feature.description}
+                    </p>
                   </div>
                 </motion.div>
               ))}
@@ -120,9 +130,12 @@ export default function AboutSection() {
               viewport={{ once: true }}
             >
               <p className="text-lg md:text-xl font-semibold text-gray-800 italic leading-relaxed">
-                "Join our thriving community and discover your true potential—physically, mentally, and morally!"
+                "Join our thriving community and discover your true
+                potential—physically, mentally, and morally!"
               </p>
-              <cite className="block mt-2 text-sm font-medium text-gray-600">— Ghatak Sports Academy India</cite>
+              <cite className="block mt-2 text-sm font-medium text-gray-600">
+                — Ghatak Sports Academy India
+              </cite>
             </motion.blockquote>
           </motion.div>
 
@@ -138,7 +151,7 @@ export default function AboutSection() {
               {/* Decorative Elements */}
               <div className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full blur-lg opacity-60"></div>
               <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-gradient-to-br from-orange-400 to-red-500 rounded-full blur-lg opacity-40"></div>
-              
+
               {/* Stats Grid */}
               <div className="grid grid-cols-2 gap-6 relative z-10">
                 {stats.map((stat, index) => (
@@ -166,10 +179,15 @@ export default function AboutSection() {
                 className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-2xl"
                 initial={{ opacity: 0, scale: 0 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 1, type: "spring", bounce: 0.4 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 1,
+                  type: 'spring',
+                  bounce: 0.4,
+                }}
                 viewport={{ once: true }}
                 whileHover={{ rotate: 360 }}
-                style={{ transition: "transform 0.8s ease-in-out" }}
+                style={{ transition: 'transform 0.8s ease-in-out' }}
               >
                 <Users className="w-12 h-12 text-white" />
               </motion.div>
@@ -189,7 +207,8 @@ export default function AboutSection() {
             Ready to Begin Your Journey?
           </h3>
           <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Join thousands of students who have transformed their lives through our proven training methods.
+            Join thousands of students who have transformed their lives through
+            our proven training methods.
           </p>
           <motion.a
             href="#programs"

@@ -1,14 +1,14 @@
 import React, {
   createContext,
+  useContext,
   useEffect,
   useState,
-  useContext,
   ReactNode,
 } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Session } from '@supabase/supabase-js';
 import { toast } from '@/components/ui/sonner';
-import { useNavigate } from 'react-router-dom';
 
 type AdminAuthContextType = {
   session: Session | null;
@@ -30,98 +30,93 @@ const AdminAuthContext = createContext<AdminAuthContextType>({
 
 const ADMIN_EMAIL = 'ghatakgsai@gmail.com';
 
-function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
+function AdminAuthProviderInner({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Force clear all session and admin state
-  function clearAdminState() {
-    setIsAdmin(false);
+  const clearState = () => {
     setSession(null);
     setUserEmail(null);
+    setIsAdmin(false);
     setIsLoading(false);
-  }
+  };
+
+  const updateAuthState = (session: Session | null) => {
+    const email = session?.user?.email ?? null;
+    setSession(session);
+    setUserEmail(email);
+    const isAdminUser = email === ADMIN_EMAIL;
+    setIsAdmin(isAdminUser);
+    return isAdminUser;
+  };
 
   useEffect(() => {
-    // Listen for changes in auth state
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession);
-      setUserEmail(newSession?.user?.email ?? null);
-      setIsAdmin(newSession?.user?.email === ADMIN_EMAIL);
+    // Initial session check
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      const currentSession = data.session;
+      const isAdminUser = updateAuthState(currentSession);
       setIsLoading(false);
 
-      // Redirect if not admin (no reload)
-      if (
-        !_event.startsWith('INITIAL') &&
-        (!newSession || newSession?.user?.email !== ADMIN_EMAIL)
-      ) {
-        clearAdminState();
+      if (!isAdminUser) {
+        clearState();
         navigate('/admin/login', { replace: true });
       }
-    });
+    };
 
-    // On mount, check for persisted session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUserEmail(session?.user?.email ?? null);
-      setIsAdmin(session?.user?.email === ADMIN_EMAIL);
-      setIsLoading(false);
+    checkSession();
 
-      // If not admin, redirect to login (no reload)
-      if (!session?.user || session.user.email !== ADMIN_EMAIL) {
-        clearAdminState();
-        navigate('/admin/login', { replace: true });
+    // Auth change listener
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, newSession) => {
+        const isAdminUser = updateAuthState(newSession);
+        setIsLoading(false);
+
+        if (!isAdminUser) {
+          clearState();
+          navigate('/admin/login', { replace: true });
+        }
       }
-    });
+    );
 
     return () => {
-      subscription.unsubscribe();
+      listener.subscription.unsubscribe();
     };
   }, [navigate]);
 
-  // Sign in as admin only
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
-    const { error, data } = await supabase.auth.signInWithPassword({
+
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+
     if (error) {
-      toast.error('Login failed: ' + error.message);
-      clearAdminState();
-      setIsLoading(false);
+      toast.error(`Login failed: ${error.message}`);
+      clearState();
       return;
     }
+
     if (data.user.email !== ADMIN_EMAIL) {
-      toast.error(
-        'Only the designated admin account can access the dashboard.'
-      );
+      toast.error('Unauthorized: This is not the designated admin account.');
       await supabase.auth.signOut();
-      clearAdminState();
-      setIsLoading(false);
+      clearState();
       return;
     }
-    toast.success('Logged in as admin.');
-    setIsAdmin(true);
-    setSession(data.session ?? null);
-    setUserEmail(data.user.email);
-    setIsLoading(false);
-    // Redirect to dashboard on successful login
+
+    updateAuthState(data.session ?? null);
+    toast.success('Successfully logged in as admin.');
     navigate('/admin/dashboard', { replace: true });
   };
 
-  // Logout: always clear state & redirect to homepage
   const signOut = async () => {
     await supabase.auth.signOut();
-    clearAdminState();
-
-    toast.success('Logged out.');
-    // Redirect to homepage and prevent back navigation.
+    clearState();
+    toast.success('Logged out successfully.');
     window.location.replace('/');
   };
 
@@ -134,11 +129,10 @@ function AdminAuthProviderInner({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Provide the navigation context by wrapping in a component
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   return <AdminAuthProviderInner>{children}</AdminAuthProviderInner>;
 }
 
-export function useAdminAuth() {
+export function useAdminAuth(): AdminAuthContextType {
   return useContext(AdminAuthContext);
 }

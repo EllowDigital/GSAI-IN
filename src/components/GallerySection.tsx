@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
@@ -63,10 +62,11 @@ export default function GallerySection() {
   };
 
   const navigateImage = (direction: 'prev' | 'next') => {
-    const newIndex = direction === 'next' 
-      ? (currentIndex + 1) % images.length 
-      : (currentIndex - 1 + images.length) % images.length;
-    
+    const newIndex =
+      direction === 'next'
+        ? (currentIndex + 1) % images.length
+        : (currentIndex - 1 + images.length) % images.length;
+
     setCurrentIndex(newIndex);
     setSelectedImage(images[newIndex]);
   };
@@ -77,9 +77,9 @@ export default function GallerySection() {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
-    }
+        delayChildren: 0.2,
+      },
+    },
   };
 
   const itemVariants = {
@@ -90,9 +90,9 @@ export default function GallerySection() {
       scale: 1,
       transition: {
         duration: 0.6,
-        ease: [0.4, 0, 0.2, 1] as [number, number, number, number]
-      }
-    }
+        ease: [0.4, 0, 0.2, 1] as [number, number, number, number],
+      },
+    },
   };
 
   return (
@@ -103,10 +103,10 @@ export default function GallerySection() {
       {/* Modern Background Elements */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-full blur-3xl" />
       <div className="absolute bottom-20 right-16 w-96 h-96 bg-gradient-to-br from-yellow-500/5 to-orange-500/5 rounded-full blur-3xl" />
-      
+
       <div className="max-w-7xl mx-auto relative">
         {/* Modern Header */}
-        <motion.div 
+        <motion.div
           className="text-center mb-20"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -114,19 +114,22 @@ export default function GallerySection() {
         >
           <div className="inline-flex items-center justify-center p-3 mb-8 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full backdrop-blur-sm border border-blue-200/30">
             <Images className="w-6 h-6 text-blue-600 mr-3" />
-            <span className="text-sm font-semibold text-blue-600 uppercase tracking-wider">Gallery</span>
+            <span className="text-sm font-semibold text-blue-600 uppercase tracking-wider">
+              Gallery
+            </span>
           </div>
-          
+
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-gray-900 mb-8 leading-tight">
             Academy{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800">
               Moments
             </span>
           </h2>
-          
+
           <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed font-medium">
-            Discover the energy, dedication, and community spirit that defines our academy through 
-            these captured moments of training, events, and achievements.
+            Discover the energy, dedication, and community spirit that defines
+            our academy through these captured moments of training, events, and
+            achievements.
           </p>
         </motion.div>
 
@@ -139,14 +142,18 @@ export default function GallerySection() {
             </div>
           </div>
         ) : images.length === 0 ? (
-          <motion.div 
+          <motion.div
             className="text-center py-40"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
             <Images className="w-32 h-32 text-gray-300 mx-auto mb-8" />
-            <h3 className="text-3xl font-bold text-gray-400 mb-4">No Images Yet</h3>
-            <p className="text-xl text-gray-500">Check back soon for amazing moments from our academy!</p>
+            <h3 className="text-3xl font-bold text-gray-400 mb-4">
+              No Images Yet
+            </h3>
+            <p className="text-xl text-gray-500">
+              Check back soon for amazing moments from our academy!
+            </p>
           </motion.div>
         ) : (
           <motion.div
@@ -172,10 +179,10 @@ export default function GallerySection() {
                     loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                  
+
                   {/* Modern Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  
+
                   {/* View Button */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform group-hover:scale-110">
                     <div className="bg-white/20 backdrop-blur-lg rounded-full p-4 border border-white/30 shadow-lg">
@@ -238,7 +245,7 @@ export default function GallerySection() {
                   >
                     <ChevronLeft className="w-8 h-8 text-white" />
                   </button>
-                  
+
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -266,7 +273,7 @@ export default function GallerySection() {
                   alt={selectedImage.caption || 'Gallery image'}
                   className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
                 />
-                
+
                 {/* Caption in Lightbox */}
                 {selectedImage.caption && (
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-8 rounded-b-2xl backdrop-blur-sm">

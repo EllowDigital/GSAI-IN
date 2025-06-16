@@ -1,10 +1,13 @@
 /**
- * Utilities to aggregate, validate, and summarize all Admin Dashboard stats.
+ * Admin Dashboard Utility Functions
+ * ---------------------------------
+ * Handles data aggregation, validation, and summarization for key dashboard metrics.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-/** Interfaces for expected DB shape (loosely typed to allow partial results). */
+/* -------------------------- Types for DB Records -------------------------- */
+
 export type Fee = {
   paid_amount?: number;
   status?: string;
@@ -13,77 +16,124 @@ export type Fee = {
   student_id?: string;
   [key: string]: any;
 };
-export type Student = { program?: string; id?: string; [key: string]: any };
-export type Blog = { title?: string; published_at?: string };
-export type News = { title?: string; date?: string };
-export type GalleryImage = { id?: string };
-export type Event = { title?: string; date?: string };
+
+export type Student = {
+  id?: string;
+  program?: string;
+  [key: string]: any;
+};
+
+export type Blog = {
+  title?: string;
+  published_at?: string;
+};
+
+export type News = {
+  title?: string;
+  date?: string;
+};
+
+export type GalleryImage = {
+  id?: string;
+};
+
+export type Event = {
+  title?: string;
+  date?: string;
+};
+
+/* -------------------------- Fee Aggregation Logic -------------------------- */
 
 /**
- * Aggregate fee stats, robust and tolerant to errors
+ * Aggregates fee information to calculate totals for paid, unpaid, and partial payments.
  */
 export function aggregateFees(fees: Fee[] = []) {
-  let paidSum = 0,
-    unpaidCount = 0,
-    partialSum = 0,
-    total = 0;
-  for (const f of fees) {
-    if (!f) continue;
-    total++;
-    const paid = Number(f.paid_amount || 0);
-    const due = Number(f.monthly_fee || 0) + Number(f.balance_due || 0);
-    const status = String(f.status || '').toLowerCase();
-    if (status === 'paid' || paid >= due) paidSum += paid;
-    else if (status === 'partial' && paid > 0) partialSum += paid;
-    else unpaidCount++;
+  let totalFees = 0;
+  let fullyPaidTotal = 0;
+  let partiallyPaidTotal = 0;
+  let unpaidCount = 0;
+
+  for (const fee of fees) {
+    if (!fee) continue;
+
+    totalFees++;
+
+    const paid = Number(fee.paid_amount || 0);
+    const due = Number(fee.monthly_fee || 0) + Number(fee.balance_due || 0);
+    const status = String(fee.status || '').toLowerCase();
+
+    if (status === 'paid' || paid >= due) {
+      fullyPaidTotal += paid;
+    } else if (status === 'partial' && paid > 0) {
+      partiallyPaidTotal += paid;
+    } else {
+      unpaidCount++;
+    }
   }
-  return { total, paidSum, unpaidCount, partialSum };
+
+  return {
+    total: totalFees,
+    paidSum: fullyPaidTotal,
+    partialSum: partiallyPaidTotal,
+    unpaidCount,
+  };
 }
 
+/* ---------------------- Student Distribution by Program --------------------- */
+
 /**
- * Aggregate students by program
+ * Counts students grouped by their program name.
  */
 export function studentsByProgram(students: Student[] = []) {
-  const counts: Record<string, number> = {};
+  const byProgram: Record<string, number> = {};
   let total = 0;
-  for (const s of students) {
-    if (!s || !s.program) continue;
-    counts[s.program] = (counts[s.program] || 0) + 1;
+
+  for (const student of students) {
+    if (!student?.program) continue;
+
+    const program = student.program;
+    byProgram[program] = (byProgram[program] || 0) + 1;
     total++;
   }
-  return { byProgram: counts, total };
+
+  return { byProgram, total };
 }
 
+/* ------------------------ General Dashboard Helpers ------------------------ */
+
 /**
- * Simplified: Get latest X items by property with fallback for empty/missing data
+ * Extracts the latest X titles from an array of objects with optional `title` property.
  */
 export function getLatestTitlesAll<T extends { title?: string }>(
   arr: T[] = [],
   count: number = 3
 ): string[] {
-  if (!Array.isArray(arr)) return [];
-  return arr
+  return (arr || [])
     .slice(0, count)
-    .map((b) => b?.title || '')
-    .filter((t) => t);
+    .map((item) => item?.title || '')
+    .filter(Boolean);
 }
 
 /**
- * Returns count safely for any array
+ * Safely returns count of items in an array (handles null/undefined).
  */
 export function safeCount(arr: any[] | null | undefined): number {
   return Array.isArray(arr) ? arr.length : 0;
 }
 
 /**
- * Returns first upcoming event (from sorted array), or null
+ * Returns the first upcoming event title (sorted by date), or null if none found.
  */
 export function getNextEvent(events: Event[] = []): string | null {
   const now = new Date();
-  for (const e of events) {
-    if (e && e.date && new Date(e.date) >= now) {
-      return e.title ? `${e.title} (${e.date})` : e.date;
+
+  for (const event of events) {
+    const eventDate = event?.date ? new Date(event.date) : null;
+
+    if (eventDate && eventDate >= now) {
+      return event.title ? `${event.title} (${event.date})` : event.date;
     }
   }
+
   return null;
 }

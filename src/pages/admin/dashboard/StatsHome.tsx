@@ -1,6 +1,6 @@
-import React from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import React, { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import {
   BadgeDollarSign,
   Users,
@@ -9,11 +9,20 @@ import {
   Image as GalleryIcon,
   Calendar,
 } from 'lucide-react';
+
 import StatsCards from '@/components/admin/dashboard/StatsCards';
 import AnalyticsChart from '@/components/admin/dashboard/AnalyticsChart';
 import AdvancedPanel from '@/components/admin/dashboard/AdvancedPanel';
 
-const cardsConfig = [
+type CardConfig = {
+  key: string;
+  label: string;
+  icon: React.ElementType;
+  color: string;
+  table: string;
+};
+
+const cardsConfig: CardConfig[] = [
   {
     key: 'fees',
     label: 'Fee Records',
@@ -58,33 +67,38 @@ const cardsConfig = [
   },
 ];
 
-const fetchAllCounts = async () => {
-  const promises = cardsConfig.map(async ({ key, table }) => {
-    const { count } = await supabase
-      .from(table as any)
+const fetchDashboardCounts = async () => {
+  const countPromises = cardsConfig.map(async ({ key, table }) => {
+    const { count, error } = await supabase
+      .from(table)
       .select('id', { count: 'exact', head: true });
+
+    if (error) {
+      console.error(`Error fetching count for ${table}:`, error.message);
+    }
+
     return [key, count ?? 0] as const;
   });
-  const results = await Promise.all(promises);
+
+  const results = await Promise.all(countPromises);
   return Object.fromEntries(results);
 };
 
 export default function StatsHome() {
   const queryClient = useQueryClient();
-  const { data: counts, isLoading: loading } = useQuery({
+
+  const { data: counts, isLoading: isLoadingCounts } = useQuery({
     queryKey: ['dashboardCounts'],
-    queryFn: fetchAllCounts,
+    queryFn: fetchDashboardCounts,
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     const channels = cardsConfig.map(({ table }) =>
       supabase
-        .channel(`public:${table}:stats-home`)
-        .on(
-          'postgres_changes',
-          { event: '*', schema: 'public', table: table },
-          () => queryClient.invalidateQueries({ queryKey: ['dashboardCounts'] })
-        )
+        .channel(`public:${table}:dashboard`)
+        .on('postgres_changes', { event: '*', schema: 'public', table }, () => {
+          queryClient.invalidateQueries({ queryKey: ['dashboardCounts'] });
+        })
         .subscribe()
     );
 
@@ -93,29 +107,32 @@ export default function StatsHome() {
     };
   }, [queryClient]);
 
-  // Prepare data for analytics chart
   const analyticsData = cardsConfig.map(({ key, label }) => ({
     name: label,
     count: counts?.[key] ?? 0,
   }));
 
   return (
-    <div className="max-w-7xl mx-auto px-2 xs:px-4 sm:px-8 py-6 w-full animate-fade-in">
-      {/* Dashboard Header */}
+    <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 animate-fade-in">
+      {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-yellow-600 drop-shadow">
+        <h1 className="text-3xl font-extrabold tracking-tight text-yellow-600 drop-shadow">
           Dashboard Overview
         </h1>
-        <div className="mt-1 text-base text-gray-500 font-medium">
-          Your admin panel analytics and quick stats.
-        </div>
+        <p className="mt-1 text-gray-500 font-medium">
+          Admin panel analytics and quick stats.
+        </p>
       </div>
 
-      {/* Responsive card stats grid */}
-      <StatsCards cardsConfig={cardsConfig} counts={counts} loading={loading} />
+      {/* Stats Cards */}
+      <StatsCards
+        cardsConfig={cardsConfig}
+        counts={counts}
+        loading={isLoadingCounts}
+      />
 
-      {/* Main dashboard section with Chart and Advanced Panel */}
-      <div className="mt-8 sm:mt-10 grid grid-cols-1 lg:grid-cols-5 gap-8 sm:gap-10">
+      {/* Charts & Advanced Panel */}
+      <div className="mt-10 grid grid-cols-1 lg:grid-cols-5 gap-8">
         <div className="lg:col-span-3">
           <AnalyticsChart analyticsData={analyticsData} />
         </div>
