@@ -13,7 +13,7 @@ const programs = [
   { icon: '🥋', title: 'Kickboxing', desc: 'Cardio meets combat' },
   { icon: '🤼', title: 'Grappling', desc: 'Ground control tactics' },
   { icon: '🥋', title: 'MMA', desc: 'Striking & grappling combined' },
-  { icon: '🕉️', title: 'Kalaripayattu', desc: 'India's ancient warrior art' },
+  { icon: '🕉️', title: 'Kalaripayattu', desc: "India's ancient warrior art" },
   { icon: '🛡️', title: 'Self-Defense', desc: 'Practical safety training' },
   { icon: '🏋️', title: 'Fat Loss', desc: 'Burn fat, build agility' },
 ];
