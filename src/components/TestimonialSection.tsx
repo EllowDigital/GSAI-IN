@@ -25,7 +25,7 @@ const testimonials = [
   {
     name: 'Sarwan Yadav',
     quote:
-      'The range of programs and the supportive environment make every session enjoyable. I've gained new skills and lifelong friends!',
+      "The range of programs and the supportive environment make every session enjoyable. I've gained new skills and lifelong friends!",
     role: 'Kalarippayattu Practitioner',
   },
   {
