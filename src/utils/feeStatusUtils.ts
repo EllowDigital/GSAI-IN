@@ -1,62 +1,74 @@
 /**
- * Utilities for robustly determining/aggregating fee statuses and financial stats
+ * Utilities for robustly determining and aggregating fee statuses and financial stats
  */
+
 export type FeeRow = {
-  monthly_fee: number;
-  paid_amount: number;
-  balance_due: number;
+  monthly_fee?: number;
+  paid_amount?: number;
+  balance_due?: number;
   status?: string | null;
   [key: string]: any;
 };
 
-// Returns the status for a given fee row, based on paid amount versus monthly fee
+/**
+ * Normalize fee values to ensure safe numeric operations
+ */
+function normalizeFee(fee: FeeRow) {
+  return {
+    monthly: Number(fee.monthly_fee ?? 0),
+    paid: Number(fee.paid_amount ?? 0),
+    balance: Number(fee.balance_due ?? 0),
+    status: (fee.status ?? '').toLowerCase(),
+  };
+}
+
+/**
+ * Determines the fee payment status for a single fee record
+ */
 export function getFeeStatus(fee: FeeRow): 'paid' | 'partial' | 'unpaid' {
-  const monthlyFee = Number(fee.monthly_fee ?? 0);
-  const paidAmount = Number(fee.paid_amount ?? 0);
+  const { monthly, paid } = normalizeFee(fee);
 
-  // If fee is 0 or negative, consider it paid.
-  if (monthlyFee <= 0) {
-    return 'paid';
-  }
-
-  if (paidAmount >= monthlyFee) {
-    return 'paid';
-  }
-  if (paidAmount > 0 && paidAmount < monthlyFee) {
-    return 'partial';
-  }
+  if (monthly <= 0) return 'paid'; // No fee due
+  if (paid >= monthly) return 'paid';
+  if (paid > 0 && paid < monthly) return 'partial';
   return 'unpaid';
 }
 
-// Returns clearer and more accurate stats for paid, partial, and overdue fees
+/**
+ * Aggregates fee statistics: paid, partial, and overdue amounts and counts
+ */
 export function summarizeFees(fees: FeeRow[]) {
-  let paidAmount = 0; // Total money from fully paid fees
-  let partialAmount = 0; // Total money from partially paid fees
-  let overdueAmount = 0; // Total money pending/due
+  let paidAmount = 0;
+  let partialAmount = 0;
+  let overdueAmount = 0;
   let paidCount = 0;
   let partialCount = 0;
-  let overdueCount = 0; // Count of students with outstanding balance
+  let overdueCount = 0;
 
-  fees.forEach((fee) => {
+  for (const fee of fees) {
     const status = getFeeStatus(fee);
-    const monthlyFee = Number(fee.monthly_fee ?? 0);
-    const paid = Number(fee.paid_amount ?? 0);
+    const { monthly, paid } = normalizeFee(fee);
 
-    if (status === 'paid') {
-      paidAmount += paid;
-      paidCount += 1;
-    } else if (status === 'partial') {
-      partialAmount += paid;
-      partialCount += 1;
+    switch (status) {
+      case 'paid':
+        paidAmount += paid;
+        paidCount++;
+        break;
 
-      overdueAmount += monthlyFee - paid;
-      overdueCount += 1;
-    } else {
-      // unpaid
-      overdueAmount += monthlyFee;
-      overdueCount += 1;
+      case 'partial':
+        partialAmount += paid;
+        overdueAmount += monthly - paid;
+        partialCount++;
+        overdueCount++;
+        break;
+
+      case 'unpaid':
+      default:
+        overdueAmount += monthly;
+        overdueCount++;
+        break;
     }
-  });
+  }
 
   return {
     paidAmount,
@@ -68,17 +80,18 @@ export function summarizeFees(fees: FeeRow[]) {
   };
 }
 
-// Human readable status (with color)
-export function getStatusTextAndColor(status: string) {
-  switch (status) {
+/**
+ * Returns human-readable status with associated Tailwind CSS class
+ */
+export function getStatusTextAndColor(status: string): [string, string] {
+  const normalized = status?.toLowerCase();
+
+  switch (normalized) {
     case 'paid':
-    case 'Paid':
       return ['Paid', 'bg-green-100 text-green-700'];
     case 'partial':
-    case 'Partial':
       return ['Partial', 'bg-yellow-100 text-yellow-700'];
     case 'unpaid':
-    case 'Unpaid':
     default:
       return ['Unpaid', 'bg-red-100 text-red-700'];
   }

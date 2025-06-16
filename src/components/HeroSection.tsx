@@ -1,7 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowDownCircle, Play } from 'lucide-react';
+import { ArrowDownCircle } from 'lucide-react';
+import { FaInstagram } from 'react-icons/fa';
 
 const bgImages = [
   '/assets/slider/slider6.png',
@@ -28,9 +28,7 @@ const variants = {
 
 const staggerContainer = {
   animate: {
-    transition: {
-      staggerChildren: 0.2,
-    },
+    transition: { staggerChildren: 0.2 },
   },
 };
 
@@ -39,14 +37,17 @@ export default function HeroSection() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setImgIndex((idx) => (idx + 1) % bgImages.length);
+      setImgIndex((prev) => (prev + 1) % bgImages.length);
     }, 5000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image Slider with Modern Overlay */}
+    <section
+      id="hero"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+    >
+      {/* Background Image Slider */}
       <div className="absolute inset-0 w-full h-full z-0">
         <AnimatePresence mode="wait">
           <motion.div
@@ -64,15 +65,13 @@ export default function HeroSection() {
             aria-hidden="true"
           />
         </AnimatePresence>
-        
-        {/* Modern Dark Gradient Overlay for Better Text Readability */}
+
+        {/* Overlays */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/40 to-black/60" />
-        
-        {/* Additional Radial Overlay for Content Focus */}
         <div className="absolute inset-0 bg-gradient-radial from-transparent via-black/20 to-black/50" />
       </div>
 
-      {/* Content Container */}
+      {/* Content */}
       <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32 z-10">
         <motion.div
           className="text-center"
@@ -80,7 +79,7 @@ export default function HeroSection() {
           initial="initial"
           animate="animate"
         >
-          {/* Badge/Tag */}
+          {/* Badge */}
           <motion.div
             variants={variants}
             className="inline-flex items-center gap-2 px-4 py-2 mb-6 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white/90 text-sm font-medium"
@@ -89,7 +88,7 @@ export default function HeroSection() {
             Government Recognized • ISO 9001:2015 Certified
           </motion.div>
 
-          {/* Main Heading */}
+          {/* Heading */}
           <motion.h1
             variants={variants}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-white leading-tight mb-6"
@@ -116,7 +115,7 @@ export default function HeroSection() {
             <span className="text-red-400">Self-Defense</span>
           </motion.p>
 
-          {/* CTA Buttons */}
+          {/* Buttons */}
           <motion.div
             variants={variants}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
@@ -130,44 +129,25 @@ export default function HeroSection() {
               <span className="relative z-10">Join Now</span>
               <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
             </motion.a>
-            
+
             <motion.button
-              className="group flex items-center gap-3 px-6 py-4 bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 rounded-full font-semibold text-white text-lg transition-all duration-300"
+              onClick={() =>
+                window.open('https://www.instagram.com/ghatakgsai/', '_blank')
+              }
+              className="group inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white font-bold rounded-full shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-400"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              aria-label="Follow us on Instagram"
             >
-              <Play className="w-5 h-5 fill-current" />
-              Watch Story
+              <FaInstagram className="w-5 h-5" />
+              Follow Us
             </motion.button>
-          </motion.div>
-
-          {/* Stats */}
-          <motion.div
-            variants={variants}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-3xl mx-auto"
-          >
-            {[
-              { number: '500+', label: 'Students' },
-              { number: '10+', label: 'Programs' },
-              { number: '15+', label: 'Years' },
-              { number: '50+', label: 'Awards' },
-            ].map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-2xl md:text-3xl lg:text-4xl font-black text-white mb-1">
-                  {stat.number}
-                </div>
-                <div className="text-sm md:text-base text-white/80 font-medium">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
           </motion.div>
         </motion.div>
       </div>
 
-      {/* Scroll Indicator and Navigation */}
+      {/* Scroll Indicator & Dots */}
       <div className="absolute left-1/2 -translate-x-1/2 bottom-8 flex flex-col items-center gap-6 z-50">
-        {/* Scroll Down Indicator */}
         <motion.div
           className="flex flex-col items-center gap-2"
           initial={{ opacity: 0, y: 20 }}
@@ -180,7 +160,6 @@ export default function HeroSection() {
           </span>
         </motion.div>
 
-        {/* Image Navigation Dots */}
         <motion.div
           className="flex gap-3"
           initial={{ opacity: 0 }}
@@ -202,9 +181,12 @@ export default function HeroSection() {
         </motion.div>
       </div>
 
-      {/* Floating Elements for Modern Touch */}
+      {/* Floating Gradient Circles */}
       <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-br from-yellow-400/20 to-orange-500/20 rounded-full blur-xl animate-pulse" />
-      <div className="absolute bottom-32 right-16 w-32 h-32 bg-gradient-to-br from-red-500/20 to-pink-500/20 rounded-full blur-xl animate-pulse" style={{ animationDelay: '1s' }} />
+      <div
+        className="absolute bottom-32 right-16 w-32 h-32 bg-gradient-to-br from-red-500/20 to-pink-500/20 rounded-full blur-xl animate-pulse"
+        style={{ animationDelay: '1s' }}
+      />
     </section>
   );
 }

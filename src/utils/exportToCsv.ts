@@ -1,4 +1,59 @@
-export function exportFeesToCsv(items: any[], month: number, year: number) {
+/**
+ * Utility to export data arrays to CSV for Admin Dashboard
+ */
+
+type FeeItem = {
+  student?: {
+    name?: string;
+    program?: string;
+    default_monthly_fee?: number;
+  };
+  fee?: {
+    month?: number;
+    year?: number;
+    monthly_fee?: number;
+    paid_amount?: number;
+    balance_due?: number;
+    status?: string;
+    notes?: string;
+  };
+};
+
+type StudentItem = {
+  name?: string;
+  aadhar_number?: string;
+  program?: string;
+  join_date?: string;
+  parent_name?: string;
+  parent_contact?: string;
+};
+
+/**
+ * Escapes a value for CSV, handling commas and quotes
+ */
+function escapeCSV(value: any): string {
+  if (value == null) return '""';
+  const str = String(value).replace(/"/g, '""');
+  return `"${str}"`;
+}
+
+/**
+ * Triggers CSV file download in browser
+ */
+function triggerCsvDownload(content: string, filename: string) {
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.setAttribute('download', filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+/**
+ * Exports fee records to CSV
+ */
+export function exportFeesToCsv(items: FeeItem[], month: number, year: number) {
   if (!Array.isArray(items) || items.length === 0) return;
 
   const headers = [
@@ -13,31 +68,31 @@ export function exportFeesToCsv(items: any[], month: number, year: number) {
     'Notes',
   ];
 
-  const csvRows = [
-    headers.join(','),
-    ...items.map((fee) =>
-      [
-        `"${fee.student?.name || ''}"`,
-        `"${fee.student?.program || ''}"`,
-        `"${fee.fee?.month || month}"`,
-        `"${fee.fee?.year || year}"`,
-        `"${fee.fee ? fee.fee.monthly_fee : fee.student?.default_monthly_fee || ''}"`,
-        `"${fee.fee ? fee.fee.paid_amount : ''}"`,
-        `"${fee.fee ? fee.fee.balance_due : ''}"`,
-        `"${fee.fee ? fee.fee.status : 'unpaid'}"`,
-        `"${fee.fee ? fee.fee.notes : ''}"`,
-      ].join(',')
-    ),
-  ];
+  const rows = items.map((item) => {
+    const student = item.student || {};
+    const fee = item.fee || {};
 
-  const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = `fees_${month}_${year}.csv`;
-  link.click();
+    return [
+      escapeCSV(student.name),
+      escapeCSV(student.program),
+      escapeCSV(fee.month ?? month),
+      escapeCSV(fee.year ?? year),
+      escapeCSV(fee.monthly_fee ?? student.default_monthly_fee ?? ''),
+      escapeCSV(fee.paid_amount ?? ''),
+      escapeCSV(fee.balance_due ?? ''),
+      escapeCSV(fee.status ?? 'unpaid'),
+      escapeCSV(fee.notes ?? ''),
+    ].join(',');
+  });
+
+  const csvContent = [headers.join(','), ...rows].join('\n');
+  triggerCsvDownload(csvContent, `fees_${month}_${year}.csv`);
 }
 
-export function exportStudentsToCsv(students: any[]) {
+/**
+ * Exports student records to CSV
+ */
+export function exportStudentsToCsv(students: StudentItem[]) {
   if (!Array.isArray(students) || students.length === 0) return;
 
   const headers = [
@@ -49,23 +104,17 @@ export function exportStudentsToCsv(students: any[]) {
     'Parent Contact',
   ];
 
-  const csvRows = [
-    headers.join(','),
-    ...students.map((stu) =>
-      [
-        `"${stu.name || ''}"`,
-        `"${stu.aadhar_number || ''}"`,
-        `"${stu.program || ''}"`,
-        `"${stu.join_date || ''}"`,
-        `"${stu.parent_name || ''}"`,
-        `"${stu.parent_contact || ''}"`,
-      ].join(',')
-    ),
-  ];
+  const rows = students.map((stu) =>
+    [
+      escapeCSV(stu.name),
+      escapeCSV(stu.aadhar_number),
+      escapeCSV(stu.program),
+      escapeCSV(stu.join_date),
+      escapeCSV(stu.parent_name),
+      escapeCSV(stu.parent_contact),
+    ].join(',')
+  );
 
-  const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = `students.csv`;
-  link.click();
+  const csvContent = [headers.join(','), ...rows].join('\n');
+  triggerCsvDownload(csvContent, `students.csv`);
 }

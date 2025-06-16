@@ -1,11 +1,6 @@
 import React from 'react';
 import { Menu, X, LogIn } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-} from '../ui/dropdown-menu';
 import { NavLinkItem } from './NavLinkItem';
 import { navLinks } from '../../data/navLinks';
 
@@ -16,60 +11,89 @@ interface MobileNavbarProps {
 
 export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
   return (
-    <div className="md:hidden flex items-center">
-      <DropdownMenu open={mobileOpen} onOpenChange={setMobileOpen}>
-        <DropdownMenuTrigger asChild>
-          <button
-            className={`p-2 rounded focus:outline-none text-gray-800 hover:bg-yellow-100 transition h-11 w-11 flex items-center justify-center
-              ${mobileOpen ? 'ring-2 ring-yellow-300' : ''}`}
-            aria-label="Open mobile menu"
-          >
-            {mobileOpen ? <X size={30} /> : <Menu size={30} />}
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="start"
-          className="z-[99] w-[92vw] max-w-[350px] bg-white rounded-2xl border border-yellow-300 shadow-2xl mt-3 ml-[-8px] px-0 py-0 overflow-hidden animate-fade-in"
-          sideOffset={10}
-        >
-          <div className="flex items-center gap-3 px-5 pt-6 pb-2 border-b border-yellow-100 bg-white">
-            <img
-              src="/assets/img/logo.webp"
-              alt="GSAI Logo"
-              className="w-10 h-10 rounded-full border border-yellow-400"
-            />
-            <span className="font-extrabold text-lg text-black tracking-tight">
-              GSAI
-            </span>
-            <span className="text-sm font-semibold text-yellow-700 ml-4 border-l border-yellow-200 pl-3">
-              Ghatak Sports Academy India
-            </span>
+    <div className="md:hidden flex items-center justify-between w-full px-4 py-2 bg-white shadow-sm">
+      {/* Logo & Brand */}
+      <div className="flex items-center gap-3">
+        <img
+          src="/assets/img/logo.webp"
+          alt="Ghatak Sports Academy Logo"
+          className="w-10 h-10 rounded-full border border-yellow-400 object-contain"
+        />
+        <div className="leading-tight">
+          <span className="text-sm font-bold text-red-700">GSAI</span>
+          <p className="text-xs font-semibold text-gray-800">
+            Ghatak Sports Academy India
+          </p>
+        </div>
+      </div>
+
+      {/* Toggle Menu Button */}
+      <button
+        onClick={() => setMobileOpen(!mobileOpen)}
+        className={`p-2 rounded-full bg-white border border-gray-300 shadow-md hover:shadow-lg transition-all duration-200 h-11 w-11 flex items-center justify-center ${
+          mobileOpen ? 'ring-2 ring-yellow-400' : ''
+        }`}
+        aria-label={mobileOpen ? 'Close mobile menu' : 'Open mobile menu'}
+      >
+        {mobileOpen ? <X size={26} /> : <Menu size={26} />}
+      </button>
+
+      {/* Slide-out Mobile Menu */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-[100] bg-white w-screen h-screen overflow-y-auto animate-fade-in">
+          {/* Slideout Header */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-yellow-200 bg-white">
+            <div className="flex items-center gap-3">
+              <img
+                src="/assets/img/logo.webp"
+                alt="Ghatak Sports Academy Logo"
+                className="w-11 h-11 rounded-full border border-yellow-400 object-contain"
+              />
+              <div>
+                <span className="text-lg font-extrabold text-gray-900 tracking-tight">
+                  GSAI
+                </span>
+                <p className="text-xs text-yellow-700 font-semibold">
+                  Ghatak Sports Academy India
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="p-2 rounded-full bg-gray-100 hover:bg-yellow-100 transition"
+              aria-label="Close menu"
+            >
+              <X size={22} />
+            </button>
           </div>
-          <div className="flex flex-col py-4 px-6 gap-3 bg-white">
+
+          {/* Navigation Links */}
+          <nav className="flex flex-col gap-2 px-6 py-6">
             {navLinks.map((link) => (
               <NavLinkItem
                 key={link.name}
                 name={link.name}
                 href={link.href}
-                className="flex items-center gap-3 text-gray-800 font-semibold py-3 px-3 rounded-xl transition-all duration-200 hover:bg-yellow-100 active:bg-yellow-200 text-base"
                 onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 text-gray-800 font-medium py-3 px-4 rounded-xl transition hover:bg-yellow-50 active:bg-yellow-100 text-base"
               >
-                <>
-                  <span className="inline-block w-2 h-2 rounded-full bg-yellow-400 mr-2" />
-                  <span>{link.name}</span>
-                </>
+                <span className="w-2 h-2 rounded-full bg-yellow-400" />
+                <span>{link.name}</span>
               </NavLinkItem>
             ))}
+
+            {/* Admin Panel */}
             <Link
               to="/admin/login"
-              className="flex items-center gap-2 justify-center px-6 py-3 rounded-xl bg-yellow-400 text-black font-semibold shadow hover:bg-yellow-500 active:bg-yellow-600 transition-all mt-2 text-base"
               onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-2 justify-center mt-6 px-6 py-3 rounded-xl bg-yellow-400 text-black font-semibold shadow hover:bg-yellow-500 active:bg-yellow-600 transition-all text-base"
             >
-              <LogIn className="w-5 h-5" /> Admin Panel
+              <LogIn className="w-5 h-5" />
+              Admin Panel
             </Link>
-          </div>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          </nav>
+        </div>
+      )}
     </div>
   );
 }

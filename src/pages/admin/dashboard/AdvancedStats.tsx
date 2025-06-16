@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   DollarSign,
-  List,
   Users,
   BookOpen,
   Newspaper,
@@ -18,15 +17,29 @@ import {
   getNextEvent,
 } from '@/utils/dashboardStats';
 
-function useAdvancedStats() {
-  const [data, setData] = React.useState<any>({});
-  const [loading, setLoading] = React.useState(true);
+type StatsData = {
+  total?: number;
+  paidSum?: number;
+  partialSum?: number;
+  unpaidCount?: number;
+  byProgram?: Record<string, number>;
+  latestBlogs?: string[];
+  latestNews?: string[];
+  galleryCount?: number;
+  eventCount?: number;
+  nextEvent?: string;
+};
 
-  React.useEffect(() => {
-    let ignore = false;
-    async function getStats() {
+function useAdvancedStats() {
+  const [stats, setStats] = useState<StatsData>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchData() {
       setLoading(true);
-      // Fetch all data in batches and only aggregate after fetch
+
       const [feesRes, studentsRes, blogsRes, newsRes, galleryRes, eventsRes] =
         await Promise.all([
           supabase.from('fees').select('*'),
@@ -46,217 +59,194 @@ function useAdvancedStats() {
             .order('date', { ascending: true }),
         ]);
 
-      const fees = Array.isArray(feesRes.data) ? feesRes.data : [];
-      const students = Array.isArray(studentsRes.data) ? studentsRes.data : [];
-      const blogs = Array.isArray(blogsRes.data) ? blogsRes.data : [];
-      const news = Array.isArray(newsRes.data) ? newsRes.data : [];
-      const gallery = Array.isArray(galleryRes.data) ? galleryRes.data : [];
-      const events = Array.isArray(eventsRes.data) ? eventsRes.data : [];
+      const fees = feesRes.data ?? [];
+      const students = studentsRes.data ?? [];
+      const blogs = blogsRes.data ?? [];
+      const news = newsRes.data ?? [];
+      const gallery = galleryRes.data ?? [];
+      const events = eventsRes.data ?? [];
 
-      // Perform robust/advanced aggregation
-      const feesAgg = aggregateFees(fees);
-      const studentsProg = studentsByProgram(students);
-      const latestBlogs = getLatestTitlesAll(blogs, 3);
-      const latestNews = getLatestTitlesAll(news, 3);
-      const galleryCount = safeCount(gallery);
-      const eventCount = safeCount(events);
-      const nextEvent = getNextEvent(events);
+      const result: StatsData = {
+        ...aggregateFees(fees),
+        byProgram: studentsByProgram(students),
+        latestBlogs: getLatestTitlesAll(blogs, 3),
+        latestNews: getLatestTitlesAll(news, 3),
+        galleryCount: safeCount(gallery),
+        eventCount: safeCount(events),
+        nextEvent: getNextEvent(events),
+      };
 
-      if (!ignore) {
-        setData({
-          ...feesAgg,
-          ...studentsProg,
-          latestBlogs,
-          latestNews,
-          galleryCount,
-          eventCount,
-          nextEvent,
-        });
+      if (!cancelled) {
+        setStats(result);
         setLoading(false);
       }
     }
-    getStats();
+
+    fetchData();
     return () => {
-      ignore = true;
+      cancelled = true;
     };
   }, []);
 
-  return { data, loading };
+  return { stats, loading };
 }
 
 export default function AdvancedStats() {
-  const { data, loading } = useAdvancedStats();
+  const { stats, loading } = useAdvancedStats();
 
   return (
-    <div>
-      <div className="text-xl font-bold mb-2 mt-6 text-gray-700">
+    <section>
+      <h2 className="text-xl font-bold mb-2 mt-6 text-gray-700">
         Advanced Stats
-      </div>
+      </h2>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Fees block */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-green-700">
-              <DollarSign className="w-5 h-5" />
-              Fees Details
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              'Loading...'
-            ) : (
-              <ul className="text-sm space-y-1">
-                <li>
-                  <b>Total Fee Records:</b> {data.total}
-                </li>
-                <li>
-                  <b>Total Paid:</b> ₹{data.paidSum}
-                </li>
-                <li>
-                  <b>Partial Paid:</b> ₹{data.partialSum}
-                </li>
-                <li>
-                  <b>Completely Unpaid Count:</b> {data.unpaidCount}
-                </li>
-              </ul>
-            )}
-          </CardContent>
-        </Card>
-        {/* Students block */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-blue-700">
-              <Users className="w-5 h-5" />
-              Students Breakdown
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              'Loading...'
-            ) : data.total === 0 ? (
-              <div>No students</div>
-            ) : (
-              <div>
-                <ul className="text-sm space-y-1">
-                  <li>
-                    <b>Total Students:</b> {data.total}
-                  </li>
-                  <li>
-                    <b>By Program:</b>
-                  </li>
-                  <ul className="ml-4 list-disc">
-                    {data && data.byProgram ? (
-                      Object.entries(data.byProgram).length === 0 ? (
-                        <li>No programs</li>
-                      ) : (
-                        Object.entries(data.byProgram).map(([prog, count]) => (
-                          <li key={prog}>
-                            {String(prog)}: {String(count)}
-                          </li>
-                        ))
-                      )
-                    ) : (
-                      <li>No programs</li>
-                    )}
-                  </ul>
-                </ul>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-        {/* Blogs block */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-pink-700">
-              <BookOpen className="w-5 h-5" />
-              Latest Blogs
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              'Loading...'
-            ) : (
-              <ol className="list-decimal ml-4 text-sm">
-                {Array.isArray(data.latestBlogs) &&
-                data.latestBlogs.length > 0 ? (
-                  data.latestBlogs.map((b: string, idx: number) => (
-                    <li key={b + idx}>{b}</li>
+        {/* Fees */}
+        <StatCard
+          icon={<DollarSign className="w-5 h-5" />}
+          title="Fees Details"
+          color="text-green-700"
+          loading={loading}
+        >
+          <ul className="text-sm space-y-1">
+            <li>
+              <b>Total Records:</b> {stats.total ?? '-'}
+            </li>
+            <li>
+              <b>Total Paid:</b> ₹{stats.paidSum ?? 0}
+            </li>
+            <li>
+              <b>Partial Paid:</b> ₹{stats.partialSum ?? 0}
+            </li>
+            <li>
+              <b>Unpaid Count:</b> {stats.unpaidCount ?? 0}
+            </li>
+          </ul>
+        </StatCard>
+
+        {/* Students */}
+        <StatCard
+          icon={<Users className="w-5 h-5" />}
+          title="Students Breakdown"
+          color="text-blue-700"
+          loading={loading}
+        >
+          {stats.total === 0 ? (
+            <p>No students found.</p>
+          ) : (
+            <ul className="text-sm space-y-1">
+              <li>
+                <b>Total Students:</b> {stats.total}
+              </li>
+              <li>
+                <b>By Program:</b>
+              </li>
+              <ul className="ml-4 list-disc">
+                {stats.byProgram && Object.keys(stats.byProgram).length > 0 ? (
+                  Object.entries(stats.byProgram).map(([program, count]) => (
+                    <li key={program}>
+                      {program}: {count}
+                    </li>
                   ))
                 ) : (
-                  <li>No blogs found.</li>
+                  <li>No programs found.</li>
                 )}
-              </ol>
-            )}
-          </CardContent>
-        </Card>
-        {/* News block */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-yellow-700">
-              <Newspaper className="w-5 h-5" />
-              Latest News
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              'Loading...'
-            ) : (
-              <ol className="list-decimal ml-4 text-sm">
-                {Array.isArray(data.latestNews) &&
-                data.latestNews.length > 0 ? (
-                  data.latestNews.map((n: string, idx: number) => (
-                    <li key={n + idx}>{n}</li>
-                  ))
-                ) : (
-                  <li>No news found.</li>
-                )}
-              </ol>
-            )}
-          </CardContent>
-        </Card>
-        {/* Gallery block */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-indigo-700">
-              <Image className="w-5 h-5" />
-              Gallery Stats
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              'Loading...'
-            ) : (
-              <div>
-                <span className="font-bold text-lg">{data.galleryCount}</span>{' '}
-                images
-              </div>
-            )}
-          </CardContent>
-        </Card>
-        {/* Events block */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-orange-700">
-              <Calendar className="w-5 h-5" />
-              Events
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              'Loading...'
-            ) : (
-              <ul className="text-sm space-y-1">
-                <li>
-                  <b>Total Events:</b> {data.eventCount ?? 0}
-                </li>
-                <li>
-                  <b>Next Event:</b> {data.nextEvent || 'No upcoming'}
-                </li>
               </ul>
+            </ul>
+          )}
+        </StatCard>
+
+        {/* Blogs */}
+        <StatCard
+          icon={<BookOpen className="w-5 h-5" />}
+          title="Latest Blogs"
+          color="text-pink-700"
+          loading={loading}
+        >
+          <ol className="list-decimal ml-4 text-sm">
+            {stats.latestBlogs?.length ? (
+              stats.latestBlogs.map((blog, idx) => <li key={idx}>{blog}</li>)
+            ) : (
+              <li>No blogs found.</li>
             )}
-          </CardContent>
-        </Card>
+          </ol>
+        </StatCard>
+
+        {/* News */}
+        <StatCard
+          icon={<Newspaper className="w-5 h-5" />}
+          title="Latest News"
+          color="text-yellow-700"
+          loading={loading}
+        >
+          <ol className="list-decimal ml-4 text-sm">
+            {stats.latestNews?.length ? (
+              stats.latestNews.map((news, idx) => <li key={idx}>{news}</li>)
+            ) : (
+              <li>No news found.</li>
+            )}
+          </ol>
+        </StatCard>
+
+        {/* Gallery */}
+        <StatCard
+          icon={<Image className="w-5 h-5" />}
+          title="Gallery Stats"
+          color="text-indigo-700"
+          loading={loading}
+        >
+          <p>
+            <span className="font-bold text-lg">{stats.galleryCount ?? 0}</span>{' '}
+            images
+          </p>
+        </StatCard>
+
+        {/* Events */}
+        <StatCard
+          icon={<Calendar className="w-5 h-5" />}
+          title="Events"
+          color="text-orange-700"
+          loading={loading}
+        >
+          <ul className="text-sm space-y-1">
+            <li>
+              <b>Total Events:</b> {stats.eventCount ?? 0}
+            </li>
+            <li>
+              <b>Next Event:</b> {stats.nextEvent ?? 'No upcoming'}
+            </li>
+          </ul>
+        </StatCard>
       </div>
-    </div>
+    </section>
+  );
+}
+
+// Reusable stat card component
+function StatCard({
+  icon,
+  title,
+  color,
+  loading,
+  children,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  color: string;
+  loading: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className={`flex items-center gap-2 ${color}`}>
+          {icon}
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {loading ? <p className="text-sm text-muted">Loading...</p> : children}
+      </CardContent>
+    </Card>
   );
 }

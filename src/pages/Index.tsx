@@ -1,4 +1,3 @@
-
 import Seo from '../components/Seo';
 import Navbar from '../components/Navbar';
 
