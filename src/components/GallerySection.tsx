@@ -90,7 +90,9 @@ export default function GallerySection() {
       scale: 1,
       transition: {
         duration: 0.6,
-        ease: "easeOut"
+        type: "spring",
+        damping: 20,
+        stiffness: 100
       }
     }
   };
@@ -98,21 +100,22 @@ export default function GallerySection() {
   return (
     <section
       id="gallery"
-      className="py-16 md:py-24 px-4 md:px-6 lg:px-8 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 relative overflow-hidden"
+      className="py-16 md:py-24 px-4 md:px-6 lg:px-8 bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 relative overflow-hidden"
     >
-      {/* Background Elements */}
-      <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-blue-100/40 to-purple-100/40 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 right-16 w-48 h-48 bg-gradient-to-br from-yellow-100/30 to-orange-100/30 rounded-full blur-3xl" />
+      {/* Glassmorphism Background Elements */}
+      <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl backdrop-blur-sm" />
+      <div className="absolute bottom-20 right-16 w-48 h-48 bg-gradient-to-br from-yellow-400/15 to-orange-400/15 rounded-full blur-3xl backdrop-blur-sm" />
       
       <div className="max-w-7xl mx-auto relative">
-        {/* Header */}
+        {/* Header with Glassmorphism */}
         <motion.div 
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="inline-flex items-center justify-center p-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl mb-6">
+          {/* Neumorphic Badge */}
+          <div className="inline-flex items-center justify-center p-3 mb-6 bg-white/70 backdrop-blur-md rounded-2xl shadow-neumorphic border border-white/20">
             <Images className="w-8 h-8 text-blue-600 mr-3" />
             <span className="text-sm font-semibold text-blue-600 uppercase tracking-wider">Gallery</span>
           </div>
@@ -134,7 +137,7 @@ export default function GallerySection() {
         {loading ? (
           <div className="flex justify-center items-center py-32">
             <div className="relative">
-              <div className="w-16 h-16 border-4 border-blue-200 rounded-full animate-spin border-t-blue-600"></div>
+              <div className="w-16 h-16 border-4 border-blue-200 rounded-full animate-spin border-t-blue-600 shadow-neumorphic-inset"></div>
               <div className="absolute inset-0 w-16 h-16 border-4 border-transparent rounded-full animate-ping border-t-blue-400"></div>
             </div>
           </div>
@@ -144,7 +147,9 @@ export default function GallerySection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <Images className="w-24 h-24 text-gray-300 mx-auto mb-6" />
+            <div className="w-24 h-24 mx-auto mb-6 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center shadow-neumorphic">
+              <Images className="w-12 h-12 text-gray-400" />
+            </div>
             <h3 className="text-2xl font-semibold text-gray-400 mb-2">No Images Yet</h3>
             <p className="text-gray-500">Check back soon for amazing moments from our academy!</p>
           </motion.div>
@@ -159,12 +164,12 @@ export default function GallerySection() {
               <motion.div
                 key={img.id}
                 variants={itemVariants}
-                className="group relative overflow-hidden rounded-2xl bg-white shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer"
+                className="group relative overflow-hidden rounded-2xl bg-white/60 backdrop-blur-md shadow-neumorphic hover:shadow-neumorphic-hover border border-white/20 transition-all duration-500 cursor-pointer"
                 onClick={() => openLightbox(img, index)}
                 whileHover={{ y: -8 }}
               >
-                {/* Image Container */}
-                <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+                {/* Image Container with Glassmorphism */}
+                <div className="relative aspect-[4/3] overflow-hidden bg-gray-100/50 backdrop-blur-sm rounded-t-2xl">
                   <img
                     src={img.image_url}
                     alt={img.caption || `Academy gallery image ${index + 1}`}
@@ -172,30 +177,30 @@ export default function GallerySection() {
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  {/* Glassmorphism Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[1px]" />
                   
-                  {/* View Button */}
+                  {/* View Button with Neumorphism */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 border border-white/30">
+                    <div className="bg-white/20 backdrop-blur-md rounded-full p-3 border border-white/30 shadow-neumorphic">
                       <Images className="w-6 h-6 text-white" />
                     </div>
                   </div>
                 </div>
 
-                {/* Caption */}
+                {/* Caption with Glassmorphism */}
                 {img.caption && (
-                  <div className="p-4">
+                  <div className="p-4 bg-white/40 backdrop-blur-sm rounded-b-2xl">
                     <p className="text-gray-800 font-medium text-sm md:text-base leading-relaxed line-clamp-2">
                       {img.caption}
                     </p>
                   </div>
                 )}
 
-                {/* Tag */}
+                {/* Tag with Glassmorphism */}
                 {img.tag && (
                   <div className="absolute top-3 left-3">
-                    <span className="inline-block px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs font-semibold rounded-full shadow-lg">
+                    <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-md text-blue-800 text-xs font-semibold rounded-full shadow-neumorphic border border-white/30">
                       {img.tag}
                     </span>
                   </div>
@@ -205,26 +210,26 @@ export default function GallerySection() {
           </motion.div>
         )}
 
-        {/* Lightbox Modal */}
+        {/* Enhanced Lightbox Modal with Glassmorphism */}
         <AnimatePresence>
           {selectedImage && (
             <motion.div
-              className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-center justify-center p-4"
+              className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closeLightbox}
             >
-              {/* Close Button */}
+              {/* Close Button with Neumorphism */}
               <button
                 onClick={closeLightbox}
-                className="absolute top-6 right-6 z-60 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors duration-200"
+                className="absolute top-6 right-6 z-60 p-3 bg-white/10 backdrop-blur-md hover:bg-white/20 rounded-full transition-all duration-200 shadow-neumorphic border border-white/20"
                 aria-label="Close gallery"
               >
                 <X className="w-6 h-6 text-white" />
               </button>
 
-              {/* Navigation Buttons */}
+              {/* Navigation Buttons with Glassmorphism */}
               {images.length > 1 && (
                 <>
                   <button
@@ -232,7 +237,7 @@ export default function GallerySection() {
                       e.stopPropagation();
                       navigateImage('prev');
                     }}
-                    className="absolute left-6 top-1/2 -translate-y-1/2 z-60 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors duration-200"
+                    className="absolute left-6 top-1/2 -translate-y-1/2 z-60 p-3 bg-white/10 backdrop-blur-md hover:bg-white/20 rounded-full transition-all duration-200 shadow-neumorphic border border-white/20"
                     aria-label="Previous image"
                   >
                     <ChevronLeft className="w-6 h-6 text-white" />
@@ -243,7 +248,7 @@ export default function GallerySection() {
                       e.stopPropagation();
                       navigateImage('next');
                     }}
-                    className="absolute right-6 top-1/2 -translate-y-1/2 z-60 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors duration-200"
+                    className="absolute right-6 top-1/2 -translate-y-1/2 z-60 p-3 bg-white/10 backdrop-blur-md hover:bg-white/20 rounded-full transition-all duration-200 shadow-neumorphic border border-white/20"
                     aria-label="Next image"
                   >
                     <ChevronRight className="w-6 h-6 text-white" />
@@ -251,7 +256,7 @@ export default function GallerySection() {
                 </>
               )}
 
-              {/* Image Container */}
+              {/* Image Container with Enhanced Glassmorphism */}
               <motion.div
                 className="relative max-w-5xl max-h-[80vh] mx-auto"
                 initial={{ scale: 0.9, opacity: 0 }}
@@ -260,15 +265,17 @@ export default function GallerySection() {
                 transition={{ duration: 0.3 }}
                 onClick={(e) => e.stopPropagation()}
               >
-                <img
-                  src={selectedImage.image_url}
-                  alt={selectedImage.caption || 'Gallery image'}
-                  className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                />
+                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-2 shadow-neumorphic border border-white/20">
+                  <img
+                    src={selectedImage.image_url}
+                    alt={selectedImage.caption || 'Gallery image'}
+                    className="max-w-full max-h-full object-contain rounded-xl"
+                  />
+                </div>
                 
-                {/* Caption in Lightbox */}
+                {/* Caption in Lightbox with Glassmorphism */}
                 {selectedImage.caption && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-6 rounded-b-lg">
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-md p-6 rounded-b-2xl border-t border-white/20">
                     <p className="text-white text-lg font-medium leading-relaxed">
                       {selectedImage.caption}
                     </p>
@@ -276,8 +283,8 @@ export default function GallerySection() {
                 )}
               </motion.div>
 
-              {/* Image Counter */}
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full">
+              {/* Image Counter with Glassmorphism */}
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full shadow-neumorphic border border-white/20">
                 <span className="text-white text-sm font-medium">
                   {currentIndex + 1} / {images.length}
                 </span>
