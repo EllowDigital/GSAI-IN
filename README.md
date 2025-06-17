@@ -1,73 +1,142 @@
-# Welcome to your Lovable project
+# 🌟 Welcome to **Ghatak Sports Academy India™ (GSAI)** 🌟
 
-## Project info
+<div align="center">
 
-**URL**: https://lovable.dev/projects/9cbf1a43-bcf8-47bf-8bd5-5f8f4d2f99ce
+## 📊 Project Status & Hosting
 
-## How can I edit this code?
+[![Netlify Status](https://api.netlify.com/api/v1/badges/0fded24e-0eac-4352-bfbe-e89fe368499f/deploy-status)](https://app.netlify.com/projects/ghatakgsai/deploys)
+[![GitHub Repo](https://img.shields.io/badge/Source-GitHub-blue?logo=github)](https://github.com/EllowDigital/gsai-curd)
+[![Live Website](https://img.shields.io/website?label=Visit%20Site&url=https%3A%2F%2Fghatakgsai.netlify.app)](https://ghatakgsai.netlify.app)
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## 📦 Repository Insights
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/9cbf1a43-bcf8-47bf-8bd5-5f8f4d2f99ce) and start prompting.
+| **Metric**        | **Status**                                                                                                                                                            |
+|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 🕒 Last Commit    | [![GitHub last commit](https://img.shields.io/github/last-commit/EllowDigital/gsai-curd?logo=github)](https://github.com/EllowDigital/gsai-curd/commits/main)        |
+| 🐛 Open Issues    | [![GitHub issues](https://img.shields.io/github/issues/EllowDigital/gsai-curd?logo=github)](https://github.com/EllowDigital/gsai-curd/issues)                        |
+| 🔄 Pull Requests  | [![GitHub pull requests](https://img.shields.io/github/issues-pr/EllowDigital/gsai-curd?logo=github)](https://github.com/EllowDigital/gsai-curd/pulls)               |
+| 🍴 Forks          | [![GitHub forks](https://img.shields.io/github/forks/EllowDigital/gsai-curd?style=social&logo=github)](https://github.com/EllowDigital/gsai-curd/network/members)    |
+| ⭐ Stars          | [![GitHub stars](https://img.shields.io/github/stars/EllowDigital/gsai-curd?style=social&logo=github)](https://github.com/EllowDigital/gsai-curd/stargazers)         |
 
-Changes made via Lovable will be committed automatically to this repo.
+</div>
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🥋 About Us
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+**Ghatak Sports Academy India™ (GSAI)** is a **Government-recognized and ISO 9001:2015 certified institution** committed to empowering individuals through martial arts and self-defense. 💪✨  
+We blend **traditional martial arts** with **modern fitness techniques**, helping students unlock their **strength, discipline, and confidence**.  
+From kids to professionals, we guide everyone on a journey of **self-mastery and personal growth**.
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 👤 Founder’s Message
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### **Mr. Nitesh Yadav**  
+**Founder & Director** 🥇 *Black Belt 1st Dan* | International/National Gold Medalist | Self-Defense Instructor
 
-# Step 3: Install the necessary dependencies.
-npm i
+> “With decades of experience, I remain dedicated to mentoring the champions of tomorrow.”  
+> — **Mr. Nitesh Yadav**
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+---
 
-**Edit a file directly in GitHub**
+## 🥊 Programs Offered
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- 🥋 Karate  
+- 🦵 Taekwondo  
+- 🥊 Boxing  
+- 🥋 Kickboxing  
+- 🤼 Grappling  
+- 🥋 MMA  
+- 🕉️ Kalaripayattu  
+- 🛡️ Self-Defense  
+- 🏋️ Fat Loss Programs  
+- 🏏 Cricket & Kabaddi
 
-**Use GitHub Codespaces**
+---
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## ❓ Frequently Asked Questions
 
-## What technologies are used for this project?
+**💡 Fees**: Contact us for program-wise fees  
+**🕒 Schedule**: Morning & evening batches  
+**🎯 Trial Classes**: Available for all  
+**👶 Age Groups**: Kids to adults  
+**🏠 Hostel**: Available  
+**📝 Registration**: Online or in-person  
+**💸 Discounts**: Yes — seasonal & promotional  
+**🤝 Personal Coaching**: Available  
+**🔁 Refund Policy**: Varies by program
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 📞 Contact Us
 
-## How can I deploy this project?
+📧 Email: [ghatakgsai@gmail.com](mailto:ghatakgsai@gmail.com)  
+📞 Phone: +91 63941 35988 | +91 83550 62424
 
-Simply open [Lovable](https://lovable.dev/projects/9cbf1a43-bcf8-47bf-8bd5-5f8f4d2f99ce) and click on Share -> Publish.
+🏢 Main Campus:  
+Naubasta Pulia, Takrohi Road, Amrai Gaon, Indira Nagar, Lucknow, U.P. – 226028
 
-## Can I connect a custom domain to my Lovable project?
+🏢 Branch:  
+**Fitness & Fun Arena (TCC)**, Hardasi Kheda, Deva Road, near Baba Hospital Road, Matiyari, Lucknow, U.P.
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🏆 Recognitions & Affiliations
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- 🇮🇳 Government of India  
+- 🏅 Ministry of Youth Affairs & Sports  
+- 💪 Fit India Movement  
+- 🏃 Khelo India  
+- 🏢 MSME Certified  
+- ✅ ISO 9001:2015 Certified  
+- 🏫 School Games Federation of India  
+- 🏋️ Uttar Pradesh Olympic Association  
+- 🕉️ UP Kalaripayattu Association  
+- 🥋 Taekwondo Federation  
+
+---
+
+## 🧪 Test Coverage & CI/CD
+
+We maintain code quality through continuous integration pipelines and testing tools.
+
+- ✅ **CI/CD** via [Netlify Deploys](https://app.netlify.com/projects/ghatakgsai)
+- 🧪 **Planned Test Coverage** (unit + integration) using:
+  - `Vitest` or `Jest`
+  - `React Testing Library`
+  - `Cypress` for E2E (coming soon)
+- 🛠 **Linting & Formatting**:
+  - ESLint
+  - Prettier
+- 🔄 GitHub Actions (CI/CD pipeline under development)
+
+---
+
+## 🌍 Internationalization
+
+We aim to serve a global audience with support for multiple languages (in development):
+
+- 🌐 Default: English (🇺🇸)
+- 🌏 Planned: Hindi (🇮🇳), Urdu (🇵🇰), Arabic (🇸🇦)
+- 📦 Tools:
+  - `i18next`
+  - `react-i18next`
+  - Locale-based route detection & fallback
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**.
+
+```text
+MIT License
+
+Copyright (c) 2025 EllowDigitals
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction...
