@@ -2,7 +2,7 @@
 import React from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Newspaper, Calendar, ArrowRight, Clock } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 
 function formatDate(dt: string) {
   return new Date(dt).toLocaleDateString('en-US', { 
@@ -20,7 +20,7 @@ type News = {
   image_url?: string | null;
 };
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -31,14 +31,14 @@ const containerVariants = {
   }
 };
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: { 
     opacity: 1, 
     y: 0,
     transition: {
       duration: 0.6,
-      ease: "easeOut"
+      ease: [0.4, 0, 0.2, 1]
     }
   }
 };
