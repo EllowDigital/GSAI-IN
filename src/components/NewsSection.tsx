@@ -1,9 +1,15 @@
+
 import React from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Newspaper, Image as ImageIcon } from 'lucide-react';
+import { Newspaper, Calendar, ArrowRight, Clock } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 function formatDate(dt: string) {
-  return new Date(dt).toLocaleDateString(undefined, { dateStyle: 'medium' });
+  return new Date(dt).toLocaleDateString('en-US', { 
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
 }
 
 type News = {
@@ -12,6 +18,29 @@ type News = {
   short_description: string;
   date: string;
   image_url?: string | null;
+};
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut"
+    }
+  }
 };
 
 export default function NewsSection() {
@@ -54,86 +83,167 @@ export default function NewsSection() {
   return (
     <section
       id="news"
-      className="py-14 px-2 xs:px-4 md:px-6 bg-gradient-to-br from-yellow-50 via-white to-red-50 border-b border-yellow-100"
+      className="relative py-20 lg:py-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 overflow-hidden"
     >
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col items-center gap-2 mb-7">
-          <div className="flex items-center gap-2 justify-center w-full">
-            <Newspaper size={32} className="text-yellow-400" />
-            <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-500 tracking-tight drop-shadow text-center w-full">
-              Latest News & Highlights
-            </h2>
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-r from-blue-200/40 to-indigo-200/40 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-amber-200/30 to-orange-200/30 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <div className="inline-flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Newspaper className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-lg font-semibold text-blue-600 tracking-wide">Latest Updates</span>
           </div>
-          <p className="text-base md:text-lg font-medium text-gray-500 text-center max-w-xl">
-            Stay updated with the most recent announcements, achievements, and
-            moments from Ghatak Sports Academy.
+          
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+            News &{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
+              Highlights
+            </span>
+          </h2>
+          
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Stay updated with the latest announcements, achievements, and inspiring moments from Ghatak Sports Academy
           </p>
-        </div>
-        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-6">
+        </motion.div>
+
+        {/* News Grid */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
           {loading ? (
-            Array.from({ length: 3 }).map((_, idx) => (
-              <div
+            // Loading skeleton
+            Array.from({ length: 6 }).map((_, idx) => (
+              <motion.div
                 key={idx}
-                className="rounded-2xl bg-white/80 shadow-lg animate-pulse h-64 flex flex-col"
+                variants={cardVariants}
+                className="group bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden animate-pulse"
               >
-                <div className="h-36 bg-yellow-100 w-full rounded-t-2xl" />
-                <div className="p-4 flex-1 space-y-2">
-                  <div className="h-5 bg-yellow-100 w-1/2 rounded" />
-                  <div className="h-3 bg-gray-100 w-full rounded" />
-                  <div className="h-3 bg-gray-100 w-3/4 rounded" />
+                <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200" />
+                <div className="p-6 space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 bg-gray-200 rounded w-20" />
+                  </div>
+                  <div className="h-6 bg-gray-200 rounded w-full" />
+                  <div className="h-4 bg-gray-200 rounded w-3/4" />
+                  <div className="h-4 bg-gray-200 rounded w-1/2" />
                 </div>
-              </div>
+              </motion.div>
             ))
           ) : news.length > 0 ? (
             news.map((item) => (
-              <div
+              <motion.div
                 key={item.id}
-                className="group rounded-2xl shadow-xl bg-white ring-1 ring-yellow-100 overflow-hidden flex flex-col hover:scale-[1.03] hover:shadow-2xl transition-transform duration-200"
+                variants={cardVariants}
+                className="group bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl hover:border-blue-200 transition-all duration-300 transform hover:-translate-y-2"
               >
-                <div className="relative w-full h-36 xs:h-44 bg-yellow-50 flex items-center justify-center">
+                {/* Image Container */}
+                <div className="relative h-48 overflow-hidden">
                   {item.image_url ? (
                     <img
                       src={item.image_url}
                       alt={item.title}
-                      className="absolute inset-0 w-full h-full object-cover transition-all duration-200 group-hover:brightness-95"
+                      className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
                       loading="lazy"
                     />
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center gap-1">
-                      <ImageIcon size={36} className="text-yellow-300" />
-                      <span className="text-yellow-300 text-sm font-semibold">
-                        No Image
-                      </span>
+                    <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+                      <div className="text-center">
+                        <Newspaper className="w-12 h-12 text-blue-300 mx-auto mb-2" />
+                        <span className="text-blue-400 text-sm font-medium">No Image</span>
+                      </div>
                     </div>
                   )}
-                  <div className="absolute bottom-2 left-2 bg-white/90 rounded px-2 py-0.5 text-xs font-bold text-yellow-500 shadow">
-                    {item.date ? formatDate(item.date) : '--'}
+                  
+                  {/* Date Badge */}
+                  <div className="absolute top-4 left-4">
+                    <div className="bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg">
+                      <div className="flex items-center gap-2 text-gray-700">
+                        <Calendar className="w-4 h-4" />
+                        <span className="text-sm font-semibold">
+                          {item.date ? formatDate(item.date) : '--'}
+                        </span>
+                      </div>
+                    </div>
                   </div>
+
+                  {/* Overlay gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
-                <div className="flex-1 flex flex-col p-5">
-                  <h3 className="text-lg md:text-xl font-bold mb-2 line-clamp-2 group-hover:text-red-600 transition-colors">
+
+                {/* Content */}
+                <div className="p-6">
+                  <div className="flex items-center gap-2 text-gray-500 text-sm mb-3">
+                    <Clock className="w-4 h-4" />
+                    <span>Recently published</span>
+                  </div>
+                  
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300">
                     {item.title}
                   </h3>
-                  <p className="text-gray-700 text-sm line-clamp-3 flex-1">
-                    {item.short_description ?? ''}
+                  
+                  <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-4">
+                    {item.short_description || 'No description available'}
                   </p>
+                  
+                  {/* Read more indicator */}
+                  <div className="flex items-center gap-2 text-blue-600 font-semibold text-sm group-hover:gap-3 transition-all duration-300">
+                    <span>Read more</span>
+                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" />
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             ))
           ) : (
-            <div className="col-span-full max-w-xl mx-auto text-center pt-8 pb-10">
-              <div className="flex flex-col items-center gap-2">
-                <Newspaper size={34} className="text-gray-300 mb-1" />
-                <h4 className="text-gray-400 text-lg font-semibold">
-                  No news published yet.
-                </h4>
-                <p className="text-gray-500 text-sm max-w-xs">
-                  We'll post updates and highlights here soon. Stay tuned!
+            // Empty state
+            <motion.div
+              variants={cardVariants}
+              className="col-span-full"
+            >
+              <div className="text-center py-16">
+                <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Newspaper className="w-10 h-10 text-gray-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">No News Yet</h3>
+                <p className="text-gray-600 max-w-md mx-auto">
+                  We'll share exciting updates and achievements here soon. Stay tuned for the latest news from our academy!
                 </p>
               </div>
-            </div>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
+
+        {/* Call to action */}
+        {news.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-center mt-16"
+          >
+            <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+              <span>View All News</span>
+              <ArrowRight className="w-4 h-4" />
+            </div>
+          </motion.div>
+        )}
       </div>
     </section>
   );
