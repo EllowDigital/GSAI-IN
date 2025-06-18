@@ -1,9 +1,23 @@
+
 import React from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { BookOpenText } from 'lucide-react';
+import { BookOpenText, Calendar, ArrowRight, Clock, User } from 'lucide-react';
+import { motion, Variants } from 'framer-motion';
 
 function formatDate(dt: string) {
-  return new Date(dt).toLocaleDateString(undefined, { dateStyle: 'medium' });
+  return new Date(dt).toLocaleDateString(undefined, { 
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+
+function getReadingTime(description: string | null): string {
+  if (!description) return '2 min read';
+  const wordsPerMinute = 200;
+  const wordCount = description.split(' ').length;
+  const readingTime = Math.ceil(wordCount / wordsPerMinute);
+  return `${readingTime} min read`;
 }
 
 type Blog = {
@@ -12,6 +26,28 @@ type Blog = {
   title: string;
   description: string | null;
   published_at: string | null;
+};
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut"
+    }
+  }
 };
 
 export default function BlogNewsSection() {
@@ -53,83 +89,189 @@ export default function BlogNewsSection() {
   return (
     <section
       id="blog"
-      className="py-12 xs:py-16 md:py-20 px-2 xs:px-4 md:px-6 bg-gradient-to-br from-yellow-50 via-white to-red-50 border-b border-yellow-100"
+      className="relative py-16 md:py-24 px-4 md:px-6 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 overflow-hidden"
     >
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col items-center mb-7 gap-2">
-          <div className="flex items-center gap-2 justify-center w-full">
-            <BookOpenText size={32} className="text-yellow-400" />
-            <h2 className="text-2xl xs:text-3xl md:text-4xl font-bold text-yellow-500 tracking-tight drop-shadow text-center w-full">
-              Blog & Insights
-            </h2>
+      {/* Background Elements */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-blue-200/40 to-indigo-200/40 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-amber-200/30 to-orange-200/30 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto">
+        {/* Section Header */}
+        <motion.div 
+          className="text-center mb-16"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={itemVariants}
+        >
+          <div className="inline-flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <BookOpenText className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-lg font-semibold text-blue-600 tracking-wide">
+              Latest Insights
+            </span>
           </div>
-          <p className="text-base md:text-lg font-medium text-gray-500 text-center max-w-xl">
-            Explore stories, tips, and inspiration from Ghatak Sports
-            Academy—expert advice, community highlights, and athlete journeys.
+          
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+            Blog &
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
+              Insights
+            </span>
+          </h2>
+          
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Explore stories, expert tips, and inspiration from Ghatak Sports Academy—
+            community highlights, athlete journeys, and martial arts wisdom.
           </p>
-        </div>
-        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-5 md:gap-8">
+        </motion.div>
+
+        {/* Blog Grid */}
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
           {loading ? (
-            Array.from({ length: 3 }).map((_, idx) => (
-              <div
+            // Loading Skeleton
+            Array.from({ length: 6 }).map((_, idx) => (
+              <motion.div
                 key={idx}
-                className="rounded-2xl bg-white/80 shadow-lg animate-pulse h-60 flex flex-col"
+                className="group bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100"
+                variants={itemVariants}
               >
-                <div className="h-36 bg-yellow-100 w-full rounded-t-2xl" />
-                <div className="p-4 flex-1 space-y-2">
-                  <div className="h-5 bg-yellow-100 w-1/2 rounded" />
-                  <div className="h-3 bg-gray-100 w-full rounded" />
-                  <div className="h-3 bg-gray-100 w-3/4 rounded" />
+                <div className="h-48 bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse" />
+                <div className="p-6 space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 bg-gray-200 rounded w-24 animate-pulse" />
+                    <div className="h-4 bg-gray-200 rounded w-20 animate-pulse" />
+                  </div>
+                  <div className="h-6 bg-gray-200 rounded w-full animate-pulse" />
+                  <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
+                  <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse" />
                 </div>
-              </div>
+              </motion.div>
             ))
           ) : posts.length > 0 ? (
-            posts.map((post) => (
-              <div
+            posts.map((post, index) => (
+              <motion.article
                 key={post.id}
-                className="group rounded-2xl shadow-xl bg-white ring-1 ring-yellow-100 overflow-hidden flex flex-col hover:scale-[1.03] hover:shadow-2xl transition-transform duration-200"
+                className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 hover:border-blue-200"
+                variants={itemVariants}
+                whileHover={{ y: -8, scale: 1.02 }}
+                transition={{ duration: 0.3 }}
               >
-                <div className="relative w-full h-36 xs:h-44 bg-yellow-50 flex items-center justify-center">
+                {/* Blog Image */}
+                <div className="relative h-48 overflow-hidden">
                   {post.image_url ? (
                     <img
                       src={post.image_url}
                       alt={post.title}
-                      className="absolute inset-0 w-full h-full object-cover transition-all duration-200 group-hover:brightness-95"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       loading="lazy"
                     />
                   ) : (
-                    <div className="w-full h-full bg-yellow-100 flex items-center justify-center text-yellow-300 text-lg font-semibold">
-                      No Image
+                    <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+                      <BookOpenText className="w-16 h-16 text-blue-300" />
                     </div>
                   )}
-                  <div className="absolute bottom-2 left-2 bg-white/90 rounded px-2 py-0.5 text-xs font-bold text-yellow-500 shadow">
-                    {post.published_at ? formatDate(post.published_at) : '--'}
-                  </div>
+                  
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  
+                  {/* Featured Badge */}
+                  {index === 0 && (
+                    <div className="absolute top-4 left-4 bg-gradient-to-r from-amber-400 to-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
+                      Featured
+                    </div>
+                  )}
                 </div>
-                <div className="flex-1 flex flex-col p-5">
-                  <h3 className="text-lg md:text-xl font-bold mb-2 line-clamp-2 group-hover:text-red-600 transition-colors">
+
+                {/* Blog Content */}
+                <div className="p-6">
+                  {/* Meta Information */}
+                  <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>{post.published_at ? formatDate(post.published_at) : 'Draft'}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-4 h-4" />
+                      <span>{getReadingTime(post.description)}</span>
+                    </div>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300">
                     {post.title}
                   </h3>
-                  <p className="text-gray-700 text-sm line-clamp-3 flex-1">
-                    {post.description ?? ''}
+
+                  {/* Description */}
+                  <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-4">
+                    {post.description || 'Discover insights and stories from our martial arts community...'}
                   </p>
+
+                  {/* Read More Link */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1">
+                      <User className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm text-gray-500">GSAI Team</span>
+                    </div>
+                    
+                    <button className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors duration-200 group-hover:gap-3">
+                      Read More
+                      <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </motion.article>
             ))
           ) : (
-            <div className="col-span-full max-w-xl mx-auto text-center pt-8 pb-10">
-              <div className="flex flex-col items-center gap-2">
-                <BookOpenText size={34} className="text-gray-300 mb-1" />
-                <h4 className="text-gray-400 text-lg font-semibold">
-                  No blogs published yet.
-                </h4>
-                <p className="text-gray-500 text-sm max-w-xs">
-                  Stay tuned for our latest insights and updates!
-                </p>
+            // Empty State
+            <motion.div 
+              className="col-span-full max-w-2xl mx-auto text-center py-16"
+              variants={itemVariants}
+            >
+              <div className="w-24 h-24 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <BookOpenText className="w-12 h-12 text-blue-400" />
               </div>
-            </div>
+              
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                No Blogs Yet
+              </h3>
+              
+              <p className="text-gray-600 text-lg leading-relaxed mb-8">
+                We're working on creating amazing content for you. Stay tuned for our latest insights, 
+                training tips, and inspiring stories from the world of martial arts!
+              </p>
+
+              <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-full border border-blue-200">
+                <Clock className="w-5 h-5 text-blue-500" />
+                <span className="text-blue-700 font-medium">Coming Soon</span>
+              </div>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
+
+        {/* Call to Action */}
+        {posts.length > 0 && (
+          <motion.div 
+            className="text-center mt-16"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={itemVariants}
+          >
+            <button className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+              <span>View All Articles</span>
+              <ArrowRight className="w-5 h-5" />
+            </button>
+          </motion.div>
+        )}
       </div>
     </section>
   );
