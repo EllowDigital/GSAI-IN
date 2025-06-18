@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Phone, Mail, MapPin, Send, CheckCircle, Clock, MessageSquare } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -51,7 +50,7 @@ const itemVariants = {
     y: 0,
     transition: {
       duration: 0.6,
-      ease: [0.4, 0, 0.2, 1],
+      ease: "easeOut",
     },
   },
 };
