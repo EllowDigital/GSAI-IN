@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -19,7 +18,6 @@ export function NavLinkItem({
 }: NavLinkItemProps) {
   const content = children || name;
 
-  // Handle internal routes (starting with /)
   if (href.startsWith('/')) {
     return (
       <Link to={href} className={className} onClick={onClick}>
@@ -28,24 +26,8 @@ export function NavLinkItem({
     );
   }
 
-  // Handle anchor links and external links
-  const handleClick = (e: React.MouseEvent) => {
-    if (href.startsWith('#')) {
-      e.preventDefault();
-      const element = document.querySelector(href);
-      if (element) {
-        const offsetTop = element.getBoundingClientRect().top + window.pageYOffset - 80;
-        window.scrollTo({
-          top: offsetTop,
-          behavior: 'smooth'
-        });
-      }
-    }
-    onClick?.();
-  };
-
   return (
-    <a href={href} className={className} onClick={handleClick}>
+    <a href={href} className={className} onClick={onClick}>
       {content}
     </a>
   );
