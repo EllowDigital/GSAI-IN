@@ -1,6 +1,14 @@
-
 import React from 'react';
-import { Youtube, Mail, MapPin, Instagram, Phone, Clock, Heart, ChevronUp } from 'lucide-react';
+import {
+  Youtube,
+  Mail,
+  MapPin,
+  Instagram,
+  Phone,
+  Clock,
+  Heart,
+  ChevronUp,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const quickLinks = [
@@ -89,10 +97,11 @@ export default function FooterSection() {
                   Ghatak Sports Academy India™
                 </h3>
                 <p className="text-gray-300 text-sm md:text-base leading-relaxed mb-6">
-                  Empowering youth and athletes through structured training, discipline, and innovation. 
-                  Join our thriving community to unlock your strength and potential.
+                  Empowering youth and athletes through structured training,
+                  discipline, and innovation. Join our thriving community to
+                  unlock your strength and potential.
                 </p>
-                
+
                 {/* Contact Info */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
@@ -108,7 +117,7 @@ export default function FooterSection() {
                       </a>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-red-500 rounded-lg flex items-center justify-center flex-shrink-0">
                       <Mail className="w-4 h-4 text-white" />
@@ -122,19 +131,20 @@ export default function FooterSection() {
                       </a>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-red-500 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
                       <MapPin className="w-4 h-4 text-white" />
                     </div>
                     <div>
                       <p className="text-gray-300 text-sm leading-relaxed">
-                        Naubasta Pulia, Takrohi Road<br />
+                        Naubasta Pulia, Takrohi Road
+                        <br />
                         Indira Nagar, Lucknow, UP
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-red-500 rounded-lg flex items-center justify-center flex-shrink-0">
                       <Clock className="w-4 h-4 text-white" />
@@ -197,7 +207,7 @@ export default function FooterSection() {
                 Connect With Us
                 <div className="absolute -bottom-2 left-0 w-12 h-1 bg-gradient-to-r from-yellow-400 to-red-500 rounded-full"></div>
               </h4>
-              
+
               {/* Social Links */}
               <div className="flex gap-4 mb-6">
                 <a
@@ -226,7 +236,8 @@ export default function FooterSection() {
                   Ready to Start?
                 </h5>
                 <p className="text-gray-300 text-sm mb-4 leading-relaxed">
-                  Join our academy and begin your martial arts journey today. Contact us for a free trial class.
+                  Join our academy and begin your martial arts journey today.
+                  Contact us for a free trial class.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <a
@@ -260,7 +271,8 @@ export default function FooterSection() {
             {/* Copyright */}
             <div className="text-center lg:text-left">
               <p className="text-gray-400 text-sm">
-                &copy; {new Date().getFullYear()} Ghatak Sports Academy India™. All rights reserved.
+                &copy; {new Date().getFullYear()} Ghatak Sports Academy India™.
+                All rights reserved.
               </p>
             </div>
 

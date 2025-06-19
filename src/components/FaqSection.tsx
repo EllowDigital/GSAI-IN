@@ -1,12 +1,17 @@
-
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
 } from '@/components/ui/accordion';
-import { HelpCircle, Search, Filter, ChevronDown, Sparkles } from 'lucide-react';
+import {
+  HelpCircle,
+  Search,
+  Filter,
+  ChevronDown,
+  Sparkles,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export const faqs = [
@@ -60,15 +65,6 @@ export const faqs = [
   },
 ];
 
-const categories = [
-  { id: 'all', label: 'All Questions', count: faqs.length },
-  { id: 'programs', label: 'Programs', count: faqs.filter(faq => faq.category === 'programs').length },
-  { id: 'fees', label: 'Fees', count: faqs.filter(faq => faq.category === 'fees').length },
-  { id: 'facilities', label: 'Facilities', count: faqs.filter(faq => faq.category === 'facilities').length },
-  { id: 'getting-started', label: 'Getting Started', count: faqs.filter(faq => faq.category === 'getting-started').length },
-  { id: 'coaches', label: 'Coaches', count: faqs.filter(faq => faq.category === 'coaches').length },
-];
-
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -95,12 +91,64 @@ export default function FaqSection() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const filteredFaqs = faqs.filter(faq => {
-    const matchesSearch = faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         faq.answer.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || faq.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  // Memoized categories calculation
+  const categories = useMemo(
+    () => [
+      { id: 'all', label: 'All Questions', count: faqs.length },
+      {
+        id: 'programs',
+        label: 'Programs',
+        count: faqs.filter((faq) => faq.category === 'programs').length,
+      },
+      {
+        id: 'fees',
+        label: 'Fees',
+        count: faqs.filter((faq) => faq.category === 'fees').length,
+      },
+      {
+        id: 'facilities',
+        label: 'Facilities',
+        count: faqs.filter((faq) => faq.category === 'facilities').length,
+      },
+      {
+        id: 'getting-started',
+        label: 'Getting Started',
+        count: faqs.filter((faq) => faq.category === 'getting-started').length,
+      },
+      {
+        id: 'coaches',
+        label: 'Coaches',
+        count: faqs.filter((faq) => faq.category === 'coaches').length,
+      },
+    ],
+    []
+  );
+
+  // Memoized filtered FAQs
+  const filteredFaqs = useMemo(() => {
+    return faqs.filter((faq) => {
+      const matchesSearch =
+        searchTerm === '' ||
+        faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        faq.answer.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory =
+        selectedCategory === 'all' || faq.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [searchTerm, selectedCategory]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleCategorySelect = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+  };
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setSelectedCategory('all');
+  };
 
   return (
     <section
@@ -109,7 +157,7 @@ export default function FaqSection() {
       aria-labelledby="faq-heading"
     >
       {/* Background Elements */}
-      <div className="absolute inset-0 opacity-20">
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
         <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-yellow-200/40 to-red-200/40 rounded-full blur-3xl" />
         <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-red-200/30 to-yellow-200/30 rounded-full blur-3xl" />
       </div>
@@ -132,7 +180,10 @@ export default function FaqSection() {
             </span>
           </div>
 
-          <h2 id="faq-heading" className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+          <h2
+            id="faq-heading"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6"
+          >
             Frequently Asked
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-red-600 to-yellow-700">
               Questions
@@ -140,7 +191,8 @@ export default function FaqSection() {
           </h2>
 
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Find answers to common questions about our programs, facilities, coaching, and enrollment process.
+            Find answers to common questions about our programs, facilities,
+            coaching, and enrollment process.
           </p>
         </motion.div>
 
@@ -155,12 +207,12 @@ export default function FaqSection() {
           {/* Search Bar */}
           <div className="relative max-w-2xl mx-auto mb-8">
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search questions..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={handleSearchChange}
                 className="w-full pl-12 pr-4 py-4 bg-white/80 backdrop-blur-sm border-2 border-yellow-100 rounded-2xl text-gray-700 placeholder-gray-400 focus:outline-none focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 shadow-lg"
                 aria-label="Search FAQ questions"
               />
@@ -172,21 +224,24 @@ export default function FaqSection() {
             {categories.map((category) => (
               <button
                 key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 ${
+                onClick={() => handleCategorySelect(category.id)}
+                className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 ${
                   selectedCategory === category.id
                     ? 'bg-gradient-to-r from-yellow-500 to-red-500 text-white shadow-yellow-200'
                     : 'bg-white/80 backdrop-blur-sm text-gray-700 border border-yellow-100 hover:bg-yellow-50'
                 }`}
                 aria-label={`Filter by ${category.label}`}
+                aria-pressed={selectedCategory === category.id}
               >
                 <Filter className="w-4 h-4" />
                 <span>{category.label}</span>
-                <span className={`px-2 py-1 text-xs rounded-full ${
-                  selectedCategory === category.id
-                    ? 'bg-white/20 text-white'
-                    : 'bg-yellow-100 text-yellow-700'
-                }`}>
+                <span
+                  className={`px-2 py-1 text-xs rounded-full ${
+                    selectedCategory === category.id
+                      ? 'bg-white/20 text-white'
+                      : 'bg-yellow-100 text-yellow-700'
+                  }`}
+                >
                   {category.count}
                 </span>
               </button>
@@ -195,7 +250,7 @@ export default function FaqSection() {
         </motion.div>
 
         {/* FAQ Results Count */}
-        {searchTerm && (
+        {(searchTerm || selectedCategory !== 'all') && (
           <motion.div
             className="text-center mb-8"
             initial={{ opacity: 0, y: 10 }}
@@ -203,8 +258,14 @@ export default function FaqSection() {
             transition={{ duration: 0.3 }}
           >
             <p className="text-gray-600 text-lg">
-              Found <span className="font-semibold text-yellow-600">{filteredFaqs.length}</span> question{filteredFaqs.length !== 1 ? 's' : ''} 
+              Found{' '}
+              <span className="font-semibold text-yellow-600">
+                {filteredFaqs.length}
+              </span>{' '}
+              question{filteredFaqs.length !== 1 ? 's' : ''}
               {searchTerm && ` matching "${searchTerm}"`}
+              {selectedCategory !== 'all' &&
+                ` in ${categories.find((cat) => cat.id === selectedCategory)?.label}`}
             </p>
           </motion.div>
         )}
@@ -220,12 +281,15 @@ export default function FaqSection() {
           {filteredFaqs.length > 0 ? (
             <Accordion type="multiple" className="space-y-4">
               {filteredFaqs.map((item, idx) => (
-                <motion.div key={idx} variants={itemVariants}>
+                <motion.div
+                  key={`${item.category}-${idx}`}
+                  variants={itemVariants}
+                >
                   <AccordionItem
-                    value={`faq-${idx}`}
+                    value={`faq-${item.category}-${idx}`}
                     className="group bg-white/80 backdrop-blur-sm rounded-2xl border border-yellow-100/50 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
                   >
-                    <AccordionTrigger className="group/trigger px-8 py-6 text-left hover:no-underline hover:bg-gradient-to-r hover:from-yellow-50 hover:to-red-50 transition-all duration-300">
+                    <AccordionTrigger className="group/trigger px-8 py-6 text-left hover:no-underline hover:bg-gradient-to-r hover:from-yellow-50 hover:to-red-50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-inset">
                       <div className="flex items-start gap-4 w-full">
                         <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-yellow-400 to-red-500 rounded-full flex items-center justify-center mt-1">
                           <HelpCircle className="w-4 h-4 text-white" />
@@ -245,7 +309,8 @@ export default function FaqSection() {
                     </AccordionTrigger>
                     <AccordionContent className="px-8 pb-6">
                       <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 w-8 h-8" /> {/* Spacer for alignment */}
+                        <div className="flex-shrink-0 w-8 h-8" />{' '}
+                        {/* Spacer for alignment */}
                         <div className="flex-1">
                           <div className="prose prose-gray max-w-none">
                             <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-0">
@@ -269,16 +334,17 @@ export default function FaqSection() {
               <div className="w-16 h-16 bg-gradient-to-r from-yellow-200 to-red-200 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Search className="w-8 h-8 text-yellow-600" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">No questions found</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                No questions found
+              </h3>
               <p className="text-gray-600 text-lg mb-8 max-w-md mx-auto">
-                We couldn't find any questions matching your search. Try different keywords or browse all categories.
+                We couldn't find any questions matching your search. Try
+                different keywords or browse all categories.
               </p>
               <button
-                onClick={() => {
-                  setSearchTerm('');
-                  setSelectedCategory('all');
-                }}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                onClick={clearFilters}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
+                aria-label="Clear all filters and search terms"
               >
                 <Filter className="w-4 h-4" />
                 Clear Filters
@@ -304,19 +370,22 @@ export default function FaqSection() {
               <Sparkles className="w-8 h-8 text-red-500" />
             </div>
             <p className="text-gray-600 text-lg mb-8 max-w-2xl mx-auto">
-              Can't find what you're looking for? Our friendly team is here to help you get started on your martial arts journey.
+              Can't find what you're looking for? Our friendly team is here to
+              help you get started on your martial arts journey.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <a
                 href="#contact"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
+                aria-label="Contact us for more information"
               >
                 <HelpCircle className="w-5 h-5" />
                 <span>Contact Us</span>
               </a>
               <a
                 href="tel:+916394135988"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-white/80 backdrop-blur-sm text-gray-700 font-semibold rounded-xl shadow-lg hover:shadow-xl border border-yellow-200/50 transition-all duration-300 transform hover:scale-105"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-white/80 backdrop-blur-sm text-gray-700 font-semibold rounded-xl shadow-lg hover:shadow-xl border border-yellow-200/50 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
+                aria-label="Call us at +91 63941 35988"
               >
                 <span>Call: +91 63941 35988</span>
               </a>

@@ -1,14 +1,13 @@
-
 import React from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { BookOpenText, Calendar, ArrowRight, Clock, User } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
 
 function formatDate(dt: string) {
-  return new Date(dt).toLocaleDateString(undefined, { 
+  return new Date(dt).toLocaleDateString(undefined, {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   });
 }
 
@@ -33,9 +32,9 @@ const containerVariants: Variants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1
-    }
-  }
+      staggerChildren: 0.1,
+    },
+  },
 };
 
 const itemVariants: Variants = {
@@ -45,9 +44,9 @@ const itemVariants: Variants = {
     y: 0,
     transition: {
       duration: 0.6,
-      ease: "easeOut"
-    }
-  }
+      ease: 'easeOut',
+    },
+  },
 };
 
 export default function BlogNewsSection() {
@@ -99,7 +98,7 @@ export default function BlogNewsSection() {
 
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Section Header */}
-        <motion.div 
+        <motion.div
           className="text-center mb-16"
           initial="hidden"
           whileInView="visible"
@@ -114,22 +113,23 @@ export default function BlogNewsSection() {
               Latest Insights
             </span>
           </div>
-          
+
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
             Blog &
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
               Insights
             </span>
           </h2>
-          
+
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Explore stories, expert tips, and inspiration from Ghatak Sports Academy—
-            community highlights, athlete journeys, and martial arts wisdom.
+            Explore stories, expert tips, and inspiration from Ghatak Sports
+            Academy— community highlights, athlete journeys, and martial arts
+            wisdom.
           </p>
         </motion.div>
 
         {/* Blog Grid */}
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           initial="hidden"
           whileInView="visible"
@@ -179,10 +179,10 @@ export default function BlogNewsSection() {
                       <BookOpenText className="w-16 h-16 text-blue-300" />
                     </div>
                   )}
-                  
+
                   {/* Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  
+
                   {/* Featured Badge */}
                   {index === 0 && (
                     <div className="absolute top-4 left-4 bg-gradient-to-r from-amber-400 to-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
@@ -197,7 +197,11 @@ export default function BlogNewsSection() {
                   <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
                     <div className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
-                      <span>{post.published_at ? formatDate(post.published_at) : 'Draft'}</span>
+                      <span>
+                        {post.published_at
+                          ? formatDate(post.published_at)
+                          : 'Draft'}
+                      </span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Clock className="w-4 h-4" />
@@ -212,7 +216,8 @@ export default function BlogNewsSection() {
 
                   {/* Description */}
                   <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-4">
-                    {post.description || 'Discover insights and stories from our martial arts community...'}
+                    {post.description ||
+                      'Discover insights and stories from our martial arts community...'}
                   </p>
 
                   {/* Read More Link */}
@@ -221,7 +226,7 @@ export default function BlogNewsSection() {
                       <User className="w-4 h-4 text-gray-400" />
                       <span className="text-sm text-gray-500">GSAI Team</span>
                     </div>
-                    
+
                     <button className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors duration-200 group-hover:gap-3">
                       Read More
                       <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
@@ -232,21 +237,22 @@ export default function BlogNewsSection() {
             ))
           ) : (
             // Empty State
-            <motion.div 
+            <motion.div
               className="col-span-full max-w-2xl mx-auto text-center py-16"
               variants={itemVariants}
             >
               <div className="w-24 h-24 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <BookOpenText className="w-12 h-12 text-blue-400" />
               </div>
-              
+
               <h3 className="text-2xl font-bold text-gray-900 mb-4">
                 No Blogs Yet
               </h3>
-              
+
               <p className="text-gray-600 text-lg leading-relaxed mb-8">
-                We're working on creating amazing content for you. Stay tuned for our latest insights, 
-                training tips, and inspiring stories from the world of martial arts!
+                We're working on creating amazing content for you. Stay tuned
+                for our latest insights, training tips, and inspiring stories
+                from the world of martial arts!
               </p>
 
               <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-full border border-blue-200">
@@ -259,7 +265,7 @@ export default function BlogNewsSection() {
 
         {/* Call to Action */}
         {posts.length > 0 && (
-          <motion.div 
+          <motion.div
             className="text-center mt-16"
             initial="hidden"
             whileInView="visible"
