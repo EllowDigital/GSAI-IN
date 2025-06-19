@@ -14,26 +14,14 @@ export function useNavbar() {
 
   useEffect(() => {
     if (mobileOpen) {
-      // Prevent body scroll when mobile menu is open
-      document.body.style.overflow = 'hidden';
+      // Prevent body scroll when mobile menu is open, if needed in future.
+      // document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = '';
     }
     return () => {
       document.body.style.overflow = '';
     };
-  }, [mobileOpen]);
-
-  // Close mobile menu when screen size changes to desktop
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768 && mobileOpen) {
-        setMobileOpen(false);
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
   }, [mobileOpen]);
 
   return { mobileOpen, setMobileOpen, scrolled };

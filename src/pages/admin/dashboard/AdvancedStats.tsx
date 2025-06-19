@@ -30,10 +30,10 @@ export default function AdvancedStats() {
         .from('students')
         .select('program, created_at');
       if (error) throw error;
-
+      
       const total = data?.length || 0;
       const byProgram: Record<string, number> = {};
-
+      
       if (Array.isArray(data)) {
         data.forEach((student) => {
           if (student.program) {
@@ -41,7 +41,7 @@ export default function AdvancedStats() {
           }
         });
       }
-
+      
       return { total, byProgram };
     },
   });
@@ -53,17 +53,17 @@ export default function AdvancedStats() {
         .from('fees')
         .select('monthly_fee, paid_amount');
       if (error) throw error;
-
+      
       let totalFees = 0;
       let monthlyRecurring = 0;
-
+      
       if (Array.isArray(data)) {
         data.forEach((fee) => {
           totalFees += fee.paid_amount || 0;
           monthlyRecurring += fee.monthly_fee || 0;
         });
       }
-
+      
       return { totalFees, monthlyRecurring };
     },
   });
@@ -95,7 +95,9 @@ export default function AdvancedStats() {
     <div className="space-y-6">
       <Card className="shadow">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+          <CardTitle className="text-sm font-medium">
+            Total Students
+          </CardTitle>
           <Users className="h-4 w-4 text-gray-500" />
         </CardHeader>
         <CardContent>
@@ -104,11 +106,13 @@ export default function AdvancedStats() {
           </div>
           <p className="text-xs text-gray-500">
             {studentStats?.byProgram &&
-              Object.entries(studentStats.byProgram).map(([program, count]) => (
-                <span key={program}>
-                  {program}: {count}{' '}
-                </span>
-              ))}
+              Object.entries(studentStats.byProgram).map(
+                ([program, count]) => (
+                  <span key={program}>
+                    {program}: {count}{' '}
+                  </span>
+                )
+              )}
           </p>
         </CardContent>
       </Card>
