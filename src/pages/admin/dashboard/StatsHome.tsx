@@ -1,144 +1,99 @@
-import React, { useEffect } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  BadgeDollarSign,
-  Users,
-  BookOpen,
-  Newspaper,
-  Image as GalleryIcon,
-  Calendar,
-} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Users, FileText, Calendar, Image } from 'lucide-react';
 
-import StatsCards from '@/components/admin/dashboard/StatsCards';
-import AnalyticsChart from '@/components/admin/dashboard/AnalyticsChart';
-import AdvancedPanel from '@/components/admin/dashboard/AdvancedPanel';
-
-type CardConfig = {
-  key: string;
-  label: string;
-  icon: React.ElementType;
-  color: string;
-  table: string;
-};
-
-const cardsConfig: CardConfig[] = [
-  {
-    key: 'fees',
-    label: 'Fee Records',
-    icon: BadgeDollarSign,
-    color: 'from-green-100 to-green-200/80 text-green-800 border-green-200',
-    table: 'fees',
-  },
-  {
-    key: 'students',
-    label: 'Students',
-    icon: Users,
-    color: 'from-yellow-100 to-yellow-200/80 text-yellow-800 border-yellow-200',
-    table: 'students',
-  },
-  {
-    key: 'blogs',
-    label: 'Blogs',
-    icon: BookOpen,
-    color: 'from-blue-100 to-blue-200/80 text-blue-800 border-blue-200',
-    table: 'blogs',
-  },
-  {
-    key: 'news',
-    label: 'News',
-    icon: Newspaper,
-    color: 'from-orange-100 to-orange-200/80 text-orange-800 border-orange-200',
-    table: 'news',
-  },
-  {
-    key: 'gallery',
-    label: 'Gallery Images',
-    icon: GalleryIcon,
-    color: 'from-pink-100 to-pink-200/80 text-pink-800 border-pink-200',
-    table: 'gallery_images',
-  },
-  {
-    key: 'events',
-    label: 'Events',
-    icon: Calendar,
-    color: 'from-purple-100 to-purple-200/80 text-purple-800 border-purple-200',
-    table: 'events',
-  },
-];
-
-const fetchDashboardCounts = async () => {
-  const countPromises = cardsConfig.map(async ({ key, table }) => {
-    const { count, error } = await supabase
-      .from(table)
-      .select('id', { count: 'exact', head: true });
-
-    if (error) {
-      console.error(`Error fetching count for ${table}:`, error.message);
-    }
-
-    return [key, count ?? 0] as const;
-  });
-
-  const results = await Promise.all(countPromises);
-  return Object.fromEntries(results);
-};
+interface DashboardCounts {
+  students: number;
+  blogs: number;
+  events: number;
+  gallery_images: number;
+}
 
 export default function StatsHome() {
-  const queryClient = useQueryClient();
+  const { data: counts, isLoading } = useQuery({
+    queryKey: ['dashboard-counts'],
+    queryFn: async () => {
+      const tables = ['students', 'blogs', 'events', 'gallery_images'] as const;
+      const results: Record<string, number> = {};
 
-  const { data: counts, isLoading: isLoadingCounts } = useQuery({
-    queryKey: ['dashboardCounts'],
-    queryFn: fetchDashboardCounts,
+      for (const table of tables) {
+        const { count, error } = await supabase
+          .from(table)
+          .select('*', { count: 'exact', head: true });
+        if (error) {
+          console.error(`Error fetching ${table} count:`, error);
+          results[table] = 0;
+        } else {
+          results[table] = count || 0;
+        }
+      }
+
+      return results;
+    },
   });
 
-  useEffect(() => {
-    const channels = cardsConfig.map(({ table }) =>
-      supabase
-        .channel(`public:${table}:dashboard`)
-        .on('postgres_changes', { event: '*', schema: 'public', table }, () => {
-          queryClient.invalidateQueries({ queryKey: ['dashboardCounts'] });
-        })
-        .subscribe()
-    );
-
-    return () => {
-      channels.forEach((channel) => supabase.removeChannel(channel));
-    };
-  }, [queryClient]);
-
-  const analyticsData = cardsConfig.map(({ key, label }) => ({
-    name: label,
-    count: counts?.[key] ?? 0,
-  }));
-
   return (
-    <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 animate-fade-in">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-extrabold tracking-tight text-yellow-600 drop-shadow">
-          Dashboard Overview
-        </h1>
-        <p className="mt-1 text-gray-500 font-medium">
-          Admin panel analytics and quick stats.
-        </p>
-      </div>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-white shadow-md rounded-lg overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total Students
+            </CardTitle>
+            <Users className="h-4 w-4 text-gray-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {isLoading ? '...' : counts?.students || 0}
+            </div>
+            <p className="text-xs text-gray-500">Registered in the academy</p>
+          </CardContent>
+        </Card>
 
-      {/* Stats Cards */}
-      <StatsCards
-        cardsConfig={cardsConfig}
-        counts={counts}
-        loading={isLoadingCounts}
-      />
+        <Card className="bg-white shadow-md rounded-lg overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Blogs</CardTitle>
+            <FileText className="h-4 w-4 text-gray-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {isLoading ? '...' : counts?.blogs || 0}
+            </div>
+            <p className="text-xs text-gray-500">Published on the website</p>
+          </CardContent>
+        </Card>
 
-      {/* Charts & Advanced Panel */}
-      <div className="mt-10 grid grid-cols-1 lg:grid-cols-5 gap-8">
-        <div className="lg:col-span-3">
-          <AnalyticsChart analyticsData={analyticsData} />
-        </div>
-        <div className="lg:col-span-2">
-          <AdvancedPanel />
-        </div>
+        <Card className="bg-white shadow-md rounded-lg overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Upcoming Events
+            </CardTitle>
+            <Calendar className="h-4 w-4 text-gray-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {isLoading ? '...' : counts?.events || 0}
+            </div>
+            <p className="text-xs text-gray-500">Scheduled this month</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white shadow-md rounded-lg overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Gallery Images
+            </CardTitle>
+            <Image className="h-4 w-4 text-gray-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {isLoading ? '...' : counts?.gallery_images || 0}
+            </div>
+            <p className="text-xs text-gray-500">Uploaded to the gallery</p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
