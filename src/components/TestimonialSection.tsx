@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Card,
@@ -41,7 +40,7 @@ const testimonials = [
   {
     name: 'Sarwan Yadav',
     quote:
-      'The range of programs and the supportive environment make every session enjoyable. I\'ve gained new skills and lifelong friends!',
+      "The range of programs and the supportive environment make every session enjoyable. I've gained new skills and lifelong friends!",
     role: 'Kalarippayattu Practitioner',
     program: 'Kalarippayattu',
     experience: '3+ years',
@@ -61,7 +60,7 @@ const testimonials = [
   {
     name: 'Dr. Priya Sharma',
     quote:
-      'The holistic approach to fitness and mental well-being at GSAI is remarkable. It\'s not just about physical training but overall personality development.',
+      "The holistic approach to fitness and mental well-being at GSAI is remarkable. It's not just about physical training but overall personality development.",
     role: 'Fitness Enthusiast & Doctor',
     program: 'Fitness Training',
     experience: '1+ years',
@@ -84,88 +83,81 @@ const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
+    transition: { staggerChildren: 0.12, delayChildren: 0.1 },
   },
 };
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: {
-      duration: 0.6,
-      ease: 'easeOut',
-    },
+    transition: { duration: 0.6, ease: 'easeOut' },
   },
 };
 
-const StarRating = ({ rating }: { rating: number }) => {
-  return (
-    <div className="flex items-center gap-1">
-      {[...Array(5)].map((_, i) => (
-        <Star
-          key={i}
-          size={16}
-          className={`${
-            i < rating
-              ? 'text-yellow-400 fill-yellow-400'
-              : 'text-gray-300 fill-gray-300'
-          } transition-colors duration-200`}
-        />
-      ))}
-    </div>
-  );
-};
+const StarRating = ({ rating }: { rating: number }) => (
+  <div className="flex gap-1">
+    {[...Array(5)].map((_, i) => (
+      <Star
+        key={i}
+        size={16}
+        className={
+          i < rating
+            ? 'text-yellow-400 fill-yellow-400'
+            : 'text-gray-300 fill-gray-300'
+        }
+      />
+    ))}
+  </div>
+);
 
 export default function TestimonialSection() {
   return (
     <section
       id="testimonials"
-      className="relative py-16 md:py-24 px-4 md:px-6 bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden"
+      className="relative py-20 md:py-28 px-4 md:px-6 bg-gradient-to-br from-slate-50 via-white to-yellow-50/40 overflow-hidden"
       aria-labelledby="testimonial-heading"
     >
-      {/* Background Elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-yellow-200/40 to-red-200/40 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-red-200/30 to-yellow-200/30 rounded-full blur-3xl" />
+      {/* Decorative Background */}
+      <div className="absolute inset-0 -z-10 opacity-20 pointer-events-none">
+        <div className="absolute top-24 left-12 w-96 h-96 bg-gradient-to-r from-yellow-200/40 to-red-200/40 rounded-full blur-3xl" />
+        <div className="absolute bottom-24 right-12 w-80 h-80 bg-gradient-to-r from-red-200/30 to-yellow-200/30 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto">
-        {/* Section Header */}
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
         <motion.div
           className="text-center mb-16"
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
+          viewport={{ once: true, amount: 0.4 }}
           variants={itemVariants}
         >
           <div className="inline-flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-red-500 rounded-xl flex items-center justify-center shadow-md">
               <Quote className="w-6 h-6 text-white" />
             </div>
             <span className="text-lg font-semibold text-yellow-600 tracking-wide">
               Community Voices
             </span>
           </div>
-
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-            What Our
+          <h2
+            id="testimonial-heading"
+            className="text-4xl md:text-5xl font-bold text-gray-900 mb-6"
+          >
+            What Our{' '}
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-red-600 to-yellow-700">
               GSAI Community Says
             </span>
           </h2>
-
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Hear authentic stories from students, parents, and athletes who have experienced
-            transformation, growth, and success at Ghatak Sports Academy India.
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Real voices from students, parents, and athletes who’ve grown with
+            Ghatak Sports Academy India.
           </p>
         </motion.div>
 
-        {/* Statistics Bar */}
+        {/* Stats */}
         <motion.div
           className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16"
           initial="hidden"
@@ -178,125 +170,111 @@ export default function TestimonialSection() {
             { label: 'Success Stories', value: '100+', icon: Award },
             { label: 'Average Rating', value: '4.9★', icon: Star },
             { label: 'Years Experience', value: '10+', icon: Quote },
-          ].map((stat, index) => (
+          ].map(({ label, value, icon: Icon }) => (
             <motion.div
-              key={stat.label}
-              className="text-center p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg"
+              key={label}
+              className="text-center bg-white/70 backdrop-blur-sm rounded-2xl border border-white/40 shadow-lg p-6"
               variants={itemVariants}
-              whileHover={{ y: -5, scale: 1.02 }}
+              whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
-              <stat.icon className="w-8 h-8 text-yellow-500 mx-auto mb-3" />
-              <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
-                {stat.value}
-              </div>
-              <div className="text-sm text-gray-600 font-medium">{stat.label}</div>
+              <Icon className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-gray-900">{value}</div>
+              <div className="text-sm text-gray-600">{label}</div>
             </motion.div>
           ))}
         </motion.div>
 
-        {/* Testimonials Carousel */}
+        {/* Carousel */}
         <motion.div
-          className="relative"
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={{ once: true, amount: 0.3 }}
           variants={itemVariants}
         >
-          <Carousel
-            opts={{
-              align: 'start',
-              loop: true,
-            }}
-            className="w-full"
-          >
-            <CarouselContent className="-ml-2 md:-ml-4">
-              {testimonials.map((testimonial, index) => (
+          <Carousel opts={{ align: 'start', loop: true }} className="w-full">
+            <CarouselContent className="-ml-4">
+              {testimonials.map((t, i) => (
                 <CarouselItem
-                  key={testimonial.name}
-                  className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3"
+                  key={`${t.name}-${i}`}
+                  className="pl-4 basis-full md:basis-1/2 lg:basis-1/3"
                 >
-                  <Card className="group h-full bg-white/80 backdrop-blur-sm border-yellow-100/50 shadow-lg hover:shadow-2xl transition-all duration-500 rounded-2xl overflow-hidden">
-                    {/* Header with Avatar and Rating */}
+                  <Card className="h-full bg-white/80 border-yellow-100/50 shadow-md hover:shadow-xl transition rounded-2xl">
                     <CardHeader className="pb-4">
-                      <div className="flex items-start justify-between mb-4">
+                      <div className="flex justify-between items-start mb-3">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-red-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                            {testimonial.avatar}
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-red-500 text-white flex items-center justify-center font-bold shadow-md">
+                            {t.avatar}
                           </div>
                           <div>
-                            <CardTitle className="text-lg font-bold text-gray-900 mb-1">
-                              {testimonial.name}
+                            <CardTitle className="text-base font-semibold text-gray-900">
+                              {t.name}
                             </CardTitle>
-                            <StarRating rating={testimonial.rating} />
+                            <StarRating rating={t.rating} />
                           </div>
                         </div>
-                        <Quote className="w-8 h-8 text-yellow-400/30 group-hover:text-yellow-400/50 transition-colors duration-300" />
+                        <Quote className="w-6 h-6 text-yellow-400/40" />
                       </div>
-
-                      <div className="flex flex-wrap gap-2">
-                        <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">
-                          {testimonial.program}
+                      <div className="flex gap-2 flex-wrap">
+                        <span className="bg-yellow-100 text-yellow-800 px-3 py-1 text-xs rounded-full font-semibold">
+                          {t.program}
                         </span>
-                        <span className="px-3 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded-full">
-                          {testimonial.experience}
+                        <span className="bg-red-100 text-red-800 px-3 py-1 text-xs rounded-full font-semibold">
+                          {t.experience}
                         </span>
                       </div>
                     </CardHeader>
-
-                    {/* Quote Content */}
-                    <CardContent className="pt-0">
-                      <blockquote className="text-gray-700 leading-relaxed text-base mb-4 relative">
-                        <span className="text-yellow-400 text-4xl absolute -top-2 -left-1 font-serif leading-none">
-                          "
+                    <CardContent>
+                      <blockquote className="relative text-gray-700 text-sm leading-relaxed">
+                        <span className="absolute -top-2 -left-1 text-3xl text-yellow-300">
+                          “
                         </span>
-                        <span className="pl-6">{testimonial.quote}</span>
-                        <span className="text-yellow-400 text-4xl absolute -bottom-4 right-0 font-serif leading-none">
-                          "
+                        <span className="pl-4">{t.quote}</span>
+                        <span className="absolute -bottom-4 right-1 text-3xl text-yellow-300">
+                          ”
                         </span>
                       </blockquote>
-
-                      <div className="pt-4 border-t border-gray-100">
-                        <CardDescription className="text-yellow-600 font-semibold text-sm">
-                          {testimonial.role}
-                        </CardDescription>
-                      </div>
+                      <CardDescription className="pt-4 border-t border-gray-100 mt-4 text-yellow-600 font-medium text-xs">
+                        {t.role}
+                      </CardDescription>
                     </CardContent>
                   </Card>
                 </CarouselItem>
               ))}
             </CarouselContent>
 
-            {/* Navigation Buttons */}
-            <CarouselPrevious className="absolute -left-6 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white border-yellow-200 text-yellow-600 hover:text-yellow-700 shadow-lg hover:shadow-xl transition-all duration-200 w-12 h-12" />
-            <CarouselNext className="absolute -right-6 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white border-yellow-200 text-yellow-600 hover:text-yellow-700 shadow-lg hover:shadow-xl transition-all duration-200 w-12 h-12" />
+            <CarouselPrevious className="absolute -left-6 top-1/2 -translate-y-1/2 bg-white/90 border border-yellow-200 text-yellow-600 hover:text-yellow-800 shadow-md w-10 h-10" />
+            <CarouselNext className="absolute -right-6 top-1/2 -translate-y-1/2 bg-white/90 border border-yellow-200 text-yellow-600 hover:text-yellow-800 shadow-md w-10 h-10" />
           </Carousel>
         </motion.div>
 
         {/* Call to Action */}
         <motion.div
-          className="text-center mt-16"
+          className="text-center mt-20"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
           variants={itemVariants}
         >
-          <div className="bg-gradient-to-r from-yellow-50 to-red-50 rounded-3xl p-8 md:p-12 border border-yellow-100/50 shadow-lg">
+          <div className="bg-gradient-to-r from-yellow-50 to-red-50 border border-yellow-100/50 rounded-3xl shadow-md p-10">
             <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
               Ready to Start Your Journey?
             </h3>
-            <p className="text-gray-600 text-lg mb-8 max-w-2xl mx-auto">
-              Join hundreds of satisfied students and families who have transformed their lives
-              through our world-class martial arts and fitness programs.
+            <p className="text-gray-600 max-w-xl mx-auto mb-8">
+              Join hundreds who have transformed their lives through our
+              world-class programs in martial arts, fitness, and character
+              development.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <button className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                <span>Join Our Community</span>
-                <Award className="w-5 h-5" />
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <button className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-red-500 text-white rounded-xl font-semibold shadow-lg hover:scale-105 transition">
+                <span className="flex items-center gap-2">
+                  Join Our Community <Award className="w-5 h-5" />
+                </span>
               </button>
-              <button className="inline-flex items-center gap-3 px-8 py-4 bg-white/80 backdrop-blur-sm text-gray-700 font-semibold rounded-xl shadow-lg hover:shadow-xl border border-yellow-200/50 transition-all duration-300 transform hover:scale-105">
-                <span>Read More Stories</span>
-                <Quote className="w-5 h-5" />
+              <button className="px-6 py-3 bg-white text-gray-700 rounded-xl font-semibold border border-yellow-200 shadow hover:scale-105 transition">
+                <span className="flex items-center gap-2">
+                  Read More Stories <Quote className="w-5 h-5" />
+                </span>
               </button>
             </div>
           </div>

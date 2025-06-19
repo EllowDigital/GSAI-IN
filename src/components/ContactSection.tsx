@@ -1,7 +1,14 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Clock, Send, MessageCircle, Sparkles } from 'lucide-react';
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
+  Send,
+  MessageCircle,
+  Sparkles,
+} from 'lucide-react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -15,6 +22,39 @@ const containerVariants = {
 };
 
 const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+    },
+  },
+};
+
+const quickContactVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+    },
+  },
+};
+
+const formVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+    },
+  },
+};
+
+const ctaVariants = {
   hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
@@ -56,39 +96,6 @@ const contactInfo = [
   },
 ];
 
-const quickContactVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-    },
-  },
-};
-
-const formVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-    },
-  },
-};
-
-const ctaVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-    },
-  },
-};
-
 export default function ContactSection() {
   const [formData, setFormData] = useState({
     name: '',
@@ -97,15 +104,11 @@ export default function ContactSection() {
     message: '',
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Handle form submission here
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -114,14 +117,14 @@ export default function ContactSection() {
       className="relative py-16 md:py-24 px-4 md:px-6 bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden"
       aria-labelledby="contact-heading"
     >
-      {/* Background Elements */}
+      {/* Background Effects */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-20 right-10 w-96 h-96 bg-gradient-to-r from-yellow-200/40 to-red-200/40 rounded-full blur-3xl" />
         <div className="absolute bottom-20 left-10 w-80 h-80 bg-gradient-to-r from-red-200/30 to-yellow-200/30 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">
-        {/* Section Header */}
+        {/* Header */}
         <motion.div
           className="text-center mb-16"
           initial="hidden"
@@ -137,20 +140,22 @@ export default function ContactSection() {
               Get In Touch
             </span>
           </div>
-
-          <h2 id="contact-heading" className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+          <h2
+            id="contact-heading"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6"
+          >
             Contact
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-red-600 to-yellow-700">
               Us Today
             </span>
           </h2>
-
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Ready to start your martial arts journey? Get in touch with us for enrollment, trial classes, or any questions about our programs.
+            Ready to start your martial arts journey? Get in touch with us for
+            enrollment, trial classes, or any questions about our programs.
           </p>
         </motion.div>
 
-        {/* Quick Contact Info */}
+        {/* Info Cards */}
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
           initial="hidden"
@@ -165,32 +170,33 @@ export default function ContactSection() {
               variants={quickContactVariants}
               whileHover={{ y: -8, scale: 1.02 }}
             >
-              <div className={`w-16 h-16 bg-gradient-to-r ${info.color} rounded-2xl flex items-center justify-center mb-4 shadow-lg group-hover:shadow-xl transition-shadow duration-300`}>
+              <div
+                className={`w-16 h-16 bg-gradient-to-r ${info.color} rounded-2xl flex items-center justify-center mb-4 shadow-lg group-hover:shadow-xl`}
+              >
                 <info.icon className="w-8 h-8 text-white" />
               </div>
-              
-              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-yellow-600 transition-colors duration-300">
+              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-yellow-600">
                 {info.title}
               </h3>
-              
               <div className="space-y-1">
-                {info.details.map((detail, detailIndex) => (
-                  <p key={detailIndex} className="text-gray-600 text-sm leading-relaxed">
+                {info.details.map((detail, idx) => (
+                  <p key={idx} className="text-gray-600 text-sm">
                     {detail}
                   </p>
                 ))}
               </div>
-
               {info.action && (
                 <div className="mt-4">
                   <a
                     href={info.action}
-                    className="inline-flex items-center gap-2 text-yellow-600 font-medium hover:text-yellow-700 transition-colors duration-300"
+                    className="inline-flex items-center gap-2 text-yellow-600 font-medium hover:text-yellow-700"
                   >
                     <span className="text-sm">
-                      {info.title === 'Call Us' ? 'Call Now' : 
-                       info.title === 'Email Us' ? 'Send Email' : 
-                       'Get Directions'}
+                      {info.title === 'Call Us'
+                        ? 'Call Now'
+                        : info.title === 'Email Us'
+                          ? 'Send Email'
+                          : 'Get Directions'}
                     </span>
                     <div className="w-4 h-4 rounded-full bg-gradient-to-r from-yellow-400 to-red-500"></div>
                   </a>
@@ -202,7 +208,6 @@ export default function ContactSection() {
 
         {/* Contact Form */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Form */}
           <motion.div
             className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/50"
             initial="hidden"
@@ -219,10 +224,26 @@ export default function ContactSection() {
               </h3>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form
+              action="https://formsubmit.co/ghatakgsai@gmail.com"
+              method="POST"
+              className="space-y-6"
+            >
+              {/* Redirect after submission */}
+              <input
+                type="hidden"
+                name="_next"
+                value="http://ghatakgsai.netlify.app/pages/success.html"
+              />
+              <input type="hidden" name="_captcha" value="false" />
+
+              {/* Name & Email */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-semibold text-gray-700 mb-2"
+                  >
                     Full Name *
                   </label>
                   <input
@@ -232,12 +253,15 @@ export default function ContactSection() {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300"
+                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl"
                     placeholder="Enter your full name"
                   />
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-semibold text-gray-700 mb-2"
+                  >
                     Email Address *
                   </label>
                   <input
@@ -247,14 +271,18 @@ export default function ContactSection() {
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300"
+                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl"
                     placeholder="Enter your email"
                   />
                 </div>
               </div>
 
+              {/* Phone */}
               <div>
-                <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Phone Number
                 </label>
                 <input
@@ -263,13 +291,17 @@ export default function ContactSection() {
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300"
+                  className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl"
                   placeholder="Enter your phone number"
                 />
               </div>
 
+              {/* Message */}
               <div>
-                <label htmlFor="message" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="message"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Message *
                 </label>
                 <textarea
@@ -279,14 +311,14 @@ export default function ContactSection() {
                   onChange={handleInputChange}
                   required
                   rows={5}
-                  className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 resize-none"
+                  className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl resize-none"
                   placeholder="Tell us about your interest in our programs..."
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full px-8 py-4 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-yellow-300"
+                className="w-full px-8 py-4 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-2xl transition-transform hover:scale-105"
               >
                 <span className="flex items-center justify-center gap-3">
                   <Send className="w-5 h-5" />
@@ -313,7 +345,9 @@ export default function ContactSection() {
                 </h3>
               </div>
               <p className="text-gray-700 text-lg mb-6 leading-relaxed">
-                Experience our world-class training firsthand. Book your free trial class today and discover the perfect martial arts program for you.
+                Experience our world-class training firsthand. Book your free
+                trial class today and discover the perfect martial arts program
+                for you.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <a
@@ -338,7 +372,8 @@ export default function ContactSection() {
                 Have Questions?
               </h3>
               <p className="text-gray-600 mb-6 leading-relaxed">
-                Check out our comprehensive FAQ section for answers to common questions about programs, fees, facilities, and more.
+                Check out our comprehensive FAQ section for answers to common
+                questions about programs, fees, facilities, and more.
               </p>
               <a
                 href="#faq"
@@ -355,7 +390,8 @@ export default function ContactSection() {
                 Find Our Locations
               </h3>
               <p className="text-gray-600 mb-6 leading-relaxed">
-                We have two convenient locations in Lucknow. Find the one nearest to you and get directions.
+                We have two convenient locations in Lucknow. Find the one
+                nearest to you and get directions.
               </p>
               <a
                 href="#location"

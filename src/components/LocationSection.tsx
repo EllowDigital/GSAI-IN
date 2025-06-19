@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MapPin, Navigation, Clock, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -33,7 +32,11 @@ const campusInfo = [
     title: 'Main Campus',
     address: mainCampus,
     timing: 'Mon-Sat: 6:00 AM - 9:00 PM',
-    features: ['Full Training Facilities', 'Equipment Available', 'Parking Available'],
+    features: [
+      'Full Training Facilities',
+      'Equipment Available',
+      'Parking Available',
+    ],
     color: 'from-yellow-500 to-red-500',
   },
   {
@@ -76,7 +79,10 @@ export default function LocationSection() {
             </span>
           </div>
 
-          <h2 id="location-heading" className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+          <h2
+            id="location-heading"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6"
+          >
             Our
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-red-600 to-yellow-700">
               Locations
@@ -84,7 +90,8 @@ export default function LocationSection() {
           </h2>
 
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Visit us at our main and branch campuses in Lucknow. Find directions and plan your visit to start your martial arts journey.
+            Visit us at our main and branch campuses in Lucknow. Find directions
+            and plan your visit to start your martial arts journey.
           </p>
         </motion.div>
 
@@ -104,7 +111,9 @@ export default function LocationSection() {
               whileHover={{ y: -8, scale: 1.02 }}
             >
               <div className="flex items-start gap-4 mb-6">
-                <div className={`w-16 h-16 bg-gradient-to-r ${campus.color} rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300`}>
+                <div
+                  className={`w-16 h-16 bg-gradient-to-r ${campus.color} rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300`}
+                >
                   <MapPin className="w-8 h-8 text-white" />
                 </div>
                 <div className="flex-1">
@@ -127,10 +136,15 @@ export default function LocationSection() {
                 </div>
 
                 <div className="pt-4 border-t border-gray-100">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Features</h4>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                    Features
+                  </h4>
                   <div className="grid grid-cols-1 gap-2">
                     {campus.features.map((feature, featureIndex) => (
-                      <div key={featureIndex} className="flex items-center gap-2">
+                      <div
+                        key={featureIndex}
+                        className="flex items-center gap-2"
+                      >
                         <div className="w-2 h-2 bg-gradient-to-r from-yellow-400 to-red-500 rounded-full"></div>
                         <span className="text-gray-600 text-sm">{feature}</span>
                       </div>
@@ -187,9 +201,10 @@ export default function LocationSection() {
 
           <div className="text-center mt-6">
             <p className="text-sm text-gray-500 mb-4">
-              Map powered by Google Maps. Both campuses are shown for your reference.
+              Map powered by Google Maps. Both campuses are shown for your
+              reference.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
                 href="https://www.google.com/maps/search/?api=1&query=Ghatak+Sports+Academy+India"
@@ -200,7 +215,7 @@ export default function LocationSection() {
                 <MapPin className="w-4 h-4" />
                 <span>View on Google Maps</span>
               </a>
-              
+
               <a
                 href="#contact"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-700 font-semibold rounded-xl shadow-lg hover:shadow-xl border border-gray-200 transition-all duration-300 transform hover:scale-105"

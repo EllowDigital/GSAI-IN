@@ -65,7 +65,6 @@ export default function NewsSection() {
 
     fetchNews();
 
-    // Real-time subscription
     const channel = supabase
       .channel('news-public')
       .on(
@@ -84,12 +83,12 @@ export default function NewsSection() {
   return (
     <section
       id="news"
-      className="relative py-20 lg:py-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 overflow-hidden"
+      className="relative py-20 lg:py-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden"
     >
       {/* Background Blur Decorations */}
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-r from-blue-200/40 to-indigo-200/40 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-amber-200/30 to-orange-200/30 rounded-full blur-3xl" />
+        <div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-r from-yellow-200/40 to-orange-200/40 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-amber-200/30 to-orange-300/30 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">
@@ -102,17 +101,17 @@ export default function NewsSection() {
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
               <Newspaper className="w-6 h-6 text-white" />
             </div>
-            <span className="text-lg font-semibold text-blue-600 tracking-wide">
+            <span className="text-lg font-semibold text-yellow-600 tracking-wide">
               Latest Updates
             </span>
           </div>
 
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
             News &{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500">
               Highlights
             </span>
           </h2>
@@ -152,7 +151,7 @@ export default function NewsSection() {
               <motion.div
                 key={item.id}
                 variants={cardVariants}
-                className="group bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl hover:border-blue-200 transition-all duration-300 transform hover:-translate-y-2"
+                className="group bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl hover:border-yellow-300 transition-all duration-300 transform hover:-translate-y-2"
               >
                 {/* Image Section */}
                 <div className="relative h-48 overflow-hidden">
@@ -164,9 +163,9 @@ export default function NewsSection() {
                       loading="lazy"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-                      <Newspaper className="w-12 h-12 text-blue-300 mb-2" />
-                      <span className="text-blue-400 text-sm font-medium">
+                    <div className="w-full h-full bg-gradient-to-br from-yellow-50 to-orange-100 flex items-center justify-center flex-col">
+                      <Newspaper className="w-12 h-12 text-yellow-400 mb-2" />
+                      <span className="text-orange-500 text-sm font-medium">
                         No Image
                       </span>
                     </div>
@@ -190,7 +189,7 @@ export default function NewsSection() {
                     <span>Recently published</span>
                   </div>
 
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-yellow-600 transition-colors duration-300">
                     {item.title}
                   </h3>
 
@@ -198,7 +197,7 @@ export default function NewsSection() {
                     {item.short_description || 'No description available'}
                   </p>
 
-                  <div className="flex items-center gap-2 text-blue-600 font-semibold text-sm group-hover:gap-3 transition-all duration-300">
+                  <div className="flex items-center gap-2 text-yellow-600 font-semibold text-sm group-hover:gap-3 transition-all duration-300">
                     <span>Read more</span>
                     <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -209,8 +208,8 @@ export default function NewsSection() {
             // Empty State
             <motion.div variants={cardVariants} className="col-span-full">
               <div className="text-center py-16">
-                <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Newspaper className="w-10 h-10 text-gray-400" />
+                <div className="w-20 h-20 bg-gradient-to-r from-yellow-100 to-orange-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Newspaper className="w-10 h-10 text-orange-400" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-3">
                   No News Yet
@@ -234,7 +233,7 @@ export default function NewsSection() {
             className="text-center mt-16"
           >
             <a href="#news">
-              <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+              <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-full font-semibold hover:from-yellow-600 hover:to-orange-700 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                 <span>View All News</span>
                 <ArrowRight className="w-4 h-4" />
               </div>
