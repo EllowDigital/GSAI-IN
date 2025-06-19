@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Carousel,
@@ -11,28 +10,52 @@ import { Award, Shield, Trophy, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const logos = [
-  { name: 'Government of India', url: '/assets/af_img/india.png', category: 'government' },
+  {
+    name: 'Government of India',
+    url: '/assets/af_img/india.png',
+    category: 'government',
+  },
   {
     name: 'Ministry of Youth Affairs & Sports',
     url: '/assets/af_img/ministry.png',
-    category: 'government'
+    category: 'government',
   },
-  { name: 'Fit India', url: '/assets/af_img/fit-india.png', category: 'fitness' },
-  { name: 'Khelo India', url: '/assets/af_img/khelo-india.png', category: 'sports' },
+  {
+    name: 'Fit India',
+    url: '/assets/af_img/fit-india.png',
+    category: 'fitness',
+  },
+  {
+    name: 'Khelo India',
+    url: '/assets/af_img/khelo-india.png',
+    category: 'sports',
+  },
   { name: 'MSME', url: '/assets/af_img/MSME.png', category: 'certification' },
-  { name: 'ISO Certified', url: '/assets/af_img/iso.png', category: 'certification' },
+  {
+    name: 'ISO Certified',
+    url: '/assets/af_img/iso.png',
+    category: 'certification',
+  },
   { name: 'SGFI', url: '/assets/af_img/SGF.png', category: 'federation' },
-  { name: 'UP Olympic Association', url: '/assets/af_img/up-olympic.png', category: 'sports' },
+  {
+    name: 'UP Olympic Association',
+    url: '/assets/af_img/up-olympic.png',
+    category: 'sports',
+  },
   {
     name: 'UP Kalaripayattu Federation',
     url: '/assets/af_img/up-kalarippayattu.png',
-    category: 'federation'
+    category: 'federation',
   },
-  { name: 'Taekwondo Federation', url: '/assets/af_img/takewondo.png', category: 'federation' },
+  {
+    name: 'Taekwondo Federation',
+    url: '/assets/af_img/takewondo.png',
+    category: 'federation',
+  },
   {
     name: 'Indian Kalaripayattu Federation',
     url: '/assets/af_img/in-kalarippayattufed.png',
-    category: 'federation'
+    category: 'federation',
   },
 ];
 
@@ -54,7 +77,7 @@ const itemVariants = {
     y: 0,
     transition: {
       duration: 0.6,
-      ease: "easeOut",
+      ease: 'easeOut',
     },
   },
 };
@@ -63,19 +86,22 @@ const highlights = [
   {
     icon: Shield,
     title: 'Government Recognized',
-    description: 'Officially recognized by Government of India and Ministry of Youth Affairs & Sports',
+    description:
+      'Officially recognized by Government of India and Ministry of Youth Affairs & Sports',
     color: 'from-blue-500 to-indigo-600',
   },
   {
     icon: Trophy,
     title: 'Sports Federations',
-    description: 'Affiliated with multiple national and state sports federations',
+    description:
+      'Affiliated with multiple national and state sports federations',
     color: 'from-yellow-500 to-red-500',
   },
   {
     icon: Star,
     title: 'Quality Certified',
-    description: 'ISO certified academy with MSME registration for quality assurance',
+    description:
+      'ISO certified academy with MSME registration for quality assurance',
     color: 'from-green-500 to-emerald-600',
   },
 ];
@@ -111,7 +137,10 @@ export default function RecognitionAffiliationsSection() {
             </span>
           </div>
 
-          <h2 id="recognitions-heading" className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+          <h2
+            id="recognitions-heading"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6"
+          >
             Recognitions &
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-red-600 to-yellow-700">
               Affiliations
@@ -119,7 +148,9 @@ export default function RecognitionAffiliationsSection() {
           </h2>
 
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Proudly recognized and affiliated with premier national and state organizations driving excellence in sports, fitness, and martial arts.
+            Proudly recognized and affiliated with premier national and state
+            organizations driving excellence in sports, fitness, and martial
+            arts.
           </p>
         </motion.div>
 
@@ -138,10 +169,12 @@ export default function RecognitionAffiliationsSection() {
               variants={itemVariants}
               whileHover={{ y: -8, scale: 1.02 }}
             >
-              <div className={`w-16 h-16 bg-gradient-to-r ${highlight.color} rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-lg group-hover:shadow-xl transition-shadow duration-300`}>
+              <div
+                className={`w-16 h-16 bg-gradient-to-r ${highlight.color} rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-lg group-hover:shadow-xl transition-shadow duration-300`}
+              >
                 <highlight.icon className="w-8 h-8 text-white" />
               </div>
-              
+
               <div className="text-center">
                 <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 group-hover:text-yellow-600 transition-colors duration-300">
                   {highlight.title}
@@ -167,7 +200,8 @@ export default function RecognitionAffiliationsSection() {
               Our Prestigious Affiliations
             </h3>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              These recognitions validate our commitment to excellence and ensure the highest standards in training and education.
+              These recognitions validate our commitment to excellence and
+              ensure the highest standards in training and education.
             </p>
           </div>
 
@@ -181,8 +215,8 @@ export default function RecognitionAffiliationsSection() {
               }}
               className="w-full max-w-5xl"
             >
-              <CarouselPrevious 
-                aria-label="Scroll left" 
+              <CarouselPrevious
+                aria-label="Scroll left"
                 className="bg-white/80 hover:bg-white border-yellow-200 text-yellow-600 hover:text-yellow-700 shadow-lg hover:shadow-xl"
               />
               <CarouselContent className="gap-4 md:gap-6 py-6">
@@ -213,8 +247,8 @@ export default function RecognitionAffiliationsSection() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselNext 
-                aria-label="Scroll right" 
+              <CarouselNext
+                aria-label="Scroll right"
                 className="bg-white/80 hover:bg-white border-yellow-200 text-yellow-600 hover:text-yellow-700 shadow-lg hover:shadow-xl"
               />
             </Carousel>
@@ -222,15 +256,16 @@ export default function RecognitionAffiliationsSection() {
 
           <div className="text-center mt-12 pt-8 border-t border-gray-100">
             <p className="text-gray-500 text-sm mb-6">
-              These affiliations ensure our training programs meet the highest national and international standards.
+              These affiliations ensure our training programs meet the highest
+              national and international standards.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold rounded-xl shadow-lg">
                 <Trophy className="w-4 h-4" />
                 <span>Excellence Recognized</span>
               </div>
-              
+
               <div className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-700 font-semibold rounded-xl shadow-lg border border-gray-200">
                 <Shield className="w-4 h-4" />
                 <span>Quality Assured</span>

@@ -1,75 +1,37 @@
 import React from 'react';
-import Spinner from './ui/spinner';
+import { Loader2 } from 'lucide-react';
 
 export default function Preloader() {
   return (
-    <div
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-gradient-to-br from-white via-gray-100 to-gray-200 animate-fade-scale"
-      aria-label="Loading site content"
-      role="status"
-    >
-      <Spinner size={60} className="animate-spin-slow text-red-600" />
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-yellow-50 via-white to-red-50">
+      <div className="flex flex-col items-center space-y-6 text-center">
+        {/* Logo – clean, no border/circle */}
+        <div className="w-32 animate-pulse">
+          <img
+            src="/assets/img/logo.webp"
+            alt="Ghatak Sports Academy India"
+            className="w-full h-auto object-contain"
+          />
+        </div>
 
-      <h1 className="mt-6 font-montserrat font-bold text-3xl text-gray-800 text-center tracking-wide animate-text-pop">
-        Ghatak Sports Academy India
-      </h1>
+        {/* Spinner and Label */}
+        <div className="flex items-center gap-2">
+          <Loader2 className="w-6 h-6 animate-spin text-yellow-600" />
+          <span className="text-xl font-semibold text-gray-800">
+            Loading...
+          </span>
+        </div>
 
-      <p className="text-gray-600 font-medium text-lg mt-2 animate-fade-in-slow">
-        Empowering Champions...
-      </p>
+        {/* Animated Progress Bar */}
+        <div className="w-56 h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-yellow-500 to-red-500 animate-pulse rounded-full" />
+        </div>
 
-      {/* Custom CSS Animations */}
-      <style>
-        {`
-          .animate-fade-scale {
-            animation: fade-scale 0.8s ease-in-out both;
-          }
-
-          .animate-spin-slow {
-            animation: spin 2s linear infinite;
-          }
-
-          .animate-text-pop {
-            animation: text-pop 0.6s ease-in-out both;
-          }
-
-          .animate-fade-in-slow {
-            animation: fade-in 1.2s ease-in-out both;
-          }
-
-          @keyframes fade-scale {
-            0% {
-              opacity: 0;
-              transform: scale(0.95);
-            }
-            100% {
-              opacity: 1;
-              transform: scale(1);
-            }
-          }
-
-          @keyframes text-pop {
-            0% {
-              opacity: 0;
-              transform: translateY(10px);
-            }
-            100% {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-
-          @keyframes fade-in {
-            from { opacity: 0; }
-            to { opacity: 1; }
-          }
-
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}
-      </style>
+        {/* Footer Text */}
+        <p className="text-sm text-gray-600 font-medium">
+          Ghatak Sports Academy India
+        </p>
+      </div>
     </div>
   );
 }
