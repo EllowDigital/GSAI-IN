@@ -121,7 +121,7 @@ export default function AboutSection() {
               ))}
             </div>
 
-            {/* Quote
+            {/* Quote */}
             <motion.blockquote
               className="border-l-4 border-gradient-to-b from-yellow-400 to-orange-500 pl-6 py-4 bg-gradient-to-r from-yellow-50/50 to-orange-50/50 rounded-r-2xl shadow-lg backdrop-blur-sm"
               initial={{ opacity: 0, scale: 0.95 }}
@@ -136,7 +136,7 @@ export default function AboutSection() {
               <cite className="block mt-2 text-sm font-medium text-gray-600">
                 — Ghatak Sports Academy India
               </cite>
-            </motion.blockquote> */}
+            </motion.blockquote>
           </motion.div>
 
           {/* Right: Visual Element */}

@@ -236,6 +236,12 @@ export default function ContactSection() {
                 value="http://ghatakgsai.netlify.app/pages/success.html"
               />
               <input type="hidden" name="_captcha" value="false" />
+              {/* CC: Add other recipients here */}
+              <input
+                type="hidden"
+                name="_cc"
+                value="sarwanyadav6174@gmail.com, ellowdigitalindia@gmail.com"
+              />
 
               {/* Name & Email */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
