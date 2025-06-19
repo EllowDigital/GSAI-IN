@@ -167,9 +167,9 @@ export default function TestimonialSection() {
         >
           {[
             { label: 'Happy Students', value: '500+', icon: User },
-            { label: 'Success Stories', value: '100+', icon: Award },
-            { label: 'Average Rating', value: '4.9★', icon: Star },
-            { label: 'Years Experience', value: '10+', icon: Quote },
+            { label: 'Success Stories', value: '10+', icon: Award },
+            { label: 'Average Rating', value: '5 ★', icon: Star },
+            { label: 'Years Experience', value: '8+', icon: Quote },
           ].map(({ label, value, icon: Icon }) => (
             <motion.div
               key={label}
@@ -266,16 +266,24 @@ export default function TestimonialSection() {
               development.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <button className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-red-500 text-white rounded-xl font-semibold shadow-lg hover:scale-105 transition">
-                <span className="flex items-center gap-2">
-                  Join Our Community <Award className="w-5 h-5" />
-                </span>
-              </button>
-              <button className="px-6 py-3 bg-white text-gray-700 rounded-xl font-semibold border border-yellow-200 shadow hover:scale-105 transition">
-                <span className="flex items-center gap-2">
-                  Read More Stories <Quote className="w-5 h-5" />
-                </span>
-              </button>
+              <a href="/#contact">
+                <button className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-red-500 text-white rounded-xl font-semibold shadow-lg hover:scale-105 transition">
+                  <span className="flex items-center gap-2">
+                    Join Our Community <Award className="w-5 h-5" />
+                  </span>
+                </button>
+              </a>
+              <a
+                href="https://www.instagram.com/ghatakgsai/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <button className="px-6 py-3 bg-white text-gray-700 rounded-xl font-semibold border border-yellow-200 shadow hover:scale-105 transition">
+                  <span className="flex items-center gap-2">
+                    Read More Stories <Quote className="w-5 h-5" />
+                  </span>
+                </button>
+              </a>
             </div>
           </div>
         </motion.div>
