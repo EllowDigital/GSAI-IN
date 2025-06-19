@@ -151,10 +151,13 @@ export default function LocationSection() {
                     ))}
                   </div>
                 </div>
-
                 <div className="pt-4">
                   <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(campus.address)}`}
+                    href={
+                      index === 0
+                        ? 'https://maps.app.goo.gl/yA7r5XQWt6iYLqwTA'
+                        : 'https://maps.app.goo.gl/oXfoJQBweHeJGH976'
+                    }
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
@@ -207,7 +210,7 @@ export default function LocationSection() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="https://www.google.com/maps/search/?api=1&query=Ghatak+Sports+Academy+India"
+                href="https://maps.app.goo.gl/f3AXzpJoNiuMoYeS6"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
