@@ -1,252 +1,170 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  DollarSign,
-  Users,
-  BookOpen,
-  Newspaper,
-  Image,
-  Calendar,
-} from 'lucide-react';
-import {
-  aggregateFees,
-  studentsByProgram,
-  getLatestTitlesAll,
-  safeCount,
-  getNextEvent,
-} from '@/utils/dashboardStats';
+import { Users, DollarSign, Calendar, TrendingUp } from 'lucide-react';
 
-type StatsData = {
-  total?: number;
-  paidSum?: number;
-  partialSum?: number;
-  unpaidCount?: number;
-  byProgram?: Record<string, number>;
-  latestBlogs?: string[];
-  latestNews?: string[];
-  galleryCount?: number;
-  eventCount?: number;
-  nextEvent?: string;
+interface StudentStats {
+  total: number;
+  byProgram: Record<string, number>;
+}
+
+interface FeesStats {
+  totalFees: number;
+  monthlyRecurring: number;
+}
+
+interface EnrollmentStats {
+  monthlyEnrollment: number;
+}
+
+const getDaysInMonth = (month: number, year: number): number => {
+  return new Date(year, month, 0).getDate();
 };
 
-function useAdvancedStats() {
-  const [stats, setStats] = useState<StatsData>({});
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function fetchData() {
-      setLoading(true);
-
-      const [feesRes, studentsRes, blogsRes, newsRes, galleryRes, eventsRes] =
-        await Promise.all([
-          supabase.from('fees').select('*'),
-          supabase.from('students').select('program'),
-          supabase
-            .from('blogs')
-            .select('title, published_at')
-            .order('published_at', { ascending: false }),
-          supabase
-            .from('news')
-            .select('title, date')
-            .order('date', { ascending: false }),
-          supabase.from('gallery_images').select('id'),
-          supabase
-            .from('events')
-            .select('title, date')
-            .order('date', { ascending: true }),
-        ]);
-
-      const fees = feesRes.data ?? [];
-      const students = studentsRes.data ?? [];
-      const blogs = blogsRes.data ?? [];
-      const news = newsRes.data ?? [];
-      const gallery = galleryRes.data ?? [];
-      const events = eventsRes.data ?? [];
-
-      const result: StatsData = {
-        ...aggregateFees(fees),
-        byProgram: studentsByProgram(students),
-        latestBlogs: getLatestTitlesAll(blogs, 3),
-        latestNews: getLatestTitlesAll(news, 3),
-        galleryCount: safeCount(gallery),
-        eventCount: safeCount(events),
-        nextEvent: getNextEvent(events),
-      };
-
-      if (!cancelled) {
-        setStats(result);
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  return { stats, loading };
-}
-
 export default function AdvancedStats() {
-  const { stats, loading } = useAdvancedStats();
+  const { data: studentStats, isLoading: studentsLoading } = useQuery({
+    queryKey: ['advanced-student-stats'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('students')
+        .select('program, created_at');
+      if (error) throw error;
+      
+      const total = data?.length || 0;
+      const byProgram: Record<string, number> = {};
+      
+      if (Array.isArray(data)) {
+        data.forEach((student) => {
+          if (student.program) {
+            byProgram[student.program] = (byProgram[student.program] || 0) + 1;
+          }
+        });
+      }
+      
+      return { total, byProgram };
+    },
+  });
+
+  const { data: feesStats, isLoading: feesLoading } = useQuery({
+    queryKey: ['advanced-fees-stats'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('fees')
+        .select('monthly_fee, paid_amount');
+      if (error) throw error;
+      
+      let totalFees = 0;
+      let monthlyRecurring = 0;
+      
+      if (Array.isArray(data)) {
+        data.forEach((fee) => {
+          totalFees += fee.paid_amount || 0;
+          monthlyRecurring += fee.monthly_fee || 0;
+        });
+      }
+      
+      return { totalFees, monthlyRecurring };
+    },
+  });
+
+  const { data: enrollmentStats, isLoading: enrollmentLoading } = useQuery({
+    queryKey: ['advanced-enrollment-stats'],
+    queryFn: async () => {
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1;
+      const currentYear = now.getFullYear();
+      const daysInMonth = getDaysInMonth(currentMonth, currentYear);
+
+      const startDate = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01`;
+      const endDate = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${daysInMonth}`;
+
+      const { data, error } = await supabase
+        .from('students')
+        .select('created_at')
+        .gte('created_at', startDate)
+        .lte('created_at', endDate);
+
+      if (error) throw error;
+      const monthlyEnrollment = data?.length || 0;
+      return { monthlyEnrollment };
+    },
+  });
 
   return (
-    <section>
-      <h2 className="text-xl font-bold mb-2 mt-6 text-gray-700">
-        Advanced Stats
-      </h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Fees */}
-        <StatCard
-          icon={<DollarSign className="w-5 h-5" />}
-          title="Fees Details"
-          color="text-green-700"
-          loading={loading}
-        >
-          <ul className="text-sm space-y-1">
-            <li>
-              <b>Total Records:</b> {stats.total ?? '-'}
-            </li>
-            <li>
-              <b>Total Paid:</b> ₹{stats.paidSum ?? 0}
-            </li>
-            <li>
-              <b>Partial Paid:</b> ₹{stats.partialSum ?? 0}
-            </li>
-            <li>
-              <b>Unpaid Count:</b> {stats.unpaidCount ?? 0}
-            </li>
-          </ul>
-        </StatCard>
-
-        {/* Students */}
-        <StatCard
-          icon={<Users className="w-5 h-5" />}
-          title="Students Breakdown"
-          color="text-blue-700"
-          loading={loading}
-        >
-          {stats.total === 0 ? (
-            <p>No students found.</p>
-          ) : (
-            <ul className="text-sm space-y-1">
-              <li>
-                <b>Total Students:</b> {stats.total}
-              </li>
-              <li>
-                <b>By Program:</b>
-              </li>
-              <ul className="ml-4 list-disc">
-                {stats.byProgram && Object.keys(stats.byProgram).length > 0 ? (
-                  Object.entries(stats.byProgram).map(([program, count]) => (
-                    <li key={program}>
-                      {program}: {count}
-                    </li>
-                  ))
-                ) : (
-                  <li>No programs found.</li>
-                )}
-              </ul>
-            </ul>
-          )}
-        </StatCard>
-
-        {/* Blogs */}
-        <StatCard
-          icon={<BookOpen className="w-5 h-5" />}
-          title="Latest Blogs"
-          color="text-pink-700"
-          loading={loading}
-        >
-          <ol className="list-decimal ml-4 text-sm">
-            {stats.latestBlogs?.length ? (
-              stats.latestBlogs.map((blog, idx) => <li key={idx}>{blog}</li>)
-            ) : (
-              <li>No blogs found.</li>
-            )}
-          </ol>
-        </StatCard>
-
-        {/* News */}
-        <StatCard
-          icon={<Newspaper className="w-5 h-5" />}
-          title="Latest News"
-          color="text-yellow-700"
-          loading={loading}
-        >
-          <ol className="list-decimal ml-4 text-sm">
-            {stats.latestNews?.length ? (
-              stats.latestNews.map((news, idx) => <li key={idx}>{news}</li>)
-            ) : (
-              <li>No news found.</li>
-            )}
-          </ol>
-        </StatCard>
-
-        {/* Gallery */}
-        <StatCard
-          icon={<Image className="w-5 h-5" />}
-          title="Gallery Stats"
-          color="text-indigo-700"
-          loading={loading}
-        >
-          <p>
-            <span className="font-bold text-lg">{stats.galleryCount ?? 0}</span>{' '}
-            images
+    <div className="space-y-6">
+      <Card className="shadow">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            Total Students
+          </CardTitle>
+          <Users className="h-4 w-4 text-gray-500" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">
+            {studentsLoading ? '...' : studentStats?.total}
+          </div>
+          <p className="text-xs text-gray-500">
+            {studentStats?.byProgram &&
+              Object.entries(studentStats.byProgram).map(
+                ([program, count]) => (
+                  <span key={program}>
+                    {program}: {count}{' '}
+                  </span>
+                )
+              )}
           </p>
-        </StatCard>
+        </CardContent>
+      </Card>
 
-        {/* Events */}
-        <StatCard
-          icon={<Calendar className="w-5 h-5" />}
-          title="Events"
-          color="text-orange-700"
-          loading={loading}
-        >
-          <ul className="text-sm space-y-1">
-            <li>
-              <b>Total Events:</b> {stats.eventCount ?? 0}
-            </li>
-            <li>
-              <b>Next Event:</b> {stats.nextEvent ?? 'No upcoming'}
-            </li>
-          </ul>
-        </StatCard>
-      </div>
-    </section>
-  );
-}
+      <Card className="shadow">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            Total Fees Collected
+          </CardTitle>
+          <DollarSign className="h-4 w-4 text-gray-500" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">
+            ₹{feesLoading ? '...' : feesStats?.totalFees}
+          </div>
+          <p className="text-xs text-gray-500">
+            ₹{feesStats?.monthlyRecurring} monthly recurring
+          </p>
+        </CardContent>
+      </Card>
 
-// Reusable stat card component
-function StatCard({
-  icon,
-  title,
-  color,
-  loading,
-  children,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  color: string;
-  loading: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className={`flex items-center gap-2 ${color}`}>
-          {icon}
-          {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {loading ? <p className="text-sm text-muted">Loading...</p> : children}
-      </CardContent>
-    </Card>
+      <Card className="shadow">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            New Enrollments (This Month)
+          </CardTitle>
+          <Calendar className="h-4 w-4 text-gray-500" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">
+            {enrollmentLoading ? '...' : enrollmentStats?.monthlyEnrollment}
+          </div>
+          <p className="text-xs text-gray-500">
+            Tracking new students this month
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            Future Prediction
+          </CardTitle>
+          <TrendingUp className="h-4 w-4 text-gray-500" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">TBD</div>
+          <p className="text-xs text-gray-500">
+            Based on current enrollment trends
+          </p>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
