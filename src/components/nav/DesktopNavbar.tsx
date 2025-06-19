@@ -1,10 +1,12 @@
+
 import React from 'react';
-import { Menu, LogIn } from 'lucide-react';
+import { Menu, LogIn, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuItem,
 } from '../ui/dropdown-menu';
 import { NavLinkItem } from './NavLinkItem';
 import { navLinks } from '../../data/navLinks';
@@ -12,105 +14,119 @@ import { navLinks } from '../../data/navLinks';
 export function DesktopNavbar() {
   return (
     <>
-      {/* ✅ Desktop: lg and above */}
-      <div className="hidden lg:flex items-center justify-between w-full max-w-screen-xl mx-auto px-4">
-        {/* Logo and Title */}
-        <div className="flex items-center gap-3">
-          <img
-            src="/assets/img/logo.webp"
-            alt="Logo"
-            className="w-10 h-10 object-contain rounded-full border border-yellow-400"
-          />
-          <div className="flex flex-col leading-none">
-            <span className="text-sm font-bold text-red-700">GSAI</span>
-            <span className="text-sm font-medium text-gray-900 whitespace-nowrap">
+      {/* Desktop Navigation - lg and above */}
+      <div className="hidden lg:flex items-center justify-between px-6 py-4">
+        {/* Logo Section */}
+        <div className="flex items-center space-x-4">
+          <div className="relative group">
+            <img
+              src="/assets/img/logo.webp"
+              alt="Ghatak Sports Academy India"
+              className="w-12 h-12 object-contain rounded-full border-2 border-gradient-to-r from-yellow-400 to-red-500 shadow-lg transition-transform duration-300 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-400/20 to-red-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-lg font-bold text-gray-900 tracking-tight">
+              GSAI
+            </span>
+            <span className="text-sm font-medium text-gray-600 leading-none">
               Ghatak Sports Academy India
             </span>
           </div>
         </div>
 
         {/* Navigation Links */}
-        <div className="flex items-center gap-6 xl:gap-10">
+        <div className="flex items-center space-x-8">
           {navLinks.map((link) => (
             <NavLinkItem
               key={link.name}
               href={link.href}
               name={link.name}
-              className="text-gray-800 font-semibold tracking-wide text-sm xl:text-base hover:text-red-700 hover:underline underline-offset-8 transition-all"
-            />
+              className="relative text-gray-700 font-medium text-sm tracking-wide transition-all duration-300 hover:text-red-600 group"
+            >
+              <span className="relative z-10">{link.name}</span>
+              <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-yellow-500 to-red-500 transition-all duration-300 group-hover:w-full"></div>
+            </NavLinkItem>
           ))}
         </div>
 
-        {/* Admin Button */}
+        {/* CTA Button */}
         <Link
           to="/admin/login"
-          className="flex items-center gap-2 px-4 py-2 rounded-md bg-yellow-400 text-black font-semibold shadow hover:bg-yellow-500 active:bg-yellow-600 transition"
+          className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-yellow-300/50"
         >
           <LogIn className="w-5 h-5" />
-          <span className="hidden sm:inline">Admin Panel</span>
+          <span>Admin Panel</span>
         </Link>
       </div>
 
-      {/* ✅ Tablet: md to <lg */}
-      <div className="hidden md:flex lg:hidden items-center justify-between w-full max-w-screen-xl mx-auto px-4">
-        <div className="flex items-center gap-3">
+      {/* Tablet Navigation - md to lg */}
+      <div className="hidden md:flex lg:hidden items-center justify-between px-6 py-3">
+        {/* Logo Section */}
+        <div className="flex items-center space-x-3">
           <img
             src="/assets/img/logo.webp"
             alt="Logo"
-            className="w-9 h-9 object-contain rounded-full border border-yellow-400"
+            className="w-10 h-10 object-contain rounded-full border-2 border-yellow-400 shadow-md"
           />
-          <div className="flex flex-col leading-none">
-            <span className="text-sm font-bold text-red-700">GSAI</span>
-            <span className="text-sm font-medium text-gray-900 whitespace-nowrap">
+          <div className="flex flex-col">
+            <span className="text-base font-bold text-gray-900">GSAI</span>
+            <span className="text-xs font-medium text-gray-600 leading-none">
               Ghatak Sports Academy India
             </span>
           </div>
         </div>
 
-        {/* Menu links & dropdown */}
-        <div className="flex items-center gap-3">
+        {/* Condensed Navigation */}
+        <div className="flex items-center space-x-6">
           {navLinks.slice(0, 4).map((link) => (
             <NavLinkItem
               key={link.name}
               href={link.href}
               name={link.name}
-              className="text-gray-800 font-medium tracking-wide text-sm md:text-base hover:text-red-700 hover:underline underline-offset-8 transition"
+              className="text-gray-700 font-medium text-sm hover:text-red-600 transition-colors duration-300"
             />
           ))}
 
+          {/* More Menu Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
-                className="p-2 rounded-full border border-yellow-400 text-yellow-500 hover:bg-yellow-50 transition h-10 w-10 flex items-center justify-center"
-                aria-label="Toggle more navigation"
+                className="flex items-center space-x-1 px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors duration-300 shadow-sm"
+                aria-label="More navigation options"
               >
-                <Menu size={22} />
+                <Menu className="w-4 h-4 text-gray-600" />
+                <ChevronDown className="w-3 h-3 text-gray-600" />
               </button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent
-              className="z-[60] mt-2 w-60 rounded-xl border border-yellow-200 shadow-xl bg-white animate-fade-in"
+            <DropdownMenuContent 
+              className="z-[60] mt-2 w-56 rounded-xl border border-gray-200 shadow-xl bg-white/95 backdrop-blur-md"
               sideOffset={8}
               align="end"
             >
-              <div className="flex flex-col gap-1 py-2 px-3">
-                {navLinks.slice(4).map((link) => (
+              {navLinks.slice(4).map((link) => (
+                <DropdownMenuItem key={link.name} asChild>
                   <NavLinkItem
-                    key={link.name}
                     href={link.href}
                     name={link.name}
-                    className="text-gray-800 font-medium py-2 px-3 rounded-md hover:bg-yellow-50 transition text-sm"
+                    className="w-full px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 hover:text-red-600 transition-colors duration-300 rounded-lg cursor-pointer"
                   />
-                ))}
-
+                </DropdownMenuItem>
+              ))}
+              
+              <div className="border-t border-gray-100 my-2"></div>
+              
+              <DropdownMenuItem asChild>
                 <Link
                   to="/admin/login"
-                  className="flex items-center gap-2 justify-center px-4 py-2 rounded-md bg-yellow-400 text-black font-semibold shadow hover:bg-yellow-500 transition mt-2"
+                  className="flex items-center space-x-2 w-full px-4 py-3 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold rounded-lg hover:shadow-md transition-all duration-300 cursor-pointer"
                 >
-                  <LogIn className="w-5 h-5" />
+                  <LogIn className="w-4 h-4" />
                   <span>Admin Panel</span>
                 </Link>
-              </div>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
