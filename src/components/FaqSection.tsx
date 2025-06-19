@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
   Accordion,
@@ -86,7 +87,7 @@ const itemVariants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: "easeOut",
+      ease: [0.4, 0, 0.2, 1],
     },
   },
 };
@@ -94,7 +95,6 @@ const itemVariants = {
 export default function FaqSection() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [openItems, setOpenItems] = useState<string[]>([]);
 
   const filteredFaqs = faqs.filter(faq => {
     const matchesSearch = faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
