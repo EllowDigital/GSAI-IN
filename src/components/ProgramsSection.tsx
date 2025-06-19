@@ -1,218 +1,257 @@
-
 import React from 'react';
-import { Zap, Users, Clock, Award, ArrowRight, Star } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
+import { Sparkles, Zap, Target, Shield } from 'lucide-react';
+
+// Program data
+const programs = [
+  {
+    icon: '🥋',
+    title: 'Karate',
+    desc: 'Traditional strikes & self-discipline',
+    category: 'Traditional',
+    level: 'Beginner to Advanced',
+  },
+  {
+    icon: '🦵',
+    title: 'Taekwondo',
+    desc: 'Dynamic kicks & sparring',
+    category: 'Olympic Sport',
+    level: 'All Levels',
+  },
+  {
+    icon: '🥊',
+    title: 'Boxing',
+    desc: 'Build stamina & precision',
+    category: 'Combat Sport',
+    level: 'Beginner to Pro',
+  },
+  {
+    icon: '🥋',
+    title: 'Kickboxing',
+    desc: 'Cardio meets combat',
+    category: 'Fitness',
+    level: 'All Levels',
+  },
+  {
+    icon: '🤼',
+    title: 'Grappling',
+    desc: 'Ground control tactics',
+    category: 'Combat Sport',
+    level: 'Intermediate+',
+  },
+  {
+    icon: '🥋',
+    title: 'MMA',
+    desc: 'Striking & grappling combined',
+    category: 'Mixed Martial Arts',
+    level: 'Advanced',
+  },
+  {
+    icon: '🕉️',
+    title: 'Kalaripayattu',
+    desc: "India's ancient warrior art",
+    category: 'Traditional',
+    level: 'All Levels',
+  },
+  {
+    icon: '🛡️',
+    title: 'Self-Defense',
+    desc: 'Practical safety training',
+    category: 'Life Skills',
+    level: 'Beginner',
+  },
+  {
+    icon: '🏋️',
+    title: 'Fat Loss',
+    desc: 'Burn fat, build agility',
+    category: 'Fitness',
+    level: 'All Levels',
+  },
+];
+
+// Animation variants
+const containerVariants: Variants = {
+  offscreen: {},
+  onscreen: {
+    transition: { staggerChildren: 0.08 },
+  },
+};
+
+const cardVariants: Variants = {
+  offscreen: { opacity: 0, y: 40 },
+  onscreen: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring',
+      bounce: 0.4,
+      duration: 0.6,
+    },
+  },
+};
+
+const headerVariants: Variants = {
+  offscreen: { opacity: 0, y: 30 },
+  onscreen: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.4, 0, 0.2, 1],
+    },
+  },
+};
 
 export default function ProgramsSection() {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-      },
-    },
-  };
-
-  const programs = [
-    {
-      title: 'Karate',
-      description: 'Traditional martial art focusing on striking techniques, discipline, and mental fortitude.',
-      features: ['Traditional Forms', 'Self Defense', 'Competition Training', 'Character Building'],
-      duration: '1-2 hours',
-      level: 'All Levels',
-      color: 'from-red-500 to-pink-500',
-      popular: true,
-    },
-    {
-      title: 'Taekwondo',
-      description: 'Korean martial art emphasizing high kicks, fast hand techniques, and mental discipline.',
-      features: ['Olympic Sport', 'High Kicks', 'Flexibility Training', 'Mental Focus'],
-      duration: '1-2 hours',
-      level: 'Beginner to Advanced',
-      color: 'from-blue-500 to-indigo-500',
-      popular: false,
-    },
-    {
-      title: 'Kickboxing',
-      description: 'High-intensity combat sport combining punches, kicks, and cardiovascular conditioning.',
-      features: ['Cardio Workout', 'Strike Training', 'Fitness Focus', 'Stress Relief'],
-      duration: '45-60 minutes',
-      level: 'All Levels',
-      color: 'from-yellow-500 to-orange-500',
-      popular: false,
-    },
-    {
-      title: 'MMA Training',
-      description: 'Mixed martial arts combining various fighting disciplines for comprehensive combat training.',
-      features: ['Ground Fighting', 'Stand-up Combat', 'Conditioning', 'Competition Prep'],
-      duration: '1-2 hours',
-      level: 'Intermediate to Advanced',
-      color: 'from-purple-500 to-violet-500',
-      popular: false,
-    },
-    {
-      title: 'Boxing',
-      description: 'The sweet science focusing on punching techniques, footwork, and defensive skills.',
-      features: ['Punching Techniques', 'Footwork', 'Defense', 'Cardio Training'],
-      duration: '1 hour',
-      level: 'All Levels',
-      color: 'from-green-500 to-emerald-500',
-      popular: false,
-    },
-    {
-      title: 'Cricket',
-      description: 'Professional cricket training with focus on batting, bowling, and fielding techniques.',
-      features: ['Batting Skills', 'Bowling Techniques', 'Fielding', 'Match Strategy'],
-      duration: '2-3 hours',
-      level: 'All Levels',
-      color: 'from-amber-500 to-yellow-500',
-      popular: true,
-    },
-  ];
-
   return (
     <section
       id="programs"
-      className="relative py-20 md:py-32 bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/40 overflow-hidden"
+      className="relative py-20 lg:py-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-900 via-slate-900 to-black overflow-hidden"
     >
-      {/* Background Elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-yellow-200/40 to-red-200/40 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-blue-200/40 to-indigo-200/40 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+      {/* Background Gradients */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
+        <div className="absolute top-10 left-10 w-80 h-80 bg-yellow-400/30 to-orange-500/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-red-400/20 to-pink-500/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-500/10 to-purple-500/10 rounded-full blur-3xl" />
       </div>
 
-      <motion.div
-        className="relative z-10 max-w-7xl mx-auto px-4"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
-        variants={containerVariants}
-      >
+      {/* Floating Icons */}
+      <Sparkles className="absolute top-20 right-16 w-8 h-8 text-yellow-400 opacity-30 animate-float" />
+      <Zap className="absolute bottom-24 left-16 w-10 h-10 text-orange-400 opacity-25 animate-float delay-[2s]" />
+      <Target className="absolute top-1/3 left-8 w-6 h-6 text-red-400 opacity-20 animate-float delay-[4s]" />
+
+      <div className="relative z-10 max-w-7xl mx-auto">
         {/* Section Header */}
-        <motion.div className="text-center mb-16 md:mb-20" variants={itemVariants}>
+        <motion.div
+          className="text-center mb-16 lg:mb-20"
+          initial="offscreen"
+          whileInView="onscreen"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={headerVariants}
+        >
           <div className="inline-flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
-              <Zap className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Shield className="w-6 h-6 text-white" />
             </div>
-            <span className="text-lg font-semibold text-gray-700 tracking-wide">Our Programs</span>
+            <span className="text-lg font-semibold text-yellow-400 tracking-wide">
+              Training Excellence
+            </span>
           </div>
-          
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-            Train Like A
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-red-500 to-yellow-600">
-              Champion
+
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+            <span className="text-white">Programs &</span>
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500">
+              Training
             </span>
           </h2>
-          
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Discover our comprehensive range of martial arts and sports programs designed for all ages and skill levels. 
-            Each program is carefully crafted to build strength, character, and confidence.
+
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            Explore a diverse range of martial arts and fitness programs crafted
+            to foster strength, confidence, and personal mastery for all ages
+            and skill levels.
           </p>
+
+          {/* Divider */}
+          <div className="flex justify-center items-center gap-4 mt-8">
+            <div className="h-px w-16 bg-gradient-to-r from-transparent to-yellow-400" />
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
+            <div className="h-px w-32 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400" />
+            <div
+              className="w-2 h-2 bg-red-400 rounded-full animate-pulse"
+              style={{ animationDelay: '0.5s' }}
+            />
+            <div className="h-px w-16 bg-gradient-to-r from-red-400 to-transparent" />
+          </div>
         </motion.div>
 
-        {/* Programs Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {programs.map((program, index) => (
+        {/* Program Cards */}
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+          initial="offscreen"
+          whileInView="onscreen"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+        >
+          {programs.map((prog) => (
             <motion.div
-              key={program.title}
-              className="relative bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group"
-              variants={itemVariants}
-              whileHover={{ y: -5 }}
+              key={prog.title}
+              variants={cardVariants}
+              whileHover={{ y: -8 }}
+              className="group relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 transition-all hover:scale-105 hover:shadow-2xl border border-gray-100/50 hover:border-yellow-200 overflow-hidden"
             >
-              {/* Popular Badge */}
-              {program.popular && (
-                <div className="absolute -top-3 -right-3 bg-gradient-to-r from-yellow-500 to-amber-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-lg">
-                  <Star className="w-3 h-3" />
-                  Popular
-                </div>
-              )}
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-50/50 via-white to-orange-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
 
-              {/* Program Header */}
-              <div className="mb-6">
-                <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r ${program.color} rounded-full mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                  <Zap className="w-8 h-8 text-white" />
+              <div className="relative z-10">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="text-5xl lg:text-6xl">{prog.icon}</div>
+                  <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">
+                    {prog.category}
+                  </span>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">{program.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{program.description}</p>
+
+                <h3 className="text-xl lg:text-2xl font-bold text-gray-900 group-hover:text-yellow-600 transition-colors">
+                  {prog.title}
+                </h3>
+
+                <p className="text-gray-600 font-medium text-base lg:text-lg leading-relaxed mt-2 mb-4">
+                  {prog.desc}
+                </p>
+
+                <div className="flex justify-between text-sm text-gray-500 font-medium mb-4">
+                  <span>Level:</span>
+                  <span className="text-gray-700 font-semibold">
+                    {prog.level}
+                  </span>
+                </div>
+
+                <div className="pt-4 border-t border-gray-100 group-hover:border-yellow-200 transition-colors">
+                  <a
+                    href="#contact"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-gray-800 to-gray-900 text-white font-semibold rounded-xl hover:from-yellow-500 hover:to-orange-600 transition-all transform group-hover:scale-105 shadow-lg hover:shadow-xl"
+                  >
+                    <span>Learn More</span>
+                    <svg
+                      className="w-4 h-4 transform group-hover:translate-x-1 transition-transform"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </a>
+                </div>
               </div>
-
-              {/* Program Features */}
-              <div className="mb-6">
-                <h4 className="font-semibold text-gray-900 mb-3">What You'll Learn:</h4>
-                <ul className="space-y-2">
-                  {program.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-center gap-2 text-gray-600">
-                      <div className="w-1.5 h-1.5 bg-gradient-to-r from-yellow-500 to-red-500 rounded-full flex-shrink-0" />
-                      <span className="text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Program Details */}
-              <div className="flex items-center justify-between mb-6 text-sm">
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Clock className="w-4 h-4" />
-                  <span>{program.duration}</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Users className="w-4 h-4" />
-                  <span>{program.level}</span>
-                </div>
-              </div>
-
-              {/* CTA Button */}
-              <button className="w-full group/btn flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-gray-800 to-gray-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                <span>Learn More</span>
-                <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
-              </button>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Call to Action */}
         <motion.div
-          className="text-center mt-16 md:mt-20"
-          variants={itemVariants}
+          className="text-center mt-16 lg:mt-20"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <div className="bg-gradient-to-r from-yellow-500 to-red-500 rounded-3xl p-8 md:p-12 shadow-2xl">
-            <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Ready to Start Your Journey?
-            </h3>
-            <p className="text-xl text-yellow-100 mb-8 max-w-2xl mx-auto">
-              Join thousands of students who have transformed their lives through our programs. 
-              Book your free trial class today!
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="#contact"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-red-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-              >
-                <span>Book Free Trial</span>
-                <ArrowRight className="w-5 h-5" />
-              </a>
-              <a
-                href="tel:+916394135988"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-transparent border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:text-red-600 transition-all duration-300 transform hover:scale-105"
-              >
-                <span>Call Now</span>
-              </a>
-            </div>
+          <div className="inline-flex flex-col sm:flex-row items-center gap-4">
+            <a
+              href="#contact"
+              className="px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold text-lg rounded-xl hover:from-yellow-600 hover:to-orange-700 transition-all transform hover:scale-105 shadow-xl hover:shadow-2xl"
+            >
+              Start Your Journey Today
+            </a>
+            <span className="text-gray-300 text-sm">
+              Free consultation & trial class available
+            </span>
           </div>
         </motion.div>
-      </motion.div>
+      </div>
     </section>
   );
 }

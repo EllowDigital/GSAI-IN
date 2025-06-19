@@ -1,228 +1,299 @@
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
+import { Images, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
-import React from 'react';
-import { Camera, Play, Award, Users, Image as ImageIcon } from 'lucide-react';
-import { motion } from 'framer-motion';
+type GalleryImage = {
+  id: string;
+  image_url: string;
+  caption?: string | null;
+  tag?: string | null;
+  created_at?: string | null;
+};
 
 export default function GallerySection() {
+  const [images, setImages] = useState<GalleryImage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    let ignore = false;
+    const fetchImages = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('gallery_images')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(100);
+      if (!ignore) {
+        setImages(data || []);
+        setLoading(false);
+      }
+    };
+    fetchImages();
+    const channel = supabase
+      .channel('gsai-gallery-public-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'gallery_images',
+        },
+        () => fetchImages()
+      )
+      .subscribe();
+    return () => {
+      ignore = true;
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const openLightbox = (image: GalleryImage, index: number) => {
+    setSelectedImage(image);
+    setCurrentIndex(index);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeLightbox = () => {
+    setSelectedImage(null);
+    document.body.style.overflow = 'unset';
+  };
+
+  const navigateImage = (direction: 'prev' | 'next') => {
+    const newIndex =
+      direction === 'next'
+        ? (currentIndex + 1) % images.length
+        : (currentIndex - 1 + images.length) % images.length;
+
+    setCurrentIndex(newIndex);
+    setSelectedImage(images[newIndex]);
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
+        delayChildren: 0.2,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 30, scale: 0.9 },
     visible: {
       opacity: 1,
       y: 0,
+      scale: 1,
       transition: {
         duration: 0.6,
+        ease: [0.4, 0, 0.2, 1] as [number, number, number, number],
       },
     },
   };
 
-  // Placeholder gallery items - in real implementation, these would come from your database
-  const galleryItems = [
-    {
-      type: 'image',
-      title: 'Karate Championship 2024',
-      description: 'Our students showcasing their skills at the regional championship',
-      thumbnail: '/assets/slider/slider1.png',
-      category: 'competitions',
-    },
-    {
-      type: 'video',
-      title: 'Training Session Highlights',
-      description: 'A glimpse into our intensive training programs',
-      thumbnail: '/assets/slider/slider2.png',
-      category: 'training',
-    },
-    {
-      type: 'image',
-      title: 'Belt Grading Ceremony',
-      description: 'Celebrating achievements and progress milestones',
-      thumbnail: '/assets/slider/slider3.png',
-      category: 'ceremonies',
-    },
-    {
-      type: 'image',
-      title: 'Team Building Activities',
-      description: 'Building bonds beyond martial arts training',
-      thumbnail: '/assets/slider/slider4.png',
-      category: 'community',
-    },
-    {
-      type: 'video',
-      title: 'Self Defense Workshop',
-      description: 'Empowering students with practical self-defense skills',
-      thumbnail: '/assets/slider/slider5.png',
-      category: 'workshops',
-    },
-    {
-      type: 'image',
-      title: 'Annual Sports Day',
-      description: 'Celebrating sportsmanship and healthy competition',
-      thumbnail: '/assets/slider/slider6.png',
-      category: 'events',
-    },
-  ];
-
-  const categories = ['all', 'competitions', 'training', 'ceremonies', 'community', 'workshops', 'events'];
-
   return (
     <section
       id="gallery"
-      className="relative py-20 md:py-32 bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/40 overflow-hidden"
+      className="py-20 md:py-32 px-4 md:px-6 lg:px-8 bg-gradient-to-br from-gray-50 via-white to-blue-50/20 relative overflow-hidden"
     >
-      {/* Background Elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 right-10 w-96 h-96 bg-gradient-to-r from-yellow-200/40 to-red-200/40 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 left-10 w-80 h-80 bg-gradient-to-r from-blue-200/40 to-indigo-200/40 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
-      </div>
+      {/* Modern Background Elements */}
+      <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 right-16 w-96 h-96 bg-gradient-to-br from-yellow-500/5 to-orange-500/5 rounded-full blur-3xl" />
 
-      <motion.div
-        className="relative z-10 max-w-7xl mx-auto px-4"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
-        variants={containerVariants}
-      >
-        {/* Section Header */}
-        <motion.div className="text-center mb-16 md:mb-20" variants={itemVariants}>
-          <div className="inline-flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
-              <Camera className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-lg font-semibold text-gray-700 tracking-wide">Gallery</span>
+      <div className="max-w-7xl mx-auto relative">
+        {/* Modern Header */}
+        <motion.div
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="inline-flex items-center justify-center p-3 mb-8 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full backdrop-blur-sm border border-blue-200/30">
+            <Images className="w-6 h-6 text-blue-600 mr-3" />
+            <span className="text-sm font-semibold text-blue-600 uppercase tracking-wider">
+              Gallery
+            </span>
           </div>
-          
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-            Moments of
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-red-500 to-yellow-600">
-              Excellence
+
+          <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-gray-900 mb-8 leading-tight">
+            Academy{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800">
+              Moments
             </span>
           </h2>
-          
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Explore our gallery showcasing the journey, achievements, and memorable moments of our students. 
-            Every image tells a story of dedication, growth, and success.
+
+          <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed font-medium">
+            Discover the energy, dedication, and community spirit that defines
+            our academy through these captured moments of training, events, and
+            achievements.
           </p>
         </motion.div>
 
-        {/* Filter Tabs */}
-        <motion.div className="flex flex-wrap justify-center gap-2 mb-12" variants={itemVariants}>
-          {categories.map((category) => (
-            <button
-              key={category}
-              className="px-6 py-3 bg-white/60 backdrop-blur-sm border border-gray-200/50 rounded-full text-gray-700 font-medium hover:bg-gradient-to-r hover:from-yellow-500 hover:to-red-500 hover:text-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 capitalize"
-            >
-              {category}
-            </button>
-          ))}
-        </motion.div>
+        {/* Gallery Content */}
+        {loading ? (
+          <div className="flex justify-center items-center py-40">
+            <div className="relative">
+              <div className="w-20 h-20 border-4 border-blue-200 rounded-full animate-spin border-t-blue-600"></div>
+              <div className="absolute inset-0 w-20 h-20 border-4 border-transparent rounded-full animate-ping border-t-blue-400"></div>
+            </div>
+          </div>
+        ) : images.length === 0 ? (
+          <motion.div
+            className="text-center py-40"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <Images className="w-32 h-32 text-gray-300 mx-auto mb-8" />
+            <h3 className="text-3xl font-bold text-gray-400 mb-4">
+              No Images Yet
+            </h3>
+            <p className="text-xl text-gray-500">
+              Check back soon for amazing moments from our academy!
+            </p>
+          </motion.div>
+        ) : (
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            {images.map((img, index) => (
+              <motion.div
+                key={img.id}
+                variants={itemVariants}
+                className="group relative overflow-hidden rounded-3xl bg-white shadow-xl hover:shadow-2xl transition-all duration-700 cursor-pointer"
+                onClick={() => openLightbox(img, index)}
+                whileHover={{ y: -12, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {/* Image Container */}
+                <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+                  <img
+                    src={img.image_url}
+                    alt={img.caption || `Academy gallery image ${index + 1}`}
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
 
-        {/* Gallery Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {galleryItems.map((item, index) => (
-            <motion.div
-              key={index}
-              className="group relative bg-white/60 backdrop-blur-sm rounded-2xl overflow-hidden border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-              variants={itemVariants}
-              whileHover={{ y: -5 }}
-            >
-              {/* Image Container */}
-              <div className="relative aspect-video overflow-hidden">
-                <img
-                  src={item.thumbnail}
-                  alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                
-                {/* Play Button for Videos */}
-                {item.type === 'video' && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 group-hover:scale-110 transition-transform duration-300">
-                      <Play className="w-8 h-8 text-white ml-1" />
+                  {/* Modern Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                  {/* View Button */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform group-hover:scale-110">
+                    <div className="bg-white/20 backdrop-blur-lg rounded-full p-4 border border-white/30 shadow-lg">
+                      <Images className="w-8 h-8 text-white" />
                     </div>
+                  </div>
+                </div>
+
+                {/* Caption */}
+                {img.caption && (
+                  <div className="p-6">
+                    <p className="text-gray-800 font-semibold text-base md:text-lg leading-relaxed line-clamp-2">
+                      {img.caption}
+                    </p>
                   </div>
                 )}
 
-                {/* Type Badge */}
-                <div className="absolute top-4 right-4">
-                  <div className={`p-2 rounded-full shadow-lg ${
-                    item.type === 'video' 
-                      ? 'bg-red-500/80 backdrop-blur-sm' 
-                      : 'bg-blue-500/80 backdrop-blur-sm'
-                  }`}>
-                    {item.type === 'video' ? (
-                      <Play className="w-4 h-4 text-white" />
-                    ) : (
-                      <ImageIcon className="w-4 h-4 text-white" />
-                    )}
+                {/* Tag */}
+                {img.tag && (
+                  <div className="absolute top-4 left-4">
+                    <span className="inline-block px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-bold rounded-full shadow-lg backdrop-blur-sm">
+                      {img.tag}
+                    </span>
                   </div>
-                </div>
-              </div>
+                )}
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
 
-              {/* Content */}
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors duration-300">
-                  {item.title}
-                </h3>
-                <p className="text-gray-600 leading-relaxed text-sm">
-                  {item.description}
-                </p>
-                <div className="mt-4">
-                  <span className="inline-block px-3 py-1 bg-gradient-to-r from-yellow-500/20 to-red-500/20 text-gray-700 text-xs font-medium rounded-full border border-gray-200/50 capitalize">
-                    {item.category}
-                  </span>
-                </div>
+        {/* Enhanced Lightbox Modal */}
+        <AnimatePresence>
+          {selectedImage && (
+            <motion.div
+              className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeLightbox}
+            >
+              {/* Close Button */}
+              <button
+                onClick={closeLightbox}
+                className="absolute top-8 right-8 z-60 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors duration-200 backdrop-blur-sm"
+                aria-label="Close gallery"
+              >
+                <X className="w-8 h-8 text-white" />
+              </button>
+
+              {/* Navigation Buttons */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigateImage('prev');
+                    }}
+                    className="absolute left-8 top-1/2 -translate-y-1/2 z-60 p-4 bg-white/10 hover:bg-white/20 rounded-full transition-colors duration-200 backdrop-blur-sm"
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft className="w-8 h-8 text-white" />
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigateImage('next');
+                    }}
+                    className="absolute right-8 top-1/2 -translate-y-1/2 z-60 p-4 bg-white/10 hover:bg-white/20 rounded-full transition-colors duration-200 backdrop-blur-sm"
+                    aria-label="Next image"
+                  >
+                    <ChevronRight className="w-8 h-8 text-white" />
+                  </button>
+                </>
+              )}
+
+              {/* Image Container */}
+              <motion.div
+                className="relative max-w-6xl max-h-[85vh] mx-auto"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <img
+                  src={selectedImage.image_url}
+                  alt={selectedImage.caption || 'Gallery image'}
+                  className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
+                />
+
+                {/* Caption in Lightbox */}
+                {selectedImage.caption && (
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-8 rounded-b-2xl backdrop-blur-sm">
+                    <p className="text-white text-xl font-semibold leading-relaxed">
+                      {selectedImage.caption}
+                    </p>
+                  </div>
+                )}
+              </motion.div>
+
+              {/* Image Counter */}
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
+                <span className="text-white text-lg font-semibold">
+                  {currentIndex + 1} / {images.length}
+                </span>
               </div>
             </motion.div>
-          ))}
-        </div>
-
-        {/* Call to Action */}
-        <motion.div
-          className="text-center"
-          variants={itemVariants}
-        >
-          <div className="bg-gradient-to-r from-yellow-500 to-red-500 rounded-3xl p-8 md:p-12 shadow-2xl">
-            <Award className="w-16 h-16 text-white mx-auto mb-6" />
-            <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Create Your Own Success Story
-            </h3>
-            <p className="text-xl text-yellow-100 mb-8 max-w-2xl mx-auto">
-              Join our academy and become part of our gallery of champions. Your journey to greatness starts with a single step.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="#contact"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-red-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-              >
-                <span>Join Our Academy</span>
-                <Users className="w-5 h-5" />
-              </a>
-              <a
-                href="https://www.youtube.com/@ghatakgsai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-transparent border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:text-red-600 transition-all duration-300 transform hover:scale-105"
-              >
-                <Play className="w-5 h-5" />
-                <span>Watch Videos</span>
-              </a>
-            </div>
-          </div>
-        </motion.div>
-      </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </section>
   );
 }
