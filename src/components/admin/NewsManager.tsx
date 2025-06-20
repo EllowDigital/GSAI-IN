@@ -8,7 +8,6 @@ import NewsEditorModal from './NewsEditorModal';
 import NewsDeleteDialog from './NewsDeleteDialog';
 import { exportNewsToCsv } from '@/utils/exportToCsv';
 import { Tables } from '@/integrations/supabase/types';
-import BlogsCards from './blogs/BlogsCards';
 import RefreshButton from './RefreshButton';
 import { toast } from '@/hooks/use-toast';
 
@@ -120,15 +119,6 @@ export default function NewsManager() {
 
   const isDeleting = (id: string) => deletingIds.has(id);
 
-  // Transform news to match blog structure for reusing BlogsCards
-  const transformedNews = news.map(item => ({
-    id: item.id,
-    title: item.title,
-    description: item.short_description || '',
-    image_url: item.image_url,
-    published_at: item.created_at,
-  }));
-
   return (
     <div className="w-full px-2 sm:px-4">
       {/* Header and Controls */}
@@ -162,18 +152,61 @@ export default function NewsManager() {
         <div className="flex justify-center py-8">
           <div className="animate-spin h-8 w-8 border-4 border-orange-400 rounded-full border-t-transparent" />
         </div>
-      ) : transformedNews.length === 0 ? (
+      ) : news.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
           No news articles found.
         </div>
       ) : (
-        <BlogsCards
-          blogs={transformedNews}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          isDeleting={isDeleting}
-          formatDate={formatDate}
-        />
+        <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {news.map((item) => (
+            <div key={item.id} className="bg-white rounded-lg shadow-md border p-4">
+              {item.image_url && (
+                <img
+                  src={item.image_url}
+                  alt={item.title}
+                  className="w-full h-32 object-cover rounded-md mb-3"
+                />
+              )}
+              <h3 className="font-semibold text-gray-800 mb-2 line-clamp-2">
+                {item.title}
+              </h3>
+              <p className="text-sm text-gray-600 mb-3 line-clamp-3">
+                {item.short_description}
+              </p>
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-xs text-gray-500">
+                  {formatDate(item.created_at)}
+                </span>
+                <span className={`px-2 py-1 rounded-full text-xs ${
+                  item.status === 'Published' 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-yellow-100 text-yellow-800'
+                }`}>
+                  {item.status}
+                </span>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleEdit(item)}
+                  className="flex-1"
+                >
+                  Edit
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => handleDelete(item.id)}
+                  disabled={isDeleting(item.id)}
+                  className="flex-1"
+                >
+                  {isDeleting(item.id) ? "Deleting..." : "Delete"}
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
 
       {/* Modals */}

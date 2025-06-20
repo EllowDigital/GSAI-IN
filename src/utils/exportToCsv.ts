@@ -1,3 +1,4 @@
+
 /**
  * Utility to export data arrays to CSV for Admin Dashboard
  */
@@ -26,6 +27,16 @@ type StudentItem = {
   join_date?: string;
   parent_name?: string;
   parent_contact?: string;
+};
+
+type NewsItem = {
+  id?: string;
+  title?: string;
+  short_description?: string;
+  date?: string;
+  status?: string;
+  image_url?: string;
+  created_at?: string;
 };
 
 /**
@@ -117,4 +128,32 @@ export function exportStudentsToCsv(students: StudentItem[]) {
 
   const csvContent = [headers.join(','), ...rows].join('\n');
   triggerCsvDownload(csvContent, `students.csv`);
+}
+
+/**
+ * Exports news records to CSV
+ */
+export function exportNewsToCsv(news: NewsItem[]) {
+  if (!Array.isArray(news) || news.length === 0) return;
+
+  const headers = [
+    'Title',
+    'Short Description',
+    'Date',
+    'Status',
+    'Created At',
+  ];
+
+  const rows = news.map((item) =>
+    [
+      escapeCSV(item.title),
+      escapeCSV(item.short_description),
+      escapeCSV(item.date),
+      escapeCSV(item.status),
+      escapeCSV(item.created_at),
+    ].join(',')
+  );
+
+  const csvContent = [headers.join(','), ...rows].join('\n');
+  triggerCsvDownload(csvContent, `news.csv`);
 }
