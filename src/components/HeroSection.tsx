@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ArrowDownCircle } from 'lucide-react';
 import { FaInstagram } from 'react-icons/fa';
 
@@ -15,13 +15,21 @@ const bgImages = [
   '/assets/slider/slider5.png',
 ];
 
-const fadeVariants = {
+const fadeVariants: Variants = {
   initial: { opacity: 0, scale: 1.05 },
-  animate: { opacity: 1, scale: 1, transition: { duration: 1.2, ease: "easeOut" } },
-  exit: { opacity: 0, scale: 0.95, transition: { duration: 1, ease: "easeOut" } },
+  animate: { 
+    opacity: 1, 
+    scale: 1,
+    transition: { duration: 1.2, ease: "easeOut" }
+  },
+  exit: { 
+    opacity: 0, 
+    scale: 0.95,
+    transition: { duration: 1, ease: "easeOut" }
+  },
 };
 
-const textVariants = {
+const textVariants: Variants = {
   initial: { opacity: 0, y: 40 },
   animate: {
     opacity: 1,
@@ -30,7 +38,7 @@ const textVariants = {
   },
 };
 
-const staggerContainer = {
+const staggerContainer: Variants = {
   animate: {
     transition: {
       staggerChildren: 0.25,
