@@ -1,5 +1,8 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Dialog,
   DialogContent,
@@ -10,8 +13,11 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/hooks/use-toast';
 import NewsImageUploader from './NewsImageUploader';
+import { Tables } from '@/integrations/supabase/types';
+
+type NewsRow = Tables<'news'>;
 
 type NewsEditorForm = {
   title: string;
@@ -24,9 +30,7 @@ type NewsEditorForm = {
 type Props = {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  onSubmit: (data: NewsEditorForm) => Promise<void>;
-  initialData?: NewsEditorForm | null;
-  loading: boolean;
+  editingNews?: NewsRow | null;
 };
 
 const requiredMsg = 'This field is required';
@@ -34,17 +38,17 @@ const requiredMsg = 'This field is required';
 export default function NewsEditorModal({
   open,
   onOpenChange,
-  onSubmit,
-  initialData,
-  loading,
+  editingNews,
 }: Props) {
+  const queryClient = useQueryClient();
+  
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm<NewsEditorForm>({
-    defaultValues: initialData ?? {
+    defaultValues: {
       title: '',
       short_description: '',
       date: '',
@@ -53,14 +57,18 @@ export default function NewsEditorModal({
     },
   });
 
-  const [imageUrl, setImageUrl] = React.useState<string | null>(
-    initialData?.image_url ?? null
-  );
+  const [imageUrl, setImageUrl] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (initialData) {
-      reset(initialData);
-      setImageUrl(initialData.image_url ?? null);
+    if (editingNews) {
+      reset({
+        title: editingNews.title,
+        short_description: editingNews.short_description,
+        date: editingNews.date,
+        status: editingNews.status,
+        image_url: editingNews.image_url,
+      });
+      setImageUrl(editingNews.image_url);
     } else {
       reset({
         title: '',
@@ -71,29 +79,66 @@ export default function NewsEditorModal({
       });
       setImageUrl(null);
     }
-  }, [initialData, open, reset]);
+  }, [editingNews, open, reset]);
+
+  const mutation = useMutation({
+    mutationFn: async (data: NewsEditorForm) => {
+      const newsData = {
+        ...data,
+        image_url: imageUrl,
+      };
+
+      if (editingNews) {
+        const { error } = await supabase
+          .from('news')
+          .update(newsData)
+          .eq('id', editingNews.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('news')
+          .insert([newsData]);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['news'] });
+      toast({
+        title: "Success",
+        description: editingNews ? "News updated successfully" : "News created successfully",
+      });
+      onOpenChange(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    },
+  });
 
   async function onFormSubmit(data: NewsEditorForm) {
-    await onSubmit({ ...data, image_url: imageUrl ?? null });
+    mutation.mutate(data);
   }
 
   return (
     <Dialog
       open={open}
       onOpenChange={(open) => {
-        if (!loading) onOpenChange(open);
+        if (!mutation.isPending) onOpenChange(open);
       }}
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{initialData ? 'Edit News' : 'Add News'}</DialogTitle>
+          <DialogTitle>{editingNews ? 'Edit News' : 'Add News'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-2">
           <div>
             <label className="block mb-1 font-medium">Title</label>
             <Input
               {...register('title', { required: requiredMsg })}
-              disabled={loading}
+              disabled={mutation.isPending}
             />
             {errors.title && (
               <div className="text-red-500 text-xs mt-1">
@@ -105,7 +150,7 @@ export default function NewsEditorModal({
             <label className="block mb-1 font-medium">Short Description</label>
             <Input
               {...register('short_description', { required: requiredMsg })}
-              disabled={loading}
+              disabled={mutation.isPending}
             />
             {errors.short_description && (
               <div className="text-red-500 text-xs mt-1">
@@ -118,7 +163,7 @@ export default function NewsEditorModal({
             <Input
               type="date"
               {...register('date', { required: requiredMsg })}
-              disabled={loading}
+              disabled={mutation.isPending}
             />
             {errors.date && (
               <div className="text-red-500 text-xs mt-1">
@@ -131,7 +176,7 @@ export default function NewsEditorModal({
             <select
               {...register('status', { required: requiredMsg })}
               className="border rounded-md px-2 py-1 w-full"
-              disabled={loading}
+              disabled={mutation.isPending}
             >
               <option value="Published">Published</option>
               <option value="Draft">Draft</option>
@@ -147,20 +192,20 @@ export default function NewsEditorModal({
             <NewsImageUploader
               imageUrl={imageUrl}
               onUpload={setImageUrl}
-              disabled={loading}
+              disabled={mutation.isPending}
             />
           </div>
           <DialogFooter className="flex justify-end gap-2 pt-4">
             <DialogClose asChild>
-              <Button variant="secondary" type="button" disabled={loading}>
+              <Button variant="secondary" type="button" disabled={mutation.isPending}>
                 Cancel
               </Button>
             </DialogClose>
-            <Button variant="default" type="submit" disabled={loading}>
-              {loading ? (
+            <Button variant="default" type="submit" disabled={mutation.isPending}>
+              {mutation.isPending ? (
                 <span className="animate-spin inline-block w-4 h-4 border-t-2 border-white border-solid rounded-full mr-2" />
               ) : null}
-              {initialData ? 'Update' : 'Create'}
+              {editingNews ? 'Update' : 'Create'}
             </Button>
           </DialogFooter>
         </form>
