@@ -113,7 +113,7 @@ export default function NewsEditorModal({
       toast({
         title: "Error",
         description: error.message,
-        variant: "destructive"
+        variant: "error"
       });
     },
   });
