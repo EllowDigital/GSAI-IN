@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
@@ -53,9 +54,9 @@ export default function StudentManager() {
   };
 
   const renderContent = () => {
-    const isMdUp = isClient && window.innerWidth >= 768;
+    const isLgUp = isClient && window.innerWidth >= 1024;
 
-    if (isMdUp) {
+    if (isLgUp) {
       return (
         <StudentsTable
           students={filteredStudents}
@@ -78,14 +79,15 @@ export default function StudentManager() {
   };
 
   return (
-    <div className="max-w-[98vw] mx-auto w-full">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-3">
-        <div className="w-full">
+    <div className="max-w-full mx-auto w-full px-2 sm:px-4">
+      {/* Summary and Export */}
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 mb-4">
+        <div className="w-full lg:flex-1">
           <StudentSummaryCard students={students} loading={loading} />
         </div>
         <button
           onClick={() => exportStudentsToCsv(filteredStudents)}
-          className="border border-blue-400 px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-medium hover:bg-blue-200 transition text-xs sm:text-sm ml-0 md:ml-auto min-w-[120px]"
+          className="border border-blue-400 px-3 md:px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-medium hover:bg-blue-200 transition text-xs sm:text-sm w-full lg:w-auto lg:min-w-[120px]"
           disabled={
             !Array.isArray(filteredStudents) || filteredStudents.length === 0
           }
@@ -94,11 +96,12 @@ export default function StudentManager() {
           Download CSV
         </button>
       </div>
+
       {/* Search/Add */}
-      <div className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-4 mb-4 w-full">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 w-full">
         <input
           type="text"
-          className="border rounded px-2 py-2 text-sm w-full xs:w-auto flex-1"
+          className="border rounded-lg px-3 py-2 text-sm w-full sm:flex-1"
           placeholder="Search by Name or Program"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -106,16 +109,18 @@ export default function StudentManager() {
         <Button
           onClick={handleAdd}
           variant="default"
-          className="flex gap-2 rounded-full w-full xs:w-auto justify-center"
+          className="flex gap-2 rounded-full w-full sm:w-auto justify-center px-4 md:px-6"
         >
-          <Plus size={18} />{' '}
-          <span className="hidden xs:inline">Add Student</span>
-          <span className="inline xs:hidden">Add</span>
+          <Plus size={18} />
+          <span className="hidden sm:inline">Add Student</span>
+          <span className="inline sm:hidden">Add</span>
         </Button>
       </div>
 
       {/* Table or Cards */}
-      {renderContent()}
+      <div className="w-full overflow-hidden">
+        {renderContent()}
+      </div>
 
       {/* Add/Edit Modal */}
       {showModal && (

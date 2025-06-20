@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -95,20 +96,20 @@ export default function AdvancedStats() {
   const { stats, loading } = useAdvancedStats();
 
   return (
-    <section>
-      <h2 className="text-xl font-bold mb-2 mt-6 text-gray-700">
+    <section className="px-2 sm:px-4">
+      <h2 className="text-lg md:text-xl font-bold mb-3 md:mb-4 mt-4 md:mt-6 text-gray-700">
         Advanced Stats
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Fees */}
         <StatCard
-          icon={<DollarSign className="w-5 h-5" />}
+          icon={<DollarSign className="w-4 h-4 md:w-5 md:h-5" />}
           title="Fees Details"
           color="text-green-700"
           loading={loading}
         >
-          <ul className="text-sm space-y-1">
+          <ul className="text-xs md:text-sm space-y-1">
             <li>
               <b>Total Records:</b> {stats.total ?? '-'}
             </li>
@@ -126,30 +127,30 @@ export default function AdvancedStats() {
 
         {/* Students */}
         <StatCard
-          icon={<Users className="w-5 h-5" />}
+          icon={<Users className="w-4 h-4 md:w-5 md:h-5" />}
           title="Students Breakdown"
           color="text-blue-700"
           loading={loading}
         >
           {stats.total === 0 ? (
-            <p>No students found.</p>
+            <p className="text-xs md:text-sm">No students found.</p>
           ) : (
-            <ul className="text-sm space-y-1">
+            <ul className="text-xs md:text-sm space-y-1">
               <li>
                 <b>Total Students:</b> {stats.total}
               </li>
               <li>
                 <b>By Program:</b>
               </li>
-              <ul className="ml-4 list-disc">
+              <ul className="ml-3 md:ml-4 list-disc">
                 {stats.byProgram && Object.keys(stats.byProgram).length > 0 ? (
                   Object.entries(stats.byProgram).map(([program, count]) => (
-                    <li key={program}>
+                    <li key={program} className="text-xs">
                       {program}: {count}
                     </li>
                   ))
                 ) : (
-                  <li>No programs found.</li>
+                  <li className="text-xs">No programs found.</li>
                 )}
               </ul>
             </ul>
@@ -158,57 +159,67 @@ export default function AdvancedStats() {
 
         {/* Blogs */}
         <StatCard
-          icon={<BookOpen className="w-5 h-5" />}
+          icon={<BookOpen className="w-4 h-4 md:w-5 md:h-5" />}
           title="Latest Blogs"
           color="text-pink-700"
           loading={loading}
         >
-          <ol className="list-decimal ml-4 text-sm">
+          <ol className="list-decimal ml-3 md:ml-4 text-xs md:text-sm">
             {stats.latestBlogs?.length ? (
-              stats.latestBlogs.map((blog, idx) => <li key={idx}>{blog}</li>)
+              stats.latestBlogs.map((blog, idx) => (
+                <li key={idx} className="text-xs">
+                  {blog}
+                </li>
+              ))
             ) : (
-              <li>No blogs found.</li>
+              <li className="text-xs">No blogs found.</li>
             )}
           </ol>
         </StatCard>
 
         {/* News */}
         <StatCard
-          icon={<Newspaper className="w-5 h-5" />}
+          icon={<Newspaper className="w-4 h-4 md:w-5 md:h-5" />}
           title="Latest News"
           color="text-yellow-700"
           loading={loading}
         >
-          <ol className="list-decimal ml-4 text-sm">
+          <ol className="list-decimal ml-3 md:ml-4 text-xs md:text-sm">
             {stats.latestNews?.length ? (
-              stats.latestNews.map((news, idx) => <li key={idx}>{news}</li>)
+              stats.latestNews.map((news, idx) => (
+                <li key={idx} className="text-xs">
+                  {news}
+                </li>
+              ))
             ) : (
-              <li>No news found.</li>
+              <li className="text-xs">No news found.</li>
             )}
           </ol>
         </StatCard>
 
         {/* Gallery */}
         <StatCard
-          icon={<Image className="w-5 h-5" />}
+          icon={<Image className="w-4 h-4 md:w-5 md:h-5" />}
           title="Gallery Stats"
           color="text-indigo-700"
           loading={loading}
         >
-          <p>
-            <span className="font-bold text-lg">{stats.galleryCount ?? 0}</span>{' '}
+          <p className="text-xs md:text-sm">
+            <span className="font-bold text-base md:text-lg">
+              {stats.galleryCount ?? 0}
+            </span>{' '}
             images
           </p>
         </StatCard>
 
         {/* Events */}
         <StatCard
-          icon={<Calendar className="w-5 h-5" />}
+          icon={<Calendar className="w-4 h-4 md:w-5 md:h-5" />}
           title="Events"
           color="text-orange-700"
           loading={loading}
         >
-          <ul className="text-sm space-y-1">
+          <ul className="text-xs md:text-sm space-y-1">
             <li>
               <b>Total Events:</b> {stats.eventCount ?? 0}
             </li>
@@ -237,15 +248,19 @@ function StatCard({
   children: React.ReactNode;
 }) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className={`flex items-center gap-2 ${color}`}>
+    <Card className="w-full">
+      <CardHeader className="pb-2 md:pb-3">
+        <CardTitle className={`flex items-center gap-2 ${color} text-sm md:text-base`}>
           {icon}
           {title}
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        {loading ? <p className="text-sm text-muted">Loading...</p> : children}
+      <CardContent className="pt-0">
+        {loading ? (
+          <p className="text-xs md:text-sm text-muted-foreground">Loading...</p>
+        ) : (
+          children
+        )}
       </CardContent>
     </Card>
   );

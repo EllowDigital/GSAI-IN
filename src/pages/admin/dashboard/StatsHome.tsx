@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -70,7 +71,7 @@ const cardsConfig: CardConfig[] = [
 const fetchDashboardCounts = async () => {
   const countPromises = cardsConfig.map(async ({ key, table }) => {
     const { count, error } = await supabase
-      .from(table)
+      .from(table as any)
       .select('id', { count: 'exact', head: true });
 
     if (error) {
@@ -113,13 +114,13 @@ export default function StatsHome() {
   }));
 
   return (
-    <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 animate-fade-in">
+    <div className="max-w-7xl mx-auto w-full px-2 sm:px-4 lg:px-6 xl:px-8 py-4 md:py-6 animate-fade-in">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-extrabold tracking-tight text-yellow-600 drop-shadow">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-yellow-600 drop-shadow">
           Dashboard Overview
         </h1>
-        <p className="mt-1 text-gray-500 font-medium">
+        <p className="mt-1 text-sm md:text-base text-gray-500 font-medium">
           Admin panel analytics and quick stats.
         </p>
       </div>
@@ -132,11 +133,11 @@ export default function StatsHome() {
       />
 
       {/* Charts & Advanced Panel */}
-      <div className="mt-10 grid grid-cols-1 lg:grid-cols-5 gap-8">
-        <div className="lg:col-span-3">
+      <div className="mt-8 md:mt-10 grid grid-cols-1 xl:grid-cols-5 gap-6 md:gap-8">
+        <div className="xl:col-span-3">
           <AnalyticsChart analyticsData={analyticsData} />
         </div>
-        <div className="lg:col-span-2">
+        <div className="xl:col-span-2">
           <AdvancedPanel />
         </div>
       </div>
