@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -23,23 +24,23 @@ export default function FeesCards({
   }
 
   return (
-    <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
       {rows.map(({ student, fee }) => {
         const status = fee ? getFeeStatus(fee) : 'unpaid';
         const [statusText, statusClass] = getStatusTextAndColor(status);
         return (
-          <Card key={student.id} className="rounded-xl shadow-lg bg-white p-3">
+          <Card key={student.id} className="rounded-xl shadow-lg bg-white p-3 hover:shadow-xl transition-shadow duration-200">
             <CardContent className="p-0 flex flex-col gap-2">
               <div className="flex justify-between items-start gap-2">
-                <div className="flex-1">
-                  <h4 className="font-bold text-base text-gray-800">
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-bold text-base text-gray-800 truncate">
                     {student.name}
                   </h4>
-                  <p className="text-xs text-gray-500">{student.program}</p>
+                  <p className="text-xs text-gray-500 truncate">{student.program}</p>
                 </div>
                 <span
                   className={clsx(
-                    'rounded-full px-2 py-0.5 font-bold text-[11px] capitalize self-start',
+                    'rounded-full px-2 py-0.5 font-bold text-[11px] capitalize self-start whitespace-nowrap',
                     statusClass
                   )}
                 >
@@ -47,45 +48,55 @@ export default function FeesCards({
                 </span>
               </div>
               <div className="text-xs space-y-1 text-gray-600 border-t pt-2">
-                <p>
-                  <strong>Month:</strong>{' '}
-                  {fee
-                    ? `${String(fee.month).padStart(2, '0')}/${fee.year}`
-                    : '-'}
-                </p>
-                <p>
-                  <strong>Fee:</strong> ₹
-                  {fee ? fee.monthly_fee : student.default_monthly_fee}
-                </p>
-                <p>
-                  <strong>Paid:</strong> {fee ? `₹${fee.paid_amount}` : '-'}
-                </p>
-                <p>
-                  <strong>Balance:</strong> {fee ? `₹${fee.balance_due}` : '-'}
-                </p>
+                <div className="flex justify-between">
+                  <strong>Month:</strong>
+                  <span>
+                    {fee
+                      ? `${String(fee.month).padStart(2, '0')}/${fee.year}`
+                      : '-'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <strong>Fee:</strong>
+                  <span>₹{fee ? fee.monthly_fee : student.default_monthly_fee}</span>
+                </div>
+                <div className="flex justify-between">
+                  <strong>Paid:</strong>
+                  <span>{fee ? `₹${fee.paid_amount}` : '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <strong>Balance:</strong>
+                  <span>{fee ? `₹${fee.balance_due}` : '-'}</span>
+                </div>
               </div>
-              <div className="flex justify-end items-center gap-2 border-t pt-2 mt-1">
+              <div className="flex justify-between items-center gap-2 border-t pt-2 mt-1">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex-1 rounded-full text-xs"
+                  className="flex-1 rounded-full text-xs px-2 py-1 h-8"
                   onClick={() => onShowHistory(student)}
                 >
-                  <History className="w-3 h-3 mr-1" /> History
+                  <History className="w-3 h-3 mr-1" />
+                  <span className="hidden sm:inline">History</span>
+                  <span className="inline sm:hidden">Hist</span>
                 </Button>
                 <Button
                   variant={fee ? 'secondary' : 'default'}
                   size="sm"
                   onClick={() => onEditFee({ student, fee })}
-                  className="flex-1 rounded-full text-xs"
+                  className="flex-1 rounded-full text-xs px-2 py-1 h-8"
                 >
                   {fee ? (
                     <>
-                      <Edit className="w-3 h-3 mr-1" /> Edit
+                      <Edit className="w-3 h-3 mr-1" />
+                      <span className="hidden sm:inline">Edit</span>
+                      <span className="inline sm:hidden">Edit</span>
                     </>
                   ) : (
                     <>
-                      <Plus className="w-3 h-3 mr-1" /> Add
+                      <Plus className="w-3 h-3 mr-1" />
+                      <span className="hidden sm:inline">Add</span>
+                      <span className="inline sm:hidden">Add</span>
                     </>
                   )}
                 </Button>
