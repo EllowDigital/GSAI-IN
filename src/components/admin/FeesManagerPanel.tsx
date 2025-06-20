@@ -136,7 +136,8 @@ export default function FeesManagerPanel() {
         </div>
       );
     }
-    if (isMobile) {
+    // Use cards for mobile and small tablets, table for larger screens
+    if (isMobile || window.innerWidth < 1024) {
       return (
         <FeesCards
           rows={rows}
@@ -158,11 +159,11 @@ export default function FeesManagerPanel() {
   };
 
   return (
-    <div className="w-full px-2 sm:px-4">
+    <div className="w-full px-2 sm:px-4 lg:px-6">
       {/* Summary and Controls */}
-      <div className="flex flex-col gap-3 sm:gap-4 mb-4">
+      <div className="flex flex-col gap-3 sm:gap-4 mb-4 lg:mb-6">
         <FeeSummaryCard fees={fees || []} loading={loadingFees} />
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 animate-fade-in">
+        <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 lg:gap-4 animate-fade-in">
           <div className="flex-1">
             <FeesFilterBar
               filterMonth={filterMonth}
@@ -175,15 +176,15 @@ export default function FeesManagerPanel() {
               setFilterName={setFilterName}
             />
           </div>
-          <div className="flex gap-3 w-full lg:w-auto">
+          <div className="flex gap-3 w-full xl:w-auto">
             <RefreshButton 
               onRefresh={handleRefresh}
               isLoading={isLoading}
-              className="flex-1 lg:flex-none"
+              className="flex-1 xl:flex-none min-w-[100px]"
             />
             <button
               onClick={() => exportFeesToCsv(rows, filterMonth, filterYear)}
-              className="border border-yellow-400 px-3 md:px-4 py-2 rounded-full bg-yellow-50 text-yellow-700 font-medium hover:bg-yellow-200 transition text-sm flex-1 lg:flex-none lg:min-w-[120px]"
+              className="border border-yellow-400 px-3 md:px-4 py-2 rounded-full bg-yellow-50 text-yellow-700 font-medium hover:bg-yellow-200 transition text-sm flex-1 xl:flex-none xl:min-w-[120px]"
               disabled={!Array.isArray(rows) || rows.length === 0}
             >
               Export CSV

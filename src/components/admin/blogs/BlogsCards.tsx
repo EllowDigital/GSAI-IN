@@ -1,18 +1,28 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Edit, Trash2 } from 'lucide-react';
-import { Tables } from '@/integrations/supabase/types';
 
-type Blog = Tables<'blogs'>;
+type Blog = {
+  id: string;
+  title: string;
+  description?: string | null;
+  content: string;
+  published_at?: string | null;
+  updated_at?: string | null;
+  created_at?: string | null;
+  created_by?: string | null;
+  image_url?: string | null;
+};
 
-interface BlogsCardsProps {
+type Props = {
   blogs: Blog[];
   onEdit: (blog: Blog) => void;
-  onDelete: (blogId: string) => void;
-  isDeleting: (blogId: string) => boolean;
-  formatDate: (date: string) => string;
-}
+  onDelete: (id: string) => void;
+  isDeleting: (id: string) => boolean;
+  formatDate: (date: string | null) => string;
+};
 
 export default function BlogsCards({
   blogs,
@@ -20,61 +30,59 @@ export default function BlogsCards({
   onDelete,
   isDeleting,
   formatDate,
-}: BlogsCardsProps) {
+}: Props) {
   return (
-    <div className="grid xs:grid-cols-2 gap-4 sm:gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
       {blogs.map((blog) => (
-        <Card
-          key={blog.id}
-          className="rounded-xl shadow-lg bg-white flex flex-col gap-3 p-4 relative"
-        >
-          {blog.image_url ? (
-            <img
-              src={blog.image_url}
-              alt={blog.title}
-              className="w-full h-28 xs:h-28 sm:h-32 object-cover rounded-md shadow mb-2"
-            />
-          ) : (
-            <div className="w-full h-28 xs:h-28 sm:h-32 bg-yellow-50 text-yellow-300 rounded-md flex items-center justify-center mb-2">
-              No Image
-            </div>
-          )}
-          <div className="flex items-start gap-2 justify-between mb-1 mt-1">
-            <div>
-              <div className="font-bold text-base leading-tight mb-0.5 text-gray-800 truncate">
+        <Card key={blog.id} className="rounded-xl shadow-lg bg-white hover:shadow-xl transition-shadow duration-200">
+          <CardContent className="p-4">
+            {blog.image_url && (
+              <img
+                src={blog.image_url}
+                alt={blog.title}
+                className="w-full h-32 sm:h-40 object-cover rounded-lg mb-3"
+              />
+            )}
+            <div className="space-y-2">
+              <h3 className="font-bold text-lg text-gray-800 line-clamp-2 leading-tight">
                 {blog.title}
+              </h3>
+              {blog.description && (
+                <p className="text-sm text-gray-600 line-clamp-3">
+                  {blog.description}
+                </p>
+              )}
+              <div className="flex justify-between items-center text-xs text-gray-500 border-t pt-2">
+                <span>Published</span>
+                <span>{formatDate(blog.published_at)}</span>
               </div>
-              <div className="text-xs text-gray-500 mb-1">
-                {blog.published_at ? formatDate(blog.published_at) : '--'}
+              <div className="flex justify-between items-center text-xs text-gray-500">
+                <span>Updated</span>
+                <span>{formatDate(blog.updated_at)}</span>
               </div>
-              <div className="text-sm text-gray-700">{blog.description}</div>
+              <div className="flex gap-2 pt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onEdit(blog)}
+                  className="flex-1 rounded-full text-xs"
+                >
+                  <Edit className="w-3 h-3 mr-1" />
+                  Edit
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => onDelete(blog.id)}
+                  disabled={isDeleting(blog.id)}
+                  className="flex-1 rounded-full text-xs"
+                >
+                  <Trash2 className="w-3 h-3 mr-1" />
+                  {isDeleting(blog.id) ? 'Deleting...' : 'Delete'}
+                </Button>
+              </div>
             </div>
-            <div className="flex flex-col gap-2 ml-auto">
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full mb-2"
-                onClick={() => onEdit(blog)}
-                aria-label="Edit"
-              >
-                <Edit className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="destructive"
-                size="icon"
-                className="rounded-full"
-                onClick={() => onDelete(blog.id)}
-                aria-label="Delete"
-                disabled={isDeleting(blog.id)}
-              >
-                {isDeleting(blog.id) ? (
-                  <div className="animate-spin border-2 border-t-transparent border-white rounded-full w-4 h-4" />
-                ) : (
-                  <Trash2 className="w-4 h-4" />
-                )}
-              </Button>
-            </div>
-          </div>
+          </CardContent>
         </Card>
       ))}
     </div>
