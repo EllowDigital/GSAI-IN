@@ -14,6 +14,7 @@ import {
 import StatsCards from '@/components/admin/dashboard/StatsCards';
 import AnalyticsChart from '@/components/admin/dashboard/AnalyticsChart';
 import AdvancedPanel from '@/components/admin/dashboard/AdvancedPanel';
+import RefreshButton from '@/components/admin/RefreshButton';
 
 type CardConfig = {
   key: string;
@@ -113,16 +114,26 @@ export default function StatsHome() {
     count: counts?.[key] ?? 0,
   }));
 
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ['dashboardCounts'] });
+  };
+
   return (
     <div className="max-w-7xl mx-auto w-full px-2 sm:px-4 lg:px-6 xl:px-8 py-4 md:py-6 animate-fade-in">
       {/* Header */}
-      <div className="mb-6 md:mb-8">
-        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-yellow-600 drop-shadow">
-          Dashboard Overview
-        </h1>
-        <p className="mt-1 text-sm md:text-base text-gray-500 font-medium">
-          Admin panel analytics and quick stats.
-        </p>
+      <div className="mb-6 md:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-yellow-600 drop-shadow">
+            Dashboard Overview
+          </h1>
+          <p className="mt-1 text-sm md:text-base text-gray-500 font-medium">
+            Admin panel analytics and quick stats.
+          </p>
+        </div>
+        <RefreshButton 
+          onRefresh={handleRefresh}
+          isLoading={isLoadingCounts}
+        />
       </div>
 
       {/* Stats Cards */}

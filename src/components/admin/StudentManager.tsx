@@ -9,6 +9,7 @@ import { exportStudentsToCsv } from '@/utils/exportToCsv';
 import StudentsTable from './students/StudentsTable';
 import StudentsCards from './students/StudentsCards';
 import { useStudents } from '@/hooks/useStudents';
+import RefreshButton from './RefreshButton';
 
 // --- All required columns now reflected ---
 type StudentRow = {
@@ -32,6 +33,7 @@ export default function StudentManager() {
     setSearch,
     sortConfig,
     requestSort,
+    refetchStudents,
   } = useStudents();
 
   const [showModal, setShowModal] = useState(false);
@@ -51,6 +53,22 @@ export default function StudentManager() {
   const handleAdd = () => {
     setEditingStudent(null);
     setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    // Auto-refresh after modal close
+    setTimeout(() => {
+      refetchStudents?.();
+    }, 100);
+  };
+
+  const handleDeleteClose = () => {
+    setDeleteStudent(null);
+    // Auto-refresh after delete
+    setTimeout(() => {
+      refetchStudents?.();
+    }, 100);
   };
 
   const renderContent = () => {
@@ -85,16 +103,23 @@ export default function StudentManager() {
         <div className="w-full lg:flex-1">
           <StudentSummaryCard students={students} loading={loading} />
         </div>
-        <button
-          onClick={() => exportStudentsToCsv(filteredStudents)}
-          className="border border-blue-400 px-3 md:px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-medium hover:bg-blue-200 transition text-xs sm:text-sm w-full lg:w-auto lg:min-w-[120px]"
-          disabled={
-            !Array.isArray(filteredStudents) || filteredStudents.length === 0
-          }
-          title="Download as CSV"
-        >
-          Download CSV
-        </button>
+        <div className="flex gap-3 w-full lg:w-auto">
+          <RefreshButton 
+            onRefresh={refetchStudents}
+            isLoading={loading}
+            className="flex-1 lg:flex-none"
+          />
+          <button
+            onClick={() => exportStudentsToCsv(filteredStudents)}
+            className="border border-blue-400 px-3 md:px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-medium hover:bg-blue-200 transition text-xs sm:text-sm flex-1 lg:flex-none lg:min-w-[120px]"
+            disabled={
+              !Array.isArray(filteredStudents) || filteredStudents.length === 0
+            }
+            title="Download as CSV"
+          >
+            Download CSV
+          </button>
+        </div>
       </div>
 
       {/* Search/Add */}
@@ -126,7 +151,7 @@ export default function StudentManager() {
       {showModal && (
         <StudentModal
           open={showModal}
-          onOpenChange={setShowModal}
+          onOpenChange={handleModalClose}
           student={editingStudent}
         />
       )}
@@ -134,7 +159,7 @@ export default function StudentManager() {
       {deleteStudent && (
         <StudentDeleteDialog
           student={deleteStudent}
-          onClose={() => setDeleteStudent(null)}
+          onClose={handleDeleteClose}
         />
       )}
     </div>
