@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Edit, Delete, Filter } from 'lucide-react';
@@ -134,12 +135,14 @@ export default function NewsManager() {
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto mt-2 mb-8 px-1 xs:px-2 sm:px-3 md:px-6">
-      <div className="flex flex-col xs:flex-row justify-end items-center mb-6 gap-4">
+    <div className="w-full max-w-7xl mx-auto mt-2 mb-8 px-2 sm:px-4 md:px-6">
+      {/* Header and Add Button */}
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+        <div className="hidden sm:block"></div>
         <Button
           variant="default"
           size="lg"
-          className="rounded-full font-montserrat shadow hover:scale-105 transition-transform w-full xs:w-auto"
+          className="rounded-full font-montserrat shadow hover:scale-105 transition-transform w-full sm:w-auto px-6 md:px-8"
           onClick={() => {
             setSelectedNews(null);
             setEditorOpen(true);
@@ -150,18 +153,18 @@ export default function NewsManager() {
       </div>
 
       {/* Filter bar */}
-      <div className="flex justify-between flex-wrap gap-2 mb-6 items-center bg-yellow-50/80 py-2 px-3 rounded-xl shadow-sm border border-yellow-100">
+      <div className="flex flex-col sm:flex-row justify-between gap-3 mb-6 items-start sm:items-center bg-yellow-50/80 py-3 px-4 rounded-xl shadow-sm border border-yellow-100">
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-yellow-400" />
           <span className="font-semibold text-yellow-600 text-base">
             Filter:
           </span>
         </div>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 flex-wrap w-full sm:w-auto">
           <Button
             variant={statusFilter === 'all' ? 'default' : 'secondary'}
             size="sm"
-            className={statusFilter === 'all' ? 'shadow' : ''}
+            className={`${statusFilter === 'all' ? 'shadow' : ''} text-xs md:text-sm`}
             onClick={() => setStatusFilter('all')}
           >
             All
@@ -169,6 +172,7 @@ export default function NewsManager() {
           <Button
             variant={statusFilter === 'Published' ? 'default' : 'secondary'}
             size="sm"
+            className="text-xs md:text-sm"
             onClick={() => setStatusFilter('Published')}
           >
             Published
@@ -176,6 +180,7 @@ export default function NewsManager() {
           <Button
             variant={statusFilter === 'Draft' ? 'default' : 'secondary'}
             size="sm"
+            className="text-xs md:text-sm"
             onClick={() => setStatusFilter('Draft')}
           >
             Draft
@@ -184,19 +189,12 @@ export default function NewsManager() {
       </div>
 
       {/* News List */}
-      <div
-        className="
-        grid grid-cols-1 
-        xs:grid-cols-2 
-        lg:grid-cols-3
-        gap-6
-        "
-      >
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
         {loading ? (
-          Array.from({ length: 3 }).map((_, idx) => (
+          Array.from({ length: 4 }).map((_, idx) => (
             <div
               key={idx}
-              className="rounded-2xl shadow-lg bg-white p-6 font-inter animate-pulse h-56 flex flex-col"
+              className="rounded-2xl shadow-lg bg-white p-4 md:p-6 font-inter animate-pulse h-64 flex flex-col"
             >
               <div className="h-32 bg-yellow-100 w-full rounded mb-2"></div>
               <div className="h-6 bg-yellow-100 w-1/3 rounded mb-2"></div>
@@ -211,20 +209,14 @@ export default function NewsManager() {
           displayedNews.map((item) => (
             <div
               key={item.id}
-              className="
-                  rounded-2xl shadow-lg bg-white flex flex-col
-                  font-inter transition group hover:scale-[1.02] hover:shadow-xl
-                  p-0 overflow-hidden
-                "
+              className="rounded-2xl shadow-lg bg-white flex flex-col font-inter transition group hover:scale-[1.02] hover:shadow-xl p-0 overflow-hidden"
             >
-              <div className="relative w-full h-40 xs:h-48 bg-yellow-50 flex justify-center items-center">
+              <div className="relative w-full h-36 md:h-40 bg-yellow-50 flex justify-center items-center">
                 {item.image_url ? (
                   <img
                     src={item.image_url}
                     alt={item.title}
-                    className="
-                        absolute inset-0 w-full h-full object-cover transition-all duration-200 group-hover:brightness-95
-                      "
+                    className="absolute inset-0 w-full h-full object-cover transition-all duration-200 group-hover:brightness-95"
                     loading="lazy"
                   />
                 ) : (
@@ -238,37 +230,39 @@ export default function NewsManager() {
                   {item.date ? formatDate(item.date) : '--'}
                 </div>
               </div>
-              <div className="flex-1 flex flex-col px-5 py-4 gap-2">
-                <div className="flex flex-col gap-1 sm:flex-row sm:justify-between sm:items-center">
-                  <h3 className="font-bold text-lg sm:text-xl mb-0.5 line-clamp-2">
-                    {item.title}
-                  </h3>
-                  <StatusBadge status={item.status} />
+              <div className="flex-1 flex flex-col px-4 md:px-5 py-3 md:py-4 gap-2">
+                <div className="flex flex-col gap-1">
+                  <div className="flex justify-between items-start gap-2">
+                    <h3 className="font-bold text-base md:text-lg line-clamp-2 flex-1">
+                      {item.title}
+                    </h3>
+                    <StatusBadge status={item.status} />
+                  </div>
+                  <div className="text-xs md:text-sm text-gray-500">
+                    {formatDate(item.date)}
+                  </div>
                 </div>
-                <div className="text-sm text-gray-500 mb-2">
-                  {formatDate(item.date)}
-                </div>
-                <p className="text-gray-700 text-base line-clamp-3 flex-1">
+                <p className="text-gray-700 text-sm md:text-base line-clamp-3 flex-1">
                   {item.short_description}
                 </p>
-                <div className="flex gap-3 mt-2">
+                <div className="flex gap-2 md:gap-3 mt-2">
                   <Button
                     size="icon"
                     variant="secondary"
-                    className="rounded-full border"
+                    className="rounded-full border h-8 w-8 md:h-9 md:w-9"
                     onClick={() => openEditModal(item)}
                     aria-label="Edit"
                   >
-                    <Edit className="w-4 h-4" />
+                    <Edit className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                   <Button
                     size="icon"
                     variant="destructive"
-                    className="rounded-full border"
+                    className="rounded-full border h-8 w-8 md:h-9 md:w-9"
                     onClick={() => openDeleteDialog(item)}
                     aria-label="Delete"
                   >
-                    <Delete className="w-4 h-4" />
+                    <Delete className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </div>
               </div>

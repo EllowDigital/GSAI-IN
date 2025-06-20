@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Tables } from '@/integrations/supabase/types';
@@ -83,26 +84,28 @@ const Events = () => {
   }
 
   return (
-    <div className="p-2 xs:p-3 sm:p-4 md:p-8 mx-auto max-w-[1350px] w-full min-h-[70vh] flex flex-col">
+    <div className="p-2 sm:p-4 md:p-6 lg:p-8 mx-auto max-w-[1350px] w-full min-h-[70vh] flex flex-col">
       {/* Header & Add Event */}
-      <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4 sm:gap-3">
+      <div className="w-full flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-4">
         <div className="flex-1 min-w-0">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-yellow-800 tracking-tight leading-snug mb-1">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-yellow-800 tracking-tight leading-snug mb-1">
             Event Manager
           </h1>
-          <div className="hidden sm:block text-muted-foreground text-sm">
+          <div className="text-sm md:text-base text-muted-foreground">
             View, add, update, or delete events. Optimized for all devices.
           </div>
         </div>
         <Button
           variant="default"
-          className="rounded-full shadow-lg gap-2 px-5 py-2 text-sm sm:text-base w-full sm:w-auto"
+          className="rounded-full shadow-lg gap-2 px-4 md:px-5 py-2 text-sm md:text-base w-full lg:w-auto"
           onClick={handleCreate}
         >
-          <Plus className="w-5 h-5" />
-          <span className="hidden xs:inline">Add Event</span>
+          <Plus className="w-4 h-4 md:w-5 md:h-5" />
+          <span className="hidden sm:inline">Add Event</span>
+          <span className="inline sm:hidden">Add</span>
         </Button>
       </div>
+
       {/* Loader or events grid */}
       <div className="flex-1 w-full">
         {loading ? (
@@ -110,34 +113,16 @@ const Events = () => {
             <Spinner />
           </div>
         ) : (
-          <div
-            className="
-              grid
-              gap-y-7 gap-x-4
-              grid-cols-1
-              xs:grid-cols-2
-              md:grid-cols-3
-              xl:grid-cols-4
-              2xl:grid-cols-5
-              w-full
-              mt-2
-            "
-          >
+          <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 w-full mt-2">
             {events.length === 0 && (
-              <div className="col-span-full text-center text-muted-foreground py-8 text-base">
+              <div className="col-span-full text-center text-muted-foreground py-8 text-sm md:text-base">
                 No events found.
               </div>
             )}
             {events.map((event) => (
               <div
                 key={event.id}
-                className="
-                  flex
-                  flex-col
-                  min-w-0
-                  max-w-full
-                  animate-fade-in
-                "
+                className="flex flex-col min-w-0 max-w-full animate-fade-in"
               >
                 <EventCard
                   event={event}
@@ -149,6 +134,7 @@ const Events = () => {
           </div>
         )}
       </div>
+
       <AdminEventFormModal
         open={modalOpen}
         onOpenChange={setModalOpen}

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -142,24 +143,26 @@ export default function FeesManagerPanel() {
   };
 
   return (
-    <div className="w-full">
-      {/* Responsive card/grid summary and filter controls */}
+    <div className="w-full px-2 sm:px-4">
+      {/* Summary and Controls */}
       <div className="flex flex-col gap-3 sm:gap-4 mb-4">
         <FeeSummaryCard fees={fees || []} loading={loadingFees} />
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 animate-fade-in">
-          <FeesFilterBar
-            filterMonth={filterMonth}
-            filterYear={filterYear}
-            filterStatus={filterStatus}
-            filterName={filterName}
-            setFilterMonth={setFilterMonth}
-            setFilterYear={setFilterYear}
-            setFilterStatus={setFilterStatus}
-            setFilterName={setFilterName}
-          />
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 animate-fade-in">
+          <div className="flex-1">
+            <FeesFilterBar
+              filterMonth={filterMonth}
+              filterYear={filterYear}
+              filterStatus={filterStatus}
+              filterName={filterName}
+              setFilterMonth={setFilterMonth}
+              setFilterYear={setFilterYear}
+              setFilterStatus={setFilterStatus}
+              setFilterName={setFilterName}
+            />
+          </div>
           <button
             onClick={() => exportFeesToCsv(rows, filterMonth, filterYear)}
-            className="border border-yellow-400 px-4 py-2 rounded-full bg-yellow-50 text-yellow-700 font-medium hover:bg-yellow-200 transition text-sm sm:ml-4 mt-1 sm:mt-0 w-full sm:w-auto"
+            className="border border-yellow-400 px-3 md:px-4 py-2 rounded-full bg-yellow-50 text-yellow-700 font-medium hover:bg-yellow-200 transition text-sm w-full lg:w-auto lg:min-w-[120px]"
             disabled={!Array.isArray(rows) || rows.length === 0}
           >
             Export CSV
@@ -167,9 +170,12 @@ export default function FeesManagerPanel() {
         </div>
       </div>
 
-      {renderContent()}
+      {/* Content */}
+      <div className="w-full overflow-hidden">
+        {renderContent()}
+      </div>
 
-      {/* Modals/Drawers for mobile friendly */}
+      {/* Modals/Drawers */}
       {modalOpen && (
         <FeeEditModal
           open={modalOpen}
