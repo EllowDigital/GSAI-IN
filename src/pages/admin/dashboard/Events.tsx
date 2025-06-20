@@ -11,6 +11,7 @@ import AdminEventFormModal from '@/components/admin/AdminEventFormModal';
 import EventDeleteDialog from '@/components/admin/EventDeleteDialog';
 import { Card, CardHeader } from '@/components/ui/card';
 import Spinner from '@/components/ui/spinner';
+import RefreshButton from '@/components/admin/RefreshButton';
 
 // EventRow typing stays the same
 type EventRow = Tables<'events'>;
@@ -34,7 +35,11 @@ const Events = () => {
       if (error) throw error;
       setEvents(data ?? []);
     } catch (err: any) {
-      toast.error('Failed to load events', err.message);
+      toast({
+        title: "Error",
+        description: 'Failed to load events: ' + err.message,
+        variant: "destructive"
+      });
     }
     setLoading(false);
   }, []);
@@ -70,6 +75,22 @@ const Events = () => {
     setDeleteEvent(event);
   };
 
+  const handleModalClose = () => {
+    setModalOpen(false);
+    // Auto-refresh after modal close to show changes
+    setTimeout(() => {
+      fetchEvents();
+    }, 100);
+  };
+
+  const handleDeleteClose = () => {
+    setDeleteEvent(null);
+    // Auto-refresh after delete to show changes
+    setTimeout(() => {
+      fetchEvents();
+    }, 100);
+  };
+
   if (!isAdmin) {
     return (
       <Card className="max-w-md mx-auto mt-16 p-8 text-center">
@@ -85,7 +106,7 @@ const Events = () => {
 
   return (
     <div className="p-2 sm:p-4 md:p-6 lg:p-8 mx-auto max-w-[1350px] w-full min-h-[70vh] flex flex-col">
-      {/* Header & Add Event */}
+      {/* Header & Controls */}
       <div className="w-full flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-4">
         <div className="flex-1 min-w-0">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-yellow-800 tracking-tight leading-snug mb-1">
@@ -95,15 +116,22 @@ const Events = () => {
             View, add, update, or delete events. Optimized for all devices.
           </div>
         </div>
-        <Button
-          variant="default"
-          className="rounded-full shadow-lg gap-2 px-4 md:px-5 py-2 text-sm md:text-base w-full lg:w-auto"
-          onClick={handleCreate}
-        >
-          <Plus className="w-4 h-4 md:w-5 md:h-5" />
-          <span className="hidden sm:inline">Add Event</span>
-          <span className="inline sm:hidden">Add</span>
-        </Button>
+        <div className="flex gap-3 w-full lg:w-auto">
+          <RefreshButton 
+            onRefresh={fetchEvents}
+            isLoading={loading}
+            className="flex-1 lg:flex-none"
+          />
+          <Button
+            variant="default"
+            className="rounded-full shadow-lg gap-2 px-4 md:px-5 py-2 text-sm md:text-base flex-1 lg:flex-none"
+            onClick={handleCreate}
+          >
+            <Plus className="w-4 h-4 md:w-5 md:h-5" />
+            <span className="hidden sm:inline">Add Event</span>
+            <span className="inline sm:hidden">Add</span>
+          </Button>
+        </div>
       </div>
 
       {/* Loader or events grid */}
@@ -137,12 +165,12 @@ const Events = () => {
 
       <AdminEventFormModal
         open={modalOpen}
-        onOpenChange={setModalOpen}
+        onOpenChange={handleModalClose}
         editingEvent={editingEvent}
       />
       <EventDeleteDialog
         event={deleteEvent}
-        onClose={() => setDeleteEvent(null)}
+        onClose={handleDeleteClose}
       />
     </div>
   );

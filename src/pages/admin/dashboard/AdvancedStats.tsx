@@ -1,267 +1,216 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Users, BookOpen, TrendingUp, Calendar } from 'lucide-react';
 import {
-  DollarSign,
-  Users,
-  BookOpen,
-  Newspaper,
-  Image,
-  Calendar,
-} from 'lucide-react';
-import {
-  aggregateFees,
-  studentsByProgram,
-  getLatestTitlesAll,
-  safeCount,
-  getNextEvent,
-} from '@/utils/dashboardStats';
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
 
-type StatsData = {
-  total?: number;
-  paidSum?: number;
-  partialSum?: number;
-  unpaidCount?: number;
-  byProgram?: Record<string, number>;
-  latestBlogs?: string[];
-  latestNews?: string[];
-  galleryCount?: number;
-  eventCount?: number;
-  nextEvent?: string;
-};
-
-function useAdvancedStats() {
-  const [stats, setStats] = useState<StatsData>({});
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function fetchData() {
-      setLoading(true);
-
-      const [feesRes, studentsRes, blogsRes, newsRes, galleryRes, eventsRes] =
-        await Promise.all([
-          supabase.from('fees').select('*'),
-          supabase.from('students').select('program'),
-          supabase
-            .from('blogs')
-            .select('title, published_at')
-            .order('published_at', { ascending: false }),
-          supabase
-            .from('news')
-            .select('title, date')
-            .order('date', { ascending: false }),
-          supabase.from('gallery_images').select('id'),
-          supabase
-            .from('events')
-            .select('title, date')
-            .order('date', { ascending: true }),
-        ]);
-
-      const fees = feesRes.data ?? [];
-      const students = studentsRes.data ?? [];
-      const blogs = blogsRes.data ?? [];
-      const news = newsRes.data ?? [];
-      const gallery = galleryRes.data ?? [];
-      const events = eventsRes.data ?? [];
-
-      const result: StatsData = {
-        ...aggregateFees(fees),
-        byProgram: studentsByProgram(students),
-        latestBlogs: getLatestTitlesAll(blogs, 3),
-        latestNews: getLatestTitlesAll(news, 3),
-        galleryCount: safeCount(gallery),
-        eventCount: safeCount(events),
-        nextEvent: getNextEvent(events),
-      };
-
-      if (!cancelled) {
-        setStats(result);
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  return { stats, loading };
-}
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
 export default function AdvancedStats() {
-  const { stats, loading } = useAdvancedStats();
+  const { data: studentsData } = useQuery({
+    queryKey: ['students-stats'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('students')
+        .select('program, join_date');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const { data: eventsData } = useQuery({
+    queryKey: ['events-stats'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('events')
+        .select('from_date')
+        .gte('from_date', new Date().toISOString().split('T')[0]);
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const { data: feesData } = useQuery({
+    queryKey: ['fees-stats'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('fees')
+        .select('paid_amount, status, year');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Process students by program
+  const studentsByProgram = React.useMemo(() => {
+    if (!studentsData) return [];
+    const programCounts: Record<string, number> = {};
+    studentsData.forEach((student) => {
+      programCounts[student.program] = (programCounts[student.program] || 0) + 1;
+    });
+    return Object.entries(programCounts).map(([name, value]) => ({
+      name,
+      value,
+    }));
+  }, [studentsData]);
+
+  // Process monthly enrollments
+  const monthlyEnrollments = React.useMemo(() => {
+    if (!studentsData) return [];
+    const monthlyCounts: Record<string, number> = {};
+    studentsData.forEach((student) => {
+      const month = new Date(student.join_date).toLocaleDateString('en-US', {
+        month: 'short',
+        year: 'numeric',
+      });
+      monthlyCounts[month] = (monthlyCounts[month] || 0) + 1;
+    });
+    return Object.entries(monthlyCounts)
+      .map(([month, students]) => ({ month, students }))
+      .slice(-6);
+  }, [studentsData]);
+
+  // Calculate total revenue
+  const totalRevenue = React.useMemo(() => {
+    if (!feesData) return 0;
+    return feesData
+      .filter((fee) => fee.status === 'paid')
+      .reduce((sum, fee) => sum + fee.paid_amount, 0);
+  }, [feesData]);
+
+  const stats = [
+    {
+      title: 'Total Students',
+      value: studentsData?.length || 0,
+      icon: Users,
+      color: 'text-blue-600',
+    },
+    {
+      title: 'Upcoming Events',
+      value: eventsData?.length || 0,
+      icon: Calendar,
+      color: 'text-green-600',
+    },
+    {
+      title: 'Total Revenue',
+      value: `₹${totalRevenue.toLocaleString()}`,
+      icon: TrendingUp,
+      color: 'text-purple-600',
+    },
+    {
+      title: 'Active Programs',
+      value: studentsByProgram.length,
+      icon: BookOpen,
+      color: 'text-orange-600',
+    },
+  ];
 
   return (
-    <section className="px-2 sm:px-4">
-      <h2 className="text-lg md:text-xl font-bold mb-3 md:mb-4 mt-4 md:mt-6 text-gray-700">
-        Advanced Stats
-      </h2>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-        {/* Fees */}
-        <StatCard
-          icon={<DollarSign className="w-4 h-4 md:w-5 md:h-5" />}
-          title="Fees Details"
-          color="text-green-700"
-          loading={loading}
-        >
-          <ul className="text-xs md:text-sm space-y-1">
-            <li>
-              <b>Total Records:</b> {stats.total ?? '-'}
-            </li>
-            <li>
-              <b>Total Paid:</b> ₹{stats.paidSum ?? 0}
-            </li>
-            <li>
-              <b>Partial Paid:</b> ₹{stats.partialSum ?? 0}
-            </li>
-            <li>
-              <b>Unpaid Count:</b> {stats.unpaidCount ?? 0}
-            </li>
-          </ul>
-        </StatCard>
-
-        {/* Students */}
-        <StatCard
-          icon={<Users className="w-4 h-4 md:w-5 md:h-5" />}
-          title="Students Breakdown"
-          color="text-blue-700"
-          loading={loading}
-        >
-          {stats.total === 0 ? (
-            <p className="text-xs md:text-sm">No students found.</p>
-          ) : (
-            <ul className="text-xs md:text-sm space-y-1">
-              <li>
-                <b>Total Students:</b> {stats.total}
-              </li>
-              <li>
-                <b>By Program:</b>
-              </li>
-              <ul className="ml-3 md:ml-4 list-disc">
-                {stats.byProgram && Object.keys(stats.byProgram).length > 0 ? (
-                  Object.entries(stats.byProgram).map(([program, count]) => (
-                    <li key={program} className="text-xs">
-                      {program}: {count}
-                    </li>
-                  ))
-                ) : (
-                  <li className="text-xs">No programs found.</li>
-                )}
-              </ul>
-            </ul>
-          )}
-        </StatCard>
-
-        {/* Blogs */}
-        <StatCard
-          icon={<BookOpen className="w-4 h-4 md:w-5 md:h-5" />}
-          title="Latest Blogs"
-          color="text-pink-700"
-          loading={loading}
-        >
-          <ol className="list-decimal ml-3 md:ml-4 text-xs md:text-sm">
-            {stats.latestBlogs?.length ? (
-              stats.latestBlogs.map((blog, idx) => (
-                <li key={idx} className="text-xs">
-                  {blog}
-                </li>
-              ))
-            ) : (
-              <li className="text-xs">No blogs found.</li>
-            )}
-          </ol>
-        </StatCard>
-
-        {/* News */}
-        <StatCard
-          icon={<Newspaper className="w-4 h-4 md:w-5 md:h-5" />}
-          title="Latest News"
-          color="text-yellow-700"
-          loading={loading}
-        >
-          <ol className="list-decimal ml-3 md:ml-4 text-xs md:text-sm">
-            {stats.latestNews?.length ? (
-              stats.latestNews.map((news, idx) => (
-                <li key={idx} className="text-xs">
-                  {news}
-                </li>
-              ))
-            ) : (
-              <li className="text-xs">No news found.</li>
-            )}
-          </ol>
-        </StatCard>
-
-        {/* Gallery */}
-        <StatCard
-          icon={<Image className="w-4 h-4 md:w-5 md:h-5" />}
-          title="Gallery Stats"
-          color="text-indigo-700"
-          loading={loading}
-        >
-          <p className="text-xs md:text-sm">
-            <span className="font-bold text-base md:text-lg">
-              {stats.galleryCount ?? 0}
-            </span>{' '}
-            images
-          </p>
-        </StatCard>
-
-        {/* Events */}
-        <StatCard
-          icon={<Calendar className="w-4 h-4 md:w-5 md:h-5" />}
-          title="Events"
-          color="text-orange-700"
-          loading={loading}
-        >
-          <ul className="text-xs md:text-sm space-y-1">
-            <li>
-              <b>Total Events:</b> {stats.eventCount ?? 0}
-            </li>
-            <li>
-              <b>Next Event:</b> {stats.nextEvent ?? 'No upcoming'}
-            </li>
-          </ul>
-        </StatCard>
+    <div className="max-w-7xl mx-auto p-2 sm:p-4 md:p-6 space-y-4 md:space-y-6">
+      <div className="mb-4 md:mb-6">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-yellow-600 drop-shadow">
+          Advanced Analytics
+        </h1>
+        <p className="mt-1 text-sm md:text-base text-gray-500 font-medium">
+          Detailed insights and statistics.
+        </p>
       </div>
-    </section>
-  );
-}
 
-// Reusable stat card component
-function StatCard({
-  icon,
-  title,
-  color,
-  loading,
-  children,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  color: string;
-  loading: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <Card className="w-full">
-      <CardHeader className="pb-2 md:pb-3">
-        <CardTitle className={`flex items-center gap-2 ${color} text-sm md:text-base`}>
-          {icon}
-          {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0">
-        {loading ? (
-          <p className="text-xs md:text-sm text-muted-foreground">Loading...</p>
-        ) : (
-          children
-        )}
-      </CardContent>
-    </Card>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        {stats.map((stat, index) => (
+          <Card key={index} className="rounded-xl shadow-lg">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">
+                {stat.title}
+              </CardTitle>
+              <stat.icon className={`h-4 w-4 ${stat.color}`} />
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl sm:text-2xl font-bold">{stat.value}</div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
+        {/* Monthly Enrollments */}
+        <Card className="rounded-xl shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">
+              Monthly Enrollments
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64 sm:h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={monthlyEnrollments}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="month" 
+                    fontSize={12}
+                    tick={{ fontSize: 10 }}
+                  />
+                  <YAxis fontSize={12} tick={{ fontSize: 10 }} />
+                  <Tooltip />
+                  <Bar dataKey="students" fill="#8884d8" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Students by Program */}
+        <Card className="rounded-xl shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">
+              Students by Program
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64 sm:h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={studentsByProgram}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) =>
+                      `${name} ${(percent * 100).toFixed(0)}%`
+                    }
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {studentsByProgram.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }

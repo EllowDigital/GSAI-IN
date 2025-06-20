@@ -10,6 +10,7 @@ import FeesFilterBar from './FeesFilterBar';
 import { exportFeesToCsv } from '@/utils/exportToCsv';
 import { useIsMobile } from '@/hooks/use-mobile';
 import FeesCards from './FeesCards';
+import RefreshButton from './RefreshButton';
 
 export default function FeesManagerPanel() {
   const now = new Date();
@@ -108,9 +109,23 @@ export default function FeesManagerPanel() {
     setEditFee(fee);
     setModalOpen(true);
   };
+  
   const handleShowHistory = (student: any) => {
     setHistoryStudent(student);
     setHistoryDrawerOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+    // Auto-refresh after modal close
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ['fees'] });
+    }, 100);
+  };
+
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ['fees'] });
+    queryClient.invalidateQueries({ queryKey: ['students'] });
   };
 
   const renderContent = () => {
@@ -160,13 +175,20 @@ export default function FeesManagerPanel() {
               setFilterName={setFilterName}
             />
           </div>
-          <button
-            onClick={() => exportFeesToCsv(rows, filterMonth, filterYear)}
-            className="border border-yellow-400 px-3 md:px-4 py-2 rounded-full bg-yellow-50 text-yellow-700 font-medium hover:bg-yellow-200 transition text-sm w-full lg:w-auto lg:min-w-[120px]"
-            disabled={!Array.isArray(rows) || rows.length === 0}
-          >
-            Export CSV
-          </button>
+          <div className="flex gap-3 w-full lg:w-auto">
+            <RefreshButton 
+              onRefresh={handleRefresh}
+              isLoading={isLoading}
+              className="flex-1 lg:flex-none"
+            />
+            <button
+              onClick={() => exportFeesToCsv(rows, filterMonth, filterYear)}
+              className="border border-yellow-400 px-3 md:px-4 py-2 rounded-full bg-yellow-50 text-yellow-700 font-medium hover:bg-yellow-200 transition text-sm flex-1 lg:flex-none lg:min-w-[120px]"
+              disabled={!Array.isArray(rows) || rows.length === 0}
+            >
+              Export CSV
+            </button>
+          </div>
         </div>
       </div>
 
@@ -179,7 +201,7 @@ export default function FeesManagerPanel() {
       {modalOpen && (
         <FeeEditModal
           open={modalOpen}
-          onClose={() => setModalOpen(false)}
+          onClose={handleModalClose}
           student={editStudent}
           fee={editFee}
           month={filterMonth}

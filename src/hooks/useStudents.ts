@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
 
@@ -23,25 +24,30 @@ export function useStudents() {
   );
   const [sortAsc, setSortAsc] = useState(false);
 
+  const fetchStudents = useCallback(async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('students')
+      .select(
+        'id, name, aadhar_number, program, join_date, parent_name, parent_contact, profile_image_url, created_at'
+      )
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      toast.error('Failed to fetch students: ' + error.message);
+    }
+    setStudents((data || []) as StudentRow[]);
+    setLoading(false);
+  }, []);
+
   useEffect(() => {
     let ignore = false;
-    const fetchStudents = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('students')
-        .select(
-          'id, name, aadhar_number, program, join_date, parent_name, parent_contact, profile_image_url, created_at'
-        )
-        .order('created_at', { ascending: false });
+    const runFetch = async () => {
       if (!ignore) {
-        if (error) {
-          toast.error('Failed to fetch students: ' + error.message);
-        }
-        setStudents((data || []) as StudentRow[]);
-        setLoading(false);
+        await fetchStudents();
       }
     };
-    fetchStudents();
+    runFetch();
 
     const channel = supabase
       .channel('gsai-students-admin-realtime-hook')
@@ -56,7 +62,7 @@ export function useStudents() {
       ignore = true;
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [fetchStudents]);
 
   const filteredStudents = useMemo(() => {
     let filtered = students;
@@ -102,5 +108,6 @@ export function useStudents() {
     setSearch,
     sortConfig,
     requestSort,
+    refetchStudents: fetchStudents,
   };
 }

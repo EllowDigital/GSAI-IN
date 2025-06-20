@@ -1,303 +1,193 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Edit, Delete, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 import NewsEditorModal from './NewsEditorModal';
 import NewsDeleteDialog from './NewsDeleteDialog';
-import { StatusBadge } from './StatusBadge';
-import { toast } from '@/components/ui/sonner';
+import { exportNewsToCsv } from '@/utils/exportToCsv';
+import { Tables } from '@/integrations/supabase/types';
+import BlogsCards from './blogs/BlogsCards';
+import RefreshButton from './RefreshButton';
+import { toast } from '@/hooks/use-toast';
 
-type News = {
-  id: string;
-  title: string;
-  short_description: string;
-  date: string;
-  status: string;
-  image_url?: string | null;
-};
-
-function formatDate(dt: string) {
-  return new Date(dt).toLocaleDateString(undefined, { dateStyle: 'medium' });
-}
+type NewsRow = Tables<'news'>;
 
 export default function NewsManager() {
-  const [news, setNews] = React.useState<News[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [editorOpen, setEditorOpen] = React.useState(false);
-  const [editorLoading, setEditorLoading] = React.useState(false);
-  const [selectedNews, setSelectedNews] = React.useState<News | null>(null);
-  const [deleteOpen, setDeleteOpen] = React.useState(false);
-  const [deleteLoading, setDeleteLoading] = React.useState(false);
-  const [newsToDelete, setNewsToDelete] = React.useState<News | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingNews, setEditingNews] = useState<NewsRow | null>(null);
+  const [deleteNewsId, setDeleteNewsId] = useState<string | null>(null);
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+  
+  const queryClient = useQueryClient();
 
-  // Filtering
-  const [statusFilter, setStatusFilter] = React.useState('all');
+  // Fetch news
+  const { data: news = [], isLoading } = useQuery({
+    queryKey: ['news'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('news')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+  });
 
-  // Fetch News
-  const fetchNews = React.useCallback(async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from('news')
-      .select('id, title, short_description, date, status, image_url')
-      .order('date', { ascending: false });
-    if (error) {
-      toast.error('Failed to fetch news.');
-      setLoading(false);
-      return;
-    }
-    setNews(data ?? []);
-    setLoading(false);
-  }, []);
-
-  React.useEffect(() => {
-    fetchNews();
-    // Real-time updates
+  // Real-time updates
+  useEffect(() => {
     const channel = supabase
-      .channel('news-public')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'news' },
-        () => fetchNews()
-      )
+      .channel('news-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'news' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['news'] });
+      })
       .subscribe();
+
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [fetchNews]);
+  }, [queryClient]);
 
-  // Filtered display
-  const displayedNews =
-    statusFilter === 'all'
-      ? news
-      : news.filter((n) => n.status === statusFilter);
-
-  // CRUD Handlers
-  async function handleCreateOrUpdate(data: any) {
-    setEditorLoading(true);
-    try {
-      if (selectedNews) {
-        // Update
-        const { error } = await supabase
-          .from('news')
-          .update({
-            ...data,
-          })
-          .eq('id', selectedNews.id);
-        if (error) throw error;
-        toast.success('News updated successfully!');
-      } else {
-        // Create
-        const { error } = await supabase.from('news').insert([{ ...data }]);
-        if (error) throw error;
-        toast.success('News created successfully!');
-      }
-      setEditorOpen(false);
-      setSelectedNews(null);
-    } catch (e: any) {
-      toast.error('Failed: ' + e.message);
-    } finally {
-      setEditorLoading(false);
-    }
-  }
-
-  async function handleDelete() {
-    if (!newsToDelete) return;
-    setDeleteLoading(true);
-    try {
-      const { error } = await supabase
-        .from('news')
-        .delete()
-        .eq('id', newsToDelete.id);
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('news').delete().eq('id', id);
       if (error) throw error;
-      toast.success('News deleted.');
-      setDeleteOpen(false);
-    } catch (e: any) {
-      toast.error('Error deleting: ' + e.message);
-    } finally {
-      setDeleteLoading(false);
+    },
+    onMutate: (id) => {
+      setDeletingIds(prev => new Set(prev).add(id));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['news'] });
+      toast({
+        title: "Success",
+        description: "News deleted successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error", 
+        description: error.message,
+        variant: "destructive"
+      });
+    },
+    onSettled: (_, __, id) => {
+      setDeletingIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(id);
+        return newSet;
+      });
+    },
+  });
+
+  const handleEdit = (newsItem: NewsRow) => {
+    setEditingNews(newsItem);
+    setModalOpen(true);
+  };
+
+  const handleDelete = (id: string) => {
+    setDeleteNewsId(id);
+  };
+
+  const confirmDelete = () => {
+    if (deleteNewsId) {
+      deleteMutation.mutate(deleteNewsId);
+      setDeleteNewsId(null);
     }
-  }
+  };
 
-  function openEditModal(item: News) {
-    setSelectedNews(item);
-    setEditorOpen(true);
-  }
+  const handleModalClose = () => {
+    setModalOpen(false);
+    setEditingNews(null);
+    // Auto-refresh after modal close
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ['news'] });
+    }, 100);
+  };
 
-  function openDeleteDialog(item: News) {
-    setNewsToDelete(item);
-    setDeleteOpen(true);
-  }
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ['news'] });
+  };
 
-  function clearEditor() {
-    setEditorOpen(false);
-    setSelectedNews(null);
-  }
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
+  const isDeleting = (id: string) => deletingIds.has(id);
+
+  // Transform news to match blog structure for reusing BlogsCards
+  const transformedNews = news.map(item => ({
+    id: item.id,
+    title: item.title,
+    description: item.short_description || '',
+    image_url: item.image_url,
+    published_at: item.created_at,
+  }));
 
   return (
-    <div className="w-full max-w-7xl mx-auto mt-2 mb-8 px-2 sm:px-4 md:px-6">
-      {/* Header and Add Button */}
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-        <div className="hidden sm:block"></div>
-        <Button
-          variant="default"
-          size="lg"
-          className="rounded-full font-montserrat shadow hover:scale-105 transition-transform w-full sm:w-auto px-6 md:px-8"
-          onClick={() => {
-            setSelectedNews(null);
-            setEditorOpen(true);
-          }}
+    <div className="w-full px-2 sm:px-4">
+      {/* Header and Controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6">
+        <div className="flex gap-3 w-full sm:w-auto">
+          <RefreshButton 
+            onRefresh={handleRefresh}
+            isLoading={isLoading}
+            className="flex-1 sm:flex-none"
+          />
+          <Button
+            onClick={() => setModalOpen(true)}
+            className="flex gap-2 rounded-full flex-1 sm:flex-none"
+          >
+            <Plus size={18} />
+            <span className="hidden sm:inline">Add News</span>
+            <span className="inline sm:hidden">Add</span>
+          </Button>
+        </div>
+        <button
+          onClick={() => exportNewsToCsv(news)}
+          className="border border-orange-400 px-3 md:px-4 py-2 rounded-full bg-orange-50 text-orange-700 font-medium hover:bg-orange-200 transition text-sm w-full sm:w-auto sm:min-w-[120px]"
+          disabled={news.length === 0}
         >
-          + Add News
-        </Button>
+          Export CSV
+        </button>
       </div>
 
-      {/* Filter bar */}
-      <div className="flex flex-col sm:flex-row justify-between gap-3 mb-6 items-start sm:items-center bg-yellow-50/80 py-3 px-4 rounded-xl shadow-sm border border-yellow-100">
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-yellow-400" />
-          <span className="font-semibold text-yellow-600 text-base">
-            Filter:
-          </span>
+      {/* Content */}
+      {isLoading ? (
+        <div className="flex justify-center py-8">
+          <div className="animate-spin h-8 w-8 border-4 border-orange-400 rounded-full border-t-transparent" />
         </div>
-        <div className="flex gap-2 flex-wrap w-full sm:w-auto">
-          <Button
-            variant={statusFilter === 'all' ? 'default' : 'secondary'}
-            size="sm"
-            className={`${statusFilter === 'all' ? 'shadow' : ''} text-xs md:text-sm`}
-            onClick={() => setStatusFilter('all')}
-          >
-            All
-          </Button>
-          <Button
-            variant={statusFilter === 'Published' ? 'default' : 'secondary'}
-            size="sm"
-            className="text-xs md:text-sm"
-            onClick={() => setStatusFilter('Published')}
-          >
-            Published
-          </Button>
-          <Button
-            variant={statusFilter === 'Draft' ? 'default' : 'secondary'}
-            size="sm"
-            className="text-xs md:text-sm"
-            onClick={() => setStatusFilter('Draft')}
-          >
-            Draft
-          </Button>
+      ) : transformedNews.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">
+          No news articles found.
         </div>
-      </div>
-
-      {/* News List */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-        {loading ? (
-          Array.from({ length: 4 }).map((_, idx) => (
-            <div
-              key={idx}
-              className="rounded-2xl shadow-lg bg-white p-4 md:p-6 font-inter animate-pulse h-64 flex flex-col"
-            >
-              <div className="h-32 bg-yellow-100 w-full rounded mb-2"></div>
-              <div className="h-6 bg-yellow-100 w-1/3 rounded mb-2"></div>
-              <div className="h-4 bg-gray-100 w-2/3 rounded mb-1"></div>
-            </div>
-          ))
-        ) : displayedNews.length === 0 ? (
-          <div className="col-span-full text-gray-400 mt-10 font-semibold text-center">
-            No news found.
-          </div>
-        ) : (
-          displayedNews.map((item) => (
-            <div
-              key={item.id}
-              className="rounded-2xl shadow-lg bg-white flex flex-col font-inter transition group hover:scale-[1.02] hover:shadow-xl p-0 overflow-hidden"
-            >
-              <div className="relative w-full h-36 md:h-40 bg-yellow-50 flex justify-center items-center">
-                {item.image_url ? (
-                  <img
-                    src={item.image_url}
-                    alt={item.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-all duration-200 group-hover:brightness-95"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <span className="text-yellow-300 text-xl font-bold">
-                      No Image
-                    </span>
-                  </div>
-                )}
-                <div className="absolute bottom-2 left-2 bg-white/90 rounded px-2 py-0.5 text-xs font-bold text-yellow-500 shadow">
-                  {item.date ? formatDate(item.date) : '--'}
-                </div>
-              </div>
-              <div className="flex-1 flex flex-col px-4 md:px-5 py-3 md:py-4 gap-2">
-                <div className="flex flex-col gap-1">
-                  <div className="flex justify-between items-start gap-2">
-                    <h3 className="font-bold text-base md:text-lg line-clamp-2 flex-1">
-                      {item.title}
-                    </h3>
-                    <StatusBadge status={item.status} />
-                  </div>
-                  <div className="text-xs md:text-sm text-gray-500">
-                    {formatDate(item.date)}
-                  </div>
-                </div>
-                <p className="text-gray-700 text-sm md:text-base line-clamp-3 flex-1">
-                  {item.short_description}
-                </p>
-                <div className="flex gap-2 md:gap-3 mt-2">
-                  <Button
-                    size="icon"
-                    variant="secondary"
-                    className="rounded-full border h-8 w-8 md:h-9 md:w-9"
-                    onClick={() => openEditModal(item)}
-                    aria-label="Edit"
-                  >
-                    <Edit className="w-3 h-3 md:w-4 md:h-4" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="destructive"
-                    className="rounded-full border h-8 w-8 md:h-9 md:w-9"
-                    onClick={() => openDeleteDialog(item)}
-                    aria-label="Delete"
-                  >
-                    <Delete className="w-3 h-3 md:w-4 md:h-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+      ) : (
+        <BlogsCards
+          blogs={transformedNews}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          isDeleting={isDeleting}
+          formatDate={formatDate}
+        />
+      )}
 
       {/* Modals */}
       <NewsEditorModal
-        open={editorOpen}
-        onOpenChange={(v) => {
-          if (!editorLoading) clearEditor();
-        }}
-        onSubmit={handleCreateOrUpdate}
-        initialData={
-          selectedNews
-            ? {
-                title: selectedNews.title,
-                short_description: selectedNews.short_description,
-                date: selectedNews.date,
-                status: selectedNews.status,
-                image_url: selectedNews.image_url ?? null,
-              }
-            : null
-        }
-        loading={editorLoading}
+        open={modalOpen}
+        onOpenChange={handleModalClose}
+        editingNews={editingNews}
       />
-      {/* Delete Dialog */}
+      
       <NewsDeleteDialog
-        open={deleteOpen}
-        onOpenChange={setDeleteOpen}
-        onDelete={handleDelete}
-        newsTitle={newsToDelete?.title || ''}
-        loading={deleteLoading}
+        open={!!deleteNewsId}
+        onClose={() => setDeleteNewsId(null)}
+        onConfirm={confirmDelete}
+        isDeleting={deleteMutation.isPending}
       />
     </div>
   );
