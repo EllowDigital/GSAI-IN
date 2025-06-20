@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+
+import React from 'react';
 import {
   Accordion,
   AccordionItem,
@@ -7,8 +8,6 @@ import {
 } from '@/components/ui/accordion';
 import {
   HelpCircle,
-  Search,
-  Filter,
   ChevronDown,
   Sparkles,
 } from 'lucide-react';
@@ -88,68 +87,6 @@ const itemVariants = {
 };
 
 export default function FaqSection() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-
-  // Memoized categories calculation
-  const categories = useMemo(
-    () => [
-      { id: 'all', label: 'All Questions', count: faqs.length },
-      {
-        id: 'programs',
-        label: 'Programs',
-        count: faqs.filter((faq) => faq.category === 'programs').length,
-      },
-      {
-        id: 'fees',
-        label: 'Fees',
-        count: faqs.filter((faq) => faq.category === 'fees').length,
-      },
-      {
-        id: 'facilities',
-        label: 'Facilities',
-        count: faqs.filter((faq) => faq.category === 'facilities').length,
-      },
-      {
-        id: 'getting-started',
-        label: 'Getting Started',
-        count: faqs.filter((faq) => faq.category === 'getting-started').length,
-      },
-      {
-        id: 'coaches',
-        label: 'Coaches',
-        count: faqs.filter((faq) => faq.category === 'coaches').length,
-      },
-    ],
-    []
-  );
-
-  // Memoized filtered FAQs
-  const filteredFaqs = useMemo(() => {
-    return faqs.filter((faq) => {
-      const matchesSearch =
-        searchTerm === '' ||
-        faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        faq.answer.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory =
-        selectedCategory === 'all' || faq.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    });
-  }, [searchTerm, selectedCategory]);
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleCategorySelect = (categoryId: string) => {
-    setSelectedCategory(categoryId);
-  };
-
-  const clearFilters = () => {
-    setSearchTerm('');
-    setSelectedCategory('all');
-  };
-
   return (
     <section
       id="faq"
@@ -196,80 +133,6 @@ export default function FaqSection() {
           </p>
         </motion.div>
 
-        {/* Search and Filter Controls */}
-        <motion.div
-          className="mb-12"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          variants={itemVariants}
-        >
-          {/* Search Bar */}
-          <div className="relative max-w-2xl mx-auto mb-8">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Search questions..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-                className="w-full pl-12 pr-4 py-4 bg-white/80 backdrop-blur-sm border-2 border-yellow-100 rounded-2xl text-gray-700 placeholder-gray-400 focus:outline-none focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 transition-all duration-300 shadow-lg"
-                aria-label="Search FAQ questions"
-              />
-            </div>
-          </div>
-
-          {/* Category Filter */}
-          <div className="flex flex-wrap justify-center gap-3">
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => handleCategorySelect(category.id)}
-                className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 ${
-                  selectedCategory === category.id
-                    ? 'bg-gradient-to-r from-yellow-500 to-red-500 text-white shadow-yellow-200'
-                    : 'bg-white/80 backdrop-blur-sm text-gray-700 border border-yellow-100 hover:bg-yellow-50'
-                }`}
-                aria-label={`Filter by ${category.label}`}
-                aria-pressed={selectedCategory === category.id}
-              >
-                <Filter className="w-4 h-4" />
-                <span>{category.label}</span>
-                <span
-                  className={`px-2 py-1 text-xs rounded-full ${
-                    selectedCategory === category.id
-                      ? 'bg-white/20 text-white'
-                      : 'bg-yellow-100 text-yellow-700'
-                  }`}
-                >
-                  {category.count}
-                </span>
-              </button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* FAQ Results Count */}
-        {(searchTerm || selectedCategory !== 'all') && (
-          <motion.div
-            className="text-center mb-8"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <p className="text-gray-600 text-lg">
-              Found{' '}
-              <span className="font-semibold text-yellow-600">
-                {filteredFaqs.length}
-              </span>{' '}
-              question{filteredFaqs.length !== 1 ? 's' : ''}
-              {searchTerm && ` matching "${searchTerm}"`}
-              {selectedCategory !== 'all' &&
-                ` in ${categories.find((cat) => cat.id === selectedCategory)?.label}`}
-            </p>
-          </motion.div>
-        )}
-
         {/* FAQ Accordion */}
         <motion.div
           className="max-w-4xl mx-auto"
@@ -278,90 +141,61 @@ export default function FaqSection() {
           viewport={{ once: true, amount: 0.2 }}
           variants={containerVariants}
         >
-          {filteredFaqs.length > 0 ? (
-            <Accordion type="multiple" className="space-y-4">
-              {filteredFaqs.map((item, idx) => (
-                <motion.div
-                  key={`${item.category}-${idx}`}
-                  variants={itemVariants}
-                >
-                  <AccordionItem
-                    value={`faq-${item.category}-${idx}`}
-                    className="group bg-white/80 backdrop-blur-sm rounded-2xl border border-yellow-100/50 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
-                  >
-                    <AccordionTrigger className="group/trigger px-8 py-6 text-left hover:no-underline hover:bg-gradient-to-r hover:from-yellow-50 hover:to-red-50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-inset">
-                      <div className="flex items-start gap-4 w-full">
-                        <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-yellow-400 to-red-500 rounded-full flex items-center justify-center mt-1">
-                          <HelpCircle className="w-4 h-4 text-white" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-lg md:text-xl font-semibold text-gray-900 leading-tight group-hover/trigger:text-yellow-700 transition-colors duration-300">
-                            {item.question}
-                          </h3>
-                          <div className="flex items-center gap-2 mt-2">
-                            <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full capitalize">
-                              {item.category.replace('-', ' ')}
-                            </span>
-                          </div>
-                        </div>
-                        <ChevronDown className="w-6 h-6 text-yellow-500 flex-shrink-0 transition-transform duration-300 group-data-[state=open]:rotate-180" />
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="px-8 pb-6">
-                      <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 w-8 h-8" />{' '}
-                        {/* Spacer for alignment */}
-                        <div className="flex-1">
-                          <div className="prose prose-gray max-w-none">
-                            <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-0">
-                              {item.answer}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </motion.div>
-              ))}
-            </Accordion>
-          ) : (
-            <motion.div
-              className="text-center py-16"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="w-16 h-16 bg-gradient-to-r from-yellow-200 to-red-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Search className="w-8 h-8 text-yellow-600" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                No questions found
-              </h3>
-              <p className="text-gray-600 text-lg mb-8 max-w-md mx-auto">
-                We couldn't find any questions matching your search. Try
-                different keywords or browse all categories.
-              </p>
-              <button
-                onClick={clearFilters}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
-                aria-label="Clear all filters and search terms"
+          <Accordion type="multiple" className="space-y-6">
+            {faqs.map((item, idx) => (
+              <motion.div
+                key={`${item.category}-${idx}`}
+                variants={itemVariants}
               >
-                <Filter className="w-4 h-4" />
-                Clear Filters
-              </button>
-            </motion.div>
-          )}
+                <AccordionItem
+                  value={`faq-${item.category}-${idx}`}
+                  className="group bg-white/90 backdrop-blur-sm rounded-2xl border border-yellow-100/50 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
+                >
+                  <AccordionTrigger className="group/trigger px-8 py-6 text-left hover:no-underline hover:bg-gradient-to-r hover:from-yellow-50 hover:to-red-50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-inset">
+                    <div className="flex items-start gap-4 w-full">
+                      <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-yellow-400 to-red-500 rounded-full flex items-center justify-center mt-1">
+                        <HelpCircle className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg md:text-xl font-semibold text-gray-900 leading-tight group-hover/trigger:text-yellow-700 transition-colors duration-300">
+                          {item.question}
+                        </h3>
+                        <div className="flex items-center gap-2 mt-3">
+                          <span className="px-3 py-1 bg-gradient-to-r from-yellow-100 to-red-100 text-yellow-700 text-xs font-medium rounded-full capitalize border border-yellow-200/50">
+                            {item.category.replace('-', ' ')}
+                          </span>
+                        </div>
+                      </div>
+                      <ChevronDown className="w-6 h-6 text-yellow-500 flex-shrink-0 transition-transform duration-300 group-data-[state=open]:rotate-180" />
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-8 pb-8">
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-8 h-8" />
+                      <div className="flex-1">
+                        <div className="prose prose-gray max-w-none">
+                          <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-0 font-medium">
+                            {item.answer}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </motion.div>
+            ))}
+          </Accordion>
         </motion.div>
 
         {/* Contact CTA */}
         <motion.div
-          className="text-center mt-16"
+          className="text-center mt-20"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
           variants={itemVariants}
         >
-          <div className="bg-gradient-to-r from-yellow-50 to-red-50 rounded-3xl p-8 md:p-12 border border-yellow-100/50 shadow-lg">
+          <div className="bg-gradient-to-r from-yellow-50 via-white to-red-50 rounded-3xl p-8 md:p-12 border border-yellow-100/50 shadow-xl">
             <div className="flex items-center justify-center gap-3 mb-6">
               <Sparkles className="w-8 h-8 text-yellow-500" />
               <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
