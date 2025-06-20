@@ -38,7 +38,7 @@ const Events = () => {
       toast({
         title: "Error",
         description: 'Failed to load events: ' + err.message,
-        variant: "destructive"
+        variant: "error"
       });
     }
     setLoading(false);

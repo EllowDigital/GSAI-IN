@@ -68,7 +68,7 @@ export default function NewsManager() {
       toast({
         title: "Error", 
         description: error.message,
-        variant: "destructive"
+        variant: "error"
       });
     },
     onSettled: (_, __, id) => {
