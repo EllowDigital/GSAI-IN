@@ -19,7 +19,7 @@ export default function Blogs() {
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
   const [isRefreshing, setIsRefreshing] = useState(false);
-  
+
   const queryClient = useQueryClient();
 
   // Fetch blogs
@@ -39,9 +39,13 @@ export default function Blogs() {
   useEffect(() => {
     const channel = supabase
       .channel('blogs-realtime')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'blogs' }, () => {
-        queryClient.invalidateQueries({ queryKey: ['blogs'] });
-      })
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'blogs' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['blogs'] });
+        }
+      )
       .subscribe();
 
     return () => {
@@ -56,24 +60,24 @@ export default function Blogs() {
       if (error) throw error;
     },
     onMutate: (id) => {
-      setDeletingIds(prev => new Set(prev).add(id));
+      setDeletingIds((prev) => new Set(prev).add(id));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] });
       toast({
-        title: "Success",
-        description: "Blog deleted successfully",
+        title: 'Success',
+        description: 'Blog deleted successfully',
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Error", 
+        title: 'Error',
         description: error.message,
-        variant: "error"
+        variant: 'error',
       });
     },
     onSettled: (_, __, id) => {
-      setDeletingIds(prev => {
+      setDeletingIds((prev) => {
         const newSet = new Set(prev);
         newSet.delete(id);
         return newSet;
@@ -105,14 +109,14 @@ export default function Blogs() {
       await queryClient.invalidateQueries({ queryKey: ['blogs'] });
       await queryClient.refetchQueries({ queryKey: ['blogs'] });
       toast({
-        title: "Success",
-        description: "Blogs refreshed successfully",
+        title: 'Success',
+        description: 'Blogs refreshed successfully',
       });
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: "Failed to refresh blogs",
-        variant: "error"
+        title: 'Error',
+        description: 'Failed to refresh blogs',
+        variant: 'error',
       });
     } finally {
       setIsRefreshing(false);
@@ -135,7 +139,7 @@ export default function Blogs() {
       {/* Header and Controls */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-4 mb-6">
         <div className="flex gap-3 w-full lg:w-auto">
-          <RefreshButton 
+          <RefreshButton
             onRefresh={handleRefresh}
             isLoading={isLoading || isRefreshing}
             className="flex-1 lg:flex-none"
@@ -149,7 +153,7 @@ export default function Blogs() {
             <span className="inline sm:hidden">Add</span>
           </Button>
         </div>
-        
+
         <div className="flex gap-3 w-full lg:w-auto">
           <div className="flex gap-1 border rounded-full p-1 bg-gray-50 flex-1 lg:flex-none">
             <Button
@@ -187,9 +191,7 @@ export default function Blogs() {
           <div className="animate-spin h-8 w-8 border-4 border-blue-400 rounded-full border-t-transparent" />
         </div>
       ) : blogs.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          No blogs found.
-        </div>
+        <div className="text-center py-8 text-gray-500">No blogs found.</div>
       ) : viewMode === 'cards' ? (
         <BlogsCards
           blogs={blogs}

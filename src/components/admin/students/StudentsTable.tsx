@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Table,
@@ -9,7 +8,16 @@ import {
   TableCell,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2, User, ChevronsUpDown, Phone, Calendar, GraduationCap, CreditCard } from 'lucide-react';
+import {
+  Edit,
+  Trash2,
+  User,
+  ChevronsUpDown,
+  Phone,
+  Calendar,
+  GraduationCap,
+  CreditCard,
+} from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import clsx from 'clsx';
 
@@ -48,12 +56,17 @@ const SortableHeader = ({
   direction: string;
   onClick: () => void;
 }) => (
-  <TableHead className="cursor-pointer hover:bg-slate-100/50 transition-colors duration-200" onClick={onClick}>
+  <TableHead
+    className="cursor-pointer hover:bg-slate-100/50 transition-colors duration-200"
+    onClick={onClick}
+  >
     <div className="flex items-center gap-2">
       {children}
       <ChevronsUpDown
         className={`h-4 w-4 transition-all duration-200 ${
-          active ? 'opacity-100 text-blue-600 scale-110' : 'opacity-40 group-hover:opacity-60'
+          active
+            ? 'opacity-100 text-blue-600 scale-110'
+            : 'opacity-40 group-hover:opacity-60'
         }`}
       />
     </div>
@@ -89,8 +102,12 @@ export default function StudentsTable({
           <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-full flex items-center justify-center">
             <User className="w-8 h-8 text-slate-400" />
           </div>
-          <h3 className="text-lg font-semibold text-slate-600 mb-2">No students found</h3>
-          <p className="text-slate-500">Add your first student to get started</p>
+          <h3 className="text-lg font-semibold text-slate-600 mb-2">
+            No students found
+          </h3>
+          <p className="text-slate-500">
+            Add your first student to get started
+          </p>
         </div>
       </div>
     );
@@ -172,7 +189,11 @@ export default function StudentsTable({
                     />
                   ) : (
                     <AvatarFallback className="bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 font-bold">
-                      {stu.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                      {stu.name
+                        .split(' ')
+                        .map((n) => n[0])
+                        .join('')
+                        .toUpperCase()}
                     </AvatarFallback>
                   )}
                 </Avatar>
@@ -205,7 +226,7 @@ export default function StudentsTable({
                       ? new Date(stu.join_date).toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: 'short',
-                          day: 'numeric'
+                          day: 'numeric',
                         })
                       : '--'}
                   </span>

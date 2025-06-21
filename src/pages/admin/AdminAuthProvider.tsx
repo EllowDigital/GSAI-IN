@@ -28,6 +28,7 @@ const AdminAuthContext = createContext<AdminAuthContextType>({
   signOut: async () => {},
 });
 
+// Change this to a list if more admins are allowed in future
 const ADMIN_EMAIL = 'ghatakgsai@gmail.com';
 
 function AdminAuthProviderInner({ children }: { children: ReactNode }) {
@@ -44,21 +45,23 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     setIsLoading(false);
   };
 
-  const updateAuthState = (session: Session | null) => {
-    const email = session?.user?.email ?? null;
-    setSession(session);
-    setUserEmail(email);
+  const updateAuthState = (newSession: Session | null): boolean => {
+    const email = newSession?.user?.email ?? null;
     const isAdminUser = email === ADMIN_EMAIL;
+
+    setSession(newSession);
+    setUserEmail(email);
     setIsAdmin(isAdminUser);
+
     return isAdminUser;
   };
 
   useEffect(() => {
-    // Initial session check
-    const checkSession = async () => {
+    const initializeAuth = async () => {
       const { data } = await supabase.auth.getSession();
-      const currentSession = data.session;
-      const isAdminUser = updateAuthState(currentSession);
+      const session = data.session;
+      const isAdminUser = updateAuthState(session);
+
       setIsLoading(false);
 
       if (!isAdminUser) {
@@ -67,9 +70,8 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
       }
     };
 
-    checkSession();
+    initializeAuth();
 
-    // Auth change listener
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, newSession) => {
         const isAdminUser = updateAuthState(newSession);
@@ -101,15 +103,17 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
       return;
     }
 
-    if (data.user.email !== ADMIN_EMAIL) {
-      toast.error('Unauthorized: This is not the designated admin account.');
+    const signedInEmail = data.user.email;
+
+    if (signedInEmail !== ADMIN_EMAIL) {
+      toast.error('Unauthorized: Not an admin account.');
       await supabase.auth.signOut();
       clearState();
       return;
     }
 
     updateAuthState(data.session ?? null);
-    toast.success('Successfully logged in as admin.');
+    toast.success('Logged in as admin.');
     navigate('/admin/dashboard', { replace: true });
   };
 
@@ -129,10 +133,12 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
   );
 }
 
+// Outer provider to allow wrapping and reuse if needed
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   return <AdminAuthProviderInner>{children}</AdminAuthProviderInner>;
 }
 
+// Hook to consume admin auth context
 export function useAdminAuth(): AdminAuthContextType {
   return useContext(AdminAuthContext);
 }

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -59,7 +58,8 @@ export default function AdvancedStats() {
     if (!studentsData) return [];
     const programCounts: Record<string, number> = {};
     studentsData.forEach((student) => {
-      programCounts[student.program] = (programCounts[student.program] || 0) + 1;
+      programCounts[student.program] =
+        (programCounts[student.program] || 0) + 1;
     });
     return Object.entries(programCounts).map(([name, value]) => ({
       name,
@@ -160,8 +160,8 @@ export default function AdvancedStats() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={monthlyEnrollments}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="month" 
+                  <XAxis
+                    dataKey="month"
                     fontSize={12}
                     tick={{ fontSize: 10 }}
                   />

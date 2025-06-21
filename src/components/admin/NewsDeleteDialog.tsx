@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Dialog,
@@ -31,7 +30,8 @@ export default function NewsDeleteDialog({
           <DialogTitle>Delete News</DialogTitle>
         </DialogHeader>
         <DialogDescription>
-          Are you sure you want to delete this news article? This action cannot be undone.
+          Are you sure you want to delete this news article? This action cannot
+          be undone.
         </DialogDescription>
         <DialogFooter>
           <DialogClose asChild>

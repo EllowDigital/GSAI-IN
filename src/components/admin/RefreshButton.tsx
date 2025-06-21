@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,7 +15,7 @@ const RefreshButton: React.FC<RefreshButtonProps> = ({
   isLoading = false,
   className = '',
   size = 'default',
-  variant = 'outline'
+  variant = 'outline',
 }) => {
   const [isRefreshing, setIsRefreshing] = React.useState(false);
 
@@ -51,19 +50,21 @@ const RefreshButton: React.FC<RefreshButtonProps> = ({
       aria-label={loading ? 'Refreshing...' : 'Refresh data'}
     >
       {/* Background Animation */}
-      <div className={`
+      <div
+        className={`
         absolute inset-0 bg-gradient-to-r from-blue-100 to-indigo-100 
         opacity-0 group-hover:opacity-100 transition-opacity duration-300
         ${loading ? 'animate-pulse' : ''}
-      `} />
-      
+      `}
+      />
+
       {/* Content */}
       <div className="relative flex items-center gap-2">
-        <RefreshCw 
+        <RefreshCw
           className={`
             w-4 h-4 transition-all duration-500
             ${loading ? 'animate-spin text-blue-600' : 'group-hover:rotate-180'}
-          `} 
+          `}
         />
         <span className="font-medium text-sm">
           {loading ? 'Refreshing...' : 'Refresh'}

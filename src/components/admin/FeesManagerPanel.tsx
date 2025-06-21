@@ -110,7 +110,7 @@ export default function FeesManagerPanel() {
     setEditFee(fee);
     setModalOpen(true);
   };
-  
+
   const handleShowHistory = (student: any) => {
     setHistoryStudent(student);
     setHistoryDrawerOpen(true);
@@ -132,14 +132,14 @@ export default function FeesManagerPanel() {
       await queryClient.refetchQueries({ queryKey: ['fees'] });
       await queryClient.refetchQueries({ queryKey: ['students'] });
       toast({
-        title: "Success",
-        description: "Fees refreshed successfully",
+        title: 'Success',
+        description: 'Fees refreshed successfully',
       });
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: "Failed to refresh fees",
-        variant: "error"
+        title: 'Error',
+        description: 'Failed to refresh fees',
+        variant: 'error',
       });
     } finally {
       setIsRefreshing(false);
@@ -195,7 +195,7 @@ export default function FeesManagerPanel() {
             />
           </div>
           <div className="flex gap-3 w-full xl:w-auto">
-            <RefreshButton 
+            <RefreshButton
               onRefresh={handleRefresh}
               isLoading={isLoading}
               className="flex-1 xl:flex-none min-w-[100px]"
@@ -212,9 +212,7 @@ export default function FeesManagerPanel() {
       </div>
 
       {/* Content */}
-      <div className="w-full overflow-hidden">
-        {renderContent()}
-      </div>
+      <div className="w-full overflow-hidden">{renderContent()}</div>
 
       {/* Modals/Drawers */}
       {modalOpen && (

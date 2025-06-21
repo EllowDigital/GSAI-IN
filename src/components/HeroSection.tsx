@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ArrowDownCircle } from 'lucide-react';
@@ -17,15 +16,15 @@ const bgImages = [
 
 const fadeVariants: Variants = {
   initial: { opacity: 0, scale: 1.05 },
-  animate: { 
-    opacity: 1, 
+  animate: {
+    opacity: 1,
     scale: 1,
-    transition: { duration: 1.2, ease: "easeOut" }
+    transition: { duration: 1.2, ease: 'easeOut' },
   },
-  exit: { 
-    opacity: 0, 
+  exit: {
+    opacity: 0,
     scale: 0.95,
-    transition: { duration: 1, ease: "easeOut" }
+    transition: { duration: 1, ease: 'easeOut' },
   },
 };
 
@@ -34,7 +33,7 @@ const textVariants: Variants = {
   animate: {
     opacity: 1,
     y: 0,
-    transition: { duration: 1, ease: "easeOut" },
+    transition: { duration: 1, ease: 'easeOut' },
   },
 };
 
@@ -151,7 +150,9 @@ export default function HeroSection() {
             </a>
 
             <button
-              onClick={() => window.open('https://www.instagram.com/ghatakgsai/', '_blank')}
+              onClick={() =>
+                window.open('https://www.instagram.com/ghatakgsai/', '_blank')
+              }
               className="group inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white font-bold rounded-full shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-400"
             >
               <FaInstagram className="w-5 h-5" />
@@ -170,7 +171,9 @@ export default function HeroSection() {
           transition={{ delay: 2, duration: 0.8 }}
         >
           <ArrowDownCircle className="w-8 h-8 text-white/80 animate-bounce" />
-          <span className="text-sm text-white/70 font-medium tracking-wider">Scroll</span>
+          <span className="text-sm text-white/70 font-medium tracking-wider">
+            Scroll
+          </span>
         </motion.div>
 
         <motion.div
@@ -196,7 +199,10 @@ export default function HeroSection() {
 
       {/* Background Decorations */}
       <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-br from-yellow-400/20 to-orange-500/20 rounded-full blur-xl animate-pulse" />
-      <div className="absolute bottom-32 right-16 w-32 h-32 bg-gradient-to-br from-red-500/20 to-pink-500/20 rounded-full blur-xl animate-pulse" style={{ animationDelay: '1s' }} />
+      <div
+        className="absolute bottom-32 right-16 w-32 h-32 bg-gradient-to-br from-red-500/20 to-pink-500/20 rounded-full blur-xl animate-pulse"
+        style={{ animationDelay: '1s' }}
+      />
     </section>
   );
 }

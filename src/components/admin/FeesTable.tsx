@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,7 +8,15 @@ import {
   TableHead,
   TableCell,
 } from '@/components/ui/table';
-import { Edit, Plus, History, DollarSign, Calendar, User, GraduationCap } from 'lucide-react';
+import {
+  Edit,
+  Plus,
+  History,
+  DollarSign,
+  Calendar,
+  User,
+  GraduationCap,
+} from 'lucide-react';
 import clsx from 'clsx';
 import { getFeeStatus, getStatusTextAndColor } from '@/utils/feeStatusUtils';
 
@@ -45,8 +52,12 @@ export default function FeesTable({
           <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-full flex items-center justify-center">
             <DollarSign className="w-8 h-8 text-slate-400" />
           </div>
-          <h3 className="text-lg font-semibold text-slate-600 mb-2">No fee records found</h3>
-          <p className="text-slate-500">No students match the selected filters</p>
+          <h3 className="text-lg font-semibold text-slate-600 mb-2">
+            No fee records found
+          </h3>
+          <p className="text-slate-500">
+            No students match the selected filters
+          </p>
         </div>
       </div>
     );
@@ -118,13 +129,18 @@ export default function FeesTable({
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                     <span className="font-medium text-slate-700">
-                      {fee ? `${fee.month.toString().padStart(2, '0')}/${fee.year}` : '--'}
+                      {fee
+                        ? `${fee.month.toString().padStart(2, '0')}/${fee.year}`
+                        : '--'}
                     </span>
                   </div>
                 </TableCell>
                 <TableCell>
                   <span className="font-bold text-green-700">
-                    ₹{fee ? fee.monthly_fee.toLocaleString() : student.default_monthly_fee.toLocaleString()}
+                    ₹
+                    {fee
+                      ? fee.monthly_fee.toLocaleString()
+                      : student.default_monthly_fee.toLocaleString()}
                   </span>
                 </TableCell>
                 <TableCell>
@@ -164,8 +180,8 @@ export default function FeesTable({
                       onClick={() => onEditFee({ student, fee })}
                       className={clsx(
                         'h-9 w-9 rounded-xl transition-all duration-200 group/btn',
-                        fee 
-                          ? 'border-slate-200 hover:border-amber-300 hover:bg-amber-50' 
+                        fee
+                          ? 'border-slate-200 hover:border-amber-300 hover:bg-amber-50'
                           : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-md hover:shadow-lg'
                       )}
                     >

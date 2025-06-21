@@ -18,7 +18,7 @@ export default function NewsManager() {
   const [deleteNewsId, setDeleteNewsId] = useState<string | null>(null);
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
   const [isRefreshing, setIsRefreshing] = useState(false);
-  
+
   const queryClient = useQueryClient();
 
   // Fetch news
@@ -38,9 +38,13 @@ export default function NewsManager() {
   useEffect(() => {
     const channel = supabase
       .channel('news-realtime')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'news' }, () => {
-        queryClient.invalidateQueries({ queryKey: ['news'] });
-      })
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'news' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['news'] });
+        }
+      )
       .subscribe();
 
     return () => {
@@ -55,24 +59,24 @@ export default function NewsManager() {
       if (error) throw error;
     },
     onMutate: (id) => {
-      setDeletingIds(prev => new Set(prev).add(id));
+      setDeletingIds((prev) => new Set(prev).add(id));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['news'] });
       toast({
-        title: "Success",
-        description: "News deleted successfully",
+        title: 'Success',
+        description: 'News deleted successfully',
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Error", 
+        title: 'Error',
         description: error.message,
-        variant: "error"
+        variant: 'error',
       });
     },
     onSettled: (_, __, id) => {
-      setDeletingIds(prev => {
+      setDeletingIds((prev) => {
         const newSet = new Set(prev);
         newSet.delete(id);
         return newSet;
@@ -111,14 +115,14 @@ export default function NewsManager() {
       await queryClient.invalidateQueries({ queryKey: ['news'] });
       await queryClient.refetchQueries({ queryKey: ['news'] });
       toast({
-        title: "Success",
-        description: "News refreshed successfully",
+        title: 'Success',
+        description: 'News refreshed successfully',
       });
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: "Failed to refresh news",
-        variant: "error"
+        title: 'Error',
+        description: 'Failed to refresh news',
+        variant: 'error',
       });
     } finally {
       setIsRefreshing(false);
@@ -140,7 +144,7 @@ export default function NewsManager() {
       {/* Header and Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6">
         <div className="flex gap-3 w-full sm:w-auto">
-          <RefreshButton 
+          <RefreshButton
             onRefresh={handleRefresh}
             isLoading={isLoading || isRefreshing}
             className="flex-1 sm:flex-none"
@@ -175,7 +179,10 @@ export default function NewsManager() {
       ) : (
         <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {news.map((item) => (
-            <div key={item.id} className="bg-white rounded-lg shadow-md border p-4">
+            <div
+              key={item.id}
+              className="bg-white rounded-lg shadow-md border p-4"
+            >
               {item.image_url && (
                 <img
                   src={item.image_url}
@@ -193,11 +200,13 @@ export default function NewsManager() {
                 <span className="text-xs text-gray-500">
                   {formatDate(item.created_at)}
                 </span>
-                <span className={`px-2 py-1 rounded-full text-xs ${
-                  item.status === 'Published' 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-yellow-100 text-yellow-800'
-                }`}>
+                <span
+                  className={`px-2 py-1 rounded-full text-xs ${
+                    item.status === 'Published'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-yellow-100 text-yellow-800'
+                  }`}
+                >
                   {item.status}
                 </span>
               </div>
@@ -217,7 +226,7 @@ export default function NewsManager() {
                   disabled={isDeleting(item.id)}
                   className="flex-1"
                 >
-                  {isDeleting(item.id) ? "Deleting..." : "Delete"}
+                  {isDeleting(item.id) ? 'Deleting...' : 'Delete'}
                 </Button>
               </div>
             </div>
@@ -231,7 +240,7 @@ export default function NewsManager() {
         onOpenChange={handleModalClose}
         editingNews={editingNews}
       />
-      
+
       <NewsDeleteDialog
         open={!!deleteNewsId}
         onClose={() => setDeleteNewsId(null)}

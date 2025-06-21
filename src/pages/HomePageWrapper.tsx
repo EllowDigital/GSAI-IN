@@ -5,37 +5,46 @@ import Index from './Index';
 
 const ADMIN_EMAIL = 'ghatakgsai@gmail.com';
 
-const HomePageWrapper = () => {
+const HomePageWrapper: React.FC = () => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const redirectIfAdmin = (email?: string | null) => {
-      if (email === ADMIN_EMAIL) {
-        console.log('Admin session detected, redirecting to dashboard.');
-        navigate('/admin/dashboard', { replace: true });
-      }
-    };
+  // Helper: Check and redirect if user is admin
+  const redirectIfAdmin = (email?: string | null) => {
+    if (email?.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+      console.info('✅ Admin detected — redirecting to /admin/dashboard');
+      navigate('/admin/dashboard', { replace: true });
+    }
+  };
 
+  useEffect(() => {
+    // On initial mount: check session
     const checkInitialSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      if (error) {
-        console.error('Error fetching session:', error.message);
-        return;
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('❌ Failed to get session:', error.message);
+          return;
+        }
+        const email = data?.session?.user?.email;
+        redirectIfAdmin(email);
+      } catch (err) {
+        console.error('❌ Unexpected error while checking session:', err);
       }
-      const email = data?.session?.user?.email;
-      redirectIfAdmin(email);
     };
 
     checkInitialSession();
 
+    // Listen for auth changes
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (event === 'SIGNED_IN') {
-          redirectIfAdmin(session?.user?.email);
+          const email = session?.user?.email;
+          redirectIfAdmin(email);
         }
       }
     );
 
+    // Cleanup
     return () => {
       authListener?.subscription?.unsubscribe();
     };

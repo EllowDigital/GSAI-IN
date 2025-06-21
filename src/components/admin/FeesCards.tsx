@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -29,14 +28,19 @@ export default function FeesCards({
         const status = fee ? getFeeStatus(fee) : 'unpaid';
         const [statusText, statusClass] = getStatusTextAndColor(status);
         return (
-          <Card key={student.id} className="rounded-xl shadow-lg bg-white p-3 hover:shadow-xl transition-shadow duration-200">
+          <Card
+            key={student.id}
+            className="rounded-xl shadow-lg bg-white p-3 hover:shadow-xl transition-shadow duration-200"
+          >
             <CardContent className="p-0 flex flex-col gap-2">
               <div className="flex justify-between items-start gap-2">
                 <div className="flex-1 min-w-0">
                   <h4 className="font-bold text-base text-gray-800 truncate">
                     {student.name}
                   </h4>
-                  <p className="text-xs text-gray-500 truncate">{student.program}</p>
+                  <p className="text-xs text-gray-500 truncate">
+                    {student.program}
+                  </p>
                 </div>
                 <span
                   className={clsx(
@@ -58,7 +62,9 @@ export default function FeesCards({
                 </div>
                 <div className="flex justify-between">
                   <strong>Fee:</strong>
-                  <span>₹{fee ? fee.monthly_fee : student.default_monthly_fee}</span>
+                  <span>
+                    ₹{fee ? fee.monthly_fee : student.default_monthly_fee}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <strong>Paid:</strong>

@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -72,11 +71,12 @@ const cardsConfig: CardConfig[] = [
   },
 ];
 
+// Fetch counts for all dashboard entities
 const fetchDashboardCounts = async () => {
   const countPromises = cardsConfig.map(async ({ key, table }) => {
     const { count, error } = await supabase
-      .from(table as any)
-      .select('id', { count: 'exact', head: true });
+      .from(table)
+      .select('*', { count: 'exact', head: true });
 
     if (error) {
       console.error(`Error fetching count for ${table}:`, error.message);
@@ -89,18 +89,20 @@ const fetchDashboardCounts = async () => {
   return Object.fromEntries(results);
 };
 
-export default function StatsHome() {
+const StatsHome: React.FC = () => {
   const queryClient = useQueryClient();
 
   const { data: counts, isLoading: isLoadingCounts } = useQuery({
     queryKey: ['dashboardCounts'],
     queryFn: fetchDashboardCounts,
+    staleTime: 60 * 1000, // 1 minute cache
   });
 
+  // Listen to real-time changes on Supabase tables
   useEffect(() => {
     const channels = cardsConfig.map(({ table }) =>
       supabase
-        .channel(`public:${table}:dashboard`)
+        .channel(`realtime:${table}`)
         .on('postgres_changes', { event: '*', schema: 'public', table }, () => {
           queryClient.invalidateQueries({ queryKey: ['dashboardCounts'] });
         })
@@ -112,31 +114,30 @@ export default function StatsHome() {
     };
   }, [queryClient]);
 
+  const handleRefresh = async () => {
+    try {
+      await queryClient.invalidateQueries({ queryKey: ['dashboardCounts'] });
+      toast({
+        title: 'Refreshed',
+        description: 'Dashboard data updated successfully.',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: 'Unable to refresh dashboard data.',
+        variant: 'error',
+      });
+    }
+  };
+
   const analyticsData = cardsConfig.map(({ key, label }) => ({
     name: label,
     count: counts?.[key] ?? 0,
   }));
 
-  const handleRefresh = async () => {
-    try {
-      await queryClient.invalidateQueries({ queryKey: ['dashboardCounts'] });
-      await queryClient.refetchQueries({ queryKey: ['dashboardCounts'] });
-      toast({
-        title: "Success",
-        description: "Dashboard refreshed successfully",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "Failed to refresh dashboard",
-        variant: "error"
-      });
-    }
-  };
-
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* Enhanced Header */}
+      {/* Header Section */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
@@ -144,23 +145,26 @@ export default function StatsHome() {
               <Activity className="w-6 h-6 text-yellow-700" />
             </div>
             <div>
-              <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent dark:from-white dark:to-slate-300">
                 Dashboard Overview
               </h1>
-              <p className="text-slate-600 font-medium">
+              <p className="text-slate-600 dark:text-slate-400 font-medium">
                 Real-time analytics and system insights
               </p>
             </div>
           </div>
         </div>
-        
+
+        {/* Refresh + Live Tag */}
         <div className="flex items-center gap-4">
-          <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-xl border border-slate-200">
-            <BarChart3 className="w-4 h-4 text-slate-500" />
-            <span className="text-sm font-medium text-slate-600">Live Data</span>
+          <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+            <BarChart3 className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+            <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
+              Live Data
+            </span>
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
           </div>
-          <RefreshButton 
+          <RefreshButton
             onRefresh={handleRefresh}
             isLoading={isLoadingCounts}
             size="default"
@@ -168,20 +172,23 @@ export default function StatsHome() {
         </div>
       </div>
 
-      {/* Enhanced Stats Cards */}
+      {/* Stats Cards */}
       <StatsCards
         cardsConfig={cardsConfig}
         counts={counts}
         loading={isLoadingCounts}
       />
 
-      {/* Enhanced Charts & Advanced Panel */}
+      {/* Charts & Panel */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        {/* Analytics Chart */}
         <div className="xl:col-span-2 space-y-6">
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/50 p-6">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow border border-slate-200 dark:border-slate-700 p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-slate-800">Analytics Overview</h2>
-              <div className="flex items-center gap-2 text-sm text-slate-500">
+              <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+                Analytics Overview
+              </h2>
+              <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
                 <div className="w-2 h-2 bg-blue-500 rounded-full" />
                 <span>Current Period</span>
               </div>
@@ -189,12 +196,17 @@ export default function StatsHome() {
             <AnalyticsChart analyticsData={analyticsData} />
           </div>
         </div>
-        
+
+        {/* Advanced Panel */}
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/50 overflow-hidden">
-            <div className="p-6 border-b border-slate-100">
-              <h2 className="text-xl font-bold text-slate-800">System Tools</h2>
-              <p className="text-sm text-slate-600 mt-1">Quick access and utilities</p>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-700">
+              <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+                System Tools
+              </h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                Quick access and utilities
+              </p>
             </div>
             <AdvancedPanel />
           </div>
@@ -202,4 +214,6 @@ export default function StatsHome() {
       </div>
     </div>
   );
-}
+};
+
+export default StatsHome;
