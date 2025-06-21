@@ -154,7 +154,7 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
               role="menuitem"
             >
               <LogIn className="w-5 h-5" />
-              <span>Admin Panel</span>
+              <span>Admin Login</span>
             </Link>
 
             {/* Contact Info */}

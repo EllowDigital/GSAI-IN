@@ -67,7 +67,7 @@ export function DesktopNavbar() {
           aria-label="Access admin panel"
         >
           <LogIn className="w-5 h-5" />
-          <span>Admin Panel</span>
+          <span>Admin Login</span>
         </Link>
       </div>
 
@@ -141,7 +141,7 @@ export function DesktopNavbar() {
                   className="flex items-center space-x-2 w-full px-4 py-3 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold rounded-lg hover:shadow-md transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-300"
                 >
                   <LogIn className="w-4 h-4" />
-                  <span>Admin Panel</span>
+                  <span>Admin Login</span>
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>

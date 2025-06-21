@@ -74,7 +74,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
   const { signOut } = useAdminAuth();
-  const APP_VERSION = '1.0.0';
+  const APP_VERSION = '1.2.2'; // Always Change If any change in complete admin dashboard
 
   const mainItems = navItems.filter((item) => item.category === 'main');
   const managementItems = navItems.filter(
@@ -187,7 +187,7 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
             GSAI Admin
           </span>
           <p className="text-xs font-medium text-slate-500 mt-1">
-            Management Portal
+            Nitesh Yadav
           </p>
         </div>
       </div>
