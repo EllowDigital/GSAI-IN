@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -13,6 +14,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import BlogImageUploader from './BlogImageUploader';
+import { Tables } from '@/integrations/supabase/types';
+
+type Blog = Tables<'blogs'>;
 
 type BlogForm = {
   title: string;
@@ -25,7 +29,7 @@ type BlogForm = {
 type Props = {
   open: boolean;
   mode: 'create' | 'edit';
-  blog?: any;
+  blog?: Blog;
   onClose(): void;
 };
 
