@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -41,7 +40,7 @@ export default function NewsEditorModal({
   editingNews,
 }: Props) {
   const queryClient = useQueryClient();
-  
+
   const {
     register,
     handleSubmit,
@@ -95,25 +94,25 @@ export default function NewsEditorModal({
           .eq('id', editingNews.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase
-          .from('news')
-          .insert([newsData]);
+        const { error } = await supabase.from('news').insert([newsData]);
         if (error) throw error;
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['news'] });
       toast({
-        title: "Success",
-        description: editingNews ? "News updated successfully" : "News created successfully",
+        title: 'Success',
+        description: editingNews
+          ? 'News updated successfully'
+          : 'News created successfully',
       });
       onOpenChange(false);
     },
     onError: (error: any) => {
       toast({
-        title: "Error",
+        title: 'Error',
         description: error.message,
-        variant: "error"
+        variant: 'error',
       });
     },
   });
@@ -197,11 +196,19 @@ export default function NewsEditorModal({
           </div>
           <DialogFooter className="flex justify-end gap-2 pt-4">
             <DialogClose asChild>
-              <Button variant="secondary" type="button" disabled={mutation.isPending}>
+              <Button
+                variant="secondary"
+                type="button"
+                disabled={mutation.isPending}
+              >
                 Cancel
               </Button>
             </DialogClose>
-            <Button variant="default" type="submit" disabled={mutation.isPending}>
+            <Button
+              variant="default"
+              type="submit"
+              disabled={mutation.isPending}
+            >
               {mutation.isPending ? (
                 <span className="animate-spin inline-block w-4 h-4 border-t-2 border-white border-solid rounded-full mr-2" />
               ) : null}

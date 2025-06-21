@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';
@@ -21,7 +20,14 @@ const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn('bg-gradient-to-r from-slate-50 to-slate-100/50 [&_tr]:border-b border-slate-200/60', className)} {...props} />
+  <thead
+    ref={ref}
+    className={cn(
+      'bg-gradient-to-r from-slate-50 to-slate-100/50 [&_tr]:border-b border-slate-200/60',
+      className
+    )}
+    {...props}
+  />
 ));
 TableHeader.displayName = 'TableHeader';
 
@@ -88,7 +94,10 @@ const TableCell = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <td
     ref={ref}
-    className={cn('p-6 align-middle [&:has([role=checkbox])]:pr-0 border-r border-slate-100/60 last:border-r-0 font-medium text-slate-600', className)}
+    className={cn(
+      'p-6 align-middle [&:has([role=checkbox])]:pr-0 border-r border-slate-100/60 last:border-r-0 font-medium text-slate-600',
+      className
+    )}
     {...props}
   />
 ));

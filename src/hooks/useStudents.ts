@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
@@ -32,7 +31,7 @@ export function useStudents() {
         'id, name, aadhar_number, program, join_date, parent_name, parent_contact, profile_image_url, created_at'
       )
       .order('created_at', { ascending: false });
-    
+
     if (error) {
       toast.error('Failed to fetch students: ' + error.message);
     }

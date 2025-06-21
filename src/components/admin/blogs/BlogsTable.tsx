@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -54,7 +53,9 @@ export default function BlogsTable({
                 </div>
               </TableHead>
               <TableHead>Description</TableHead>
-              <TableHead className="text-center min-w-[140px]">Actions</TableHead>
+              <TableHead className="text-center min-w-[140px]">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -92,7 +93,10 @@ export default function BlogsTable({
                   </div>
                 </TableCell>
                 <TableCell>
-                  <p className="text-slate-600 line-clamp-2 text-sm leading-relaxed" title={blog.description ?? ''}>
+                  <p
+                    className="text-slate-600 line-clamp-2 text-sm leading-relaxed"
+                    title={blog.description ?? ''}
+                  >
                     {blog.description || 'No description available'}
                   </p>
                 </TableCell>

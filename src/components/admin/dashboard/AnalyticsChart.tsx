@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   BarChart,
@@ -33,24 +32,23 @@ export default function AnalyticsChart({ analyticsData }: Props) {
   return (
     <div className="w-full h-[300px] md:h-[400px] p-4">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={analyticsData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+        <BarChart
+          data={analyticsData}
+          margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+        >
           <defs>
             <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.8}/>
-              <stop offset="100%" stopColor="#1E40AF" stopOpacity={0.6}/>
+              <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.8} />
+              <stop offset="100%" stopColor="#1E40AF" stopOpacity={0.6} />
             </linearGradient>
           </defs>
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke="#E2E8F0" 
-            opacity={0.5}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" opacity={0.5} />
           <XAxis
             dataKey="name"
-            tick={{ 
-              fontWeight: 600, 
-              fontSize: 11, 
-              fill: '#475569' // slate-600
+            tick={{
+              fontWeight: 600,
+              fontSize: 11,
+              fill: '#475569', // slate-600
             }}
             axisLine={false}
             tickLine={false}
@@ -61,19 +59,19 @@ export default function AnalyticsChart({ analyticsData }: Props) {
           />
           <YAxis
             allowDecimals={false}
-            tick={{ 
-              fontWeight: 600, 
-              fontSize: 12, 
-              fill: '#64748B' // slate-500
+            tick={{
+              fontWeight: 600,
+              fontSize: 12,
+              fill: '#64748B', // slate-500
             }}
             axisLine={false}
             tickLine={false}
             width={50}
           />
           <Tooltip
-            cursor={{ 
-              fill: 'rgba(59, 130, 246, 0.1)', 
-              radius: 8 
+            cursor={{
+              fill: 'rgba(59, 130, 246, 0.1)',
+              radius: 8,
             }}
             contentStyle={{
               borderRadius: '12px',
@@ -87,21 +85,14 @@ export default function AnalyticsChart({ analyticsData }: Props) {
             labelStyle={{
               color: '#1E40AF', // blue-800
               fontWeight: 700,
-              marginBottom: '4px'
+              marginBottom: '4px',
             }}
-            formatter={(value: number) => [
-              value.toLocaleString(), 
-              'Count'
-            ]}
+            formatter={(value: number) => [value.toLocaleString(), 'Count']}
           />
-          <Bar 
-            dataKey="count" 
-            radius={[8, 8, 0, 0]}
-            maxBarSize={60}
-          >
+          <Bar dataKey="count" radius={[8, 8, 0, 0]} maxBarSize={60}>
             {analyticsData.map((entry, index) => (
-              <Cell 
-                key={`cell-${index}`} 
+              <Cell
+                key={`cell-${index}`}
                 fill={chartColors[index % chartColors.length]}
               />
             ))}

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
@@ -18,53 +17,53 @@ import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 
 // Modern sidebar nav items with improved categorization
 const navItems = [
-  { 
-    title: 'Homepage', 
-    url: 'https://ghatakgsai.netlify.app/', 
+  {
+    title: 'Homepage',
+    url: 'https://ghatakgsai.netlify.app/',
     icon: Globe,
-    category: 'external'
+    category: 'external',
   },
-  { 
-    title: 'Dashboard', 
-    url: '/admin/dashboard', 
+  {
+    title: 'Dashboard',
+    url: '/admin/dashboard',
     icon: Home,
-    category: 'main'
+    category: 'main',
   },
-  { 
-    title: 'Fees', 
-    url: '/admin/dashboard/fees', 
+  {
+    title: 'Fees',
+    url: '/admin/dashboard/fees',
     icon: BadgeDollarSign,
-    category: 'management'
+    category: 'management',
   },
-  { 
-    title: 'Students', 
-    url: '/admin/dashboard/students', 
+  {
+    title: 'Students',
+    url: '/admin/dashboard/students',
     icon: Users,
-    category: 'management'
+    category: 'management',
   },
-  { 
-    title: 'Events', 
-    url: '/admin/dashboard/events', 
+  {
+    title: 'Events',
+    url: '/admin/dashboard/events',
     icon: Calendar,
-    category: 'content'
+    category: 'content',
   },
-  { 
-    title: 'Blogs', 
-    url: '/admin/dashboard/blogs', 
+  {
+    title: 'Blogs',
+    url: '/admin/dashboard/blogs',
     icon: BookOpen,
-    category: 'content'
+    category: 'content',
   },
-  { 
-    title: 'News', 
-    url: '/admin/dashboard/news', 
+  {
+    title: 'News',
+    url: '/admin/dashboard/news',
     icon: Newspaper,
-    category: 'content'
+    category: 'content',
   },
-  { 
-    title: 'Gallery', 
-    url: '/admin/dashboard/gallery', 
+  {
+    title: 'Gallery',
+    url: '/admin/dashboard/gallery',
     icon: GalleryIcon,
-    category: 'content'
+    category: 'content',
   },
 ];
 
@@ -77,12 +76,20 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
   const { signOut } = useAdminAuth();
   const APP_VERSION = '1.0.0';
 
-  const mainItems = navItems.filter(item => item.category === 'main');
-  const managementItems = navItems.filter(item => item.category === 'management');
-  const contentItems = navItems.filter(item => item.category === 'content');
-  const externalItems = navItems.filter(item => item.category === 'external');
+  const mainItems = navItems.filter((item) => item.category === 'main');
+  const managementItems = navItems.filter(
+    (item) => item.category === 'management'
+  );
+  const contentItems = navItems.filter((item) => item.category === 'content');
+  const externalItems = navItems.filter((item) => item.category === 'external');
 
-  const NavSection = ({ title, items }: { title: string; items: typeof navItems }) => (
+  const NavSection = ({
+    title,
+    items,
+  }: {
+    title: string;
+    items: typeof navItems;
+  }) => (
     <div className="space-y-1">
       <h3 className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
         {title}
@@ -126,9 +133,13 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
                 {({ isActive }) => (
                   <>
                     <div className="flex items-center gap-3">
-                      <div className={`p-1.5 rounded-lg transition-colors duration-200 ${
-                        isActive ? 'bg-yellow-200' : 'bg-slate-100 group-hover:bg-slate-200'
-                      }`}>
+                      <div
+                        className={`p-1.5 rounded-lg transition-colors duration-200 ${
+                          isActive
+                            ? 'bg-yellow-200'
+                            : 'bg-slate-100 group-hover:bg-slate-200'
+                        }`}
+                      >
                         <Icon className="w-4 h-4" />
                       </div>
                       <span>{title}</span>
@@ -198,12 +209,15 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
           <LogOut size={16} />
           <span>Sign Out</span>
         </button>
-        
+
         <div className="mt-4 text-center">
           <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
             <span>© 2025 GSAI</span>
             <span className="text-slate-300">•</span>
-            <div className="flex items-center gap-1" title={`Version ${APP_VERSION}`}>
+            <div
+              className="flex items-center gap-1"
+              title={`Version ${APP_VERSION}`}
+            >
               <GitBranch size={10} />
               <span>v{APP_VERSION}</span>
             </div>

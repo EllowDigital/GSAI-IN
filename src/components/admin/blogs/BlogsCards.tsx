@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -25,7 +24,10 @@ export default function BlogsCards({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
       {blogs.map((blog) => (
-        <Card key={blog.id} className="rounded-xl shadow-lg bg-white hover:shadow-xl transition-shadow duration-200">
+        <Card
+          key={blog.id}
+          className="rounded-xl shadow-lg bg-white hover:shadow-xl transition-shadow duration-200"
+        >
           <CardContent className="p-4">
             {blog.image_url && (
               <img

@@ -16,7 +16,7 @@ export default function Gallery() {
   const [uploadDrawerOpen, setUploadDrawerOpen] = useState(false);
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
   const [isRefreshing, setIsRefreshing] = useState(false);
-  
+
   const queryClient = useQueryClient();
 
   // Fetch gallery images
@@ -36,9 +36,13 @@ export default function Gallery() {
   useEffect(() => {
     const channel = supabase
       .channel('gallery-realtime')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'gallery_images' }, () => {
-        queryClient.invalidateQueries({ queryKey: ['gallery_images'] });
-      })
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'gallery_images' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['gallery_images'] });
+        }
+      )
       .subscribe();
 
     return () => {
@@ -49,28 +53,31 @@ export default function Gallery() {
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('gallery_images').delete().eq('id', id);
+      const { error } = await supabase
+        .from('gallery_images')
+        .delete()
+        .eq('id', id);
       if (error) throw error;
     },
     onMutate: (id) => {
-      setDeletingIds(prev => new Set(prev).add(id));
+      setDeletingIds((prev) => new Set(prev).add(id));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['gallery_images'] });
       toast({
-        title: "Success",
-        description: "Image deleted successfully",
+        title: 'Success',
+        description: 'Image deleted successfully',
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Error", 
+        title: 'Error',
         description: error.message,
-        variant: "error"
+        variant: 'error',
       });
     },
     onSettled: (_, __, id) => {
-      setDeletingIds(prev => {
+      setDeletingIds((prev) => {
         const newSet = new Set(prev);
         newSet.delete(id);
         return newSet;
@@ -96,14 +103,14 @@ export default function Gallery() {
       await queryClient.invalidateQueries({ queryKey: ['gallery_images'] });
       await queryClient.refetchQueries({ queryKey: ['gallery_images'] });
       toast({
-        title: "Success",
-        description: "Gallery refreshed successfully",
+        title: 'Success',
+        description: 'Gallery refreshed successfully',
       });
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: "Failed to refresh gallery",
-        variant: "error"
+        title: 'Error',
+        description: 'Failed to refresh gallery',
+        variant: 'error',
       });
     } finally {
       setIsRefreshing(false);
@@ -117,7 +124,7 @@ export default function Gallery() {
       {/* Header and Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6">
         <div className="flex gap-3 w-full sm:w-auto">
-          <RefreshButton 
+          <RefreshButton
             onRefresh={handleRefresh}
             isLoading={isLoading || isRefreshing}
             className="flex-1 sm:flex-none"
@@ -131,7 +138,7 @@ export default function Gallery() {
             <span className="inline sm:hidden">Upload</span>
           </Button>
         </div>
-        
+
         <button
           onClick={() => exportGalleryToCsv(images)}
           className="border border-pink-400 px-3 md:px-4 py-2 rounded-full bg-pink-50 text-pink-700 font-medium hover:bg-pink-200 transition text-sm w-full sm:w-auto sm:min-w-[120px]"
@@ -147,9 +154,7 @@ export default function Gallery() {
           <div className="animate-spin h-8 w-8 border-4 border-pink-400 rounded-full border-t-transparent" />
         </div>
       ) : images.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          No images found.
-        </div>
+        <div className="text-center py-8 text-gray-500">No images found.</div>
       ) : (
         <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {images.map((image) => (

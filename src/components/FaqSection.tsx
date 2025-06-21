@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Accordion,
@@ -6,11 +5,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from '@/components/ui/accordion';
-import {
-  HelpCircle,
-  ChevronDown,
-  Sparkles,
-} from 'lucide-react';
+import { HelpCircle, ChevronDown, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export const faqs = [

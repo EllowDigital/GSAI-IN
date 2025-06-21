@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
@@ -54,18 +53,24 @@ export default function StatsCards({ cardsConfig, counts, loading }: Props) {
             className={`group relative bg-white rounded-2xl shadow-sm hover:shadow-xl border border-slate-200/50 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 overflow-hidden`}
           >
             {/* Background Gradient Overlay */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-5 group-hover:opacity-10 transition-opacity duration-300`} />
-            
+            <div
+              className={`absolute inset-0 bg-gradient-to-br ${color} opacity-5 group-hover:opacity-10 transition-opacity duration-300`}
+            />
+
             {/* Content */}
             <div className="relative p-6 flex flex-col h-full min-h-[140px]">
               {/* Header */}
               <div className="flex items-start justify-between mb-4">
-                <div className={`p-3 rounded-xl bg-gradient-to-br ${color} shadow-sm group-hover:shadow-md transition-shadow duration-300`}>
+                <div
+                  className={`p-3 rounded-xl bg-gradient-to-br ${color} shadow-sm group-hover:shadow-md transition-shadow duration-300`}
+                >
                   <Icon className="w-6 h-6 text-white" />
                 </div>
-                
+
                 {/* Growth Indicator */}
-                <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${growthData.bgColor} ${growthData.color}`}>
+                <div
+                  className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${growthData.bgColor} ${growthData.color}`}
+                >
                   <growthData.icon className="w-3 h-3" />
                   <span>{growthData.value}%</span>
                 </div>

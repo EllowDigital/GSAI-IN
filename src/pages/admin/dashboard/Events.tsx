@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Tables } from '@/integrations/supabase/types';
@@ -37,9 +36,9 @@ const Events = () => {
       setEvents(data ?? []);
     } catch (err: any) {
       toast({
-        title: "Error",
+        title: 'Error',
         description: 'Failed to load events: ' + err.message,
-        variant: "error"
+        variant: 'error',
       });
     }
     setLoading(false);
@@ -97,14 +96,14 @@ const Events = () => {
     try {
       await fetchEvents();
       toast({
-        title: "Success",
-        description: "Events refreshed successfully",
+        title: 'Success',
+        description: 'Events refreshed successfully',
       });
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: "Failed to refresh events",
-        variant: "error"
+        title: 'Error',
+        description: 'Failed to refresh events',
+        variant: 'error',
       });
     } finally {
       setIsRefreshing(false);
@@ -137,7 +136,7 @@ const Events = () => {
           </div>
         </div>
         <div className="flex gap-3 w-full lg:w-auto">
-          <RefreshButton 
+          <RefreshButton
             onRefresh={handleRefresh}
             isLoading={loading || isRefreshing}
             className="flex-1 lg:flex-none"
@@ -188,10 +187,7 @@ const Events = () => {
         onOpenChange={handleModalClose}
         editingEvent={editingEvent}
       />
-      <EventDeleteDialog
-        event={deleteEvent}
-        onClose={handleDeleteClose}
-      />
+      <EventDeleteDialog event={deleteEvent} onClose={handleDeleteClose} />
     </div>
   );
 };

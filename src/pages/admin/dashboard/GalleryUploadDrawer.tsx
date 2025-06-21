@@ -22,7 +22,7 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
   const [caption, setCaption] = useState('');
   const [tag, setTag] = useState('');
   const [uploading, setUploading] = useState(false);
-  
+
   const queryClient = useQueryClient();
 
   async function handleUpload(e: React.FormEvent) {
@@ -84,7 +84,7 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
     setTag('');
     setFile(null);
     setUploading(false);
-    
+
     // Refresh gallery data
     queryClient.invalidateQueries({ queryKey: ['gallery_images'] });
     onClose();

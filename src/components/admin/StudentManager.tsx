@@ -75,14 +75,14 @@ export default function StudentManager() {
     try {
       await refetchStudents?.();
       toast({
-        title: "Success",
-        description: "Students refreshed successfully",
+        title: 'Success',
+        description: 'Students refreshed successfully',
       });
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: "Failed to refresh students",
-        variant: "error"
+        title: 'Error',
+        description: 'Failed to refresh students',
+        variant: 'error',
       });
     }
   };
@@ -120,7 +120,7 @@ export default function StudentManager() {
           <StudentSummaryCard students={students} loading={loading} />
         </div>
         <div className="flex gap-3 w-full lg:w-auto">
-          <RefreshButton 
+          <RefreshButton
             onRefresh={handleRefresh}
             isLoading={loading}
             className="flex-1 lg:flex-none"
@@ -159,9 +159,7 @@ export default function StudentManager() {
       </div>
 
       {/* Table or Cards */}
-      <div className="w-full overflow-hidden">
-        {renderContent()}
-      </div>
+      <div className="w-full overflow-hidden">{renderContent()}</div>
 
       {/* Add/Edit Modal */}
       {showModal && (

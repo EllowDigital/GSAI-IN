@@ -1,4 +1,3 @@
-
 /**
  * Utility to export data arrays to CSV for Admin Dashboard
  */
@@ -182,12 +181,7 @@ export function exportNewsToCsv(news: NewsItem[]) {
 export function exportBlogsToCsv(blogs: BlogItem[]) {
   if (!Array.isArray(blogs) || blogs.length === 0) return;
 
-  const headers = [
-    'Title',
-    'Description',
-    'Published At',
-    'Created At',
-  ];
+  const headers = ['Title', 'Description', 'Published At', 'Created At'];
 
   const rows = blogs.map((item) =>
     [
@@ -208,12 +202,7 @@ export function exportBlogsToCsv(blogs: BlogItem[]) {
 export function exportGalleryToCsv(images: GalleryItem[]) {
   if (!Array.isArray(images) || images.length === 0) return;
 
-  const headers = [
-    'Caption',
-    'Tag',
-    'Image URL',
-    'Created At',
-  ];
+  const headers = ['Caption', 'Tag', 'Image URL', 'Created At'];
 
   const rows = images.map((item) =>
     [
