@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
@@ -10,6 +9,7 @@ import StudentsTable from './students/StudentsTable';
 import StudentsCards from './students/StudentsCards';
 import { useStudents } from '@/hooks/useStudents';
 import RefreshButton from './RefreshButton';
+import { toast } from '@/hooks/use-toast';
 
 // --- All required columns now reflected ---
 type StudentRow = {
@@ -71,6 +71,22 @@ export default function StudentManager() {
     }, 100);
   };
 
+  const handleRefresh = async () => {
+    try {
+      await refetchStudents?.();
+      toast({
+        title: "Success",
+        description: "Students refreshed successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to refresh students",
+        variant: "error"
+      });
+    }
+  };
+
   const renderContent = () => {
     const isLgUp = isClient && window.innerWidth >= 1024;
 
@@ -105,7 +121,7 @@ export default function StudentManager() {
         </div>
         <div className="flex gap-3 w-full lg:w-auto">
           <RefreshButton 
-            onRefresh={refetchStudents}
+            onRefresh={handleRefresh}
             isLoading={loading}
             className="flex-1 lg:flex-none"
           />

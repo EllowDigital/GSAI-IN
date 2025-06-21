@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,6 +10,7 @@ import { exportFeesToCsv } from '@/utils/exportToCsv';
 import { useIsMobile } from '@/hooks/use-mobile';
 import FeesCards from './FeesCards';
 import RefreshButton from './RefreshButton';
+import { toast } from '@/hooks/use-toast';
 
 export default function FeesManagerPanel() {
   const now = new Date();
@@ -23,6 +23,7 @@ export default function FeesManagerPanel() {
   const [editFee, setEditFee] = useState<any | null>(null);
   const [historyDrawerOpen, setHistoryDrawerOpen] = useState(false);
   const [historyStudent, setHistoryStudent] = useState<any | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
 
@@ -101,7 +102,7 @@ export default function FeesManagerPanel() {
         })
     : [];
 
-  const isLoading = loadingStudents || loadingFees;
+  const isLoading = loadingStudents || loadingFees || isRefreshing;
 
   // Handlers
   const handleEditFee = ({ student, fee }: { student: any; fee?: any }) => {
@@ -123,9 +124,26 @@ export default function FeesManagerPanel() {
     }, 100);
   };
 
-  const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['fees'] });
-    queryClient.invalidateQueries({ queryKey: ['students'] });
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await queryClient.invalidateQueries({ queryKey: ['fees'] });
+      await queryClient.invalidateQueries({ queryKey: ['students'] });
+      await queryClient.refetchQueries({ queryKey: ['fees'] });
+      await queryClient.refetchQueries({ queryKey: ['students'] });
+      toast({
+        title: "Success",
+        description: "Fees refreshed successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to refresh fees",
+        variant: "error"
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   const renderContent = () => {
