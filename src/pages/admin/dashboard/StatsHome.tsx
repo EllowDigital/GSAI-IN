@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,6 +14,7 @@ import StatsCards from '@/components/admin/dashboard/StatsCards';
 import AnalyticsChart from '@/components/admin/dashboard/AnalyticsChart';
 import AdvancedPanel from '@/components/admin/dashboard/AdvancedPanel';
 import RefreshButton from '@/components/admin/RefreshButton';
+import { toast } from '@/hooks/use-toast';
 
 type CardConfig = {
   key: string;
@@ -114,8 +114,21 @@ export default function StatsHome() {
     count: counts?.[key] ?? 0,
   }));
 
-  const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['dashboardCounts'] });
+  const handleRefresh = async () => {
+    try {
+      await queryClient.invalidateQueries({ queryKey: ['dashboardCounts'] });
+      await queryClient.refetchQueries({ queryKey: ['dashboardCounts'] });
+      toast({
+        title: "Success",
+        description: "Dashboard refreshed successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to refresh dashboard",
+        variant: "error"
+      });
+    }
   };
 
   return (

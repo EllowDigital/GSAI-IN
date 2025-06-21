@@ -23,6 +23,7 @@ const Events = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<EventRow | null>(null);
   const [deleteEvent, setDeleteEvent] = useState<EventRow | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Fetch all events
   const fetchEvents = useCallback(async () => {
@@ -91,6 +92,25 @@ const Events = () => {
     }, 100);
   };
 
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await fetchEvents();
+      toast({
+        title: "Success",
+        description: "Events refreshed successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to refresh events",
+        variant: "error"
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   if (!isAdmin) {
     return (
       <Card className="max-w-md mx-auto mt-16 p-8 text-center">
@@ -118,8 +138,8 @@ const Events = () => {
         </div>
         <div className="flex gap-3 w-full lg:w-auto">
           <RefreshButton 
-            onRefresh={fetchEvents}
-            isLoading={loading}
+            onRefresh={handleRefresh}
+            isLoading={loading || isRefreshing}
             className="flex-1 lg:flex-none"
           />
           <Button
@@ -136,7 +156,7 @@ const Events = () => {
 
       {/* Loader or events grid */}
       <div className="flex-1 w-full">
-        {loading ? (
+        {loading || isRefreshing ? (
           <div className="flex justify-center items-center min-h-[40vh]">
             <Spinner />
           </div>
