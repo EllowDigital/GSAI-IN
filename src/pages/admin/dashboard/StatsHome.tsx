@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,6 +9,8 @@ import {
   Newspaper,
   Image as GalleryIcon,
   Calendar,
+  Activity,
+  BarChart3,
 } from 'lucide-react';
 
 import StatsCards from '@/components/admin/dashboard/StatsCards';
@@ -29,42 +32,42 @@ const cardsConfig: CardConfig[] = [
     key: 'fees',
     label: 'Fee Records',
     icon: BadgeDollarSign,
-    color: 'from-green-100 to-green-200/80 text-green-800 border-green-200',
+    color: 'from-emerald-500 to-green-600',
     table: 'fees',
   },
   {
     key: 'students',
     label: 'Students',
     icon: Users,
-    color: 'from-yellow-100 to-yellow-200/80 text-yellow-800 border-yellow-200',
+    color: 'from-blue-500 to-indigo-600',
     table: 'students',
   },
   {
     key: 'blogs',
     label: 'Blogs',
     icon: BookOpen,
-    color: 'from-blue-100 to-blue-200/80 text-blue-800 border-blue-200',
+    color: 'from-purple-500 to-violet-600',
     table: 'blogs',
   },
   {
     key: 'news',
     label: 'News',
     icon: Newspaper,
-    color: 'from-orange-100 to-orange-200/80 text-orange-800 border-orange-200',
+    color: 'from-orange-500 to-red-600',
     table: 'news',
   },
   {
     key: 'gallery',
     label: 'Gallery Images',
     icon: GalleryIcon,
-    color: 'from-pink-100 to-pink-200/80 text-pink-800 border-pink-200',
+    color: 'from-pink-500 to-rose-600',
     table: 'gallery_images',
   },
   {
     key: 'events',
     label: 'Events',
     icon: Calendar,
-    color: 'from-purple-100 to-purple-200/80 text-purple-800 border-purple-200',
+    color: 'from-cyan-500 to-teal-600',
     table: 'events',
   },
 ];
@@ -132,37 +135,69 @@ export default function StatsHome() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto w-full px-2 sm:px-4 lg:px-6 xl:px-8 py-4 md:py-6 animate-fade-in">
-      {/* Header */}
-      <div className="mb-6 md:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-yellow-600 drop-shadow">
-            Dashboard Overview
-          </h1>
-          <p className="mt-1 text-sm md:text-base text-gray-500 font-medium">
-            Admin panel analytics and quick stats.
-          </p>
+    <div className="space-y-8 animate-fade-in">
+      {/* Enhanced Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-gradient-to-r from-yellow-100 to-yellow-200 border border-yellow-300/50">
+              <Activity className="w-6 h-6 text-yellow-700" />
+            </div>
+            <div>
+              <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+                Dashboard Overview
+              </h1>
+              <p className="text-slate-600 font-medium">
+                Real-time analytics and system insights
+              </p>
+            </div>
+          </div>
         </div>
-        <RefreshButton 
-          onRefresh={handleRefresh}
-          isLoading={isLoadingCounts}
-        />
+        
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-xl border border-slate-200">
+            <BarChart3 className="w-4 h-4 text-slate-500" />
+            <span className="text-sm font-medium text-slate-600">Live Data</span>
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+          </div>
+          <RefreshButton 
+            onRefresh={handleRefresh}
+            isLoading={isLoadingCounts}
+            size="default"
+          />
+        </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* Enhanced Stats Cards */}
       <StatsCards
         cardsConfig={cardsConfig}
         counts={counts}
         loading={isLoadingCounts}
       />
 
-      {/* Charts & Advanced Panel */}
-      <div className="mt-8 md:mt-10 grid grid-cols-1 xl:grid-cols-5 gap-6 md:gap-8">
-        <div className="xl:col-span-3">
-          <AnalyticsChart analyticsData={analyticsData} />
+      {/* Enhanced Charts & Advanced Panel */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <div className="xl:col-span-2 space-y-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/50 p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-slate-800">Analytics Overview</h2>
+              <div className="flex items-center gap-2 text-sm text-slate-500">
+                <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                <span>Current Period</span>
+              </div>
+            </div>
+            <AnalyticsChart analyticsData={analyticsData} />
+          </div>
         </div>
-        <div className="xl:col-span-2">
-          <AdvancedPanel />
+        
+        <div className="space-y-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/50 overflow-hidden">
+            <div className="p-6 border-b border-slate-100">
+              <h2 className="text-xl font-bold text-slate-800">System Tools</h2>
+              <p className="text-sm text-slate-600 mt-1">Quick access and utilities</p>
+            </div>
+            <AdvancedPanel />
+          </div>
         </div>
       </div>
     </div>
