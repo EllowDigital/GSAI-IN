@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,7 +19,7 @@ interface BlogsTableProps {
   onEdit: (blog: Blog) => void;
   onDelete: (blogId: string) => void;
   isDeleting: (blogId: string) => boolean;
-  formatDate: (date: string) => string;
+  formatDate: (date: string | null) => string;
 }
 
 export default function BlogsTable({
