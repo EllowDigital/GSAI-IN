@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -19,6 +18,7 @@ export default function Blogs() {
   const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   const queryClient = useQueryClient();
 
@@ -99,8 +99,24 @@ export default function Blogs() {
     }, 100);
   };
 
-  const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['blogs'] });
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await queryClient.invalidateQueries({ queryKey: ['blogs'] });
+      await queryClient.refetchQueries({ queryKey: ['blogs'] });
+      toast({
+        title: "Success",
+        description: "Blogs refreshed successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to refresh blogs",
+        variant: "error"
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   const formatDate = (dateString: string | null) => {
@@ -121,7 +137,7 @@ export default function Blogs() {
         <div className="flex gap-3 w-full lg:w-auto">
           <RefreshButton 
             onRefresh={handleRefresh}
-            isLoading={isLoading}
+            isLoading={isLoading || isRefreshing}
             className="flex-1 lg:flex-none"
           />
           <Button
@@ -166,7 +182,7 @@ export default function Blogs() {
       </div>
 
       {/* Content */}
-      {isLoading ? (
+      {isLoading || isRefreshing ? (
         <div className="flex justify-center py-8">
           <div className="animate-spin h-8 w-8 border-4 border-blue-400 rounded-full border-t-transparent" />
         </div>
