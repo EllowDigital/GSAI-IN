@@ -3,26 +3,17 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Edit, Trash2 } from 'lucide-react';
+import { Tables } from '@/integrations/supabase/types';
 
-type Blog = {
-  id: string;
-  title: string;
-  description?: string | null;
-  content: string;
-  published_at?: string | null;
-  updated_at?: string | null;
-  created_at?: string | null;
-  created_by?: string | null;
-  image_url?: string | null;
-};
+type Blog = Tables<'blogs'>;
 
-type Props = {
+interface BlogsCardsProps {
   blogs: Blog[];
   onEdit: (blog: Blog) => void;
   onDelete: (id: string) => void;
   isDeleting: (id: string) => boolean;
   formatDate: (date: string | null) => string;
-};
+}
 
 export default function BlogsCards({
   blogs,
@@ -30,7 +21,7 @@ export default function BlogsCards({
   onDelete,
   isDeleting,
   formatDate,
-}: Props) {
+}: BlogsCardsProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
       {blogs.map((blog) => (
