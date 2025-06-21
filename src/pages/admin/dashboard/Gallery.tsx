@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -66,7 +65,7 @@ export default function Gallery() {
       toast({
         title: "Error", 
         description: error.message,
-        variant: "destructive"
+        variant: "error"
       });
     },
     onSettled: (_, __, id) => {
@@ -140,8 +139,9 @@ export default function Gallery() {
             <GalleryImageCard
               key={image.id}
               image={image}
-              onDelete={() => handleDelete(image.id)}
-              isDeleting={isDeleting(image.id)}
+              onDeleteSuccess={() => {
+                queryClient.invalidateQueries({ queryKey: ['gallery_images'] });
+              }}
             />
           ))}
         </div>
@@ -151,7 +151,6 @@ export default function Gallery() {
       <GalleryUploadDrawer
         open={uploadDrawerOpen}
         onClose={() => setUploadDrawerOpen(false)}
-        onUploadComplete={handleUploadComplete}
       />
     </div>
   );
