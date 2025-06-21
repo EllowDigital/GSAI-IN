@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,6 +17,7 @@ export default function NewsManager() {
   const [editingNews, setEditingNews] = useState<NewsRow | null>(null);
   const [deleteNewsId, setDeleteNewsId] = useState<string | null>(null);
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   const queryClient = useQueryClient();
 
@@ -105,8 +105,24 @@ export default function NewsManager() {
     }, 100);
   };
 
-  const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['news'] });
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await queryClient.invalidateQueries({ queryKey: ['news'] });
+      await queryClient.refetchQueries({ queryKey: ['news'] });
+      toast({
+        title: "Success",
+        description: "News refreshed successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to refresh news",
+        variant: "error"
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -126,7 +142,7 @@ export default function NewsManager() {
         <div className="flex gap-3 w-full sm:w-auto">
           <RefreshButton 
             onRefresh={handleRefresh}
-            isLoading={isLoading}
+            isLoading={isLoading || isRefreshing}
             className="flex-1 sm:flex-none"
           />
           <Button
@@ -148,7 +164,7 @@ export default function NewsManager() {
       </div>
 
       {/* Content */}
-      {isLoading ? (
+      {isLoading || isRefreshing ? (
         <div className="flex justify-center py-8">
           <div className="animate-spin h-8 w-8 border-4 border-orange-400 rounded-full border-t-transparent" />
         </div>

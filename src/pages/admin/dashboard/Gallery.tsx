@@ -15,6 +15,7 @@ type GalleryImage = Tables<'gallery_images'>;
 export default function Gallery() {
   const [uploadDrawerOpen, setUploadDrawerOpen] = useState(false);
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   const queryClient = useQueryClient();
 
@@ -89,8 +90,24 @@ export default function Gallery() {
     }, 100);
   };
 
-  const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['gallery_images'] });
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await queryClient.invalidateQueries({ queryKey: ['gallery_images'] });
+      await queryClient.refetchQueries({ queryKey: ['gallery_images'] });
+      toast({
+        title: "Success",
+        description: "Gallery refreshed successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to refresh gallery",
+        variant: "error"
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   const isDeleting = (id: string) => deletingIds.has(id);
@@ -102,7 +119,7 @@ export default function Gallery() {
         <div className="flex gap-3 w-full sm:w-auto">
           <RefreshButton 
             onRefresh={handleRefresh}
-            isLoading={isLoading}
+            isLoading={isLoading || isRefreshing}
             className="flex-1 sm:flex-none"
           />
           <Button
@@ -125,7 +142,7 @@ export default function Gallery() {
       </div>
 
       {/* Content */}
-      {isLoading ? (
+      {isLoading || isRefreshing ? (
         <div className="flex justify-center py-8">
           <div className="animate-spin h-8 w-8 border-4 border-pink-400 rounded-full border-t-transparent" />
         </div>
