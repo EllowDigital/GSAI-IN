@@ -1,190 +1,158 @@
-import React, { useState, useCallback, useEffect } from 'react';
+
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { BadgePlus, Loader2, ArrowUp } from 'lucide-react';
-import GalleryUploadDrawer from './GalleryUploadDrawer';
+import { Button } from '@/components/ui/button';
+import { Plus, Upload } from 'lucide-react';
 import GalleryImageCard from './GalleryImageCard';
-import toast, { Toaster } from 'react-hot-toast';
+import GalleryUploadDrawer from './GalleryUploadDrawer';
+import { exportGalleryToCsv } from '@/utils/exportToCsv';
+import { Tables } from '@/integrations/supabase/types';
+import RefreshButton from '@/components/admin/RefreshButton';
+import { toast } from '@/hooks/use-toast';
 
-type GalleryImage = {
-  id: string;
-  image_url: string;
-  caption?: string | null;
-  tag?: string | null;
-  created_at?: string | null;
-};
-
-const masonryCols = {
-  base: 'columns-1 sm:columns-2',
-  md: 'md:columns-3',
-  lg: 'lg:columns-4',
-};
+type GalleryImage = Tables<'gallery_images'>;
 
 export default function Gallery() {
-  const [images, setImages] = useState<GalleryImage[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [uploadDrawerOpen, setUploadDrawerOpen] = useState(false);
-  const [filterTag, setFilterTag] = useState<string | null>(null);
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+  
+  const queryClient = useQueryClient();
 
-  // Real-time subscription
-  useEffect(() => {
-    let ignore = false;
-    setLoading(true);
-    const fetchGallery = async () => {
+  // Fetch gallery images
+  const { data: images = [], isLoading } = useQuery({
+    queryKey: ['gallery_images'],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from('gallery_images')
         .select('*')
-        .order('created_at', { ascending: false })
-        .limit(100);
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+  });
 
-      if (!ignore) {
-        if (error) toast.error('Could not fetch gallery.');
-        setImages(data || []);
-        setLoading(false);
-      }
-    };
-
-    fetchGallery();
-
+  // Real-time updates
+  useEffect(() => {
     const channel = supabase
-      .channel('gsai-gallery-db-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'gallery_images',
-        },
-        () => {
-          fetchGallery();
-        }
-      )
+      .channel('gallery-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'gallery_images' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['gallery_images'] });
+      })
       .subscribe();
 
     return () => {
-      ignore = true;
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [queryClient]);
 
-  // Gather unique tags
-  const tags = Array.from(
-    new Set(
-      images
-        .map((img) => img.tag)
-        .filter((tag): tag is string => !!tag && tag.trim().length > 0)
-    )
-  );
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('gallery_images').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onMutate: (id) => {
+      setDeletingIds(prev => new Set(prev).add(id));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['gallery_images'] });
+      toast({
+        title: "Success",
+        description: "Image deleted successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error", 
+        description: error.message,
+        variant: "destructive"
+      });
+    },
+    onSettled: (_, __, id) => {
+      setDeletingIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(id);
+        return newSet;
+      });
+    },
+  });
 
-  const filteredImages = filterTag
-    ? images.filter((img) => img.tag === filterTag)
-    : images;
+  const handleDelete = (id: string) => {
+    deleteMutation.mutate(id);
+  };
 
-  // Back to Top Button
-  const [showBackToTop, setShowBackToTop] = useState(false);
-  useEffect(() => {
-    const handler = () => setShowBackToTop(window.scrollY > 200);
-    window.addEventListener('scroll', handler);
-    return () => window.removeEventListener('scroll', handler);
-  }, []);
+  const handleUploadComplete = () => {
+    setUploadDrawerOpen(false);
+    // Auto-refresh after upload
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ['gallery_images'] });
+    }, 100);
+  };
+
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ['gallery_images'] });
+  };
+
+  const isDeleting = (id: string) => deletingIds.has(id);
 
   return (
-    <div className="relative max-w-7xl mx-auto w-full min-h-screen flex flex-col bg-white pb-12">
-      <Toaster position="top-right" />
-      {/* Sticky header for mobile */}
-      <div className="sticky top-0 z-20 bg-gradient-to-b from-yellow-50/95 via-white/90 to-white/75 backdrop-blur-lg px-2 xs:px-4 pt-4 pb-3 mb-2 border-b border-yellow-100 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 transition-shadow shadow-xs">
-        <div>
-          <h3 className="font-bold text-xl sm:text-2xl mb-1 text-yellow-500 font-montserrat leading-tight">
-            🖼️ Gallery Manager
-          </h3>
-          <p className="text-muted-foreground mb-2 text-xs sm:text-sm">
-            Upload, tag, organize, and delete images in your public gallery.
-          </p>
+    <div className="w-full px-2 sm:px-4">
+      {/* Header and Controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6">
+        <div className="flex gap-3 w-full sm:w-auto">
+          <RefreshButton 
+            onRefresh={handleRefresh}
+            isLoading={isLoading}
+            className="flex-1 sm:flex-none"
+          />
+          <Button
+            onClick={() => setUploadDrawerOpen(true)}
+            className="flex gap-2 rounded-full flex-1 sm:flex-none"
+          >
+            <Upload size={18} />
+            <span className="hidden sm:inline">Upload Images</span>
+            <span className="inline sm:hidden">Upload</span>
+          </Button>
         </div>
+        
         <button
-          className="flex items-center gap-2 bg-yellow-400 text-black px-4 py-2 font-semibold rounded-2xl shadow-lg hover:bg-yellow-500 transition text-base w-full sm:w-auto justify-center"
-          onClick={() => setUploadDrawerOpen(true)}
+          onClick={() => exportGalleryToCsv(images)}
+          className="border border-pink-400 px-3 md:px-4 py-2 rounded-full bg-pink-50 text-pink-700 font-medium hover:bg-pink-200 transition text-sm w-full sm:w-auto sm:min-w-[120px]"
+          disabled={images.length === 0}
         >
-          <BadgePlus /> <span className="hidden xs:inline">Upload Image</span>
-          <span className="inline xs:hidden">Upload</span>
+          Export CSV
         </button>
       </div>
 
-      {/* Tags/Filters bar */}
-      {tags.length > 0 && (
-        <div className="w-full flex gap-x-2 gap-y-2 pb-3 flex-wrap overflow-x-auto px-1 sm:px-0 min-h-[40px]">
-          <button
-            className={`chip px-3 py-1 rounded-full font-inter shadow hover:shadow-lg focus:ring-2 transition border border-yellow-200 ${
-              !filterTag
-                ? 'bg-yellow-400 text-black'
-                : 'bg-gray-100 hover:bg-yellow-100 text-gray-700'
-            }`}
-            onClick={() => setFilterTag(null)}
-          >
-            All
-          </button>
-          {tags.map((tag) => (
-            <button
-              key={tag}
-              className={`chip px-3 py-1 rounded-full font-inter shadow hover:shadow-lg focus:ring-2 transition border border-yellow-200 ${
-                filterTag === tag
-                  ? 'bg-yellow-400 text-black'
-                  : 'bg-gray-100 hover:bg-yellow-100 text-gray-700'
-              }`}
-              onClick={() => setFilterTag(tag)}
-            >
-              {tag}
-            </button>
+      {/* Content */}
+      {isLoading ? (
+        <div className="flex justify-center py-8">
+          <div className="animate-spin h-8 w-8 border-4 border-pink-400 rounded-full border-t-transparent" />
+        </div>
+      ) : images.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">
+          No images found.
+        </div>
+      ) : (
+        <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {images.map((image) => (
+            <GalleryImageCard
+              key={image.id}
+              image={image}
+              onDelete={() => handleDelete(image.id)}
+              isDeleting={isDeleting(image.id)}
+            />
           ))}
         </div>
       )}
 
-      {/* Gallery grid / Masonry */}
-      <div className="flex-1 flex flex-col">
-        {loading ? (
-          <div className="flex-1 flex justify-center items-center py-16 min-h-[60vh]">
-            <Loader2 className="animate-spin text-yellow-400" size={48} />
-          </div>
-        ) : (
-          <div
-            className={`transition-all duration-300 w-full space-y-4 ${masonryCols.base} ${masonryCols.md} ${masonryCols.lg} gap-x-4 flex-1`}
-            style={{ minHeight: '40vh' }} // Ensures grid fills available space
-          >
-            {filteredImages.length ? (
-              filteredImages.map((img) => (
-                <GalleryImageCard
-                  key={img.id}
-                  image={img}
-                  onDeleteSuccess={() => {
-                    setImages((cur) => cur.filter((i) => i.id !== img.id));
-                    toast.success('Image deleted.');
-                  }}
-                />
-              ))
-            ) : (
-              <div className="text-center text-muted-foreground py-12 sm:py-16 text-lg font-semibold min-h-[30vh] flex items-center justify-center">
-                No images found.
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Upload drawer for image uploads */}
+      {/* Upload Drawer */}
       <GalleryUploadDrawer
         open={uploadDrawerOpen}
         onClose={() => setUploadDrawerOpen(false)}
+        onUploadComplete={handleUploadComplete}
       />
-
-      {/* Back to top button (better position for mobile view) */}
-      {showBackToTop && (
-        <button
-          className="fixed bottom-6 right-4 xs:right-6 sm:right-8 bg-yellow-400 hover:bg-yellow-500 rounded-full shadow-2xl p-3 z-50 transition flex items-center"
-          aria-label="Back to Top"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        >
-          <ArrowUp className="text-black" size={22} />
-        </button>
-      )}
     </div>
   );
 }
