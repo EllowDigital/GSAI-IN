@@ -69,7 +69,7 @@ export default function Blogs() {
       toast({
         title: "Error", 
         description: error.message,
-        variant: "destructive"
+        variant: "error"
       });
     },
     onSettled: (_, __, id) => {

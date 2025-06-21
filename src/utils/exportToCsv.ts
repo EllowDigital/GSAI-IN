@@ -39,6 +39,24 @@ type NewsItem = {
   created_at?: string;
 };
 
+type BlogItem = {
+  id?: string;
+  title?: string;
+  description?: string;
+  content?: string;
+  published_at?: string;
+  created_at?: string;
+  image_url?: string;
+};
+
+type GalleryItem = {
+  id?: string;
+  image_url?: string;
+  caption?: string;
+  tag?: string;
+  created_at?: string;
+};
+
 /**
  * Escapes a value for CSV, handling commas and quotes
  */
@@ -156,4 +174,56 @@ export function exportNewsToCsv(news: NewsItem[]) {
 
   const csvContent = [headers.join(','), ...rows].join('\n');
   triggerCsvDownload(csvContent, `news.csv`);
+}
+
+/**
+ * Exports blog records to CSV
+ */
+export function exportBlogsToCsv(blogs: BlogItem[]) {
+  if (!Array.isArray(blogs) || blogs.length === 0) return;
+
+  const headers = [
+    'Title',
+    'Description',
+    'Published At',
+    'Created At',
+  ];
+
+  const rows = blogs.map((item) =>
+    [
+      escapeCSV(item.title),
+      escapeCSV(item.description),
+      escapeCSV(item.published_at),
+      escapeCSV(item.created_at),
+    ].join(',')
+  );
+
+  const csvContent = [headers.join(','), ...rows].join('\n');
+  triggerCsvDownload(csvContent, `blogs.csv`);
+}
+
+/**
+ * Exports gallery records to CSV
+ */
+export function exportGalleryToCsv(images: GalleryItem[]) {
+  if (!Array.isArray(images) || images.length === 0) return;
+
+  const headers = [
+    'Caption',
+    'Tag',
+    'Image URL',
+    'Created At',
+  ];
+
+  const rows = images.map((item) =>
+    [
+      escapeCSV(item.caption),
+      escapeCSV(item.tag),
+      escapeCSV(item.image_url),
+      escapeCSV(item.created_at),
+    ].join(',')
+  );
+
+  const csvContent = [headers.join(','), ...rows].join('\n');
+  triggerCsvDownload(csvContent, `gallery.csv`);
 }

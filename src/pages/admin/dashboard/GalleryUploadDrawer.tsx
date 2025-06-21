@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import toast from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 type Props = {
   open: boolean;
@@ -21,6 +22,8 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
   const [caption, setCaption] = useState('');
   const [tag, setTag] = useState('');
   const [uploading, setUploading] = useState(false);
+  
+  const queryClient = useQueryClient();
 
   async function handleUpload(e: React.FormEvent) {
     e.preventDefault();
@@ -81,6 +84,9 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
     setTag('');
     setFile(null);
     setUploading(false);
+    
+    // Refresh gallery data
+    queryClient.invalidateQueries({ queryKey: ['gallery_images'] });
     onClose();
   }
 
