@@ -282,7 +282,7 @@
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #facc15 #000000; /* Yellow thumb on black track */
+  scrollbar-color: #facc15 #ffffff; /* Yellow thumb on black track */
 }
 
 /* Responsive Typography */
