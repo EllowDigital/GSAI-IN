@@ -69,7 +69,7 @@ const contactInfo = [
   {
     icon: Phone,
     title: 'Call Us',
-    details: ['+91 63941 35988', '+91 98390 47957'],
+    details: ['+91 63941 35988'],
     action: 'tel:+916394135988',
     color: 'from-green-500 to-emerald-600',
   },
