@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, Grid, List } from 'lucide-react';
 import StudentModal from './StudentModal';
 import StudentDeleteDialog from './StudentDeleteDialog';
 import StudentSummaryCard from './StudentSummaryCard';
@@ -40,6 +40,7 @@ export default function StudentManager() {
   const [showModal, setShowModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState<StudentRow | null>(null);
   const [deleteStudent, setDeleteStudent] = useState<StudentRow | null>(null);
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
 
   const [isClient, setIsClient] = React.useState(false);
   React.useEffect(() => {
@@ -83,24 +84,25 @@ export default function StudentManager() {
       toast({
         title: 'Error',
         description: 'Failed to refresh students',
-        variant: 'destructive',
+        variant: 'error',
       });
     }
   };
 
   const renderContent = () => {
-    const isLgUp = isClient && window.innerWidth >= 1024;
-
-    if (isLgUp) {
+    // Use view mode state instead of window width check
+    if (viewMode === 'table') {
       return (
-        <StudentsTable
-          students={filteredStudents}
-          loading={loading}
-          onEdit={handleEdit}
-          onDelete={setDeleteStudent}
-          sortConfig={sortConfig}
-          requestSort={requestSort}
-        />
+        <div className="rounded-2xl shadow-lg overflow-x-auto bg-white">
+          <StudentsTable
+            students={filteredStudents}
+            loading={loading}
+            onEdit={handleEdit}
+            onDelete={setDeleteStudent}
+            sortConfig={sortConfig}
+            requestSort={requestSort}
+          />
+        </div>
       );
     }
     return (
@@ -121,22 +123,46 @@ export default function StudentManager() {
           <StudentSummaryCard students={students} loading={loading} />
         </div>
         
-        <div className="flex flex-col xs:flex-row gap-2 sm:gap-3">
-          <RefreshButton
-            onRefresh={handleRefresh}
-            isLoading={loading}
-            className="flex-1 xs:flex-none"
-          />
-          <button
-            onClick={() => exportStudentsToCsv(filteredStudents)}
-            className="flex-1 xs:flex-none border border-blue-400 px-3 sm:px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-medium hover:bg-blue-200 transition text-xs sm:text-sm min-h-[40px] flex items-center justify-center"
-            disabled={
-              !Array.isArray(filteredStudents) || filteredStudents.length === 0
-            }
-            title="Download as CSV"
-          >
-            Download CSV
-          </button>
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-4">
+          <div className="flex gap-3 w-full lg:w-auto">
+            <RefreshButton
+              onRefresh={handleRefresh}
+              isLoading={loading}
+              className="flex-1 lg:flex-none"
+            />
+            <button
+              onClick={() => exportStudentsToCsv(filteredStudents)}
+              className="flex-1 lg:flex-none border border-blue-400 px-3 sm:px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-medium hover:bg-blue-200 transition text-xs sm:text-sm min-h-[40px] flex items-center justify-center"
+              disabled={
+                !Array.isArray(filteredStudents) || filteredStudents.length === 0
+              }
+              title="Download as CSV"
+            >
+              Download CSV
+            </button>
+          </div>
+
+          {/* View Mode Toggle */}
+          <div className="flex gap-1 border rounded-full p-1 bg-gray-50 w-full lg:w-auto">
+            <Button
+              variant={viewMode === 'cards' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('cards')}
+              className="rounded-full px-3 flex-1 lg:flex-none"
+            >
+              <Grid size={16} />
+              <span className="hidden sm:inline ml-1">Cards</span>
+            </Button>
+            <Button
+              variant={viewMode === 'table' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('table')}
+              className="rounded-full px-3 flex-1 lg:flex-none"
+            >
+              <List size={16} />
+              <span className="hidden sm:inline ml-1">Table</span>
+            </Button>
+          </div>
         </div>
       </div>
 

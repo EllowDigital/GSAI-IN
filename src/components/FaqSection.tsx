@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   Accordion,
@@ -5,7 +6,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from '@/components/ui/accordion';
-import { HelpCircle, ChevronDown, Sparkles } from 'lucide-react';
+import { HelpCircle, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export const faqs = [
@@ -146,7 +147,7 @@ export default function FaqSection() {
                   value={`faq-${item.category}-${idx}`}
                   className="group bg-white/90 backdrop-blur-sm rounded-2xl border border-yellow-100/50 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
                 >
-                  <AccordionTrigger className="group/trigger px-8 py-6 text-left hover:no-underline hover:bg-gradient-to-r hover:from-yellow-50 hover:to-red-50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-inset">
+                  <AccordionTrigger className="group/trigger px-8 py-6 text-left hover:no-underline hover:bg-gradient-to-r hover:from-yellow-50 hover:to-red-50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-inset [&>svg]:hidden">
                     <div className="flex items-start gap-4 w-full">
                       <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-yellow-400 to-red-500 rounded-full flex items-center justify-center mt-1">
                         <HelpCircle className="w-4 h-4 text-white" />
@@ -161,7 +162,6 @@ export default function FaqSection() {
                           </span>
                         </div>
                       </div>
-                      <ChevronDown className="w-6 h-6 text-yellow-500 flex-shrink-0 transition-transform duration-300 group-data-[state=open]:rotate-180" />
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="px-8 pb-8">
