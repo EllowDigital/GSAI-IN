@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BadgeDollarSign } from 'lucide-react';
 import FeesManagerPanel from '@/components/admin/FeesManagerPanel';

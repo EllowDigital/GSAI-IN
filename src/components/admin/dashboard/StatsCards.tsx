@@ -28,7 +28,11 @@ const LoadingSkeleton = () => (
   </div>
 );
 
-export default function StatsCards({ cardsConfig = [], counts = {}, loading }: Props) {
+export default function StatsCards({
+  cardsConfig = [],
+  counts = {},
+  loading,
+}: Props) {
   if (!cardsConfig.length) {
     return (
       <div className="text-center text-sm text-slate-500">
@@ -55,9 +59,15 @@ export default function StatsCards({ cardsConfig = [], counts = {}, loading }: P
       value: Math.abs(growth).toFixed(1),
       isPositive,
       IconComponent: isPositive ? TrendingUp : TrendingDown,
-      color: isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400',
-      bgColor: isPositive ? 'bg-emerald-50 dark:bg-emerald-900/20' : 'bg-red-50 dark:bg-red-900/20',
-      borderColor: isPositive ? 'border-emerald-200 dark:border-emerald-800' : 'border-red-200 dark:border-red-800',
+      color: isPositive
+        ? 'text-emerald-600 dark:text-emerald-400'
+        : 'text-red-500 dark:text-red-400',
+      bgColor: isPositive
+        ? 'bg-emerald-50 dark:bg-emerald-900/20'
+        : 'bg-red-50 dark:bg-red-900/20',
+      borderColor: isPositive
+        ? 'border-emerald-200 dark:border-emerald-800'
+        : 'border-red-200 dark:border-red-800',
     };
   };
 
@@ -84,7 +94,14 @@ export default function StatsCards({ cardsConfig = [], counts = {}, loading }: P
     >
       {cardsConfig.map(({ key, label, icon: Icon, color }) => {
         const growth = getGrowthData(key);
-        const { value, IconComponent, isPositive, color: txtColor, bgColor, borderColor } = formatGrowth(growth);
+        const {
+          value,
+          IconComponent,
+          isPositive,
+          color: txtColor,
+          bgColor,
+          borderColor,
+        } = formatGrowth(growth);
         const count = counts[key] ?? 0;
 
         return (
@@ -93,16 +110,22 @@ export default function StatsCards({ cardsConfig = [], counts = {}, loading }: P
             variants={cardVariants}
             className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-xl dark:shadow-slate-900/20 border border-slate-200/60 dark:border-slate-700/60 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 overflow-hidden min-h-[140px]"
           >
-            <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-[0.02] group-hover:opacity-[0.08] transition-opacity duration-500`} />
+            <div
+              className={`absolute inset-0 bg-gradient-to-br ${color} opacity-[0.02] group-hover:opacity-[0.08] transition-opacity duration-500`}
+            />
             <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-slate-200/30 dark:group-hover:border-slate-600/30 transition-colors duration-300 pointer-events-none" />
 
             <div className="relative p-4 flex flex-col h-full">
               <div className="flex items-start justify-between mb-3">
-                <div className={`p-3 rounded-xl bg-gradient-to-br ${color} shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:scale-110`}>
+                <div
+                  className={`p-3 rounded-xl bg-gradient-to-br ${color} shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:scale-110`}
+                >
                   <Icon className="w-6 h-6 text-white" />
                 </div>
 
-                <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold border ${bgColor} ${txtColor} ${borderColor} shadow-sm`}>
+                <div
+                  className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold border ${bgColor} ${txtColor} ${borderColor} shadow-sm`}
+                >
                   <IconComponent className="w-3 h-3" />
                   <span>{value}%</span>
                 </div>

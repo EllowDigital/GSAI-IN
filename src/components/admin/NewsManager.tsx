@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -146,16 +145,29 @@ export default function NewsManager() {
       <table className="w-full min-w-[600px]">
         <thead className="bg-gradient-to-r from-slate-50 to-slate-100/50 border-b border-slate-200/60">
           <tr>
-            <th className="text-left p-4 font-bold text-slate-700 text-xs uppercase tracking-wide">Image</th>
-            <th className="text-left p-4 font-bold text-slate-700 text-xs uppercase tracking-wide">Title</th>
-            <th className="text-left p-4 font-bold text-slate-700 text-xs uppercase tracking-wide">Status</th>
-            <th className="text-left p-4 font-bold text-slate-700 text-xs uppercase tracking-wide">Date</th>
-            <th className="text-center p-4 font-bold text-slate-700 text-xs uppercase tracking-wide">Actions</th>
+            <th className="text-left p-4 font-bold text-slate-700 text-xs uppercase tracking-wide">
+              Image
+            </th>
+            <th className="text-left p-4 font-bold text-slate-700 text-xs uppercase tracking-wide">
+              Title
+            </th>
+            <th className="text-left p-4 font-bold text-slate-700 text-xs uppercase tracking-wide">
+              Status
+            </th>
+            <th className="text-left p-4 font-bold text-slate-700 text-xs uppercase tracking-wide">
+              Date
+            </th>
+            <th className="text-center p-4 font-bold text-slate-700 text-xs uppercase tracking-wide">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
           {news.map((item) => (
-            <tr key={item.id} className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-slate-50/50 hover:to-orange-50/30 transition-all duration-200">
+            <tr
+              key={item.id}
+              className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-slate-50/50 hover:to-orange-50/30 transition-all duration-200"
+            >
               <td className="p-4">
                 {item.image_url ? (
                   <img
@@ -170,8 +182,12 @@ export default function NewsManager() {
                 )}
               </td>
               <td className="p-4">
-                <h3 className="font-semibold text-gray-800 line-clamp-2">{item.title}</h3>
-                <p className="text-sm text-gray-600 line-clamp-1">{item.short_description}</p>
+                <h3 className="font-semibold text-gray-800 line-clamp-2">
+                  {item.title}
+                </h3>
+                <p className="text-sm text-gray-600 line-clamp-1">
+                  {item.short_description}
+                </p>
               </td>
               <td className="p-4">
                 <span

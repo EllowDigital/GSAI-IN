@@ -74,14 +74,22 @@ interface AppSidebarProps {
 
 export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
   const { signOut } = useAdminAuth();
-  const APP_VERSION = '1.2.5';
+  const APP_VERSION = '1.2.6';
 
   const mainItems = navItems.filter((item) => item.category === 'main');
-  const managementItems = navItems.filter((item) => item.category === 'management');
+  const managementItems = navItems.filter(
+    (item) => item.category === 'management'
+  );
   const contentItems = navItems.filter((item) => item.category === 'content');
   const externalItems = navItems.filter((item) => item.category === 'external');
 
-  const NavSection = ({ title, items }: { title: string; items: typeof navItems }) => (
+  const NavSection = ({
+    title,
+    items,
+  }: {
+    title: string;
+    items: typeof navItems;
+  }) => (
     <div className="space-y-1">
       <h3 className="px-3 sm:px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
         {title}
@@ -136,7 +144,9 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
                       >
                         <Icon className="w-3 h-3 sm:w-4 sm:h-4" />
                       </div>
-                      <span className="truncate text-slate-800 dark:text-slate-200">{title}</span>
+                      <span className="truncate text-slate-800 dark:text-slate-200">
+                        {title}
+                      </span>
                     </div>
                     {isActive && (
                       <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-500 flex-shrink-0" />

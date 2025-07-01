@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -21,7 +20,11 @@ export default function StatsHome() {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Fetch dashboard stats
-  const { data: stats, isLoading, refetch } = useQuery({
+  const {
+    data: stats,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['dashboard-stats'],
     queryFn: async () => {
       const [studentsRes, newsRes, blogsRes, feesRes] = await Promise.all([
@@ -70,15 +73,17 @@ export default function StatsHome() {
   const totalStudents = stats?.students?.length || 0;
   const totalNews = stats?.news?.length || 0;
   const totalBlogs = stats?.blogs?.length || 0;
-  const totalRevenue = stats?.fees?.reduce((sum, fee) => sum + (fee.paid_amount || 0), 0) || 0;
+  const totalRevenue =
+    stats?.fees?.reduce((sum, fee) => sum + (fee.paid_amount || 0), 0) || 0;
 
   // Recent activity (last 7 days)
-  const recentStudents = stats?.students?.filter(s => {
-    const createdAt = new Date(s.created_at);
-    const weekAgo = new Date();
-    weekAgo.setDate(weekAgo.getDate() - 7);
-    return createdAt >= weekAgo;
-  }).length || 0;
+  const recentStudents =
+    stats?.students?.filter((s) => {
+      const createdAt = new Date(s.created_at);
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      return createdAt >= weekAgo;
+    }).length || 0;
 
   return (
     <div className="w-full min-h-full p-2 sm:p-4 md:p-6 space-y-4 sm:space-y-6 md:space-y-8">

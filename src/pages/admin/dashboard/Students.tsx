@@ -1,4 +1,3 @@
-
 import React from 'react';
 import StudentManager from '@/components/admin/StudentManager';
 import { Users } from 'lucide-react';
