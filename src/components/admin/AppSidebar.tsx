@@ -22,7 +22,7 @@ const navItems = [
     url: '/',
     icon: Globe,
     category: 'external',
-    signOutFirst: true, // custom flag
+    signOutFirst: true,
   },
   { title: 'Dashboard', url: '/admin/dashboard', icon: Home, category: 'main' },
   {
@@ -71,13 +71,6 @@ interface AppSidebarProps {
 export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
   const { signOut } = useAdminAuth();
   const APP_VERSION = '1.2.6';
-
-  const mainItems = navItems.filter((item) => item.category === 'main');
-  const managementItems = navItems.filter(
-    (item) => item.category === 'management'
-  );
-  const contentItems = navItems.filter((item) => item.category === 'content');
-  const externalItems = navItems.filter((item) => item.category === 'external');
 
   const NavSection = ({
     title,
@@ -156,76 +149,85 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
   );
 
   return (
-    <>
-      <nav
-        className={`fixed left-0 top-0 z-50 h-screen bg-white dark:bg-slate-900 shadow-2xl border-r border-slate-200/60 dark:border-slate-700/60 transform transition-all duration-300 ease-out ${
-          open ? 'translate-x-0' : '-translate-x-full'
-        } w-[280px] xs:w-[300px] sm:w-[320px] md:w-[280px] lg:w-64 xl:w-72 lg:translate-x-0 lg:max-w-none lg:static lg:block flex flex-col max-w-[85vw] xs:max-w-[80vw] sm:max-w-[75vw] lg:max-w-none`}
-        aria-label="Sidebar"
-      >
-        {setOpen && (
-          <button
-            className="lg:hidden absolute top-3 sm:top-4 right-3 sm:right-4 p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors z-10 shadow-sm"
-            onClick={() => setOpen(false)}
-            aria-label="Close sidebar"
-          >
-            <X className="w-4 h-4 text-slate-600 dark:text-slate-300" />
-          </button>
-        )}
+    <nav
+      className={`fixed left-0 top-0 z-50 h-screen bg-white dark:bg-slate-900 shadow-2xl border-r border-slate-200/60 dark:border-slate-700/60 transform transition-all duration-300 ease-out ${
+        open ? 'translate-x-0' : '-translate-x-full'
+      } w-[280px] xs:w-[300px] sm:w-[320px] md:w-[280px] lg:w-64 xl:w-72 lg:translate-x-0 lg:max-w-none lg:static lg:block flex flex-col max-w-[85vw] xs:max-w-[80vw] sm:max-w-[75vw] lg:max-w-none`}
+      aria-label="Sidebar"
+    >
+      {setOpen && (
+        <button
+          className="lg:hidden absolute top-3 sm:top-4 right-3 sm:right-4 p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors z-10 shadow-sm"
+          onClick={() => setOpen(false)}
+          aria-label="Close sidebar"
+        >
+          <X className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+        </button>
+      )}
 
-        {/* Header */}
-        <div className="flex flex-col items-center pt-4 sm:pt-6 pb-3 sm:pb-4 gap-2 sm:gap-3 select-none border-b border-slate-100 dark:border-slate-700">
-          <div className="relative">
-            <img
-              src="/favicon.ico"
-              alt="Logo"
-              className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-2xl border-2 border-blue-400 dark:border-blue-500 shadow-lg transition-transform duration-300 hover:scale-105"
-            />
-            <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full border-2 border-white dark:border-slate-900 shadow-sm animate-pulse" />
-          </div>
-          <div className="text-center">
-            <span className="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-200">
-              GSAI Admin
-            </span>
-            <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
-              Nitesh Yadav
-            </p>
-          </div>
+      {/* Header */}
+      <div className="flex flex-col items-center pt-4 sm:pt-6 pb-3 sm:pb-4 gap-2 sm:gap-3 select-none border-b border-slate-100 dark:border-slate-700">
+        <div className="relative">
+          <img
+            src="/assets/img/logo.webp"
+            alt="Logo"
+            className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 object-contain"
+          />
+          <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full border-2 border-white dark:border-slate-900 shadow-sm animate-pulse" />
         </div>
-
-        {/* Navigation */}
-        <div className="flex-1 py-3 sm:py-4 px-1 sm:px-2 overflow-y-auto space-y-3 sm:space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
-          <NavSection title="Overview" items={mainItems} />
-          <NavSection title="Management" items={managementItems} />
-          <NavSection title="Content" items={contentItems} />
-          <NavSection title="External" items={externalItems} />
+        <div className="text-center">
+          <span className="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-200">
+            GSAI Admin
+          </span>
+          <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
+            Nitesh Yadav
+          </p>
         </div>
+      </div>
 
-        {/* Footer */}
-        <div className="p-3 sm:p-4 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900">
-          <button
-            onClick={() => signOut()}
-            className="w-full flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-red-400 transition-all duration-200 font-semibold text-xs sm:text-sm"
-          >
-            <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
-            <span>Sign Out</span>
-          </button>
+      {/* Navigation */}
+      <div className="flex-1 py-3 sm:py-4 px-1 sm:px-2 overflow-y-auto space-y-3 sm:space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
+        <NavSection
+          title="Overview"
+          items={navItems.filter((i) => i.category === 'main')}
+        />
+        <NavSection
+          title="Management"
+          items={navItems.filter((i) => i.category === 'management')}
+        />
+        <NavSection
+          title="Content"
+          items={navItems.filter((i) => i.category === 'content')}
+        />
+        <NavSection
+          title="External"
+          items={navItems.filter((i) => i.category === 'external')}
+        />
+      </div>
 
-          <div className="mt-2 sm:mt-3 text-center">
-            <div className="flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
-              <span>© 2025 GSAI</span>
-              <span className="text-slate-300 dark:text-slate-600">•</span>
-              <div
-                className="flex items-center gap-1 hover:text-slate-600 dark:hover:text-slate-400 transition-colors duration-200 cursor-pointer"
-                title={`Version ${APP_VERSION}`}
-              >
-                <GitBranch className="w-2.5 h-2.5" />
-                <span>v{APP_VERSION}</span>
-              </div>
+      {/* Footer */}
+      <div className="p-3 sm:p-4 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900">
+        <button
+          onClick={() => signOut()}
+          className="w-full flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-red-400 transition-all duration-200 font-semibold text-xs sm:text-sm"
+        >
+          <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
+          <span>Sign Out</span>
+        </button>
+        <div className="mt-2 sm:mt-3 text-center">
+          <div className="flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
+            <span>© 2025 GSAI</span>
+            <span className="text-slate-300 dark:text-slate-600">•</span>
+            <div
+              className="flex items-center gap-1 hover:text-slate-600 dark:hover:text-slate-400 transition-colors duration-200 cursor-pointer"
+              title={`Version ${APP_VERSION}`}
+            >
+              <GitBranch className="w-2.5 h-2.5" />
+              <span>v{APP_VERSION}</span>
             </div>
           </div>
         </div>
-      </nav>
-    </>
+      </div>
+    </nav>
   );
 }

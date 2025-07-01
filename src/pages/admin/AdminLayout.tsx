@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { RefreshCw, Menu } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import { LogOut } from 'lucide-react';
 
 const AdminLayout: React.FC = () => {
   const { isAdmin, isLoading, signOut } = useAdminAuth();
@@ -130,20 +131,21 @@ const AdminLayout: React.FC = () => {
 
               {/* Avatar & Sign Out (Mobile only) */}
               <div className="flex items-center gap-2">
-                {/* Mobile-only Logout */}
-                <Button
+                {/* Mobile-only Logout Icon */}
+                <button
                   onClick={signOut}
-                  className="lg:hidden text-sm px-3 py-1.5 rounded-md bg-red-100 text-red-600 border border-red-300 hover:bg-red-200 dark:bg-red-900 dark:text-red-300 dark:border-red-700 dark:hover:bg-red-800"
+                  className="lg:hidden p-2 rounded-md bg-red-100 text-red-600 border border-red-300 hover:bg-red-200 dark:bg-red-900 dark:text-red-300 dark:border-red-700 dark:hover:bg-red-800"
+                  title="Sign out"
                 >
-                  Sign Out
-                </Button>
-                <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-blue-100 to-indigo-200 dark:from-blue-900 dark:to-indigo-700 flex items-center justify-center shadow-sm border border-blue-200/50 dark:border-blue-600/50 overflow-hidden flex-shrink-0">
-                  <img
-                    src="/assets/img/logo.webp"
-                    alt="Admin avatar"
-                    className="w-full h-full object-contain rounded-xl"
-                  />
-                </div>
+                  <LogOut className="w-5 h-5" />
+                </button>
+
+                {/* Avatar – only shown on tablet and mobile */}
+                <img
+                  src="/assets/img/logo.webp"
+                  alt="Admin avatar"
+                  className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 object-contain lg:hidden"
+                />
               </div>
             </div>
           </div>
