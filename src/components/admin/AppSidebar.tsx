@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
@@ -17,7 +16,6 @@ import {
 } from 'lucide-react';
 import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 
-// Modern sidebar nav items with improved categorization
 const navItems = [
   {
     title: 'Homepage',
@@ -76,24 +74,16 @@ interface AppSidebarProps {
 
 export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
   const { signOut } = useAdminAuth();
-  const APP_VERSION = '1.2.5'; // Version updated for improved responsiveness
+  const APP_VERSION = '1.2.5';
 
   const mainItems = navItems.filter((item) => item.category === 'main');
-  const managementItems = navItems.filter(
-    (item) => item.category === 'management'
-  );
+  const managementItems = navItems.filter((item) => item.category === 'management');
   const contentItems = navItems.filter((item) => item.category === 'content');
   const externalItems = navItems.filter((item) => item.category === 'external');
 
-  const NavSection = ({
-    title,
-    items,
-  }: {
-    title: string;
-    items: typeof navItems;
-  }) => (
+  const NavSection = ({ title, items }: { title: string; items: typeof navItems }) => (
     <div className="space-y-1">
-      <h3 className="px-3 sm:px-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
+      <h3 className="px-3 sm:px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
         {title}
       </h3>
       <ul className="space-y-1">
@@ -113,7 +103,9 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
                   <div className="p-1 sm:p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 group-hover:bg-blue-200 dark:group-hover:bg-blue-800 transition-colors duration-200 flex-shrink-0">
                     <Icon className="w-3 h-3 sm:w-4 sm:h-4" />
                   </div>
-                  <span className="font-medium text-xs sm:text-sm truncate">{title}</span>
+                  <span className="font-medium text-xs sm:text-sm truncate text-slate-800 dark:text-slate-200">
+                    {title}
+                  </span>
                 </div>
                 <ChevronRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0" />
               </a>
@@ -144,7 +136,7 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
                       >
                         <Icon className="w-3 h-3 sm:w-4 sm:h-4" />
                       </div>
-                      <span className="truncate">{title}</span>
+                      <span className="truncate text-slate-800 dark:text-slate-200">{title}</span>
                     </div>
                     {isActive && (
                       <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-500 flex-shrink-0" />
@@ -175,7 +167,6 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
         `}
         aria-label="Sidebar"
       >
-        {/* Mobile Close Button */}
         {setOpen && (
           <button
             className="lg:hidden absolute top-3 sm:top-4 right-3 sm:right-4 p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors z-10 shadow-sm"
@@ -186,7 +177,7 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
           </button>
         )}
 
-        {/* Enhanced Header */}
+        {/* Header */}
         <div className="flex flex-col items-center pt-4 sm:pt-6 pb-3 sm:pb-4 gap-2 sm:gap-3 select-none border-b border-slate-100 dark:border-slate-700">
           <div className="relative">
             <img
@@ -197,7 +188,7 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
             <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full border-2 border-white dark:border-slate-900 shadow-sm animate-pulse" />
           </div>
           <div className="text-center">
-            <span className="text-base sm:text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <span className="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-200">
               GSAI Admin
             </span>
             <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
@@ -206,7 +197,7 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
           </div>
         </div>
 
-        {/* Enhanced Navigation */}
+        {/* Navigation */}
         <div className="flex-1 py-3 sm:py-4 px-1 sm:px-2 overflow-y-auto space-y-3 sm:space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
           <NavSection title="Overview" items={mainItems} />
           <NavSection title="Management" items={managementItems} />
@@ -214,7 +205,7 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
           <NavSection title="External" items={externalItems} />
         </div>
 
-        {/* Enhanced Footer */}
+        {/* Footer */}
         <div className="p-3 sm:p-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm">
           <button
             onClick={() => signOut()}
