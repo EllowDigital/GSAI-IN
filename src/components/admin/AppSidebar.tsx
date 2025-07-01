@@ -19,16 +19,12 @@ import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 const navItems = [
   {
     title: 'Homepage',
-    url: 'https://ghatakgsai.netlify.app/',
+    url: '/',
     icon: Globe,
     category: 'external',
+    signOutFirst: true, // custom flag
   },
-  {
-    title: 'Dashboard',
-    url: '/admin/dashboard',
-    icon: Home,
-    category: 'main',
-  },
+  { title: 'Dashboard', url: '/admin/dashboard', icon: Home, category: 'main' },
   {
     title: 'Fees',
     url: '/admin/dashboard/fees',
@@ -95,17 +91,15 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
         {title}
       </h3>
       <ul className="space-y-1">
-        {items.map(({ title, url, icon: Icon }) => (
+        {items.map(({ title, url, icon: Icon, signOutFirst }) => (
           <li key={title}>
-            {url.startsWith('http') ? (
-              <a
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl mx-2 transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 dark:hover:from-blue-900/30 dark:hover:to-blue-800/30 hover:shadow-sm text-slate-700 dark:text-slate-300 hover:text-blue-800 dark:hover:text-blue-200"
+            {title === 'Homepage' ? (
+              <button
                 onClick={() => {
-                  if (window.innerWidth < 1024 && setOpen) setOpen(false);
+                  signOut();
+                  window.location.href = '/';
                 }}
+                className="group flex w-full items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl mx-2 transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 dark:hover:from-blue-900/30 dark:hover:to-blue-800/30 hover:shadow-sm text-left text-slate-700 dark:text-slate-300 hover:text-blue-800 dark:hover:text-blue-200"
               >
                 <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                   <div className="p-1 sm:p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 group-hover:bg-blue-200 dark:group-hover:bg-blue-800 transition-colors duration-200 flex-shrink-0">
@@ -116,7 +110,7 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
                   </span>
                 </div>
                 <ChevronRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0" />
-              </a>
+              </button>
             ) : (
               <NavLink
                 to={url}
@@ -164,17 +158,9 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
   return (
     <>
       <nav
-        className={`
-          fixed left-0 top-0 z-50 h-screen
-          bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl
-          shadow-2xl border-r border-slate-200/60 dark:border-slate-700/60
-          transform transition-all duration-300 ease-out
-          ${open ? 'translate-x-0' : '-translate-x-full'}
-          w-[280px] xs:w-[300px] sm:w-[320px] md:w-[280px]
-          lg:w-64 xl:w-72 lg:translate-x-0 lg:max-w-none lg:static lg:block
-          flex flex-col
-          max-w-[85vw] xs:max-w-[80vw] sm:max-w-[75vw] lg:max-w-none
-        `}
+        className={`fixed left-0 top-0 z-50 h-screen bg-white dark:bg-slate-900 shadow-2xl border-r border-slate-200/60 dark:border-slate-700/60 transform transition-all duration-300 ease-out ${
+          open ? 'translate-x-0' : '-translate-x-full'
+        } w-[280px] xs:w-[300px] sm:w-[320px] md:w-[280px] lg:w-64 xl:w-72 lg:translate-x-0 lg:max-w-none lg:static lg:block flex flex-col max-w-[85vw] xs:max-w-[80vw] sm:max-w-[75vw] lg:max-w-none`}
         aria-label="Sidebar"
       >
         {setOpen && (
@@ -216,7 +202,7 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
         </div>
 
         {/* Footer */}
-        <div className="p-3 sm:p-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm">
+        <div className="p-3 sm:p-4 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900">
           <button
             onClick={() => signOut()}
             className="w-full flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-red-400 transition-all duration-200 font-semibold text-xs sm:text-sm"

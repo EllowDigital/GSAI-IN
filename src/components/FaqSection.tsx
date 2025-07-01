@@ -5,7 +5,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from '@/components/ui/accordion';
-import { HelpCircle, Sparkles } from 'lucide-react';
+import { HelpCircle, Sparkles, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export const faqs = [
@@ -146,13 +146,13 @@ export default function FaqSection() {
                   value={`faq-${item.category}-${idx}`}
                   className="group bg-white/90 backdrop-blur-sm rounded-2xl border border-yellow-100/50 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
                 >
-                  <AccordionTrigger className="group/trigger px-8 py-6 text-left hover:no-underline hover:bg-gradient-to-r hover:from-yellow-50 hover:to-red-50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-inset [&>svg]:hidden">
+                  <AccordionTrigger className="relative px-8 py-6 text-left hover:no-underline hover:bg-gradient-to-r hover:from-yellow-50 hover:to-red-50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-inset pr-12">
                     <div className="flex items-start gap-4 w-full">
                       <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-yellow-400 to-red-500 rounded-full flex items-center justify-center mt-1">
                         <HelpCircle className="w-4 h-4 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-lg md:text-xl font-semibold text-gray-900 leading-tight group-hover/trigger:text-yellow-700 transition-colors duration-300">
+                        <h3 className="text-lg md:text-xl font-semibold text-gray-900 leading-tight group-hover:text-yellow-700 transition-colors duration-300">
                           {item.question}
                         </h3>
                         <div className="flex items-center gap-2 mt-3">
@@ -162,7 +162,10 @@ export default function FaqSection() {
                         </div>
                       </div>
                     </div>
+                    {/* Custom Chevron Icon */}
+                    <ChevronDown className="w-5 h-5 text-gray-500 absolute right-6 top-1/2 -translate-y-1/2 transition-transform duration-300 group-data-[state=open]:rotate-180" />
                   </AccordionTrigger>
+
                   <AccordionContent className="px-8 pb-8">
                     <div className="flex items-start gap-4">
                       <div className="flex-shrink-0 w-8 h-8" />
