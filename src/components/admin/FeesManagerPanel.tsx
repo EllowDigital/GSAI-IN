@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -158,7 +157,7 @@ export default function FeesManagerPanel() {
         </div>
       );
     }
-    
+
     // Use view mode state instead of window width check
     if (viewMode === 'table') {
       return (
@@ -205,7 +204,7 @@ export default function FeesManagerPanel() {
               isLoading={isLoading}
               className="flex-1 xl:flex-none min-w-[100px]"
             />
-            
+
             {/* View Mode Toggle */}
             <div className="flex gap-1 border rounded-full p-1 bg-gray-50 flex-1 xl:flex-none">
               <Button
@@ -227,7 +226,7 @@ export default function FeesManagerPanel() {
                 <span className="hidden sm:inline ml-1">Table</span>
               </Button>
             </div>
-            
+
             <button
               onClick={() => exportFeesToCsv(rows, filterMonth, filterYear)}
               className="border border-yellow-400 px-3 md:px-4 py-2 rounded-full bg-yellow-50 text-yellow-700 font-medium hover:bg-yellow-200 transition text-sm flex-1 xl:flex-none xl:min-w-[120px]"

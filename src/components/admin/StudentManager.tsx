@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Grid, List } from 'lucide-react';
@@ -122,7 +121,7 @@ export default function StudentManager() {
         <div className="w-full">
           <StudentSummaryCard students={students} loading={loading} />
         </div>
-        
+
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-4">
           <div className="flex gap-3 w-full lg:w-auto">
             <RefreshButton
@@ -134,7 +133,8 @@ export default function StudentManager() {
               onClick={() => exportStudentsToCsv(filteredStudents)}
               className="flex-1 lg:flex-none border border-blue-400 px-3 sm:px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-medium hover:bg-blue-200 transition text-xs sm:text-sm min-h-[40px] flex items-center justify-center"
               disabled={
-                !Array.isArray(filteredStudents) || filteredStudents.length === 0
+                !Array.isArray(filteredStudents) ||
+                filteredStudents.length === 0
               }
               title="Download as CSV"
             >
@@ -187,9 +187,7 @@ export default function StudentManager() {
       </div>
 
       {/* Table or Cards */}
-      <div className="w-full overflow-hidden">
-        {renderContent()}
-      </div>
+      <div className="w-full overflow-hidden">{renderContent()}</div>
 
       {/* Add/Edit Modal */}
       {showModal && (
@@ -199,7 +197,7 @@ export default function StudentManager() {
           student={editingStudent}
         />
       )}
-      
+
       {/* Delete dialog */}
       {deleteStudent && (
         <StudentDeleteDialog

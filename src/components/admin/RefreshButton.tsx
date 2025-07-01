@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -22,23 +21,25 @@ const RefreshButton: React.FC<RefreshButtonProps> = ({
   showText = true,
 }) => {
   const [isRefreshing, setIsRefreshing] = React.useState(false);
-  const [refreshStatus, setRefreshStatus] = React.useState<'idle' | 'success' | 'error'>('idle');
+  const [refreshStatus, setRefreshStatus] = React.useState<
+    'idle' | 'success' | 'error'
+  >('idle');
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
     setRefreshStatus('idle');
-    
+
     try {
       await onRefresh();
       setRefreshStatus('success');
-      
+
       // Reset success status after animation
       setTimeout(() => {
         setRefreshStatus('idle');
       }, 2000);
     } catch (error) {
       setRefreshStatus('error');
-      
+
       // Reset error status after animation
       setTimeout(() => {
         setRefreshStatus('idle');
@@ -54,12 +55,18 @@ const RefreshButton: React.FC<RefreshButtonProps> = ({
   const getStatusIcon = () => {
     if (refreshStatus === 'success') return <CheckCircle className="w-4 h-4" />;
     if (refreshStatus === 'error') return <AlertCircle className="w-4 h-4" />;
-    return <RefreshCw className={`w-4 h-4 transition-transform duration-500 ${loading ? 'animate-spin' : 'group-hover:rotate-180'}`} />;
+    return (
+      <RefreshCw
+        className={`w-4 h-4 transition-transform duration-500 ${loading ? 'animate-spin' : 'group-hover:rotate-180'}`}
+      />
+    );
   };
 
   const getStatusColor = () => {
-    if (refreshStatus === 'success') return 'from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 border-green-200/60 hover:border-green-300/80 text-green-700 hover:text-green-800';
-    if (refreshStatus === 'error') return 'from-red-50 to-pink-50 hover:from-red-100 hover:to-pink-100 border-red-200/60 hover:border-red-300/80 text-red-700 hover:text-red-800';
+    if (refreshStatus === 'success')
+      return 'from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 border-green-200/60 hover:border-green-300/80 text-green-700 hover:text-green-800';
+    if (refreshStatus === 'error')
+      return 'from-red-50 to-pink-50 hover:from-red-100 hover:to-pink-100 border-red-200/60 hover:border-red-300/80 text-red-700 hover:text-red-800';
     return 'from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border-blue-200/60 hover:border-blue-300/80 text-blue-700 hover:text-blue-800';
   };
 
@@ -96,7 +103,7 @@ const RefreshButton: React.FC<RefreshButtonProps> = ({
         transition={{
           duration: 1.5,
           repeat: loading ? Infinity : 0,
-          ease: "easeInOut"
+          ease: 'easeInOut',
         }}
       />
 
@@ -113,7 +120,7 @@ const RefreshButton: React.FC<RefreshButtonProps> = ({
             {getStatusIcon()}
           </motion.div>
         </AnimatePresence>
-        
+
         {showText && (
           <AnimatePresence mode="wait">
             <motion.span
@@ -139,7 +146,7 @@ const RefreshButton: React.FC<RefreshButtonProps> = ({
           transition={{ duration: 0.6 }}
         />
       )}
-      
+
       {refreshStatus === 'error' && (
         <motion.div
           className="absolute inset-0 rounded-lg bg-red-200"

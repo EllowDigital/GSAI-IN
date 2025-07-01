@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useAdminAuth } from './AdminAuthProvider';
@@ -9,13 +8,13 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 
 const AdminLayout: React.FC = () => {
-  const { isAdmin, isLoading } = useAdminAuth();
+  const { isAdmin, isLoading, signOut } = useAdminAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  // Lock scroll when sidebar is open on mobile
+  // Lock scroll on mobile when sidebar is open
   useEffect(() => {
     if (window.innerWidth < 1024) {
       document.body.style.overflow = sidebarOpen ? 'hidden' : '';
@@ -32,10 +31,10 @@ const AdminLayout: React.FC = () => {
         title: 'Refreshing Dashboard',
         description: 'Fetching the latest data...',
       });
-      
+
       await queryClient.invalidateQueries();
       await queryClient.refetchQueries();
-      
+
       toast({
         title: 'Success',
         description: 'Dashboard refreshed successfully!',
@@ -86,12 +85,12 @@ const AdminLayout: React.FC = () => {
         />
       )}
 
-      {/* Main Layout */}
+      {/* Main layout */}
       <div className="flex-1 flex flex-col min-h-screen w-full min-w-0">
-        {/* Enhanced Responsive Header */}
-        <header className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-700/60 sticky top-0 z-30 shadow-lg">
+        {/* Header */}
+        <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-700/60 shadow-lg">
           <div className="flex items-center justify-between px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 gap-2 sm:gap-4">
-            {/* Left: Brand & Menu */}
+            {/* Left: Brand & Sidebar Toggle */}
             <div className="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0 flex-shrink-0">
               <button
                 className="lg:hidden p-1.5 sm:p-2 md:p-2.5 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-200 dark:border-blue-700 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-800/40 dark:hover:to-indigo-800/40 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-200 shadow-sm hover:shadow-md"
@@ -100,7 +99,7 @@ const AdminLayout: React.FC = () => {
               >
                 <Menu className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700 dark:text-blue-300" />
               </button>
-              
+
               <div className="flex flex-col min-w-0">
                 <h1 className="text-sm sm:text-lg md:text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
                   GSAI Admin
@@ -111,35 +110,48 @@ const AdminLayout: React.FC = () => {
               </div>
             </div>
 
-            {/* Right: Actions */}
+            {/* Right: Refresh, Avatar, Sign Out (Mobile only) */}
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-              {/* Enhanced Refresh Button */}
+              {/* Refresh */}
               <Button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
                 className="p-2 sm:p-2.5 md:p-3 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-800/40 dark:hover:to-emerald-800/40 border border-green-200 dark:border-green-700 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
-                aria-label={isRefreshing ? 'Refreshing...' : 'Refresh dashboard'}
+                aria-label={
+                  isRefreshing ? 'Refreshing...' : 'Refresh dashboard'
+                }
               >
-                <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 text-green-700 dark:text-green-300 transition-transform duration-500 ${isRefreshing ? 'animate-spin' : 'hover:rotate-180'}`} />
+                <RefreshCw
+                  className={`w-4 h-4 sm:w-5 sm:h-5 text-green-700 dark:text-green-300 transition-transform duration-500 ${
+                    isRefreshing ? 'animate-spin' : 'hover:rotate-180'
+                  }`}
+                />
               </Button>
 
-              {/* Avatar */}
-              <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-blue-100 to-indigo-200 dark:from-blue-900 dark:to-indigo-700 flex items-center justify-center shadow-sm border border-blue-200/50 dark:border-blue-600/50 overflow-hidden flex-shrink-0">
-                <img
-                  src="/assets/img/logo.webp"
-                  alt="Admin avatar"
-                  className="w-full h-full object-contain rounded-xl"
-                />
+              {/* Avatar & Sign Out (Mobile only) */}
+              <div className="flex items-center gap-2">
+                {/* Mobile-only Logout */}
+                <Button
+                  onClick={signOut}
+                  className="lg:hidden text-sm px-3 py-1.5 rounded-md bg-red-100 text-red-600 border border-red-300 hover:bg-red-200 dark:bg-red-900 dark:text-red-300 dark:border-red-700 dark:hover:bg-red-800"
+                >
+                  Sign Out
+                </Button>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-blue-100 to-indigo-200 dark:from-blue-900 dark:to-indigo-700 flex items-center justify-center shadow-sm border border-blue-200/50 dark:border-blue-600/50 overflow-hidden flex-shrink-0">
+                  <img
+                    src="/assets/img/logo.webp"
+                    alt="Admin avatar"
+                    className="w-full h-full object-contain rounded-xl"
+                  />
+                </div>
               </div>
             </div>
           </div>
         </header>
 
-        {/* Content with responsive spacing */}
+        {/* Main content */}
         <main className="flex-1 w-full min-w-0 overflow-auto bg-gradient-to-br from-slate-50/50 via-white/50 to-blue-50/50">
-          <div className="w-full h-full">
-            <Outlet />
-          </div>
+          <Outlet />
         </main>
       </div>
     </div>
