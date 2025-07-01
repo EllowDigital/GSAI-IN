@@ -113,7 +113,7 @@ const AdminLayout: React.FC = () => {
             {/* Right: Refresh, Avatar, Sign Out (Mobile only) */}
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               {/* Refresh */}
-              <Button
+              {/* <Button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
                 className="p-2 sm:p-2.5 md:p-3 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-800/40 dark:hover:to-emerald-800/40 border border-green-200 dark:border-green-700 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
@@ -126,7 +126,7 @@ const AdminLayout: React.FC = () => {
                     isRefreshing ? 'animate-spin' : 'hover:rotate-180'
                   }`}
                 />
-              </Button>
+              </Button> */}
 
               {/* Avatar & Sign Out (Mobile only) */}
               <div className="flex items-center gap-2">
