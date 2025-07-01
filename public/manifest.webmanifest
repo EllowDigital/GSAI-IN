@@ -1,6 +1,6 @@
 {
-  "name": "Ghatak Sports Academy",
-  "short_name": "GSAI",
+  "name": "Ghatak Sports Academy India™",
+  "short_name": "GSAI™",
   "description": "Train at Ghatak Sports Academy, India's leading martial arts and self-defense school. Learn karate, taekwondo, fitness, and more with professional coaches.",
   "icons": [
     {
@@ -30,7 +30,7 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#fbff00",
+  "theme_color": "#000000",
   "background_color": "#ffffff",
   "orientation": "portrait-primary",
   "scope": "/"
