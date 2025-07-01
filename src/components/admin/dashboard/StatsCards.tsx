@@ -71,7 +71,7 @@ export default function StatsCards({ cardsConfig, counts, loading }: Props) {
       opacity: 1, 
       y: 0,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 100,
         damping: 15
       }
@@ -80,7 +80,7 @@ export default function StatsCards({ cardsConfig, counts, loading }: Props) {
 
   return (
     <motion.div 
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-6"
+      className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-6 gap-3 sm:gap-4"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -94,7 +94,7 @@ export default function StatsCards({ cardsConfig, counts, loading }: Props) {
           <motion.div
             key={key}
             variants={cardVariants}
-            className="group relative bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-xl dark:shadow-slate-900/20 border border-slate-200/60 dark:border-slate-700/60 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 overflow-hidden"
+            className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-xl dark:shadow-slate-900/20 border border-slate-200/60 dark:border-slate-700/60 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 overflow-hidden min-h-[140px] sm:min-h-[160px] md:min-h-[180px]"
           >
             {/* Animated Background Gradient */}
             <div
@@ -105,21 +105,21 @@ export default function StatsCards({ cardsConfig, counts, loading }: Props) {
             <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-slate-200/30 dark:group-hover:border-slate-600/30 transition-colors duration-300 pointer-events-none" />
 
             {/* Content */}
-            <div className="relative p-4 sm:p-5 lg:p-6 flex flex-col h-full min-h-[140px] sm:min-h-[160px]">
+            <div className="relative p-3 sm:p-4 md:p-5 lg:p-6 flex flex-col h-full">
               {/* Header */}
-              <div className="flex items-start justify-between mb-4">
+              <div className="flex items-start justify-between mb-3 sm:mb-4">
                 <div
-                  className={`p-2.5 sm:p-3 rounded-xl bg-gradient-to-br ${color} shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:scale-110`}
+                  className={`p-2 sm:p-2.5 md:p-3 rounded-xl bg-gradient-to-br ${color} shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:scale-110`}
                 >
-                  <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  <Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
                 </div>
 
                 {/* Enhanced Growth Indicator */}
                 <div
-                  className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold border ${growthData.bgColor} ${growthData.color} ${growthData.borderColor} shadow-sm`}
+                  className={`flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs font-semibold border ${growthData.bgColor} ${growthData.color} ${growthData.borderColor} shadow-sm`}
                 >
-                  <growthData.icon className="w-3 h-3" />
-                  <span>{growthData.value}%</span>
+                  <growthData.icon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                  <span className="text-xs">{growthData.value}%</span>
                 </div>
               </div>
 
@@ -130,13 +130,13 @@ export default function StatsCards({ cardsConfig, counts, loading }: Props) {
                     <LoadingSkeleton />
                   ) : (
                     <>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors duration-300">
+                      <div className="flex items-center gap-1 sm:gap-2 mb-1">
+                        <span className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 dark:text-white group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors duration-300">
                           {count.toLocaleString()}
                         </span>
-                        <Activity className="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors duration-300" />
+                        <Activity className="w-3 h-3 sm:w-4 sm:h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors duration-300" />
                       </div>
-                      <span className="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-300 leading-tight">
+                      <span className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors duration-300 leading-tight line-clamp-2">
                         {label}
                       </span>
                     </>

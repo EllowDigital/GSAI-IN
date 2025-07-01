@@ -80,7 +80,7 @@ const fetchDashboardCounts = async () => {
   const countPromises = cardsConfig.map(async ({ key, table }) => {
     try {
       const { count, error } = await supabase
-        .from(table)
+        .from(table as any)
         .select('*', { count: 'exact', head: true });
 
       if (error) {
@@ -184,7 +184,7 @@ const StatsHome: React.FC = () => {
       opacity: 1, 
       y: 0,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 100,
         damping: 15
       }
@@ -193,43 +193,43 @@ const StatsHome: React.FC = () => {
 
   return (
     <motion.div 
-      className="space-y-6 sm:space-y-8 animate-fade-in"
+      className="space-y-4 sm:space-y-6 md:space-y-8 animate-fade-in"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
-      {/* Enhanced Header Section */}
+      {/* Enhanced Responsive Header Section */}
       <motion.div 
-        className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 lg:gap-6"
+        className="flex flex-col space-y-3 sm:space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0 gap-2 sm:gap-4"
         variants={itemVariants}
       >
-        <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-r from-blue-100 to-indigo-200 border border-blue-200/60 shadow-sm">
-              <Activity className="w-6 h-6 sm:w-7 sm:h-7 text-blue-700" />
+        <div className="space-y-2 sm:space-y-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="p-2 sm:p-2.5 md:p-3 rounded-xl bg-gradient-to-r from-blue-100 to-indigo-200 border border-blue-200/60 shadow-sm">
+              <Activity className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-blue-700" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent dark:from-white dark:via-slate-200 dark:to-slate-300">
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent dark:from-white dark:via-slate-200 dark:to-slate-300">
                 Dashboard Overview
               </h1>
-              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 font-medium">
+              <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-400 font-medium">
                 Real-time analytics and system insights
               </p>
             </div>
           </div>
           
           {/* Summary Stats */}
-          <div className="flex flex-wrap items-center gap-4 text-sm">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-              <Database className="w-4 h-4 text-slate-500" />
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm">
+            <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+              <Database className="w-3 h-3 sm:w-4 sm:h-4 text-slate-500" />
               <span className="font-medium text-slate-700 dark:text-slate-300">
                 {totalRecords.toLocaleString()} Total Records
               </span>
             </div>
             
             {error && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+              <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full animate-pulse" />
                 <span className="text-red-700 dark:text-red-300 font-medium">
                   Connection Issue
                 </span>
@@ -238,14 +238,14 @@ const StatsHome: React.FC = () => {
           </div>
         </div>
 
-        {/* Enhanced Action Controls */}
-        <div className="flex items-center gap-3 sm:gap-4">
-          <div className="hidden sm:flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-            <BarChart3 className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-            <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
+        {/* Enhanced Responsive Action Controls */}
+        <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
+          <div className="hidden sm:flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-2.5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <BarChart3 className="w-3 h-3 sm:w-4 sm:h-4 text-slate-500 dark:text-slate-400" />
+            <span className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300">
               Live Data
             </span>
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-sm" />
+            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse shadow-sm" />
           </div>
           
           <RefreshButton
@@ -257,7 +257,7 @@ const StatsHome: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* Enhanced Stats Cards */}
+      {/* Enhanced Responsive Stats Cards */}
       <motion.div variants={itemVariants}>
         <StatsCards
           cardsConfig={cardsConfig}
@@ -266,25 +266,25 @@ const StatsHome: React.FC = () => {
         />
       </motion.div>
 
-      {/* Enhanced Charts & Panel */}
+      {/* Enhanced Responsive Charts & Panel */}
       <motion.div 
-        className="grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8"
+        className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 md:gap-8"
         variants={itemVariants}
       >
         {/* Analytics Chart */}
-        <div className="xl:col-span-2 space-y-6">
-          <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 p-4 sm:p-6 hover:shadow-md transition-all duration-300">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div className="lg:col-span-2 xl:col-span-2 space-y-4 sm:space-y-6">
+          <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 p-3 sm:p-4 md:p-6 hover:shadow-md transition-all duration-300">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
               <div>
-                <h2 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white">
+                <h2 className="text-base sm:text-lg md:text-xl font-bold text-slate-800 dark:text-white">
                   Analytics Overview
                 </h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
                   Current period statistics
                 </p>
               </div>
-              <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-                <TrendingUp className="w-4 h-4 text-green-500" />
+              <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
                 <span>Growth Trends</span>
               </div>
             </div>
@@ -293,13 +293,13 @@ const StatsHome: React.FC = () => {
         </div>
 
         {/* Advanced Panel */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 overflow-hidden hover:shadow-md transition-all duration-300">
-            <div className="p-4 sm:p-6 border-b border-slate-100 dark:border-slate-700">
-              <h2 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white">
+            <div className="p-3 sm:p-4 md:p-6 border-b border-slate-100 dark:border-slate-700">
+              <h2 className="text-base sm:text-lg md:text-xl font-bold text-slate-800 dark:text-white">
                 System Tools
               </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
                 Quick access and utilities
               </p>
             </div>
