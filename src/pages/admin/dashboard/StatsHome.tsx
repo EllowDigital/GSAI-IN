@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,7 +11,10 @@ import {
   Calendar,
   Activity,
   BarChart3,
+  TrendingUp,
+  Database,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 import StatsCards from '@/components/admin/dashboard/StatsCards';
 import AnalyticsChart from '@/components/admin/dashboard/AnalyticsChart';
@@ -71,18 +75,24 @@ const cardsConfig: CardConfig[] = [
   },
 ];
 
-// Fetch counts for all dashboard entities
+// Enhanced fetch function with better error handling
 const fetchDashboardCounts = async () => {
   const countPromises = cardsConfig.map(async ({ key, table }) => {
-    const { count, error } = await supabase
-      .from(table)
-      .select('*', { count: 'exact', head: true });
+    try {
+      const { count, error } = await supabase
+        .from(table)
+        .select('*', { count: 'exact', head: true });
 
-    if (error) {
-      console.error(`Error fetching count for ${table}:`, error.message);
+      if (error) {
+        console.error(`Error fetching count for ${table}:`, error.message);
+        return [key, 0] as const;
+      }
+
+      return [key, count ?? 0] as const;
+    } catch (error) {
+      console.error(`Exception fetching count for ${table}:`, error);
+      return [key, 0] as const;
     }
-
-    return [key, count ?? 0] as const;
   });
 
   const results = await Promise.all(countPromises);
@@ -92,40 +102,60 @@ const fetchDashboardCounts = async () => {
 const StatsHome: React.FC = () => {
   const queryClient = useQueryClient();
 
-  const { data: counts, isLoading: isLoadingCounts } = useQuery({
+  const { data: counts, isLoading: isLoadingCounts, error, refetch } = useQuery({
     queryKey: ['dashboardCounts'],
     queryFn: fetchDashboardCounts,
     staleTime: 60 * 1000, // 1 minute cache
+    retry: 3,
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
-  // Listen to real-time changes on Supabase tables
+  // Enhanced real-time updates with error handling
   useEffect(() => {
-    const channels = cardsConfig.map(({ table }) =>
-      supabase
+    const channels = cardsConfig.map(({ table }) => {
+      const channel = supabase
         .channel(`realtime:${table}`)
-        .on('postgres_changes', { event: '*', schema: 'public', table }, () => {
-          queryClient.invalidateQueries({ queryKey: ['dashboardCounts'] });
-        })
-        .subscribe()
-    );
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table },
+          (payload) => {
+            console.log(`Real-time update for ${table}:`, payload);
+            queryClient.invalidateQueries({ queryKey: ['dashboardCounts'] });
+          }
+        )
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log(`✅ Subscribed to real-time updates for ${table}`);
+          } else if (status === 'CHANNEL_ERROR') {
+            console.error(`❌ Error subscribing to real-time updates for ${table}`);
+          }
+        });
+
+      return channel;
+    });
 
     return () => {
-      channels.forEach((channel) => supabase.removeChannel(channel));
+      channels.forEach((channel) => {
+        supabase.removeChannel(channel);
+      });
     };
   }, [queryClient]);
 
   const handleRefresh = async () => {
     try {
       await queryClient.invalidateQueries({ queryKey: ['dashboardCounts'] });
+      await refetch();
+      
       toast({
-        title: 'Refreshed',
-        description: 'Dashboard data updated successfully.',
+        title: 'Dashboard Refreshed',
+        description: 'All statistics have been updated successfully.',
       });
     } catch (error: any) {
+      console.error('Refresh error:', error);
       toast({
-        title: 'Error',
-        description: 'Unable to refresh dashboard data.',
-        variant: 'error',
+        title: 'Refresh Failed',
+        description: 'Unable to refresh dashboard data. Please check your connection.',
+        variant: 'destructive',
       });
     }
   };
@@ -135,62 +165,127 @@ const StatsHome: React.FC = () => {
     count: counts?.[key] ?? 0,
   }));
 
+  const totalRecords = Object.values(counts ?? {}).reduce((sum, count) => sum + count, 0);
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }
+    }
+  };
+
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Header Section */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-        <div className="space-y-2">
+    <motion.div 
+      className="space-y-6 sm:space-y-8 animate-fade-in"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      {/* Enhanced Header Section */}
+      <motion.div 
+        className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 lg:gap-6"
+        variants={itemVariants}
+      >
+        <div className="space-y-3">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gradient-to-r from-yellow-100 to-yellow-200 border border-yellow-300/50">
-              <Activity className="w-6 h-6 text-yellow-700" />
+            <div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-r from-blue-100 to-indigo-200 border border-blue-200/60 shadow-sm">
+              <Activity className="w-6 h-6 sm:w-7 sm:h-7 text-blue-700" />
             </div>
             <div>
-              <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent dark:from-white dark:to-slate-300">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent dark:from-white dark:via-slate-200 dark:to-slate-300">
                 Dashboard Overview
               </h1>
-              <p className="text-slate-600 dark:text-slate-400 font-medium">
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 font-medium">
                 Real-time analytics and system insights
               </p>
             </div>
           </div>
+          
+          {/* Summary Stats */}
+          <div className="flex flex-wrap items-center gap-4 text-sm">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+              <Database className="w-4 h-4 text-slate-500" />
+              <span className="font-medium text-slate-700 dark:text-slate-300">
+                {totalRecords.toLocaleString()} Total Records
+              </span>
+            </div>
+            
+            {error && (
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                <span className="text-red-700 dark:text-red-300 font-medium">
+                  Connection Issue
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Refresh + Live Tag */}
-        <div className="flex items-center gap-4">
-          <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+        {/* Enhanced Action Controls */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="hidden sm:flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
             <BarChart3 className="w-4 h-4 text-slate-500 dark:text-slate-400" />
             <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
               Live Data
             </span>
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-sm" />
           </div>
+          
           <RefreshButton
             onRefresh={handleRefresh}
             isLoading={isLoadingCounts}
             size="default"
+            className="shadow-sm"
           />
         </div>
-      </div>
+      </motion.div>
 
-      {/* Stats Cards */}
-      <StatsCards
-        cardsConfig={cardsConfig}
-        counts={counts}
-        loading={isLoadingCounts}
-      />
+      {/* Enhanced Stats Cards */}
+      <motion.div variants={itemVariants}>
+        <StatsCards
+          cardsConfig={cardsConfig}
+          counts={counts}
+          loading={isLoadingCounts}
+        />
+      </motion.div>
 
-      {/* Charts & Panel */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+      {/* Enhanced Charts & Panel */}
+      <motion.div 
+        className="grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8"
+        variants={itemVariants}
+      >
         {/* Analytics Chart */}
         <div className="xl:col-span-2 space-y-6">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow border border-slate-200 dark:border-slate-700 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-slate-800 dark:text-white">
-                Analytics Overview
-              </h2>
+          <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 p-4 sm:p-6 hover:shadow-md transition-all duration-300">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <div>
+                <h2 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white">
+                  Analytics Overview
+                </h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  Current period statistics
+                </p>
+              </div>
               <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-                <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                <span>Current Period</span>
+                <TrendingUp className="w-4 h-4 text-green-500" />
+                <span>Growth Trends</span>
               </div>
             </div>
             <AnalyticsChart analyticsData={analyticsData} />
@@ -199,9 +294,9 @@ const StatsHome: React.FC = () => {
 
         {/* Advanced Panel */}
         <div className="space-y-6">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow border border-slate-200 dark:border-slate-700 overflow-hidden">
-            <div className="p-6 border-b border-slate-100 dark:border-slate-700">
-              <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+          <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 overflow-hidden hover:shadow-md transition-all duration-300">
+            <div className="p-4 sm:p-6 border-b border-slate-100 dark:border-slate-700">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white">
                 System Tools
               </h2>
               <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
@@ -211,8 +306,8 @@ const StatsHome: React.FC = () => {
             <AdvancedPanel />
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
