@@ -44,7 +44,7 @@ const AdminLayout: React.FC = () => {
       toast({
         title: 'Refresh Failed',
         description: 'Unable to refresh dashboard data. Please try again.',
-        variant: 'destructive',
+        variant: 'error',
       });
     } finally {
       setTimeout(() => setIsRefreshing(false), 500);
@@ -136,7 +136,7 @@ const AdminLayout: React.FC = () => {
         </header>
 
         {/* Content with responsive spacing */}
-        <main className="flex-1 w-full min-w-0 overflow-auto">
+        <main className="flex-1 w-full min-w-0 overflow-auto bg-gradient-to-br from-slate-50/50 via-white/50 to-blue-50/50">
           <div className="w-full h-full">
             <Outlet />
           </div>

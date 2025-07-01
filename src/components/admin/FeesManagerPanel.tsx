@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,6 +12,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import FeesCards from './FeesCards';
 import RefreshButton from './RefreshButton';
 import { toast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { Grid, List } from 'lucide-react';
 
 export default function FeesManagerPanel() {
   const now = new Date();
@@ -24,6 +27,7 @@ export default function FeesManagerPanel() {
   const [historyDrawerOpen, setHistoryDrawerOpen] = useState(false);
   const [historyStudent, setHistoryStudent] = useState<any | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
 
@@ -154,25 +158,26 @@ export default function FeesManagerPanel() {
         </div>
       );
     }
-    // Use cards for mobile and small tablets, table for larger screens
-    if (isMobile || window.innerWidth < 1024) {
+    
+    // Use view mode state instead of window width check
+    if (viewMode === 'table') {
       return (
-        <FeesCards
-          rows={rows}
-          onEditFee={handleEditFee}
-          onShowHistory={handleShowHistory}
-        />
+        <div className="rounded-2xl shadow-lg overflow-x-auto bg-white animate-fade-in">
+          <FeesTable
+            rows={rows}
+            isLoading={false}
+            onEditFee={handleEditFee}
+            onShowHistory={handleShowHistory}
+          />
+        </div>
       );
     }
     return (
-      <div className="rounded-2xl shadow-lg overflow-x-auto bg-white animate-fade-in">
-        <FeesTable
-          rows={rows}
-          isLoading={false}
-          onEditFee={handleEditFee}
-          onShowHistory={handleShowHistory}
-        />
-      </div>
+      <FeesCards
+        rows={rows}
+        onEditFee={handleEditFee}
+        onShowHistory={handleShowHistory}
+      />
     );
   };
 
@@ -200,6 +205,29 @@ export default function FeesManagerPanel() {
               isLoading={isLoading}
               className="flex-1 xl:flex-none min-w-[100px]"
             />
+            
+            {/* View Mode Toggle */}
+            <div className="flex gap-1 border rounded-full p-1 bg-gray-50 flex-1 xl:flex-none">
+              <Button
+                variant={viewMode === 'cards' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('cards')}
+                className="rounded-full px-3 flex-1 xl:flex-none"
+              >
+                <Grid size={16} />
+                <span className="hidden sm:inline ml-1">Cards</span>
+              </Button>
+              <Button
+                variant={viewMode === 'table' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('table')}
+                className="rounded-full px-3 flex-1 xl:flex-none"
+              >
+                <List size={16} />
+                <span className="hidden sm:inline ml-1">Table</span>
+              </Button>
+            </div>
+            
             <button
               onClick={() => exportFeesToCsv(rows, filterMonth, filterYear)}
               className="border border-yellow-400 px-3 md:px-4 py-2 rounded-full bg-yellow-50 text-yellow-700 font-medium hover:bg-yellow-200 transition text-sm flex-1 xl:flex-none xl:min-w-[120px]"

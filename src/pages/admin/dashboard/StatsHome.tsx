@@ -1,237 +1,246 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import StatsCards from '@/components/admin/dashboard/StatsCards';
-import { BarChart3, TrendingUp, Users, Activity, RefreshCw } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
-
-// Card configurations with enhanced styling
-const cardConfigs = [
-  {
-    key: 'fees',
-    label: 'Total Fees',
-    icon: BarChart3,
-    color: 'from-blue-500 to-blue-600',
-    table: 'fees' as const,
-  },
-  {
-    key: 'students',
-    label: 'Students',
-    icon: Users,
-    color: 'from-green-500 to-green-600',
-    table: 'students' as const,
-  },
-  {
-    key: 'blogs',
-    label: 'Blog Posts',
-    icon: TrendingUp,
-    color: 'from-purple-500 to-purple-600',
-    table: 'blogs' as const,
-  },
-  {
-    key: 'news',
-    label: 'News Articles',
-    icon: Activity,
-    color: 'from-orange-500 to-orange-600',
-    table: 'news' as const,
-  },
-  {
-    key: 'gallery',
-    label: 'Gallery Items',
-    icon: Activity,
-    color: 'from-pink-500 to-pink-600',
-    table: 'gallery_images' as const,
-  },
-  {
-    key: 'events',
-    label: 'Events',
-    icon: Activity,
-    color: 'from-indigo-500 to-indigo-600',
-    table: 'events' as const,
-  },
-];
+import AnalyticsChart from '@/components/admin/dashboard/AnalyticsChart';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Activity,
+  Users,
+  TrendingUp,
+  Calendar,
+  Star,
+  Award,
+  Target,
+  Clock,
+} from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 export default function StatsHome() {
-  const { toast } = useToast();
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Fetch counts for all tables
-  const {
-    data: counts,
-    isLoading,
-    error,
-    refetch,
-    isRefetching,
-  } = useQuery({
+  // Fetch dashboard stats
+  const { data: stats, isLoading, refetch } = useQuery({
     queryKey: ['dashboard-stats'],
     queryFn: async () => {
-      const results: Record<string, number> = {};
+      const [studentsRes, newsRes, blogsRes, feesRes] = await Promise.all([
+        supabase.from('students').select('id, created_at, program'),
+        supabase.from('news').select('id, created_at, status'),
+        supabase.from('blogs').select('id, created_at'),
+        supabase.from('fees').select('id, status, paid_amount, monthly_fee'),
+      ]);
 
-      // Fetch counts for each table
-      for (const config of cardConfigs) {
-        try {
-          const { count, error } = await supabase
-            .from(config.table)
-            .select('*', { count: 'exact', head: true });
-
-          if (error) {
-            console.error(`Error fetching ${config.table}:`, error);
-            results[config.key] = 0;
-          } else {
-            results[config.key] = count || 0;
-          }
-        } catch (err) {
-          console.error(`Exception fetching ${config.table}:`, err);
-          results[config.key] = 0;
-        }
-      }
-
-      return results;
+      return {
+        students: studentsRes.data || [],
+        news: newsRes.data || [],
+        blogs: blogsRes.data || [],
+        fees: feesRes.data || [],
+      };
     },
-    refetchInterval: 30000, // Refetch every 30 seconds
-    staleTime: 10000, // Consider data stale after 10 seconds
   });
 
-  // Handle manual refresh
   const handleRefresh = async () => {
+    setIsRefreshing(true);
     try {
-      toast({
-        title: 'Refreshing Stats',
-        description: 'Fetching the latest dashboard statistics...',
-      });
-
       await refetch();
-
       toast({
         title: 'Success',
-        description: 'Dashboard statistics updated successfully!',
+        description: 'Dashboard refreshed successfully',
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
-        title: 'Refresh Failed',
-        description: 'Unable to refresh dashboard statistics. Please try again.',
-        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to refresh dashboard',
+        variant: 'error',
       });
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
-  // Calculate total items across all tables
-  const totalItems = counts
-    ? Object.values(counts).reduce((sum, count) => sum + count, 0)
-    : 0;
+  if (isLoading || isRefreshing) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  const totalStudents = stats?.students?.length || 0;
+  const totalNews = stats?.news?.length || 0;
+  const totalBlogs = stats?.blogs?.length || 0;
+  const totalRevenue = stats?.fees?.reduce((sum, fee) => sum + (fee.paid_amount || 0), 0) || 0;
+
+  // Recent activity (last 7 days)
+  const recentStudents = stats?.students?.filter(s => {
+    const createdAt = new Date(s.created_at);
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    return createdAt >= weekAgo;
+  }).length || 0;
 
   return (
-    <div className="space-y-3 sm:space-y-4 md:space-y-6 p-2 sm:p-4 md:p-6">
-      {/* Header with Refresh */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-        <div className="space-y-1">
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 dark:text-white">
-            Dashboard Overview
-          </h1>
-          <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-400">
-            Real-time insights into your platform's performance
-          </p>
+    <div className="w-full min-h-full p-2 sm:p-4 md:p-6 space-y-4 sm:space-y-6 md:space-y-8">
+      {/* Welcome Header */}
+      <div className="bg-gradient-to-r from-blue-50 via-white to-indigo-50 dark:from-blue-900/20 dark:via-slate-800/50 dark:to-indigo-900/20 rounded-2xl p-4 sm:p-6 md:p-8 border border-blue-100 dark:border-blue-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-2">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 dark:text-white">
+              Welcome to GSAI Dashboard
+            </h1>
+            <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300">
+              Manage your academy efficiently with our comprehensive admin tools
+            </p>
+          </div>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Activity className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+            </div>
+          </div>
         </div>
-        
-        <Button
-          onClick={handleRefresh}
-          disabled={isRefetching}
-          className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 text-xs sm:text-sm"
-        >
-          <RefreshCw
-            className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-500 ${
-              isRefetching ? 'animate-spin' : 'hover:rotate-180'
-            }`}
-          />
-          <span className="hidden xs:inline">
-            {isRefetching ? 'Refreshing...' : 'Refresh Stats'}
-          </span>
-          <span className="xs:hidden">
-            {isRefetching ? 'Refreshing...' : 'Refresh'}
-          </span>
-        </Button>
       </div>
 
-      {/* Error Display */}
-      {error && (
-        <Card className="border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800">
-          <CardContent className="p-3 sm:p-4">
-            <p className="text-red-800 dark:text-red-200 text-xs sm:text-sm">
-              Error loading dashboard statistics. Please try refreshing.
+      {/* Main Stats */}
+      <StatsCards />
+
+      {/* Advanced Analytics Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        {/* Total Students */}
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200 dark:border-blue-700">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-blue-700 dark:text-blue-300">
+              Total Students
+            </CardTitle>
+            <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-800 dark:text-blue-200">
+              {totalStudents}
+            </div>
+            <p className="text-xs text-blue-600 dark:text-blue-400">
+              +{recentStudents} this week
             </p>
           </CardContent>
         </Card>
-      )}
 
-      {/* Quick Summary Card */}
-      <Card className="bg-gradient-to-r from-slate-50 to-blue-50 dark:from-slate-800 dark:to-blue-900/30 border-slate-200 dark:border-slate-700">
-        <CardHeader className="pb-2 sm:pb-3">
-          <CardTitle className="text-base sm:text-lg md:text-xl text-slate-800 dark:text-white">
-            Quick Summary
+        {/* News Articles */}
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-green-200 dark:border-green-700">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-green-700 dark:text-green-300">
+              News Articles
+            </CardTitle>
+            <Calendar className="h-4 w-4 text-green-600 dark:text-green-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-800 dark:text-green-200">
+              {totalNews}
+            </div>
+            <p className="text-xs text-green-600 dark:text-green-400">
+              Published content
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Blog Posts */}
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border-purple-200 dark:border-purple-700">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-purple-700 dark:text-purple-300">
+              Blog Posts
+            </CardTitle>
+            <Star className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-purple-800 dark:text-purple-200">
+              {totalBlogs}
+            </div>
+            <p className="text-xs text-purple-600 dark:text-purple-400">
+              Total articles
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Revenue */}
+        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 border-amber-200 dark:border-amber-700">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-amber-700 dark:text-amber-300">
+              Total Revenue
+            </CardTitle>
+            <TrendingUp className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-amber-800 dark:text-amber-200">
+              ₹{totalRevenue.toLocaleString()}
+            </div>
+            <p className="text-xs text-amber-600 dark:text-amber-400">
+              Fees collected
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Analytics Chart */}
+      <Card className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-slate-200/60 dark:border-slate-700/60">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-slate-800 dark:text-white">
+            <TrendingUp className="w-5 h-5 text-blue-500" />
+            Analytics Overview
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-0">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
-            <div className="text-center p-2 sm:p-3">
-              <p className="text-lg sm:text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400">
-                {isLoading ? '...' : totalItems.toLocaleString()}
-              </p>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Total Items
-              </p>
-            </div>
-            <div className="text-center p-2 sm:p-3">
-              <p className="text-lg sm:text-2xl md:text-3xl font-bold text-green-600 dark:text-green-400">
-                {isLoading ? '...' : (counts?.students || 0).toLocaleString()}
-              </p>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Active Students
-              </p>
-            </div>
-            <div className="text-center p-2 sm:p-3">
-              <p className="text-lg sm:text-2xl md:text-3xl font-bold text-purple-600 dark:text-purple-400">
-                {isLoading ? '...' : (counts?.events || 0).toLocaleString()}
-              </p>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Events
-              </p>
-            </div>
-            <div className="text-center p-2 sm:p-3">
-              <p className="text-lg sm:text-2xl md:text-3xl font-bold text-orange-600 dark:text-orange-400">
-                {isLoading ? '...' : (counts?.blogs || 0).toLocaleString()}
-              </p>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Content Items
-              </p>
-            </div>
-          </div>
+        <CardContent>
+          <AnalyticsChart />
         </CardContent>
       </Card>
 
-      {/* Main Stats Cards */}
-      <div className="space-y-3 sm:space-y-4">
-        <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 dark:text-white">
-          Detailed Statistics
-        </h2>
-        <StatsCards
-          cardsConfig={cardConfigs}
-          counts={counts}
-          loading={isLoading}
-        />
-      </div>
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <Card className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20 border-indigo-200 dark:border-indigo-700 cursor-pointer hover:shadow-lg transition-shadow">
+          <CardContent className="p-4 sm:p-6 text-center">
+            <Award className="w-8 h-8 mx-auto mb-2 text-indigo-600 dark:text-indigo-400" />
+            <h3 className="font-semibold text-indigo-800 dark:text-indigo-200">
+              Achievements
+            </h3>
+            <p className="text-sm text-indigo-600 dark:text-indigo-400">
+              Track progress
+            </p>
+          </CardContent>
+        </Card>
 
-      {/* Last Updated Info */}
-      <div className="text-center py-3 sm:py-4 border-t border-slate-200 dark:border-slate-700">
-        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-          Last updated: {new Date().toLocaleString()}
-          {isRefetching && (
-            <span className="ml-2 text-blue-600 dark:text-blue-400">
-              • Updating...
-            </span>
-          )}
-        </p>
+        <Card className="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-900/20 dark:to-rose-800/20 border-rose-200 dark:border-rose-700 cursor-pointer hover:shadow-lg transition-shadow">
+          <CardContent className="p-4 sm:p-6 text-center">
+            <Target className="w-8 h-8 mx-auto mb-2 text-rose-600 dark:text-rose-400" />
+            <h3 className="font-semibold text-rose-800 dark:text-rose-200">
+              Goals
+            </h3>
+            <p className="text-sm text-rose-600 dark:text-rose-400">
+              Set targets
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-800/20 border-teal-200 dark:border-teal-700 cursor-pointer hover:shadow-lg transition-shadow">
+          <CardContent className="p-4 sm:p-6 text-center">
+            <Clock className="w-8 h-8 mx-auto mb-2 text-teal-600 dark:text-teal-400" />
+            <h3 className="font-semibold text-teal-800 dark:text-teal-200">
+              Schedule
+            </h3>
+            <p className="text-sm text-teal-600 dark:text-teal-400">
+              Manage time
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 border-orange-200 dark:border-orange-700 cursor-pointer hover:shadow-lg transition-shadow">
+          <CardContent className="p-4 sm:p-6 text-center">
+            <Users className="w-8 h-8 mx-auto mb-2 text-orange-600 dark:text-orange-400" />
+            <h3 className="font-semibold text-orange-800 dark:text-orange-200">
+              Community
+            </h3>
+            <p className="text-sm text-orange-600 dark:text-orange-400">
+              Connect users
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
