@@ -76,7 +76,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
   const { signOut } = useAdminAuth();
-  const APP_VERSION = '1.2.4'; // Version updated for improved responsiveness
+  const APP_VERSION = '1.2.5'; // Version updated for improved responsiveness
 
   const mainItems = navItems.filter((item) => item.category === 'main');
   const managementItems = navItems.filter(
@@ -104,7 +104,7 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl mx-2 transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 dark:hover:from-blue-900/30 dark:hover:to-blue-800/30 hover:shadow-sm text-slate-700 dark:text-slate-300 hover:text-blue-800 dark:hover:text-blue-200"
+                className="group flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl mx-2 transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 dark:hover:from-blue-900/30 dark:hover:to-blue-800/30 hover:shadow-sm text-slate-700 dark:text-slate-300 hover:text-blue-800 dark:hover:text-blue-200"
                 onClick={() => {
                   if (window.innerWidth < 1024 && setOpen) setOpen(false);
                 }}
@@ -125,7 +125,7 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
                   if (window.innerWidth < 1024 && setOpen) setOpen(false);
                 }}
                 className={({ isActive }) =>
-                  `group flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl mx-2 transition-all duration-200 font-medium text-xs sm:text-sm ${
+                  `group flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl mx-2 transition-all duration-200 font-medium text-xs sm:text-sm ${
                     isActive
                       ? 'bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900/40 dark:to-blue-800/40 text-blue-800 dark:text-blue-200 shadow-sm border border-blue-300/50 dark:border-blue-600/50'
                       : 'hover:bg-gradient-to-r hover:from-slate-50 hover:to-slate-100 dark:hover:from-slate-800/50 dark:hover:to-slate-700/50 hover:shadow-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100'
@@ -164,21 +164,21 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
       <nav
         className={`
           fixed left-0 top-0 z-50 h-screen
-          bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl
-          shadow-xl border-r border-slate-200/60 dark:border-slate-700/60
+          bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl
+          shadow-2xl border-r border-slate-200/60 dark:border-slate-700/60
           transform transition-all duration-300 ease-out
           ${open ? 'translate-x-0' : '-translate-x-full'}
-          w-72 sm:w-80 md:w-72
+          w-[280px] xs:w-[300px] sm:w-[320px] md:w-[280px]
           lg:w-64 xl:w-72 lg:translate-x-0 lg:max-w-none lg:static lg:block
           flex flex-col
-          max-w-[85vw] sm:max-w-[75vw] lg:max-w-none
+          max-w-[85vw] xs:max-w-[80vw] sm:max-w-[75vw] lg:max-w-none
         `}
         aria-label="Sidebar"
       >
         {/* Mobile Close Button */}
         {setOpen && (
           <button
-            className="lg:hidden absolute top-4 right-4 p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors z-10 shadow-sm"
+            className="lg:hidden absolute top-3 sm:top-4 right-3 sm:right-4 p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors z-10 shadow-sm"
             onClick={() => setOpen(false)}
             aria-label="Close sidebar"
           >
@@ -187,17 +187,17 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
         )}
 
         {/* Enhanced Header */}
-        <div className="flex flex-col items-center pt-6 sm:pt-8 pb-4 sm:pb-6 gap-3 sm:gap-4 select-none border-b border-slate-100 dark:border-slate-700">
+        <div className="flex flex-col items-center pt-4 sm:pt-6 pb-3 sm:pb-4 gap-2 sm:gap-3 select-none border-b border-slate-100 dark:border-slate-700">
           <div className="relative">
             <img
               src="/favicon.ico"
               alt="Logo"
-              className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-2xl border-2 border-blue-400 dark:border-blue-500 shadow-lg transition-transform duration-300 hover:scale-105"
+              className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-2xl border-2 border-blue-400 dark:border-blue-500 shadow-lg transition-transform duration-300 hover:scale-105"
             />
-            <div className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-green-500 rounded-full border-2 border-white dark:border-slate-900 shadow-sm animate-pulse" />
+            <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full border-2 border-white dark:border-slate-900 shadow-sm animate-pulse" />
           </div>
           <div className="text-center">
-            <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <span className="text-base sm:text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
               GSAI Admin
             </span>
             <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
@@ -207,7 +207,7 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
         </div>
 
         {/* Enhanced Navigation */}
-        <div className="flex-1 py-4 sm:py-6 px-1 sm:px-2 overflow-y-auto space-y-4 sm:space-y-6 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
+        <div className="flex-1 py-3 sm:py-4 px-1 sm:px-2 overflow-y-auto space-y-3 sm:space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
           <NavSection title="Overview" items={mainItems} />
           <NavSection title="Management" items={managementItems} />
           <NavSection title="Content" items={contentItems} />
@@ -218,13 +218,13 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
         <div className="p-3 sm:p-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm">
           <button
             onClick={() => signOut()}
-            className="w-full flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-red-400 transition-all duration-200 font-semibold text-xs sm:text-sm"
+            className="w-full flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-red-400 transition-all duration-200 font-semibold text-xs sm:text-sm"
           >
             <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
             <span>Sign Out</span>
           </button>
 
-          <div className="mt-3 sm:mt-4 text-center">
+          <div className="mt-2 sm:mt-3 text-center">
             <div className="flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
               <span>© 2025 GSAI</span>
               <span className="text-slate-300 dark:text-slate-600">•</span>
