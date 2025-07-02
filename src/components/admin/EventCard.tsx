@@ -33,34 +33,58 @@ function formatDateRange(from?: string | null, to?: string | null) {
   });
 }
 const EventCard: React.FC<Props> = ({ event, onEdit, onDelete }) => (
-  <Card className="rounded-2xl shadow-lg overflow-hidden flex flex-col justify-between h-full">
+  <Card className="rounded-xl lg:rounded-2xl shadow-sm hover:shadow-lg overflow-hidden flex flex-col justify-between h-full transition-all duration-300 hover:-translate-y-1 border border-border bg-card">
     {event.image_url && (
-      <img
-        src={event.image_url}
-        alt={event.title}
-        className="w-full h-48 object-cover"
-      />
+      <div className="relative overflow-hidden">
+        <img
+          src={event.image_url}
+          alt={event.title}
+          className="w-full h-36 sm:h-40 lg:h-48 object-cover transition-transform duration-300 hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+      </div>
     )}
-    <CardHeader className="py-3">
-      <div className="font-bold text-lg">{event.title}</div>
-      <div className="text-sm text-muted-foreground">
-        {formatDateRange(event.from_date, event.end_date)}
+    <CardHeader className="py-3 sm:py-4">
+      <div className="space-y-2">
+        <div className="font-bold text-base sm:text-lg text-foreground line-clamp-2">{event.title}</div>
+        <div className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1">
+          <span className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0" />
+          {formatDateRange(event.from_date, event.end_date)}
+        </div>
       </div>
     </CardHeader>
-    <CardContent className="flex-1">
-      <div className="text-gray-800 mb-2">{event.description}</div>
-      {event.tag && (
-        <span className="text-xs bg-yellow-100 text-yellow-800 rounded px-2">
-          {event.tag}
-        </span>
-      )}
-      <div className="flex gap-2 mt-4">
-        <Button variant="outline" size="sm" onClick={onEdit}>
-          <Pencil className="w-4 h-4 mr-1" /> Edit
-        </Button>
-        <Button variant="destructive" size="sm" onClick={onDelete}>
-          <Trash2 className="w-4 h-4 mr-1" /> Delete
-        </Button>
+    <CardContent className="flex-1 pb-4">
+      <div className="space-y-3 sm:space-y-4">
+        {event.description && (
+          <div className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+            {event.description}
+          </div>
+        )}
+        {event.tag && (
+          <span className="inline-block text-xs bg-primary/10 text-primary rounded-full px-3 py-1 font-medium">
+            {event.tag}
+          </span>
+        )}
+        <div className="flex gap-2 pt-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onEdit}
+            className="flex-1 gap-1.5 text-xs sm:text-sm"
+          >
+            <Pencil className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">Edit</span>
+          </Button>
+          <Button 
+            variant="destructive" 
+            size="sm" 
+            onClick={onDelete}
+            className="flex-1 gap-1.5 text-xs sm:text-sm"
+          >
+            <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">Delete</span>
+          </Button>
+        </div>
       </div>
     </CardContent>
   </Card>
