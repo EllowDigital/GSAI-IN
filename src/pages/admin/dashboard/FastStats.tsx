@@ -53,32 +53,37 @@ export default function FastStats() {
   }, []);
 
   return (
-    <div>
-      <div className="text-lg md:text-xl font-semibold mb-3 mt-2 text-gray-700">
-        Fast Stats
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">
+          Quick Overview
+        </h2>
+        <div className="h-px flex-1 bg-border"></div>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4 lg:gap-6">
         {entities.map((e) => (
           <Card
-            className="shadow border-0 bg-gradient-to-b from-yellow-50 to-white hover:scale-105 transition-transform"
+            className="border border-border bg-card hover:shadow-lg hover:scale-105 transition-all duration-200 min-h-[100px] sm:min-h-[120px]"
             key={e.name}
           >
-            <CardHeader className="pb-2 flex flex-row gap-2 items-center justify-center">
-              <span
-                className={`flex items-center justify-center w-8 h-8 rounded-full bg-yellow-100 ${e.color}`}
-              >
-                <e.icon className="w-5 h-5" />
-              </span>
-              <CardTitle
-                className={`text-xs font-bold tracking-wide ${e.color}`}
-              >
-                {e.name}
-              </CardTitle>
+            <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-4">
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div
+                  className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-muted ${e.color}`}
+                >
+                  <e.icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                </div>
+                <CardTitle
+                  className={`text-xs sm:text-sm font-bold tracking-wide text-center leading-tight ${e.color}`}
+                >
+                  {e.name}
+                </CardTitle>
+              </div>
             </CardHeader>
-            <CardContent className="flex items-center justify-center py-3">
-              <span className="text-xl md:text-2xl font-extrabold text-gray-900 drop-shadow-sm">
+            <CardContent className="flex items-center justify-center py-2 sm:py-3 p-3 sm:p-4 pt-0">
+              <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-foreground">
                 {loading ? (
-                  <span className="animate-pulse">...</span>
+                  <span className="animate-pulse text-muted-foreground">...</span>
                 ) : (
                   (counts[e.name] ?? 0)
                 )}

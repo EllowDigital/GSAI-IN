@@ -87,7 +87,7 @@ export default function StatsCards({
 
   return (
     <motion.div
-      className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-6 gap-3 sm:gap-4"
+      className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -108,42 +108,42 @@ export default function StatsCards({
           <motion.div
             key={key}
             variants={cardVariants}
-            className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-xl dark:shadow-slate-900/20 border border-slate-200/60 dark:border-slate-700/60 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 overflow-hidden min-h-[140px]"
+            className="group relative bg-card/90 dark:bg-card/90 backdrop-blur-sm rounded-xl lg:rounded-2xl shadow-sm hover:shadow-lg dark:shadow-slate-900/20 border border-border transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 overflow-hidden min-h-[120px] sm:min-h-[140px] lg:min-h-[160px]"
           >
             <div
               className={`absolute inset-0 bg-gradient-to-br ${color} opacity-[0.02] group-hover:opacity-[0.08] transition-opacity duration-500`}
             />
             <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-slate-200/30 dark:group-hover:border-slate-600/30 transition-colors duration-300 pointer-events-none" />
 
-            <div className="relative p-4 flex flex-col h-full">
-              <div className="flex items-start justify-between mb-3">
+            <div className="relative p-3 sm:p-4 lg:p-5 flex flex-col h-full">
+              <div className="flex items-start justify-between mb-3 sm:mb-4">
                 <div
-                  className={`p-3 rounded-xl bg-gradient-to-br ${color} shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:scale-110`}
+                  className={`p-2 sm:p-3 rounded-lg lg:rounded-xl bg-gradient-to-br ${color} shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:scale-110`}
                 >
-                  <Icon className="w-6 h-6 text-white" />
+                  <Icon className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" />
                 </div>
 
                 <div
                   className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold border ${bgColor} ${txtColor} ${borderColor} shadow-sm`}
                 >
-                  <IconComponent className="w-3 h-3" />
-                  <span>{value}%</span>
+                  <IconComponent className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                  <span className="text-xs">{value}%</span>
                 </div>
               </div>
 
               <div className="flex-1 flex flex-col justify-end">
-                <div className="mb-2">
+                <div className="mb-2 sm:mb-3">
                   {loading ? (
                     <LoadingSkeleton />
                   ) : (
                     <>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-3xl font-bold text-slate-800 dark:text-white">
+                      <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+                        <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">
                           {count.toLocaleString()}
                         </span>
-                        <Activity className="w-4 h-4 text-slate-400" />
+                        <Activity className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground" />
                       </div>
-                      <span className="text-sm font-medium text-slate-600 dark:text-slate-400 leading-tight line-clamp-2">
+                      <span className="text-xs sm:text-sm font-medium text-muted-foreground leading-tight line-clamp-2">
                         {label}
                       </span>
                     </>
@@ -152,7 +152,7 @@ export default function StatsCards({
               </div>
 
               <div className="absolute bottom-0 left-0 w-full h-1">
-                <div className="w-full h-full bg-slate-100 dark:bg-slate-700">
+                <div className="w-full h-full bg-muted">
                   <div
                     className={`h-full bg-gradient-to-r ${color} opacity-60 group-hover:opacity-100 transition-opacity duration-300`}
                     style={{ width: `${Math.min((count / 100) * 100, 100)}%` }}
