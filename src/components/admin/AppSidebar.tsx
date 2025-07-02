@@ -150,9 +150,9 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
 
   return (
     <nav
-      className={`fixed left-0 top-0 z-50 h-screen bg-white dark:bg-slate-900 shadow-2xl border-r border-slate-200/60 dark:border-slate-700/60 transform transition-all duration-300 ease-out ${
+      className={`fixed left-0 top-0 z-50 h-full bg-white dark:bg-slate-900 shadow-2xl border-r border-slate-200/60 dark:border-slate-700/60 transform transition-all duration-300 ease-out ${
         open ? 'translate-x-0' : '-translate-x-full'
-      } w-[280px] xs:w-[300px] sm:w-[320px] md:w-[280px] lg:w-64 xl:w-72 lg:translate-x-0 lg:max-w-none lg:static lg:block flex flex-col max-w-[85vw] xs:max-w-[80vw] sm:max-w-[75vw] lg:max-w-none`}
+      } w-[280px] xs:w-[300px] sm:w-[320px] md:w-[280px] lg:w-64 xl:w-72 lg:translate-x-0 lg:max-w-none lg:static lg:block flex flex-col max-w-[85vw] xs:max-w-[80vw] sm:max-w-[75vw] lg:max-w-none min-h-screen`}
       aria-label="Sidebar"
     >
       {setOpen && (

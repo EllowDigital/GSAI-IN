@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Grid, List } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Plus, Grid3X3, Table2, Users } from 'lucide-react';
 import StudentModal from './StudentModal';
 import StudentDeleteDialog from './StudentDeleteDialog';
 import StudentSummaryCard from './StudentSummaryCard';
-import { exportStudentsToCsv } from '@/utils/exportToCsv';
 import StudentsTable from './students/StudentsTable';
 import StudentsCards from './students/StudentsCards';
+import BackCard from './BackCard';
 import { useStudents } from '@/hooks/useStudents';
-import RefreshButton from './RefreshButton';
 import { toast } from '@/hooks/use-toast';
 
 // --- All required columns now reflected ---
@@ -36,173 +36,145 @@ export default function StudentManager() {
     refetchStudents,
   } = useStudents();
 
-  const [showModal, setShowModal] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<StudentRow | null>(null);
   const [deleteStudent, setDeleteStudent] = useState<StudentRow | null>(null);
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
 
-  const [isClient, setIsClient] = React.useState(false);
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
-
   const handleEdit = (student: StudentRow) => {
     setEditingStudent(student);
-    setShowModal(true);
+    setIsModalOpen(true);
   };
 
-  const handleAdd = () => {
+  const handleDelete = (student: StudentRow) => {
+    setDeleteStudent(student);
+  };
+
+  const handleSave = () => {
+    setIsModalOpen(false);
     setEditingStudent(null);
-    setShowModal(true);
-  };
-
-  const handleModalClose = () => {
-    setShowModal(false);
-    // Auto-refresh after modal close
-    setTimeout(() => {
-      refetchStudents?.();
-    }, 100);
-  };
-
-  const handleDeleteClose = () => {
-    setDeleteStudent(null);
-    // Auto-refresh after delete
-    setTimeout(() => {
-      refetchStudents?.();
-    }, 100);
-  };
-
-  const handleRefresh = async () => {
-    try {
-      await refetchStudents?.();
-      toast({
-        title: 'Success',
-        description: 'Students refreshed successfully',
-      });
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: 'Failed to refresh students',
-        variant: 'error',
-      });
-    }
-  };
-
-  const renderContent = () => {
-    // Use view mode state instead of window width check
-    if (viewMode === 'table') {
-      return (
-        <div className="rounded-2xl shadow-lg overflow-x-auto bg-white">
-          <StudentsTable
-            students={filteredStudents}
-            loading={loading}
-            onEdit={handleEdit}
-            onDelete={setDeleteStudent}
-            sortConfig={sortConfig}
-            requestSort={requestSort}
-          />
-        </div>
-      );
-    }
-    return (
-      <StudentsCards
-        students={filteredStudents}
-        loading={loading}
-        onEdit={handleEdit}
-        onDelete={setDeleteStudent}
-      />
-    );
   };
 
   return (
-    <div className="w-full space-y-3 sm:space-y-4 md:space-y-6 p-2 sm:p-4 md:p-6">
-      {/* Summary and Export */}
-      <div className="flex flex-col space-y-3 sm:space-y-4">
-        <div className="w-full">
-          <StudentSummaryCard students={students} loading={loading} />
-        </div>
-
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-4">
-          <div className="flex gap-3 w-full lg:w-auto">
-            <RefreshButton
-              onRefresh={handleRefresh}
-              isLoading={loading}
-              className="flex-1 lg:flex-none"
-            />
-            <button
-              onClick={() => exportStudentsToCsv(filteredStudents)}
-              className="flex-1 lg:flex-none border border-blue-400 px-3 sm:px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-medium hover:bg-blue-200 transition text-xs sm:text-sm min-h-[40px] flex items-center justify-center"
-              disabled={
-                !Array.isArray(filteredStudents) ||
-                filteredStudents.length === 0
-              }
-              title="Download as CSV"
-            >
-              Download CSV
-            </button>
-          </div>
-
-          {/* View Mode Toggle */}
-          <div className="flex gap-1 border rounded-full p-1 bg-gray-50 w-full lg:w-auto">
+    <div className="w-full p-3 sm:p-4 lg:p-6 xl:p-8 space-y-4 sm:space-y-6 lg:space-y-8 max-w-[1400px] mx-auto">
+      {/* Header Card */}
+      <BackCard
+        title="Student Management"
+        subtitle="Manage student records, programs, and enrollment information across all academy programs"
+        onRefresh={() => refetchStudents()}
+        isRefreshing={loading}
+      >
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center justify-between">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             <Button
-              variant={viewMode === 'cards' ? 'default' : 'ghost'}
+              variant={viewMode === 'cards' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setViewMode('cards')}
-              className="rounded-full px-3 flex-1 lg:flex-none"
+              className="gap-2"
             >
-              <Grid size={16} />
-              <span className="hidden sm:inline ml-1">Cards</span>
+              <Grid3X3 className="w-4 h-4" />
+              <span className="hidden sm:inline">Cards</span>
             </Button>
             <Button
-              variant={viewMode === 'table' ? 'default' : 'ghost'}
+              variant={viewMode === 'table' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setViewMode('table')}
-              className="rounded-full px-3 flex-1 lg:flex-none"
+              className="gap-2"
             >
-              <List size={16} />
-              <span className="hidden sm:inline ml-1">Table</span>
+              <Table2 className="w-4 h-4" />
+              <span className="hidden sm:inline">Table</span>
             </Button>
           </div>
+          
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            className="gap-2 shadow-lg"
+            size="sm"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">Add Student</span>
+            <span className="sm:hidden">Add</span>
+          </Button>
         </div>
+      </BackCard>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <StudentSummaryCard students={students} loading={loading} />
       </div>
 
-      {/* Search/Add */}
-      <div className="flex flex-col xs:flex-row gap-2 sm:gap-3 md:gap-4">
-        <input
-          type="text"
-          className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-          placeholder="Search by Name or Program"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <Button
-          onClick={handleAdd}
-          variant="default"
-          className="flex gap-2 rounded-full xs:w-auto w-full justify-center px-4 md:px-6 min-h-[40px]"
-        >
-          <Plus size={18} />
-          <span className="hidden sm:inline">Add Student</span>
-          <span className="inline sm:hidden">Add</span>
-        </Button>
+      {/* Content */}
+      <div className="space-y-4 sm:space-y-6">
+        {loading ? (
+          <Card className="p-8 sm:p-12">
+            <div className="flex flex-col items-center justify-center gap-4">
+              <div className="animate-spin h-8 w-8 sm:h-10 sm:w-10 border-4 border-primary border-t-transparent rounded-full" />
+              <p className="text-sm sm:text-base text-muted-foreground">Loading students...</p>
+            </div>
+          </Card>
+        ) : viewMode === 'cards' ? (
+          <StudentsCards
+            students={filteredStudents}
+            loading={loading}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        ) : (
+          <Card className="overflow-hidden">
+            <CardHeader className="pb-3 sm:pb-4">
+              <CardTitle className="text-base sm:text-lg font-semibold text-foreground flex items-center gap-2">
+                <Users className="w-5 h-5" />
+                Students Table View
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <StudentsTable
+                  students={filteredStudents}
+                  loading={loading}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  sortConfig={sortConfig}
+                  requestSort={requestSort}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {!loading && students.length === 0 && (
+          <Card className="p-8 sm:p-12">
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-muted rounded-full flex items-center justify-center">
+                <Users className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground" />
+              </div>
+              <div>
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">No Students Found</h3>
+                <p className="text-sm sm:text-base text-muted-foreground mb-4">
+                  Get started by adding your first student to the academy
+                </p>
+                <Button onClick={() => setIsModalOpen(true)} className="gap-2">
+                  <Plus className="w-4 h-4" />
+                  Add First Student
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
       </div>
 
-      {/* Table or Cards */}
-      <div className="w-full overflow-hidden">{renderContent()}</div>
+      {/* Modal */}
+      <StudentModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        student={editingStudent}
+      />
 
-      {/* Add/Edit Modal */}
-      {showModal && (
-        <StudentModal
-          open={showModal}
-          onOpenChange={handleModalClose}
-          student={editingStudent}
-        />
-      )}
-
-      {/* Delete dialog */}
+      {/* Delete Dialog */}
       {deleteStudent && (
         <StudentDeleteDialog
           student={deleteStudent}
-          onClose={handleDeleteClose}
+          onClose={() => setDeleteStudent(null)}
         />
       )}
     </div>
