@@ -111,14 +111,44 @@ export default function StatsHome() {
       <FastStats />
 
       {/* Main Stats */}
-      <StatsCards 
+      <StatsCards
         cardsConfig={[
-          { key: 'students', label: 'Total Students', icon: Users, color: 'from-blue-500 to-blue-600' },
-          { key: 'fees', label: 'Total Fees', icon: DollarSign, color: 'from-green-500 to-green-600' },
-          { key: 'blogs', label: 'Blog Posts', icon: BookOpen, color: 'from-purple-500 to-purple-600' },
-          { key: 'news', label: 'News Articles', icon: Newspaper, color: 'from-orange-500 to-orange-600' },
-          { key: 'events', label: 'Events', icon: Calendar, color: 'from-red-500 to-red-600' },
-          { key: 'gallery', label: 'Gallery Images', icon: Image, color: 'from-indigo-500 to-indigo-600' }
+          {
+            key: 'students',
+            label: 'Total Students',
+            icon: Users,
+            color: 'from-blue-500 to-blue-600',
+          },
+          {
+            key: 'fees',
+            label: 'Total Fees',
+            icon: DollarSign,
+            color: 'from-green-500 to-green-600',
+          },
+          {
+            key: 'blogs',
+            label: 'Blog Posts',
+            icon: BookOpen,
+            color: 'from-purple-500 to-purple-600',
+          },
+          {
+            key: 'news',
+            label: 'News Articles',
+            icon: Newspaper,
+            color: 'from-orange-500 to-orange-600',
+          },
+          {
+            key: 'events',
+            label: 'Events',
+            icon: Calendar,
+            color: 'from-red-500 to-red-600',
+          },
+          {
+            key: 'gallery',
+            label: 'Gallery Images',
+            icon: Image,
+            color: 'from-indigo-500 to-indigo-600',
+          },
         ]}
         counts={{
           students: totalStudents,
@@ -126,7 +156,7 @@ export default function StatsHome() {
           blogs: totalBlogs,
           news: totalNews,
           events: 0,
-          gallery: 0
+          gallery: 0,
         }}
         loading={isLoading}
       />
@@ -214,8 +244,12 @@ export default function StatsHome() {
               <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm sm:text-base text-foreground">Manage Students</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground">Add & update student records</p>
+              <h3 className="font-semibold text-sm sm:text-base text-foreground">
+                Manage Students
+              </h3>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Add & update student records
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -226,8 +260,12 @@ export default function StatsHome() {
               <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm sm:text-base text-foreground">Manage Fees</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground">Track payments & dues</p>
+              <h3 className="font-semibold text-sm sm:text-base text-foreground">
+                Manage Fees
+              </h3>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Track payments & dues
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -238,8 +276,12 @@ export default function StatsHome() {
               <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm sm:text-base text-foreground">Content</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground">Blogs, news & events</p>
+              <h3 className="font-semibold text-sm sm:text-base text-foreground">
+                Content
+              </h3>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Blogs, news & events
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -250,8 +292,12 @@ export default function StatsHome() {
               <Image className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm sm:text-base text-foreground">Gallery</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground">Manage academy photos</p>
+              <h3 className="font-semibold text-sm sm:text-base text-foreground">
+                Gallery
+              </h3>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Manage academy photos
+              </p>
             </div>
           </CardContent>
         </Card>

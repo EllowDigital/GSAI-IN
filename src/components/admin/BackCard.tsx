@@ -24,7 +24,12 @@ export default function BackCard({
   children,
 }: BackCardProps) {
   return (
-    <Card className={cn("bg-gradient-to-r from-primary/5 to-secondary/5 border-border/60", className)}>
+    <Card
+      className={cn(
+        'bg-gradient-to-r from-primary/5 to-secondary/5 border-border/60',
+        className
+      )}
+    >
       <CardHeader className="pb-3 sm:pb-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           <div className="flex-1 min-w-0">
@@ -47,7 +52,7 @@ export default function BackCard({
               </p>
             )}
           </div>
-          
+
           {onRefresh && (
             <Button
               variant="outline"
@@ -56,18 +61,16 @@ export default function BackCard({
               disabled={isRefreshing}
               className="flex-shrink-0 gap-2"
             >
-              <RotateCcw className={cn("w-4 h-4", isRefreshing && "animate-spin")} />
+              <RotateCcw
+                className={cn('w-4 h-4', isRefreshing && 'animate-spin')}
+              />
               <span className="hidden sm:inline">Refresh</span>
             </Button>
           )}
         </div>
       </CardHeader>
-      
-      {children && (
-        <CardContent className="pt-0">
-          {children}
-        </CardContent>
-      )}
+
+      {children && <CardContent className="pt-0">{children}</CardContent>}
     </Card>
   );
 }
