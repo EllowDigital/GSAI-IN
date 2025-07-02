@@ -83,7 +83,9 @@ export default function FastStats() {
             <CardContent className="flex items-center justify-center py-2 sm:py-3 p-3 sm:p-4 pt-0">
               <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-foreground">
                 {loading ? (
-                  <span className="animate-pulse text-muted-foreground">...</span>
+                  <span className="animate-pulse text-muted-foreground">
+                    ...
+                  </span>
                 ) : (
                   (counts[e.name] ?? 0)
                 )}

@@ -15,10 +15,7 @@ const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
+    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
   },
 };
 
@@ -27,10 +24,7 @@ const cardVariants: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: {
-      duration: 0.6,
-      ease: [0.4, 0, 0.2, 1],
-    },
+    transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] },
   },
 };
 
@@ -43,8 +37,9 @@ const formatDate = (date: string) =>
 
 export default function NewsSection() {
   const [news, setNews] = useState<NewsItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
 
+  // Fetch published news from Supabase
   useEffect(() => {
     let isMounted = true;
 
@@ -65,6 +60,7 @@ export default function NewsSection() {
 
     fetchNews();
 
+    // Live update subscription
     const channel = supabase
       .channel('news-public')
       .on(
@@ -85,10 +81,10 @@ export default function NewsSection() {
       id="news"
       className="relative py-20 lg:py-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden"
     >
-      {/* Background Blur Decorations */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-r from-yellow-200/40 to-orange-200/40 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-amber-200/30 to-orange-300/30 rounded-full blur-3xl" />
+      {/* Decorative Blurs */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
+        <div className="absolute top-20 left-10 w-64 h-64 bg-yellow-200/40 to-orange-200/40 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-80 h-80 bg-amber-200/30 to-orange-300/30 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">
@@ -118,11 +114,11 @@ export default function NewsSection() {
 
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Stay updated with the latest announcements, achievements, and
-            inspiring moments from Ghatak Sports Academy
+            inspiring moments from Ghatak Sports Academy.
           </p>
         </motion.div>
 
-        {/* News Cards Grid */}
+        {/* News Grid */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -153,7 +149,7 @@ export default function NewsSection() {
                 variants={cardVariants}
                 className="group bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl hover:border-yellow-300 transition-all duration-300 transform hover:-translate-y-2"
               >
-                {/* Image Section */}
+                {/* Image */}
                 <div className="relative h-48 overflow-hidden">
                   {item.image_url ? (
                     <img
@@ -170,19 +166,14 @@ export default function NewsSection() {
                       </span>
                     </div>
                   )}
-
-                  {/* Date Badge */}
-                  <div className="absolute top-4 left-4">
-                    <div className="bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg flex items-center gap-2 text-gray-700 text-sm font-semibold">
-                      <Calendar className="w-4 h-4" />
-                      {formatDate(item.date)}
-                    </div>
+                  <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg flex items-center gap-2 text-gray-700 text-sm font-semibold">
+                    <Calendar className="w-4 h-4" />
+                    {formatDate(item.date)}
                   </div>
-
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
 
-                {/* Card Content */}
+                {/* Content */}
                 <div className="p-6">
                   <div className="flex items-center gap-2 text-gray-500 text-sm mb-3">
                     <Clock className="w-4 h-4" />
@@ -205,7 +196,6 @@ export default function NewsSection() {
               </motion.div>
             ))
           ) : (
-            // Empty State
             <motion.div variants={cardVariants} className="col-span-full">
               <div className="text-center py-16">
                 <div className="w-20 h-20 bg-gradient-to-r from-yellow-100 to-orange-200 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -216,14 +206,14 @@ export default function NewsSection() {
                 </h3>
                 <p className="text-gray-600 max-w-md mx-auto">
                   We'll share exciting updates and achievements here soon. Stay
-                  tuned for the latest news from our academy!
+                  tuned!
                 </p>
               </div>
             </motion.div>
           )}
         </motion.div>
 
-        {/* Call-to-Action */}
+        {/* CTA */}
         {news.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 30 }}

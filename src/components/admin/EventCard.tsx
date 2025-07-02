@@ -46,7 +46,9 @@ const EventCard: React.FC<Props> = ({ event, onEdit, onDelete }) => (
     )}
     <CardHeader className="py-3 sm:py-4">
       <div className="space-y-2">
-        <div className="font-bold text-base sm:text-lg text-foreground line-clamp-2">{event.title}</div>
+        <div className="font-bold text-base sm:text-lg text-foreground line-clamp-2">
+          {event.title}
+        </div>
         <div className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1">
           <span className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0" />
           {formatDateRange(event.from_date, event.end_date)}
@@ -66,18 +68,18 @@ const EventCard: React.FC<Props> = ({ event, onEdit, onDelete }) => (
           </span>
         )}
         <div className="flex gap-2 pt-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={onEdit}
             className="flex-1 gap-1.5 text-xs sm:text-sm"
           >
             <Pencil className="w-3 h-3 sm:w-4 sm:h-4" />
             <span className="hidden sm:inline">Edit</span>
           </Button>
-          <Button 
-            variant="destructive" 
-            size="sm" 
+          <Button
+            variant="destructive"
+            size="sm"
             onClick={onDelete}
             className="flex-1 gap-1.5 text-xs sm:text-sm"
           >
