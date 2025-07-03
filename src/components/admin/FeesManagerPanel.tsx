@@ -181,65 +181,111 @@ export default function FeesManagerPanel() {
   };
 
   return (
-    <div className="w-full px-2 sm:px-4 lg:px-6">
-      {/* Summary and Controls */}
-      <div className="flex flex-col gap-3 sm:gap-4 mb-4 lg:mb-6">
-        <FeeSummaryCard fees={fees || []} loading={loadingFees} />
-        <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 lg:gap-4 animate-fade-in">
-          <div className="flex-1">
-            <FeesFilterBar
-              filterMonth={filterMonth}
-              filterYear={filterYear}
-              filterStatus={filterStatus}
-              filterName={filterName}
-              setFilterMonth={setFilterMonth}
-              setFilterYear={setFilterYear}
-              setFilterStatus={setFilterStatus}
-              setFilterName={setFilterName}
-            />
+    <div className="w-full p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1400px] mx-auto space-y-6">
+      {/* Header Card */}
+      <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 shadow-sm rounded-none sm:rounded-2xl">
+        <div className="border-b border-slate-200/60 dark:border-slate-700/60 p-4 sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800 dark:text-white">
+                <span>Fees Management</span>
+              </h2>
+              <p className="mt-1 text-sm sm:text-base text-muted-foreground">
+                Manage student fees, track payments, and monitor financial records across all programs.
+              </p>
+            </div>
+            <div className="flex gap-2 mt-2 sm:mt-0">
+              <RefreshButton
+                onRefresh={handleRefresh}
+                isLoading={isLoading}
+                className="flex-shrink-0"
+              />
+            </div>
           </div>
-          <div className="flex gap-3 w-full xl:w-auto">
-            <RefreshButton
-              onRefresh={handleRefresh}
-              isLoading={isLoading}
-              className="flex-1 xl:flex-none min-w-[100px]"
-            />
+        </div>
 
-            {/* View Mode Toggle */}
-            <div className="flex gap-1 border rounded-full p-1 bg-gray-50 flex-1 xl:flex-none">
-              <Button
-                variant={viewMode === 'cards' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('cards')}
-                className="rounded-full px-3 flex-1 xl:flex-none"
-              >
-                <Grid size={16} />
-                <span className="hidden sm:inline ml-1">Cards</span>
-              </Button>
-              <Button
-                variant={viewMode === 'table' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('table')}
-                className="rounded-full px-3 flex-1 xl:flex-none"
-              >
-                <List size={16} />
-                <span className="hidden sm:inline ml-1">Table</span>
-              </Button>
+        <div className="p-4 sm:p-6 space-y-6">
+          {/* Summary Card */}
+          <FeeSummaryCard fees={fees || []} loading={loadingFees} />
+
+          {/* Filters and Controls */}
+          <div className="flex flex-col lg:flex-row lg:items-end gap-4 lg:gap-6">
+            <div className="flex-1 min-w-0">
+              <FeesFilterBar
+                filterMonth={filterMonth}
+                filterYear={filterYear}
+                filterStatus={filterStatus}
+                filterName={filterName}
+                setFilterMonth={setFilterMonth}
+                setFilterYear={setFilterYear}
+                setFilterStatus={setFilterStatus}
+                setFilterName={setFilterName}
+              />
             </div>
 
-            <button
-              onClick={() => exportFeesToCsv(rows, filterMonth, filterYear)}
-              className="border border-yellow-400 px-3 md:px-4 py-2 rounded-full bg-yellow-50 text-yellow-700 font-medium hover:bg-yellow-200 transition text-sm flex-1 xl:flex-none xl:min-w-[120px]"
-              disabled={!Array.isArray(rows) || rows.length === 0}
-            >
-              Export CSV
-            </button>
+            {/* View Controls */}
+            <div className="flex flex-wrap gap-2 sm:gap-3">
+              {/* View Mode Toggle */}
+              <div className="flex gap-1 border rounded-full p-1 bg-muted/50 flex-1 sm:flex-initial">
+                <Button
+                  variant={viewMode === 'cards' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('cards')}
+                  className="rounded-full px-3 flex-1 sm:flex-initial"
+                >
+                  <Grid className="w-4 h-4" />
+                  <span className="hidden sm:inline ml-1">Cards</span>
+                </Button>
+                <Button
+                  variant={viewMode === 'table' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('table')}
+                  className="rounded-full px-3 flex-1 sm:flex-initial"
+                >
+                  <List className="w-4 h-4" />
+                  <span className="hidden sm:inline ml-1">Table</span>
+                </Button>
+              </div>
+
+              <Button
+                onClick={() => exportFeesToCsv(rows, filterMonth, filterYear)}
+                disabled={!Array.isArray(rows) || rows.length === 0}
+                variant="outline"
+                size="sm"
+                className="flex-1 sm:flex-initial min-w-[100px]"
+              >
+                Export CSV
+              </Button>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="w-full space-y-4">
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-8 sm:py-12">
+                <div className="animate-spin h-8 w-8 sm:h-10 sm:w-10 border-4 border-primary border-t-transparent rounded-full" />
+                <p className="text-sm sm:text-base text-muted-foreground mt-4">
+                  Loading fees data...
+                </p>
+              </div>
+            ) : rows.length === 0 ? (
+              <div className="text-center py-8 sm:py-12 space-y-4">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-muted rounded-full flex items-center justify-center">
+                  <span className="text-2xl">💰</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground">
+                  No fee records found
+                </h3>
+                <p className="text-sm sm:text-base text-muted-foreground">
+                  Try adjusting your filters or add students to begin tracking fees.
+                </p>
+              </div>
+            ) : (
+              renderContent()
+            )}
           </div>
         </div>
       </div>
-
-      {/* Content */}
-      <div className="w-full overflow-hidden">{renderContent()}</div>
 
       {/* Modals/Drawers */}
       {modalOpen && (

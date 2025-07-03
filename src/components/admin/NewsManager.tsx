@@ -290,71 +290,110 @@ export default function NewsManager() {
   );
 
   return (
-    <div className="w-full px-2 sm:px-4">
-      {/* Header and Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-4 mb-6">
-        <div className="flex gap-3 w-full lg:w-auto">
-          <RefreshButton
-            onRefresh={handleRefresh}
-            isLoading={isLoading || isRefreshing}
-            className="flex-1 lg:flex-none"
-          />
-          <Button
-            onClick={() => setModalOpen(true)}
-            className="flex gap-2 rounded-full flex-1 lg:flex-none"
-          >
-            <Plus size={18} />
-            <span className="hidden sm:inline">Add News</span>
-            <span className="inline sm:hidden">Add</span>
-          </Button>
+    <div className="w-full p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1400px] mx-auto space-y-6">
+      {/* Header Card */}
+      <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 shadow-sm rounded-none sm:rounded-2xl">
+        <div className="border-b border-slate-200/60 dark:border-slate-700/60 p-4 sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800 dark:text-white">
+                <span>News Management</span>
+              </h2>
+              <p className="mt-1 text-sm sm:text-base text-muted-foreground">
+                Create, edit, and manage news articles and announcements for your academy.
+              </p>
+            </div>
+            <div className="flex gap-2 mt-2 sm:mt-0">
+              <RefreshButton
+                onRefresh={handleRefresh}
+                isLoading={isLoading || isRefreshing}
+                className="flex-shrink-0"
+              />
+              <Button
+                onClick={() => setModalOpen(true)}
+                className="gap-2 shadow"
+                size="sm"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">Add News</span>
+                <span className="sm:hidden">Add</span>
+              </Button>
+            </div>
+          </div>
         </div>
 
-        <div className="flex gap-3 w-full lg:w-auto">
-          {/* View Mode Toggle */}
-          <div className="flex gap-1 border rounded-full p-1 bg-gray-50 flex-1 lg:flex-none">
+        <div className="p-4 sm:p-6 space-y-6">
+          {/* View Controls */}
+          <div className="flex flex-wrap gap-2 sm:gap-3 justify-between">
+            {/* View Mode Toggle */}
+            <div className="flex gap-1 border rounded-full p-1 bg-muted/50 flex-1 sm:flex-initial">
+              <Button
+                variant={viewMode === 'cards' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('cards')}
+                className="rounded-full px-3 flex-1 sm:flex-initial"
+              >
+                <Grid className="w-4 h-4" />
+                <span className="hidden sm:inline ml-1">Cards</span>
+              </Button>
+              <Button
+                variant={viewMode === 'table' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('table')}
+                className="rounded-full px-3 flex-1 sm:flex-initial"
+              >
+                <List className="w-4 h-4" />
+                <span className="hidden sm:inline ml-1">Table</span>
+              </Button>
+            </div>
+
             <Button
-              variant={viewMode === 'cards' ? 'default' : 'ghost'}
+              onClick={() => exportNewsToCsv(news)}
+              disabled={news.length === 0}
+              variant="outline"
               size="sm"
-              onClick={() => setViewMode('cards')}
-              className="rounded-full px-3 flex-1 lg:flex-none"
+              className="flex-1 sm:flex-initial min-w-[100px]"
             >
-              <Grid size={16} />
-              <span className="hidden sm:inline ml-1">Cards</span>
-            </Button>
-            <Button
-              variant={viewMode === 'table' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('table')}
-              className="rounded-full px-3 flex-1 lg:flex-none"
-            >
-              <List size={16} />
-              <span className="hidden sm:inline ml-1">Table</span>
+              Export CSV
             </Button>
           </div>
-          <button
-            onClick={() => exportNewsToCsv(news)}
-            className="border border-orange-400 px-3 md:px-4 py-2 rounded-full bg-orange-50 text-orange-700 font-medium hover:bg-orange-200 transition text-sm flex-1 lg:flex-none lg:min-w-[120px]"
-            disabled={news.length === 0}
-          >
-            Export CSV
-          </button>
+
+          {/* Content */}
+          <div className="w-full space-y-4">
+            {isLoading || isRefreshing ? (
+              <div className="flex flex-col items-center justify-center py-8 sm:py-12">
+                <div className="animate-spin h-8 w-8 sm:h-10 sm:w-10 border-4 border-primary border-t-transparent rounded-full" />
+                <p className="text-sm sm:text-base text-muted-foreground mt-4">
+                  Loading news articles...
+                </p>
+              </div>
+            ) : news.length === 0 ? (
+              <div className="text-center py-8 sm:py-12 space-y-4">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-muted rounded-full flex items-center justify-center">
+                  <span className="text-2xl">📰</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground">
+                  No news articles found
+                </h3>
+                <p className="text-sm sm:text-base text-muted-foreground">
+                  Get started by creating your first news article.
+                </p>
+                <Button
+                  onClick={() => setModalOpen(true)}
+                  className="gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add First Article
+                </Button>
+              </div>
+            ) : viewMode === 'cards' ? (
+              renderCardsView()
+            ) : (
+              renderTableView()
+            )}
+          </div>
         </div>
       </div>
-
-      {/* Content */}
-      {isLoading || isRefreshing ? (
-        <div className="flex justify-center py-8">
-          <div className="animate-spin h-8 w-8 border-4 border-orange-400 rounded-full border-t-transparent" />
-        </div>
-      ) : news.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          No news articles found.
-        </div>
-      ) : viewMode === 'cards' ? (
-        renderCardsView()
-      ) : (
-        renderTableView()
-      )}
 
       {/* Modals */}
       <NewsEditorModal

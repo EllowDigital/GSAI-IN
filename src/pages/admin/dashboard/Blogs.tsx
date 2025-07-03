@@ -131,95 +131,123 @@ export default function Blogs() {
   const isDeleting = (id: string) => deletingIds.has(id);
 
   return (
-    <div className="w-full min-h-full p-2 sm:p-4 md:p-6">
-      <div className="w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-none sm:rounded-2xl shadow-sm sm:shadow-lg border-0 sm:border border-slate-200/60 dark:border-slate-700/60">
-        {/* Header with Icon and Title */}
-        <div className="flex flex-col xs:flex-row gap-2 sm:gap-4 items-start xs:items-center justify-between p-3 sm:p-4 md:p-6 border-b border-slate-200/60 dark:border-slate-700/60">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800 dark:text-white">
-            <BookMarked className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-blue-500" />
-            <span>Blog Manager</span>
-          </h2>
-        </div>
-
-        {/* Main Content */}
-        <div className="p-3 sm:p-4 md:p-6 space-y-6">
-          {/* Header Controls */}
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 flex-wrap">
-            <div className="flex gap-3 flex-wrap w-full lg:w-auto">
+    <div className="w-full p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1400px] mx-auto space-y-6">
+      {/* Header Card */}
+      <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 shadow-sm rounded-none sm:rounded-2xl">
+        <div className="border-b border-slate-200/60 dark:border-slate-700/60 p-4 sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800 dark:text-white">
+                <BookMarked className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
+                <span>Blog Management</span>
+              </h2>
+              <p className="mt-1 text-sm sm:text-base text-muted-foreground">
+                Create, edit, and publish blog posts to share academy updates and insights.
+              </p>
+            </div>
+            <div className="flex gap-2 mt-2 sm:mt-0">
               <RefreshButton
                 onRefresh={handleRefresh}
                 isLoading={isLoading || isRefreshing}
-                className="flex-1 sm:flex-initial"
+                className="flex-shrink-0"
               />
               <Button
                 onClick={() => setModalOpen(true)}
-                className="flex gap-2 rounded-full flex-1 sm:flex-initial"
+                className="gap-2 shadow"
+                size="sm"
               >
-                <Plus size={18} />
+                <Plus className="w-4 h-4" />
                 <span className="hidden sm:inline">Add Blog</span>
-                <span className="inline sm:hidden">Add</span>
-              </Button>
-            </div>
-
-            <div className="flex gap-3 flex-wrap w-full lg:w-auto">
-              <div className="flex gap-1 border rounded-full p-1 bg-gray-100 dark:bg-slate-800 flex-1 sm:flex-initial">
-                <Button
-                  variant={viewMode === 'cards' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('cards')}
-                  className="rounded-full px-3"
-                >
-                  <Grid size={16} />
-                  <span className="hidden sm:inline ml-1">Cards</span>
-                </Button>
-                <Button
-                  variant={viewMode === 'table' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('table')}
-                  className="rounded-full px-3"
-                >
-                  <List size={16} />
-                  <span className="hidden sm:inline ml-1">Table</span>
-                </Button>
-              </div>
-              <Button
-                onClick={() => exportBlogsToCsv(blogs)}
-                className="border border-blue-500 px-4 py-2 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 transition text-sm"
-                disabled={blogs.length === 0}
-              >
-                Export CSV
+                <span className="sm:hidden">Add</span>
               </Button>
             </div>
           </div>
+        </div>
 
-          {/* Blogs Content */}
-          {isLoading || isRefreshing ? (
-            <div className="flex justify-center py-8">
-              <div className="animate-spin h-8 w-8 border-4 border-blue-400 rounded-full border-t-transparent" />
+        <div className="p-4 sm:p-6 space-y-6">
+          {/* View Controls */}
+          <div className="flex flex-wrap gap-2 sm:gap-3 justify-between">
+            {/* View Mode Toggle */}
+            <div className="flex gap-1 border rounded-full p-1 bg-muted/50 flex-1 sm:flex-initial">
+              <Button
+                variant={viewMode === 'cards' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('cards')}
+                className="rounded-full px-3 flex-1 sm:flex-initial"
+              >
+                <Grid className="w-4 h-4" />
+                <span className="hidden sm:inline ml-1">Cards</span>
+              </Button>
+              <Button
+                variant={viewMode === 'table' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('table')}
+                className="rounded-full px-3 flex-1 sm:flex-initial"
+              >
+                <List className="w-4 h-4" />
+                <span className="hidden sm:inline ml-1">Table</span>
+              </Button>
             </div>
-          ) : blogs.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              No blogs found.
-            </div>
-          ) : viewMode === 'cards' ? (
-            <BlogsCards
-              blogs={blogs}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              isDeleting={isDeleting}
-              formatDate={formatDate}
-            />
-          ) : (
-            <div className="rounded-2xl shadow-inner overflow-x-auto bg-white dark:bg-slate-800">
-              <BlogsTable
+
+            <Button
+              onClick={() => exportBlogsToCsv(blogs)}
+              disabled={blogs.length === 0}
+              variant="outline"
+              size="sm"
+              className="flex-1 sm:flex-initial min-w-[100px]"
+            >
+              Export CSV
+            </Button>
+          </div>
+
+          {/* Content */}
+          <div className="w-full space-y-4">
+            {isLoading || isRefreshing ? (
+              <div className="flex flex-col items-center justify-center py-8 sm:py-12">
+                <div className="animate-spin h-8 w-8 sm:h-10 sm:w-10 border-4 border-primary border-t-transparent rounded-full" />
+                <p className="text-sm sm:text-base text-muted-foreground mt-4">
+                  Loading blog posts...
+                </p>
+              </div>
+            ) : blogs.length === 0 ? (
+              <div className="text-center py-8 sm:py-12 space-y-4">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-muted rounded-full flex items-center justify-center">
+                  <span className="text-2xl">📝</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground">
+                  No blog posts found
+                </h3>
+                <p className="text-sm sm:text-base text-muted-foreground">
+                  Start creating engaging content for your academy blog.
+                </p>
+                <Button
+                  onClick={() => setModalOpen(true)}
+                  className="gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Create First Post
+                </Button>
+              </div>
+            ) : viewMode === 'cards' ? (
+              <BlogsCards
                 blogs={blogs}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 isDeleting={isDeleting}
                 formatDate={formatDate}
               />
-            </div>
-          )}
+            ) : (
+              <div className="rounded-2xl shadow-sm overflow-x-auto bg-card border">
+                <BlogsTable
+                  blogs={blogs}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  isDeleting={isDeleting}
+                  formatDate={formatDate}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
