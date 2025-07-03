@@ -87,9 +87,9 @@ const AdminLayout: React.FC = () => {
       )}
 
       {/* Main layout */}
-      <div className="flex-1 flex flex-col min-h-screen w-full min-w-0">
+      <div className="flex-1 flex flex-col h-screen w-full min-w-0">
         {/* Header */}
-        <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-700/60 shadow-lg">
+        <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-700/60 shadow-lg flex-shrink-0">
           <div className="flex items-center justify-between px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 gap-2 sm:gap-4">
             {/* Left: Brand & Sidebar Toggle */}
             <div className="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0 flex-shrink-0">
@@ -111,49 +111,32 @@ const AdminLayout: React.FC = () => {
               </div>
             </div>
 
-            {/* Right: Refresh, Avatar, Sign Out (Mobile only) */}
+            {/* Right: Avatar, Sign Out (Mobile only) */}
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-              {/* Refresh */}
-              {/* <Button
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-                className="p-2 sm:p-2.5 md:p-3 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-800/40 dark:hover:to-emerald-800/40 border border-green-200 dark:border-green-700 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
-                aria-label={
-                  isRefreshing ? 'Refreshing...' : 'Refresh dashboard'
-                }
+              {/* Mobile-only Logout Icon */}
+              <button
+                onClick={signOut}
+                className="lg:hidden p-2 rounded-md bg-red-100 text-red-600 border border-red-300 hover:bg-red-200 dark:bg-red-900 dark:text-red-300 dark:border-red-700 dark:hover:bg-red-800"
+                title="Sign out"
               >
-                <RefreshCw
-                  className={`w-4 h-4 sm:w-5 sm:h-5 text-green-700 dark:text-green-300 transition-transform duration-500 ${
-                    isRefreshing ? 'animate-spin' : 'hover:rotate-180'
-                  }`}
-                />
-              </Button> */}
+                <LogOut className="w-5 h-5" />
+              </button>
 
-              {/* Avatar & Sign Out (Mobile only) */}
-              <div className="flex items-center gap-2">
-                {/* Mobile-only Logout Icon */}
-                <button
-                  onClick={signOut}
-                  className="lg:hidden p-2 rounded-md bg-red-100 text-red-600 border border-red-300 hover:bg-red-200 dark:bg-red-900 dark:text-red-300 dark:border-red-700 dark:hover:bg-red-800"
-                  title="Sign out"
-                >
-                  <LogOut className="w-5 h-5" />
-                </button>
-
-                {/* Avatar – only shown on tablet and mobile */}
-                <img
-                  src="/assets/img/logo.webp"
-                  alt="Admin avatar"
-                  className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 object-contain lg:hidden"
-                />
-              </div>
+              {/* Avatar – only shown on tablet and mobile */}
+              <img
+                src="/assets/img/logo.webp"
+                alt="Admin avatar"
+                className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 object-contain lg:hidden"
+              />
             </div>
           </div>
         </header>
 
-        {/* Main content */}
-        <main className="flex-1 w-full min-w-0 overflow-auto bg-gradient-to-br from-slate-50/50 via-white/50 to-blue-50/50">
-          <Outlet />
+        {/* Main content - with proper height and overflow */}
+        <main className="flex-1 w-full min-w-0 overflow-y-auto bg-gradient-to-br from-slate-50/50 via-white/50 to-blue-50/50 h-0">
+          <div className="h-full">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>
