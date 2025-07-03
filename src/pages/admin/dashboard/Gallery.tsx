@@ -98,13 +98,6 @@ export default function Gallery() {
     setSelectedImages(new Set());
   };
 
-  const handleUploadComplete = () => {
-    setUploadDrawerOpen(false);
-    setTimeout(
-      () => queryClient.invalidateQueries({ queryKey: ['gallery_images'] }),
-      100
-    );
-  };
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -154,82 +147,104 @@ export default function Gallery() {
   const handleImageClick = (img: GalleryImage) => setPreviewImage(img);
 
   return (
-    <div className="w-full min-h-full p-2 sm:p-4 md:p-6">
-      <div className="w-full bg-white/95 dark:bg-slate-900/95 rounded-none sm:rounded-2xl shadow-sm sm:shadow-lg border sm:border-slate-200/60 dark:border-slate-700/60">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 border-b border-slate-200/60 dark:border-slate-700/60">
-          <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-            <Upload className="text-pink-500 w-6 h-6" />
-            Gallery Management
-          </h2>
-          <div className="flex gap-2 flex-wrap">
-            <RefreshButton
-              onRefresh={handleRefresh}
-              isLoading={isLoading || isRefreshing}
-            />
-            <Button
-              onClick={() => setUploadDrawerOpen(true)}
-              className="gap-2 rounded-full"
-            >
-              <Upload size={18} />
-              <span className="hidden sm:inline">Upload Images</span>
-              <span className="sm:hidden">Upload</span>
-            </Button>
+    <div className="w-full p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1400px] mx-auto space-y-6">
+      {/* Header Card */}
+      <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 shadow-sm rounded-none sm:rounded-2xl">
+        <div className="border-b border-slate-200/60 dark:border-slate-700/60 p-4 sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800 dark:text-white">
+                <ImageIcon className="w-5 h-5 sm:w-6 sm:h-6 text-purple-500" />
+                <span>Gallery Management</span>
+              </h2>
+              <p className="mt-1 text-sm sm:text-base text-muted-foreground">
+                Upload, organize, and manage images for your academy gallery and content.
+              </p>
+            </div>
+            <div className="flex gap-2 mt-2 sm:mt-0">
+              <RefreshButton
+                onRefresh={handleRefresh}
+                isLoading={isLoading || isRefreshing}
+                className="flex-shrink-0"
+              />
+              <Button
+                onClick={() => setUploadDrawerOpen(true)}
+                className="gap-2 shadow"
+                size="sm"
+              >
+                <Upload className="w-4 h-4" />
+                <span className="hidden sm:inline">Upload Images</span>
+                <span className="sm:hidden">Upload</span>
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Filters and Controls */}
-        <div className="p-4 space-y-4">
-          <div className="flex flex-wrap gap-3 items-center justify-between">
-            <div className="flex gap-2">
+        <div className="p-4 sm:p-6 space-y-6">
+          {/* Filters and Controls */}
+          <div className="flex flex-col lg:flex-row lg:items-end gap-4 lg:gap-6">
+            <div className="flex flex-col sm:flex-row gap-3 flex-1">
               <input
                 type="text"
-                placeholder="Filter by tag"
-                className="border rounded p-2 text-sm"
+                placeholder="Filter by tag..."
+                className="border border-input rounded-lg px-3 py-2 text-sm bg-background flex-1 sm:max-w-[200px]"
                 value={tagFilter}
                 onChange={(e) => setTagFilter(e.target.value)}
               />
-              <input
-                type="date"
-                className="border rounded p-2 text-sm"
-                onChange={(e) =>
-                  setDateRange([
-                    e.target.value ? new Date(e.target.value) : null,
-                    dateRange[1],
-                  ])
-                }
-              />
-              <input
-                type="date"
-                className="border rounded p-2 text-sm"
-                onChange={(e) =>
-                  setDateRange([
-                    dateRange[0],
-                    e.target.value ? new Date(e.target.value) : null,
-                  ])
-                }
-              />
+              <div className="flex gap-2 flex-1 sm:flex-initial">
+                <input
+                  type="date"
+                  className="border border-input rounded-lg px-3 py-2 text-sm bg-background flex-1"
+                  onChange={(e) =>
+                    setDateRange([
+                      e.target.value ? new Date(e.target.value) : null,
+                      dateRange[1],
+                    ])
+                  }
+                />
+                <input
+                  type="date"
+                  className="border border-input rounded-lg px-3 py-2 text-sm bg-background flex-1"
+                  onChange={(e) =>
+                    setDateRange([
+                      dateRange[0],
+                      e.target.value ? new Date(e.target.value) : null,
+                    ])
+                  }
+                />
+              </div>
             </div>
 
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                variant={viewMode === 'card' ? 'default' : 'outline'}
-                onClick={() => setViewMode('card')}
-              >
-                <ImageIcon size={16} className="mr-1" /> Cards
-              </Button>
-              <Button
-                size="sm"
-                variant={viewMode === 'table' ? 'default' : 'outline'}
-                onClick={() => setViewMode('table')}
-              >
-                <TableIcon size={16} className="mr-1" /> Table
-              </Button>
+            {/* View Controls */}
+            <div className="flex flex-wrap gap-2 sm:gap-3">
+              {/* View Mode Toggle */}
+              <div className="flex gap-1 border rounded-full p-1 bg-muted/50 flex-1 sm:flex-initial">
+                <Button
+                  variant={viewMode === 'card' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('card')}
+                  className="rounded-full px-3 flex-1 sm:flex-initial"
+                >
+                  <ImageIcon className="w-4 h-4" />
+                  <span className="hidden sm:inline ml-1">Cards</span>
+                </Button>
+                <Button
+                  variant={viewMode === 'table' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('table')}
+                  className="rounded-full px-3 flex-1 sm:flex-initial"
+                >
+                  <TableIcon className="w-4 h-4" />
+                  <span className="hidden sm:inline ml-1">Table</span>
+                </Button>
+              </div>
+
               <Button
                 onClick={() => exportGalleryToCsv(filteredImages)}
                 disabled={filteredImages.length === 0}
-                className="border border-pink-400 bg-pink-50 hover:bg-pink-200 text-pink-700 rounded-full px-4 py-2 text-sm"
+                variant="outline"
+                size="sm"
+                className="flex-1 sm:flex-initial min-w-[100px]"
               >
                 Export CSV
               </Button>
@@ -270,9 +285,6 @@ export default function Gallery() {
                         queryKey: ['gallery_images'],
                       })
                     }
-                    onSelect={toggleSelect}
-                    selected={selectedImages.has(image.id)}
-                    onPreview={() => handleImageClick(image)}
                   />
                 ))}
               </div>
@@ -371,7 +383,6 @@ export default function Gallery() {
       <GalleryUploadDrawer
         open={uploadDrawerOpen}
         onClose={() => setUploadDrawerOpen(false)}
-        onComplete={handleUploadComplete}
       />
 
       {/* Image Preview Modal */}
