@@ -12,7 +12,7 @@ import FeesCards from './FeesCards';
 import RefreshButton from './RefreshButton';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Grid, List } from 'lucide-react';
+import { Grid, List, DollarSign } from 'lucide-react';
 
 export default function FeesManagerPanel() {
   const now = new Date();
@@ -188,10 +188,13 @@ export default function FeesManagerPanel() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800 dark:text-white">
+                <DollarSign className="w-5 h-5 text-primary" />
                 <span>Fees Management</span>
               </h2>
+
               <p className="mt-1 text-sm sm:text-base text-muted-foreground">
-                Manage student fees, track payments, and monitor financial records across all programs.
+                Manage student fees, track payments, and monitor financial
+                records across all programs.
               </p>
             </div>
             <div className="flex gap-2 mt-2 sm:mt-0">
@@ -277,7 +280,8 @@ export default function FeesManagerPanel() {
                   No fee records found
                 </h3>
                 <p className="text-sm sm:text-base text-muted-foreground">
-                  Try adjusting your filters or add students to begin tracking fees.
+                  Try adjusting your filters or add students to begin tracking
+                  fees.
                 </p>
               </div>
             ) : (

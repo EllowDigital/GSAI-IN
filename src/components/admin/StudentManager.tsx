@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Grid3X3, Table2, Users, RotateCcw } from 'lucide-react';
+import { Plus, Grid3X3, Table2, Users } from 'lucide-react';
 import StudentModal from './StudentModal';
 import StudentDeleteDialog from './StudentDeleteDialog';
 import StudentSummaryCard from './StudentSummaryCard';
 import StudentsTable from './students/StudentsTable';
 import StudentsCards from './students/StudentsCards';
+import RefreshButton from './RefreshButton';
 import { useStudents } from '@/hooks/useStudents';
+// import { toast } from '@/hooks/use-toast'; // Optional: for success/error toasts
 
 type StudentRow = {
   id: string;
@@ -31,6 +33,7 @@ export default function StudentManager() {
     refetchStudents,
   } = useStudents();
 
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<StudentRow | null>(null);
   const [deleteStudent, setDeleteStudent] = useState<StudentRow | null>(null);
@@ -39,6 +42,19 @@ export default function StudentManager() {
   const handleEdit = (student: StudentRow) => {
     setEditingStudent(student);
     setIsModalOpen(true);
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refetchStudents();
+      // toast({ title: 'Success', description: 'Students refreshed successfully' });
+    } catch (error) {
+      console.error('Failed to refresh students:', error);
+      // toast({ title: 'Error', description: 'Failed to refresh students', variant: 'error' });
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   return (
@@ -57,17 +73,11 @@ export default function StudentManager() {
             </p>
           </div>
           <div className="flex gap-2 mt-2 sm:mt-0">
-            <Button
-              onClick={refetchStudents}
-              disabled={loading}
-              className="p-2 sm:px-4 sm:py-2 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-full shadow hover:from-yellow-600 hover:to-orange-700 transition-all duration-300 flex items-center gap-2 text-sm font-semibold"
-            >
-              <RotateCcw
-                className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`}
-              />
-              <span className="hidden sm:inline">Refresh</span>
-            </Button>
-
+            <RefreshButton
+              onRefresh={handleRefresh}
+              isLoading={loading || isRefreshing}
+              className="flex-shrink-0"
+            />
             <Button
               onClick={() => setIsModalOpen(true)}
               className="gap-2 shadow"
@@ -110,7 +120,7 @@ export default function StudentManager() {
 
           {/* Content */}
           <div className="space-y-4 sm:space-y-6">
-            {loading ? (
+            {loading || isRefreshing ? (
               <Card className="p-8 sm:p-12">
                 <div className="flex flex-col items-center justify-center gap-4">
                   <div className="animate-spin h-8 w-8 sm:h-10 sm:w-10 border-4 border-primary border-t-transparent rounded-full" />

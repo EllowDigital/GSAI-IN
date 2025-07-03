@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Plus, Grid, List } from 'lucide-react';
+import { Plus, Grid, List, Newspaper } from 'lucide-react';
 import NewsEditorModal from './NewsEditorModal';
 import NewsDeleteDialog from './NewsDeleteDialog';
 import { exportNewsToCsv } from '@/utils/exportToCsv';
@@ -297,10 +297,13 @@ export default function NewsManager() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800 dark:text-white">
+                <Newspaper className="w-5 h-5 text-primary" />
                 <span>News Management</span>
               </h2>
+
               <p className="mt-1 text-sm sm:text-base text-muted-foreground">
-                Create, edit, and manage news articles and announcements for your academy.
+                Create, edit, and manage news articles and announcements for
+                your academy.
               </p>
             </div>
             <div className="flex gap-2 mt-2 sm:mt-0">
@@ -378,10 +381,7 @@ export default function NewsManager() {
                 <p className="text-sm sm:text-base text-muted-foreground">
                   Get started by creating your first news article.
                 </p>
-                <Button
-                  onClick={() => setModalOpen(true)}
-                  className="gap-2"
-                >
+                <Button onClick={() => setModalOpen(true)} className="gap-2">
                   <Plus className="w-4 h-4" />
                   Add First Article
                 </Button>

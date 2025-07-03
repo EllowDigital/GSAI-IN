@@ -142,7 +142,8 @@ export default function Blogs() {
                 <span>Blog Management</span>
               </h2>
               <p className="mt-1 text-sm sm:text-base text-muted-foreground">
-                Create, edit, and publish blog posts to share academy updates and insights.
+                Create, edit, and publish blog posts to share academy updates
+                and insights.
               </p>
             </div>
             <div className="flex gap-2 mt-2 sm:mt-0">
@@ -220,10 +221,7 @@ export default function Blogs() {
                 <p className="text-sm sm:text-base text-muted-foreground">
                   Start creating engaging content for your academy blog.
                 </p>
-                <Button
-                  onClick={() => setModalOpen(true)}
-                  className="gap-2"
-                >
+                <Button onClick={() => setModalOpen(true)} className="gap-2">
                   <Plus className="w-4 h-4" />
                   Create First Post
                 </Button>
