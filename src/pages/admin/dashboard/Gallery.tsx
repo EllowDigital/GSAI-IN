@@ -98,7 +98,6 @@ export default function Gallery() {
     setSelectedImages(new Set());
   };
 
-
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
@@ -158,7 +157,8 @@ export default function Gallery() {
                 <span>Gallery Management</span>
               </h2>
               <p className="mt-1 text-sm sm:text-base text-muted-foreground">
-                Upload, organize, and manage images for your academy gallery and content.
+                Upload, organize, and manage images for your academy gallery and
+                content.
               </p>
             </div>
             <div className="flex gap-2 mt-2 sm:mt-0">

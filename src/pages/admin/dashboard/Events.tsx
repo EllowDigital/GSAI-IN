@@ -185,7 +185,8 @@ const Events = () => {
                   No events found
                 </h3>
                 <p className="text-sm sm:text-base text-muted-foreground">
-                  Create your first event to get started with managing academy events.
+                  Create your first event to get started with managing academy
+                  events.
                 </p>
                 <Button onClick={handleCreate} className="gap-2">
                   <Plus className="w-4 h-4" />
