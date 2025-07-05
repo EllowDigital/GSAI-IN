@@ -150,7 +150,7 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
               {mode === 'create' ? 'Create New Blog' : 'Edit Blog'}
             </DialogTitle>
           </DialogHeader>
-          
+
           <div className="flex-1 overflow-y-auto px-4 sm:px-6">
             <form
               className="space-y-4 sm:space-y-5 pb-4 w-full font-montserrat"
@@ -161,7 +161,9 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
               })}
             >
               <div>
-                <label className="block font-semibold mb-1 text-sm sm:text-base">Title</label>
+                <label className="block font-semibold mb-1 text-sm sm:text-base">
+                  Title
+                </label>
                 <Input
                   {...register('title', { required: 'Title is required' })}
                   disabled={isSubmitting}
@@ -177,7 +179,9 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
                 )}
               </div>
               <div>
-                <label className="block font-semibold mb-1 text-sm sm:text-base">Description</label>
+                <label className="block font-semibold mb-1 text-sm sm:text-base">
+                  Description
+                </label>
                 <Input
                   {...register('description', {
                     required: 'Description is required',
@@ -194,7 +198,9 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
                 )}
               </div>
               <div>
-                <label className="block font-semibold mb-1 text-sm sm:text-base">Content</label>
+                <label className="block font-semibold mb-1 text-sm sm:text-base">
+                  Content
+                </label>
                 <Textarea
                   {...register('content', { required: 'Content is required' })}
                   disabled={isSubmitting}
@@ -209,7 +215,9 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
                 )}
               </div>
               <div>
-                <label className="block font-semibold mb-1 text-sm sm:text-base">Blog Image</label>
+                <label className="block font-semibold mb-1 text-sm sm:text-base">
+                  Blog Image
+                </label>
                 <BlogImageUploader
                   url={imgUrl || blog?.image_url || ''}
                   disabled={isSubmitting}
@@ -230,7 +238,9 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
                 )}
               </div>
               <div>
-                <label className="block font-semibold mb-1 text-sm sm:text-base">Publish Date</label>
+                <label className="block font-semibold mb-1 text-sm sm:text-base">
+                  Publish Date
+                </label>
                 <Input
                   type="date"
                   {...register('published_at', {
@@ -247,7 +257,7 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
               </div>
             </form>
           </div>
-          
+
           <div className="flex-shrink-0 px-4 sm:px-6 pb-4 sm:pb-6 pt-2 border-t bg-background/80 backdrop-blur-sm">
             <div className="flex flex-col sm:flex-row gap-3 justify-end">
               <Button

@@ -103,11 +103,13 @@ const AdminLayout: React.FC = () => {
 
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-sm">
-                  <span className="text-sm sm:text-base font-bold text-primary-foreground">G</span>
+                  <span className="text-sm sm:text-base font-bold text-primary-foreground">
+                    G
+                  </span>
                 </div>
                 <div className="flex flex-col min-w-0">
                   <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">
-                    GSAI Admin
+                    GSAI
                   </h1>
                   <span className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
                     Analytics Dashboard
@@ -125,7 +127,9 @@ const AdminLayout: React.FC = () => {
                 className="p-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors"
                 title="Refresh data"
               >
-                <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 text-secondary-foreground ${isRefreshing ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`w-4 h-4 sm:w-5 sm:h-5 text-secondary-foreground ${isRefreshing ? 'animate-spin' : ''}`}
+                />
               </button>
 
               {/* Sign Out */}
@@ -140,9 +144,13 @@ const AdminLayout: React.FC = () => {
               {/* Profile */}
               <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-muted">
                 <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                  <span className="text-xs font-semibold text-primary-foreground">A</span>
+                  <span className="text-xs font-semibold text-primary-foreground">
+                    A
+                  </span>
                 </div>
-                <span className="text-sm font-medium text-foreground hidden lg:block">Admin</span>
+                <span className="text-sm font-medium text-foreground hidden lg:block">
+                  Admin
+                </span>
               </div>
             </div>
           </div>

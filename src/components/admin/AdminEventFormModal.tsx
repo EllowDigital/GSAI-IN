@@ -235,7 +235,7 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
               All fields required.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="flex-1 overflow-y-auto px-4 sm:px-6">
             <form
               className="space-y-4 sm:space-y-5 pb-4"
@@ -255,7 +255,10 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
                 />
               </div>
               <div className="flex flex-col gap-3 sm:gap-4">
-                <label className="font-medium text-sm" htmlFor="event-description">
+                <label
+                  className="font-medium text-sm"
+                  htmlFor="event-description"
+                >
                   Description
                 </label>
                 <Textarea
@@ -288,7 +291,9 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
                   label="End Date"
                   value={form.end_date}
                   onChange={(date) => handleDateChange('end_date', date)}
-                  minDate={form.from_date ? new Date(form.from_date) : undefined}
+                  minDate={
+                    form.from_date ? new Date(form.from_date) : undefined
+                  }
                 />
               </div>
               <div className="flex flex-col gap-3 sm:gap-4">
@@ -305,7 +310,7 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
               </div>
             </form>
           </div>
-          
+
           <div className="flex-shrink-0 px-4 sm:px-6 pb-4 sm:pb-6 pt-2 border-t bg-background/80 backdrop-blur-sm">
             <div className="flex justify-end">
               <Button
