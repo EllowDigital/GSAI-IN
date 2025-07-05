@@ -225,95 +225,106 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
-            {editingEvent ? 'Edit Event' : 'Add New Event'}
-          </DialogTitle>
-          <DialogDescription>All fields required.</DialogDescription>
-        </DialogHeader>
-        <form
-          className="space-y-5 pt-1 px-1"
-          onSubmit={handleSubmit}
-          autoComplete="off"
-        >
-          <div className="flex flex-col gap-4">
-            <label className="font-medium text-sm" htmlFor="event-title">
-              Title
-            </label>
-            <Input
-              id="event-title"
-              placeholder="Title"
-              value={form.title ?? ''}
-              onChange={(e) => handleChange('title', e.target.value)}
-              required
-            />
-          </div>
-          <div className="flex flex-col gap-4">
-            <label className="font-medium text-sm" htmlFor="event-description">
-              Description
-            </label>
-            <Textarea
-              id="event-description"
-              placeholder="Description"
-              rows={4}
-              value={form.description ?? ''}
-              onChange={(e) => handleChange('description', e.target.value)}
-              required
-            />
-          </div>
-          <EventImageUploader
-            imageFile={imageFile}
-            setImageFile={setImageFile}
-            imagePreview={imagePreview}
-            setImagePreview={setImagePreview}
-            onRemoveImage={() => {
-              setImageFile(null);
-              setImagePreview(null);
-              setForm((f) => ({ ...f, image_url: '' }));
-            }}
-          />
-          <div className="flex flex-col sm:flex-row gap-4 justify-between">
-            <DatePickerField
-              label="From Date"
-              value={form.from_date}
-              onChange={(date) => handleDateChange('from_date', date)}
-            />
-            <DatePickerField
-              label="End Date"
-              value={form.end_date}
-              onChange={(date) => handleDateChange('end_date', date)}
-              minDate={form.from_date ? new Date(form.from_date) : undefined}
-            />
-          </div>
-          <div className="flex flex-col gap-4">
-            <label className="font-medium text-sm" htmlFor="event-tag">
-              Tag <span className="text-xs text-gray-400">(optional)</span>
-            </label>
-            <Input
-              id="event-tag"
-              placeholder="Tag (e.g. Seminar, Tournament)"
-              value={form.tag ?? ''}
-              onChange={(e) => handleChange('tag', e.target.value)}
-              maxLength={32}
-            />
-          </div>
-          <div className="flex justify-end mt-1">
-            <Button
-              type="submit"
-              disabled={loading}
-              className="rounded-xl min-w-[110px]"
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-hidden p-0 sm:p-6">
+        <div className="flex flex-col h-full max-h-[90vh]">
+          <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2 flex-shrink-0">
+            <DialogTitle className="text-lg sm:text-xl">
+              {editingEvent ? 'Edit Event' : 'Add New Event'}
+            </DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground">
+              All fields required.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6">
+            <form
+              className="space-y-4 sm:space-y-5 pb-4"
+              onSubmit={handleSubmit}
+              autoComplete="off"
             >
-              {loading ? (
-                <Spinner size={16} />
-              ) : editingEvent ? (
-                'Update'
-              ) : (
-                'Create'
-              )}
-            </Button>
+              <div className="flex flex-col gap-3 sm:gap-4">
+                <label className="font-medium text-sm" htmlFor="event-title">
+                  Title
+                </label>
+                <Input
+                  id="event-title"
+                  placeholder="Title"
+                  value={form.title ?? ''}
+                  onChange={(e) => handleChange('title', e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex flex-col gap-3 sm:gap-4">
+                <label className="font-medium text-sm" htmlFor="event-description">
+                  Description
+                </label>
+                <Textarea
+                  id="event-description"
+                  placeholder="Description"
+                  rows={4}
+                  value={form.description ?? ''}
+                  onChange={(e) => handleChange('description', e.target.value)}
+                  required
+                />
+              </div>
+              <EventImageUploader
+                imageFile={imageFile}
+                setImageFile={setImageFile}
+                imagePreview={imagePreview}
+                setImagePreview={setImagePreview}
+                onRemoveImage={() => {
+                  setImageFile(null);
+                  setImagePreview(null);
+                  setForm((f) => ({ ...f, image_url: '' }));
+                }}
+              />
+              <div className="flex flex-col sm:flex-row gap-4 justify-between">
+                <DatePickerField
+                  label="From Date"
+                  value={form.from_date}
+                  onChange={(date) => handleDateChange('from_date', date)}
+                />
+                <DatePickerField
+                  label="End Date"
+                  value={form.end_date}
+                  onChange={(date) => handleDateChange('end_date', date)}
+                  minDate={form.from_date ? new Date(form.from_date) : undefined}
+                />
+              </div>
+              <div className="flex flex-col gap-3 sm:gap-4">
+                <label className="font-medium text-sm" htmlFor="event-tag">
+                  Tag <span className="text-xs text-gray-400">(optional)</span>
+                </label>
+                <Input
+                  id="event-tag"
+                  placeholder="Tag (e.g. Seminar, Tournament)"
+                  value={form.tag ?? ''}
+                  onChange={(e) => handleChange('tag', e.target.value)}
+                  maxLength={32}
+                />
+              </div>
+            </form>
           </div>
-        </form>
+          
+          <div className="flex-shrink-0 px-4 sm:px-6 pb-4 sm:pb-6 pt-2 border-t bg-background/80 backdrop-blur-sm">
+            <div className="flex justify-end">
+              <Button
+                type="submit"
+                disabled={loading}
+                onClick={handleSubmit}
+                className="rounded-xl min-w-[110px] w-full sm:w-auto"
+              >
+                {loading ? (
+                  <Spinner size={16} />
+                ) : editingEvent ? (
+                  'Update'
+                ) : (
+                  'Create'
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

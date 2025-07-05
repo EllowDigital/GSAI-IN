@@ -128,94 +128,112 @@ export default function NewsEditorModal({
         if (!mutation.isPending) onOpenChange(open);
       }}
     >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{editingNews ? 'Edit News' : 'Add News'}</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-2">
-          <div>
-            <label className="block mb-1 font-medium">Title</label>
-            <Input
-              {...register('title', { required: requiredMsg })}
-              disabled={mutation.isPending}
-            />
-            {errors.title && (
-              <div className="text-red-500 text-xs mt-1">
-                {errors.title.message}
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-hidden p-0">
+        <div className="flex flex-col h-full max-h-[90vh]">
+          <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2 flex-shrink-0">
+            <DialogTitle className="text-lg sm:text-xl">
+              {editingNews ? 'Edit News' : 'Add News'}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6">
+            <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4 sm:space-y-5 pb-4">
+              <div>
+                <label className="block mb-1 font-medium text-sm sm:text-base">Title</label>
+                <Input
+                  {...register('title', { required: requiredMsg })}
+                  disabled={mutation.isPending}
+                  placeholder="News title"
+                  className="rounded-lg"
+                />
+                {errors.title && (
+                  <div className="text-red-500 text-xs mt-1">
+                    {errors.title.message}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <div>
-            <label className="block mb-1 font-medium">Short Description</label>
-            <Input
-              {...register('short_description', { required: requiredMsg })}
-              disabled={mutation.isPending}
-            />
-            {errors.short_description && (
-              <div className="text-red-500 text-xs mt-1">
-                {errors.short_description.message}
+              <div>
+                <label className="block mb-1 font-medium text-sm sm:text-base">Short Description</label>
+                <Input
+                  {...register('short_description', { required: requiredMsg })}
+                  disabled={mutation.isPending}
+                  placeholder="Brief description"
+                  className="rounded-lg"
+                />
+                {errors.short_description && (
+                  <div className="text-red-500 text-xs mt-1">
+                    {errors.short_description.message}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <div>
-            <label className="block mb-1 font-medium">Date</label>
-            <Input
-              type="date"
-              {...register('date', { required: requiredMsg })}
-              disabled={mutation.isPending}
-            />
-            {errors.date && (
-              <div className="text-red-500 text-xs mt-1">
-                {errors.date.message}
+              <div>
+                <label className="block mb-1 font-medium text-sm sm:text-base">Date</label>
+                <Input
+                  type="date"
+                  {...register('date', { required: requiredMsg })}
+                  disabled={mutation.isPending}
+                  className="rounded-lg"
+                />
+                {errors.date && (
+                  <div className="text-red-500 text-xs mt-1">
+                    {errors.date.message}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <div>
-            <label className="block mb-1 font-medium">Status</label>
-            <select
-              {...register('status', { required: requiredMsg })}
-              className="border rounded-md px-2 py-1 w-full"
-              disabled={mutation.isPending}
-            >
-              <option value="Published">Published</option>
-              <option value="Draft">Draft</option>
-            </select>
-            {errors.status && (
-              <div className="text-red-500 text-xs mt-1">
-                {errors.status.message}
+              <div>
+                <label className="block mb-1 font-medium text-sm sm:text-base">Status</label>
+                <select
+                  {...register('status', { required: requiredMsg })}
+                  className="border rounded-lg px-3 py-2 w-full bg-background"
+                  disabled={mutation.isPending}
+                >
+                  <option value="Published">Published</option>
+                  <option value="Draft">Draft</option>
+                </select>
+                {errors.status && (
+                  <div className="text-red-500 text-xs mt-1">
+                    {errors.status.message}
+                  </div>
+                )}
               </div>
-            )}
+              <div>
+                <label className="block mb-1 font-medium text-sm sm:text-base">Image</label>
+                <NewsImageUploader
+                  imageUrl={imageUrl}
+                  onUpload={setImageUrl}
+                  disabled={mutation.isPending}
+                />
+              </div>
+            </form>
           </div>
-          <div>
-            <label className="block mb-1 font-medium">Image</label>
-            <NewsImageUploader
-              imageUrl={imageUrl}
-              onUpload={setImageUrl}
-              disabled={mutation.isPending}
-            />
-          </div>
-          <DialogFooter className="flex justify-end gap-2 pt-4">
-            <DialogClose asChild>
+          
+          <div className="flex-shrink-0 px-4 sm:px-6 pb-4 sm:pb-6 pt-2 border-t bg-background/80 backdrop-blur-sm">
+            <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
+              <DialogClose asChild>
+                <Button
+                  variant="secondary"
+                  type="button"
+                  disabled={mutation.isPending}
+                  className="rounded-xl order-2 sm:order-1"
+                >
+                  Cancel
+                </Button>
+              </DialogClose>
               <Button
-                variant="secondary"
-                type="button"
+                variant="default"
+                type="submit"
+                onClick={handleSubmit(onFormSubmit)}
                 disabled={mutation.isPending}
+                className="rounded-xl order-1 sm:order-2"
               >
-                Cancel
+                {mutation.isPending ? (
+                  <span className="animate-spin inline-block w-4 h-4 border-t-2 border-white border-solid rounded-full mr-2" />
+                ) : null}
+                {editingNews ? 'Update' : 'Create'}
               </Button>
-            </DialogClose>
-            <Button
-              variant="default"
-              type="submit"
-              disabled={mutation.isPending}
-            >
-              {mutation.isPending ? (
-                <span className="animate-spin inline-block w-4 h-4 border-t-2 border-white border-solid rounded-full mr-2" />
-              ) : null}
-              {editingNews ? 'Update' : 'Create'}
-            </Button>
-          </DialogFooter>
-        </form>
+            </div>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
