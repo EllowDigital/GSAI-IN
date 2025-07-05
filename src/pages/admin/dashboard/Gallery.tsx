@@ -265,17 +265,18 @@ export default function Gallery() {
           )}
 
           {/* Gallery View */}
-          <div className="max-h-[70vh] overflow-y-auto">
+          <div className="max-h-[50vh] sm:max-h-[60vh] lg:max-h-[70vh] overflow-y-auto">
             {isLoading || isRefreshing ? (
-              <div className="flex justify-center py-12">
-                <div className="h-8 w-8 border-4 border-pink-400 rounded-full animate-spin border-t-transparent" />
+              <div className="flex justify-center py-8 sm:py-12">
+                <div className="h-6 w-6 sm:h-8 sm:w-8 border-2 sm:border-4 border-pink-400 rounded-full animate-spin border-t-transparent" />
               </div>
             ) : filteredImages.length === 0 ? (
-              <div className="text-center text-gray-500 py-12">
-                No images found.
+              <div className="text-center text-gray-500 py-8 sm:py-12 px-4">
+                <ImageIcon className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 text-gray-300" />
+                <p className="text-sm sm:text-base">No images found.</p>
               </div>
             ) : viewMode === 'card' ? (
-              <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid gap-3 sm:gap-4 md:gap-6 grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6">
                 {paginatedImages.map((image) => (
                   <GalleryImageCard
                     key={image.id}

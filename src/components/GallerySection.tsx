@@ -136,29 +136,29 @@ export default function GallerySection() {
 
         {/* Gallery Content */}
         {loading ? (
-          <div className="flex justify-center items-center py-40">
+          <div className="flex justify-center items-center py-20 sm:py-32 lg:py-40">
             <div className="relative">
-              <div className="w-20 h-20 border-4 border-yellow-200 rounded-full animate-spin border-t-yellow-600"></div>
-              <div className="absolute inset-0 w-20 h-20 border-4 border-transparent rounded-full animate-ping border-t-yellow-400"></div>
+              <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 border-2 sm:border-3 lg:border-4 border-yellow-200 rounded-full animate-spin border-t-yellow-600"></div>
+              <div className="absolute inset-0 w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 border-2 sm:border-3 lg:border-4 border-transparent rounded-full animate-ping border-t-yellow-400"></div>
             </div>
           </div>
         ) : images.length === 0 ? (
           <motion.div
-            className="text-center py-40"
+            className="text-center py-20 sm:py-32 lg:py-40 px-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <Images className="w-32 h-32 text-gray-300 mx-auto mb-8" />
-            <h3 className="text-3xl font-bold text-gray-400 mb-4">
+            <Images className="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32 text-gray-300 mx-auto mb-4 sm:mb-6 lg:mb-8" />
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-400 mb-2 sm:mb-3 lg:mb-4">
               No Images Yet
             </h3>
-            <p className="text-xl text-gray-500">
+            <p className="text-base sm:text-lg lg:text-xl text-gray-500 max-w-md mx-auto">
               Check back soon for amazing moments from our academy!
             </p>
           </motion.div>
         ) : (
           <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10"
+            className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4 sm:gap-6 md:gap-8 lg:gap-10"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
