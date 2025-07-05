@@ -88,46 +88,62 @@ const AdminLayout: React.FC = () => {
 
       {/* Main layout */}
       <div className="flex-1 flex flex-col h-screen w-full min-w-0">
-        {/* Header */}
-        <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-700/60 shadow-lg flex-shrink-0">
-          <div className="flex items-center justify-between px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 gap-2 sm:gap-4">
-            {/* Left: Brand & Sidebar Toggle */}
-            <div className="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0 flex-shrink-0">
+        {/* Modern Header */}
+        <header className="sticky top-0 z-30 bg-gradient-to-r from-background/95 via-background/98 to-background/95 backdrop-blur-xl border-b border-border/50 shadow-sm flex-shrink-0">
+          <div className="flex items-center justify-between px-3 sm:px-4 lg:px-6 py-3 sm:py-4 gap-3 sm:gap-4">
+            {/* Left: Brand & Toggle */}
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-shrink-0">
               <button
-                className="lg:hidden p-1.5 sm:p-2 md:p-2.5 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-200 dark:border-blue-700 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-800/40 dark:hover:to-indigo-800/40 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-200 shadow-sm hover:shadow-md"
+                className="lg:hidden p-2 rounded-lg bg-primary/10 hover:bg-primary/20 border border-primary/20 hover:border-primary/30 transition-all duration-200"
                 onClick={() => setSidebarOpen(true)}
                 aria-label="Open sidebar"
               >
-                <Menu className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700 dark:text-blue-300" />
+                <Menu className="w-5 h-5 text-primary" />
               </button>
 
-              <div className="flex flex-col min-w-0">
-                <h1 className="text-sm sm:text-lg md:text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  GSAI Admin
-                </h1>
-                <span className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 truncate hidden sm:block">
-                  Dashboard Management
-                </span>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-sm">
+                  <span className="text-sm sm:text-base font-bold text-primary-foreground">G</span>
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">
+                    GSAI Admin
+                  </h1>
+                  <span className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
+                    Analytics Dashboard
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Right: Avatar, Sign Out (Mobile only) */}
+            {/* Right: Actions & Profile */}
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-              {/* Mobile-only Logout Icon */}
+              {/* Refresh Button */}
               <button
-                onClick={signOut}
-                className="lg:hidden p-2 rounded-md bg-red-100 text-red-600 border border-red-300 hover:bg-red-200 dark:bg-red-900 dark:text-red-300 dark:border-red-700 dark:hover:bg-red-800"
-                title="Sign out"
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="p-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors"
+                title="Refresh data"
               >
-                <LogOut className="w-5 h-5" />
+                <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 text-secondary-foreground ${isRefreshing ? 'animate-spin' : ''}`} />
               </button>
 
-              {/* Avatar – only shown on tablet and mobile */}
-              <img
-                src="/assets/img/logo.webp"
-                alt="Admin avatar"
-                className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 object-contain lg:hidden"
-              />
+              {/* Sign Out */}
+              <button
+                onClick={signOut}
+                className="lg:hidden p-2 rounded-lg bg-destructive/10 hover:bg-destructive/20 text-destructive border border-destructive/20 hover:border-destructive/30 transition-all"
+                title="Sign out"
+              >
+                <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
+              </button>
+
+              {/* Profile */}
+              <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-muted">
+                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                  <span className="text-xs font-semibold text-primary-foreground">A</span>
+                </div>
+                <span className="text-sm font-medium text-foreground hidden lg:block">Admin</span>
+              </div>
             </div>
           </div>
         </header>

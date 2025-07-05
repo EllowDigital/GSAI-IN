@@ -19,7 +19,7 @@ import { AdminAuthProvider } from './pages/admin/AdminAuthProvider';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminLayout from './pages/admin/AdminLayout';
 import NotFoundAdmin from './pages/admin/NotFoundAdmin';
-import StatsHome from './pages/admin/dashboard/StatsHome';
+import DashboardHome from './pages/admin/dashboard/DashboardHome';
 import Blogs from './pages/admin/dashboard/Blogs';
 import News from './pages/admin/dashboard/News';
 import Gallery from './pages/admin/dashboard/Gallery';
@@ -98,7 +98,7 @@ const App = () => {
                       <Routes>
                         <Route path="login" element={<AdminLogin />} />
                         <Route path="dashboard" element={<AdminLayout />}>
-                          <Route index element={<StatsHome />} />
+                          <Route index element={<DashboardHome />} />
                           <Route path="fees" element={<FeesManager />} />
                           <Route path="blogs" element={<Blogs />} />
                           <Route path="news" element={<News />} />
