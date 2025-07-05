@@ -135,11 +135,16 @@ export default function NewsEditorModal({
               {editingNews ? 'Edit News' : 'Add News'}
             </DialogTitle>
           </DialogHeader>
-          
+
           <div className="flex-1 overflow-y-auto px-4 sm:px-6">
-            <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4 sm:space-y-5 pb-4">
+            <form
+              onSubmit={handleSubmit(onFormSubmit)}
+              className="space-y-4 sm:space-y-5 pb-4"
+            >
               <div>
-                <label className="block mb-1 font-medium text-sm sm:text-base">Title</label>
+                <label className="block mb-1 font-medium text-sm sm:text-base">
+                  Title
+                </label>
                 <Input
                   {...register('title', { required: requiredMsg })}
                   disabled={mutation.isPending}
@@ -153,7 +158,9 @@ export default function NewsEditorModal({
                 )}
               </div>
               <div>
-                <label className="block mb-1 font-medium text-sm sm:text-base">Short Description</label>
+                <label className="block mb-1 font-medium text-sm sm:text-base">
+                  Short Description
+                </label>
                 <Input
                   {...register('short_description', { required: requiredMsg })}
                   disabled={mutation.isPending}
@@ -167,7 +174,9 @@ export default function NewsEditorModal({
                 )}
               </div>
               <div>
-                <label className="block mb-1 font-medium text-sm sm:text-base">Date</label>
+                <label className="block mb-1 font-medium text-sm sm:text-base">
+                  Date
+                </label>
                 <Input
                   type="date"
                   {...register('date', { required: requiredMsg })}
@@ -181,7 +190,9 @@ export default function NewsEditorModal({
                 )}
               </div>
               <div>
-                <label className="block mb-1 font-medium text-sm sm:text-base">Status</label>
+                <label className="block mb-1 font-medium text-sm sm:text-base">
+                  Status
+                </label>
                 <select
                   {...register('status', { required: requiredMsg })}
                   className="border rounded-lg px-3 py-2 w-full bg-background"
@@ -197,7 +208,9 @@ export default function NewsEditorModal({
                 )}
               </div>
               <div>
-                <label className="block mb-1 font-medium text-sm sm:text-base">Image</label>
+                <label className="block mb-1 font-medium text-sm sm:text-base">
+                  Image
+                </label>
                 <NewsImageUploader
                   imageUrl={imageUrl}
                   onUpload={setImageUrl}
@@ -206,7 +219,7 @@ export default function NewsEditorModal({
               </div>
             </form>
           </div>
-          
+
           <div className="flex-shrink-0 px-4 sm:px-6 pb-4 sm:pb-6 pt-2 border-t bg-background/80 backdrop-blur-sm">
             <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
               <DialogClose asChild>
