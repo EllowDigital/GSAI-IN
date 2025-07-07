@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { useAdminAuth } from './AdminAuthProvider';
 import { AppSidebar } from '@/components/admin/AppSidebar';
 import { useQueryClient } from '@tanstack/react-query';
-import { RefreshCw, Menu } from 'lucide-react';
+import { RefreshCw, Menu, LogOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
-import { LogOut } from 'lucide-react';
 
 const AdminLayout: React.FC = () => {
   const { isAdmin, isLoading, signOut } = useAdminAuth();
@@ -14,6 +12,10 @@ const AdminLayout: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const location = useLocation();
+  
+  // Only show refresh button on dashboard home
+  const isDashboardHome = location.pathname === '/admin/dashboard';
 
   // Lock scroll on mobile when sidebar is open
   useEffect(() => {
@@ -120,17 +122,19 @@ const AdminLayout: React.FC = () => {
 
             {/* Right: Actions & Profile */}
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-              {/* Refresh Button */}
-              <button
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-                className="p-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors"
-                title="Refresh data"
-              >
-                <RefreshCw
-                  className={`w-4 h-4 sm:w-5 sm:h-5 text-secondary-foreground ${isRefreshing ? 'animate-spin' : ''}`}
-                />
-              </button>
+              {/* Refresh Button - Only on Dashboard Home */}
+              {isDashboardHome && (
+                <button
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
+                  className="p-2 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 hover:border-primary/30 transition-all duration-200 hover:scale-105"
+                  title="Refresh dashboard data"
+                >
+                  <RefreshCw
+                    className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${isRefreshing ? 'animate-spin' : 'hover:rotate-180'} duration-300`}
+                  />
+                </button>
+              )}
 
               {/* Sign Out */}
               <button

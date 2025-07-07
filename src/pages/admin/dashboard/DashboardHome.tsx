@@ -43,6 +43,7 @@ import {
   BarChart3,
   PieChart as PieChartIcon,
 } from 'lucide-react';
+import { useRealtime } from '@/hooks/useRealtime';
 
 const COLORS = [
   'hsl(var(--primary))',
@@ -52,6 +53,9 @@ const COLORS = [
 ];
 
 export default function DashboardHome() {
+  // Enable real-time updates
+  useRealtime();
+
   // Enhanced data query with advanced analytics
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard-analytics'],
