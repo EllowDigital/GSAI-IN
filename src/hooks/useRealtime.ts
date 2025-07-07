@@ -14,7 +14,7 @@ export const useRealtime = () => {
         {
           event: '*',
           schema: 'public',
-          table: 'students'
+          table: 'students',
         },
         () => {
           queryClient.invalidateQueries({ queryKey: ['students'] });
@@ -31,7 +31,7 @@ export const useRealtime = () => {
         {
           event: '*',
           schema: 'public',
-          table: 'fees'
+          table: 'fees',
         },
         () => {
           queryClient.invalidateQueries({ queryKey: ['fees'] });
@@ -48,7 +48,7 @@ export const useRealtime = () => {
         {
           event: '*',
           schema: 'public',
-          table: 'events'
+          table: 'events',
         },
         () => {
           queryClient.invalidateQueries({ queryKey: ['events'] });
@@ -65,7 +65,7 @@ export const useRealtime = () => {
         {
           event: '*',
           schema: 'public',
-          table: 'blogs'
+          table: 'blogs',
         },
         () => {
           queryClient.invalidateQueries({ queryKey: ['blogs'] });
@@ -82,7 +82,7 @@ export const useRealtime = () => {
         {
           event: '*',
           schema: 'public',
-          table: 'news'
+          table: 'news',
         },
         () => {
           queryClient.invalidateQueries({ queryKey: ['news'] });
@@ -99,7 +99,7 @@ export const useRealtime = () => {
         {
           event: '*',
           schema: 'public',
-          table: 'gallery_images'
+          table: 'gallery_images',
         },
         () => {
           queryClient.invalidateQueries({ queryKey: ['gallery-images'] });
