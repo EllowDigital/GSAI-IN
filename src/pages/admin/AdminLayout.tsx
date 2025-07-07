@@ -13,7 +13,7 @@ const AdminLayout: React.FC = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const location = useLocation();
-  
+
   // Only show refresh button on dashboard home
   const isDashboardHome = location.pathname === '/admin/dashboard';
 
