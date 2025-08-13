@@ -6,7 +6,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
-import { FeeAdminDebugBanner } from './FeeAdminDebugBanner';
+
 import { FeeForm } from './FeeForm';
 import { getFeeStatus } from '@/utils/feeStatusUtils';
 
@@ -59,7 +59,7 @@ export default function FeeEditModal({
         <DialogHeader>
           <DialogTitle>{fee ? 'Edit Payment' : 'Add Payment'}</DialogTitle>
         </DialogHeader>
-        <FeeAdminDebugBanner adminDebug={adminDebug} />
+        
         <FeeForm
           student={student}
           fee={fee}

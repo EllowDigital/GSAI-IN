@@ -98,8 +98,8 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
         if (error) {
           toast.error('Image upload failed: ' + error.message);
           setLoading(false);
-          console.error('Image upload error:', error);
-          return; // Abort submission if the upload fails
+          toast.error('Image upload failed');
+          return;
         }
         const { data: publicUrlData } = supabase.storage
           .from('events')
@@ -109,17 +109,12 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
         } else {
           toast.error('Failed to retrieve image URL after upload.');
           setLoading(false);
-          console.error('Missing publicUrl after upload');
+          toast.error('Image upload failed - no URL returned');
           return;
         }
       }
 
-      // DEBUGGING: LOG THE SESSION EMAIL BEFORE SAVE
       const { data: sessionData } = await supabase.auth.getSession();
-      console.log(
-        'DEBUG: Current Supabase session email:',
-        sessionData?.session?.user?.email
-      );
 
       if (editingEvent) {
         // Update
@@ -136,7 +131,6 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
           .eq('id', editingEvent.id);
         if (error) {
           toast.error('Failed to update event: ' + error.message);
-          console.error('DEBUG: Update error:', error);
           setLoading(false);
           return;
         }
@@ -156,7 +150,6 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
         ]);
         if (error) {
           toast.error('Failed to create event: ' + error.message);
-          console.error('DEBUG: Insert error:', error);
           setLoading(false);
           return;
         }
@@ -164,8 +157,7 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
       }
       onOpenChange(false);
     } catch (err: any) {
-      toast.error('Failed to save event.', err.message);
-      console.error('UNCAUGHT ERROR in event submit:', err);
+      toast.error('Failed to save event: ' + err.message);
     }
     setLoading(false);
   };

@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { User, Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/sonner';
 
 interface StudentAvatarUploaderProps {
   url: string | null | undefined;
@@ -37,7 +38,7 @@ export default function StudentAvatarUploader({
         throw new Error('Unable to get public URL.');
       onUploaded(_data.publicUrl);
     } catch (err: any) {
-      alert('Upload error: ' + err.message);
+      toast.error('Upload error: ' + err.message);
     } finally {
       setUploading(false);
     }

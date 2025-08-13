@@ -48,10 +48,8 @@ export default function StudentManager() {
     setIsRefreshing(true);
     try {
       await refetchStudents();
-      // toast({ title: 'Success', description: 'Students refreshed successfully' });
     } catch (error) {
-      console.error('Failed to refresh students:', error);
-      // toast({ title: 'Error', description: 'Failed to refresh students', variant: 'error' });
+      // Silent error handling
     } finally {
       setIsRefreshing(false);
     }

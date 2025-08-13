@@ -2,6 +2,7 @@ import React from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { toast } from '@/components/ui/sonner';
 
 type Props = {
   url: string;
@@ -24,7 +25,7 @@ export default function BlogImageUploader({ url, disabled, onUpload }: Props) {
         upsert: true,
       });
     if (error) {
-      alert('Failed to upload image: ' + error.message);
+      toast.error('Failed to upload image: ' + error.message);
       setUploading(false);
       return;
     }
