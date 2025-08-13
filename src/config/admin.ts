@@ -1,6 +1,6 @@
 /**
  * Admin Configuration
- * 
+ *
  * Security-focused admin management with database-backed authorization.
  * This replaces hardcoded admin emails with proper database verification.
  */
@@ -15,7 +15,7 @@ export async function isCurrentUserAdmin(): Promise<boolean> {
   try {
     const { data: session } = await supabase.auth.getSession();
     const userEmail = session?.session?.user?.email;
-    
+
     if (!userEmail) return false;
 
     const { data: adminUser } = await supabase
@@ -40,7 +40,7 @@ export async function getCurrentUserAdminInfo(): Promise<{
   try {
     const { data: session } = await supabase.auth.getSession();
     const userEmail = session?.session?.user?.email ?? null;
-    
+
     if (!userEmail) {
       return { isAdmin: false, email: null };
     }
@@ -53,7 +53,7 @@ export async function getCurrentUserAdminInfo(): Promise<{
 
     return {
       isAdmin: !!adminUser,
-      email: userEmail
+      email: userEmail,
     };
   } catch (error) {
     return { isAdmin: false, email: null };

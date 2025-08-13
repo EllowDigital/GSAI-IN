@@ -59,7 +59,7 @@ export default function FeeEditModal({
         <DialogHeader>
           <DialogTitle>{fee ? 'Edit Payment' : 'Add Payment'}</DialogTitle>
         </DialogHeader>
-        
+
         <FeeForm
           student={student}
           fee={fee}
