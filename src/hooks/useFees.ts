@@ -36,10 +36,8 @@ export function useFees(args: UseFeesArgs = {}) {
       if (studentId) q = q.eq('student_id', studentId);
       const { data, error } = await q;
       if (error) {
-        console.error('Fees query error:', error.message);
         throw error;
       }
-      console.log('Fees fetched:', data);
       return data || [];
     },
   });

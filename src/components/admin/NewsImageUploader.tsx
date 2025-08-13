@@ -30,7 +30,6 @@ export default function NewsImageUploader({
           upsert: false,
         });
       if (uploadError) {
-        console.error('Image upload error:', uploadError);
         toast.error(`Image upload failed: ${uploadError.message}`);
         setUploading(false);
         return;
@@ -41,7 +40,6 @@ export default function NewsImageUploader({
         .from('news-images')
         .getPublicUrl(filePath);
       if (!urlData?.publicUrl) {
-        console.error('Could not get public URL data:', urlData);
         toast.error('Upload succeeded but image URL is missing.');
         setUploading(false);
         return;
@@ -49,7 +47,6 @@ export default function NewsImageUploader({
       onUpload(urlData.publicUrl);
       toast.success('Image uploaded.');
     } catch (ex: any) {
-      console.error('Unknown upload exception:', ex);
       toast.error('Unexpected error during upload.');
     }
     setUploading(false);

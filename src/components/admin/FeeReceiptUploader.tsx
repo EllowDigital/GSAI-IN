@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Loader2, UploadCloud, Trash2 } from 'lucide-react';
+import { toast } from '@/components/ui/sonner';
 
 type Props = {
   feeId: string;
@@ -25,7 +26,7 @@ export function FeeReceiptUploader({ feeId, initialUrl, onUploaded }: Props) {
       .from('fees')
       .upload(filePath, file, { upsert: true });
     if (error) {
-      alert('Error uploading file: ' + error.message);
+      toast.error('Error uploading file: ' + error.message);
       setUploading(false);
       return;
     }

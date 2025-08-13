@@ -44,7 +44,6 @@ const App = () => {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setInstallPrompt(e as BeforeInstallPromptEvent);
-      console.log('PWA install prompt captured.');
     };
 
     window.addEventListener('online', handleOnline);

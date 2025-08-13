@@ -67,14 +67,11 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
       tag: tag || null,
     };
 
-    console.log('Uploading image, inserting metadata:', meta);
-
     const { error: insertError } = await supabase
       .from('gallery_images')
       .insert([meta]);
     if (insertError) {
-      toast.error('Upload failed (DB): ' + insertError.message);
-      console.error('Insert error details:', insertError);
+      toast.error('Upload failed: ' + insertError.message);
       setUploading(false);
       return;
     }

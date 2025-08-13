@@ -11,7 +11,6 @@ const HomePageWrapper: React.FC = () => {
   // Helper: Check and redirect if user is admin
   const redirectIfAdmin = (email?: string | null) => {
     if (email?.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-      console.info('✅ Admin detected — redirecting to /admin/dashboard');
       navigate('/admin/dashboard', { replace: true });
     }
   };
@@ -21,14 +20,11 @@ const HomePageWrapper: React.FC = () => {
     const checkInitialSession = async () => {
       try {
         const { data, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error('❌ Failed to get session:', error.message);
-          return;
-        }
+        if (error) return;
         const email = data?.session?.user?.email;
         redirectIfAdmin(email);
       } catch (err) {
-        console.error('❌ Unexpected error while checking session:', err);
+        // Silent error handling
       }
     };
 
