@@ -2,7 +2,8 @@ import React from 'react';
 import { MapPin, Navigation, Clock, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const mainCampus = 'Naubasta Pulia, Takrohi Road, Indira Nagar, Lucknow';
+const mainCampus =
+  'Badshah kheda, Takrohi Rd, nearby Balaji Chauraha, Indira Nagar, Lucknow, Uttar Pradesh 226028';
 const branchCampus = 'Hardasi Kheda, Deva Road, Matiyari, Lucknow';
 
 const containerVariants = {
