@@ -83,7 +83,9 @@ const contactInfo = [
   {
     icon: MapPin,
     title: 'Visit Us',
-    details: ['Naubasta Pulia, Takrohi Road', 'Indira Nagar, Lucknow'],
+    details: [
+      'Badshah kheda, Takrohi Rd, nearby Balaji Chauraha, Indira Nagar, Lucknow, Uttar Pradesh 226028',
+    ],
     action: '#location',
     color: 'from-red-500 to-pink-600',
   },
