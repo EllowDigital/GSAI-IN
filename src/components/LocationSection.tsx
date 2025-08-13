@@ -156,8 +156,8 @@ export default function LocationSection() {
                   <a
                     href={
                       index === 0
-                        ? 'https://maps.app.goo.gl/yA7r5XQWt6iYLqwTA'
-                        : 'https://maps.app.goo.gl/oXfoJQBweHeJGH976'
+                        ? 'https://maps.app.goo.gl/JQRsU9jEfZZY4TVL8'
+                        : 'https://maps.app.goo.gl/za115VoiZEWWJcZa6'
                     }
                     target="_blank"
                     rel="noopener noreferrer"
@@ -192,7 +192,7 @@ export default function LocationSection() {
           <div className="relative w-full rounded-2xl shadow-xl overflow-hidden h-64 md:h-96 border-4 border-yellow-100/40 group">
             <iframe
               title="Ghatak Sports Academy Locations Map"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3557.7127555156358!2d81.02444217597154!3d26.912609860094033!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3999596def6ea9c7%3A0x23d2ceb539bff92!2sGhatak%20Sports%20Academy%20India!5e0!3m2!1sen!2sin!4v1739461937485!5m2!1sen!2sin"
+              src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d853.8389217119833!2d81.01773516625347!3d26.90489409352698!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3999596def6ea9c7%3A0x23d2ceb539bff92!2sGhatak%20Sports%20Academy%20India!5e1!3m2!1sen!2sin!4v1755108480308!5m2!1sen!2sin"
               width="100%"
               height="100%"
               allowFullScreen={true}
@@ -211,7 +211,7 @@ export default function LocationSection() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="https://maps.app.goo.gl/f3AXzpJoNiuMoYeS6"
+                href="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3558.2680388177782!2d81.035803!3d26.8949872!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39995928e5d2c639%3A0x89ece9941b196434!2sFITNESS%20%26%20FUN%20ARENA%20(TCC)!5e0!3m2!1sen!2sin!4v1755108716350!5m2!1sen!2sin"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"

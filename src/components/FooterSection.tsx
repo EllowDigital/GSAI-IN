@@ -138,9 +138,9 @@ export default function FooterSection() {
                     </div>
                     <div>
                       <p className="text-gray-300 text-sm leading-relaxed">
-                        Naubasta Pulia, Takrohi Road
+                        Badshah kheda, Takrohi Rd, nearby Balaji Chauraha
                         <br />
-                        Indira Nagar, Lucknow, UP
+                        Indira Nagar, Lucknow, Uttar Pradesh 226028
                       </p>
                     </div>
                   </div>
