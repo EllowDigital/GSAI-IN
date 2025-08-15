@@ -4,14 +4,18 @@ import { ArrowDownCircle } from 'lucide-react';
 import { FaInstagram } from 'react-icons/fa';
 
 const bgImages = [
-  '/assets/slider/slider6.png',
-  '/assets/slider/slider.png',
   '/assets/slider/slider.webp',
-  '/assets/slider/slider1.png',
-  '/assets/slider/slider2.png',
-  '/assets/slider/slider3.png',
-  '/assets/slider/slider4.png',
-  '/assets/slider/slider5.png',
+  '/assets/slider/slider0.webp',
+  '/assets/slider/slider1.webp',
+  '/assets/slider/slider2.webp',
+  '/assets/slider/slider3.webp',
+  '/assets/slider/slider4.webp',
+  '/assets/slider/slider5.webp',
+  '/assets/slider/slider6.webp',
+  '/assets/slider/slider7.webp',
+  '/assets/slider/slider8.webp',
+  '/assets/slider/slider9.webp',
+  '/assets/slider/slider10.webp',
 ];
 
 const fadeVariants: Variants = {
@@ -52,7 +56,7 @@ export default function HeroSection() {
   useEffect(() => {
     timeoutRef.current = setInterval(() => {
       setImgIndex((prev) => (prev + 1) % bgImages.length);
-    }, 6000);
+    }, 4000);
 
     return () => {
       if (timeoutRef.current) clearInterval(timeoutRef.current);
@@ -65,7 +69,7 @@ export default function HeroSection() {
       clearInterval(timeoutRef.current);
       timeoutRef.current = setInterval(() => {
         setImgIndex((prev) => (prev + 1) % bgImages.length);
-      }, 6000);
+      }, 4000);
     }
   };
 
