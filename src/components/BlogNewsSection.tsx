@@ -1,7 +1,10 @@
 import React from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 import { BookOpenText, Calendar, ArrowRight, Clock, User } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
+import { BlogPostModal } from '@/components/modals/BlogPostModal';
+import { Button } from '@/components/ui/button';
 
 function formatDate(dt: string) {
   return new Date(dt).toLocaleDateString(undefined, {
@@ -24,6 +27,7 @@ type Blog = {
   image_url: string | null;
   title: string;
   description: string | null;
+  content: string;
   published_at: string | null;
 };
 
@@ -50,8 +54,11 @@ const itemVariants: Variants = {
 };
 
 export default function BlogNewsSection() {
+  const navigate = useNavigate();
   const [posts, setPosts] = React.useState<Blog[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [selectedBlog, setSelectedBlog] = React.useState<Blog | null>(null);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   React.useEffect(() => {
     let isMounted = true;
@@ -59,7 +66,7 @@ export default function BlogNewsSection() {
       setLoading(true);
       const { data, error } = await supabase
         .from('blogs')
-        .select('id, image_url, title, description, published_at')
+        .select('id, image_url, title, description, content, published_at')
         .order('published_at', { ascending: false })
         .limit(6);
       if (!error && data && isMounted) {
@@ -83,6 +90,30 @@ export default function BlogNewsSection() {
       supabase.removeChannel(channel);
     };
   }, []);
+
+  const handleReadMore = async (postId: string) => {
+    // Fetch full post data including content
+    const { data, error } = await supabase
+      .from('blogs')
+      .select('*')
+      .eq('id', postId)
+      .single();
+
+    if (!error && data) {
+      setSelectedBlog(data);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleViewFullPage = (id: string) => {
+    setIsModalOpen(false);
+    navigate(`/blog/${id}`);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedBlog(null);
+  };
 
   return (
     <section
@@ -212,7 +243,10 @@ export default function BlogNewsSection() {
                       <span className="text-sm text-gray-500">GSAI Team</span>
                     </div>
 
-                    <button className="inline-flex items-center gap-2 text-yellow-600 hover:text-orange-600 font-semibold text-sm transition-colors duration-200 group-hover:gap-3">
+                    <button 
+                      onClick={() => handleReadMore(post.id)}
+                      className="inline-flex items-center gap-2 text-yellow-600 hover:text-orange-600 font-semibold text-sm transition-colors duration-200 group-hover:gap-3"
+                    >
                       Read More
                       <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
                     </button>
@@ -262,6 +296,13 @@ export default function BlogNewsSection() {
           </motion.div>
         )}
       </div>
+
+      <BlogPostModal
+        post={selectedBlog}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onViewFullPage={handleViewFullPage}
+      />
     </section>
   );
 }

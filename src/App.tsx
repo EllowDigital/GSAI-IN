@@ -14,6 +14,9 @@ import HomePageWrapper from './pages/HomePageWrapper';
 import NotFound from './pages/NotFound';
 import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
+import BlogPost from './pages/BlogPost';
+import EventDetail from './pages/EventDetail';
+import NewsDetail from './pages/NewsDetail';
 
 import { AdminAuthProvider } from './pages/admin/AdminAuthProvider';
 import AdminLogin from './pages/admin/AdminLogin';
@@ -115,6 +118,9 @@ const App = () => {
                 {/* CUSTOM ROUTES */}
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/terms" element={<TermsPage />} />
+                <Route path="/blog/:id" element={<BlogPost />} />
+                <Route path="/event/:id" element={<EventDetail />} />
+                <Route path="/news/:id" element={<NewsDetail />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
