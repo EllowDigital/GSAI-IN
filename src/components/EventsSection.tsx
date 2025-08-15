@@ -1,12 +1,18 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Spinner from '@/components/ui/spinner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEventsQuery } from '@/hooks/useEventsQuery';
 import { Calendar, Clock, MapPin, ArrowRight, Sparkles } from 'lucide-react';
+import { EventModal } from '@/components/modals/EventModal';
+import type { EventRow } from '@/hooks/useEventsQuery';
 
 const EventsSection: React.FC = () => {
+  const navigate = useNavigate();
   const { data: events, isLoading, error, isFetching } = useEventsQuery();
   const eventList = events ?? [];
+  const [selectedEvent, setSelectedEvent] = React.useState<EventRow | null>(null);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const formatDateRange = (from?: string | null, to?: string | null) => {
     if (!from) return { start: '', end: null, single: true };
@@ -24,6 +30,21 @@ const EventsSection: React.FC = () => {
     return end && start.getTime() !== end.getTime()
       ? { start: format(start), end: format(end, true), single: false }
       : { start: format(start, true), end: null, single: true };
+  };
+
+  const handleReadMore = (event: EventRow) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
+
+  const handleViewFullPage = (id: string) => {
+    setIsModalOpen(false);
+    navigate(`/event/${id}`);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedEvent(null);
   };
 
   const variants = {
@@ -231,13 +252,13 @@ const EventsSection: React.FC = () => {
                           <MapPin className="w-4 h-4 mr-1" />
                           Ghatak Sports Academy India
                         </div>
-                        <a
-                          href="#contact"
+                        <button
+                          onClick={() => handleReadMore(event)}
                           className="flex items-center gap-1 cursor-pointer font-medium"
                         >
-                          Learn More
+                          Read More
                           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </a>
+                        </button>
                       </div>
                     </div>
                   </motion.div>
@@ -270,6 +291,13 @@ const EventsSection: React.FC = () => {
           </motion.div>
         )}
       </div>
+
+      <EventModal
+        event={selectedEvent}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onViewFullPage={handleViewFullPage}
+      />
     </section>
   );
 };

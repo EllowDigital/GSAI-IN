@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Newspaper, Calendar, ArrowRight, Clock } from 'lucide-react';
+import { Calendar, ArrowRight, Clock, User, Newspaper, Sparkles } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
+import { NewsModal } from '@/components/modals/NewsModal';
 
 type NewsItem = {
   id: string;
   title: string;
-  short_description: string;
+  short_description: string | null;
   date: string;
-  image_url?: string | null;
+  image_url: string | null;
+  status: string | null;
+  created_by: string | null;
 };
 
 const containerVariants: Variants = {
@@ -36,8 +40,11 @@ const formatDate = (date: string) =>
   });
 
 export default function NewsSection() {
+  const navigate = useNavigate();
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch published news from Supabase
   useEffect(() => {
@@ -47,7 +54,7 @@ export default function NewsSection() {
       setLoading(true);
       const { data, error } = await supabase
         .from('news')
-        .select('id, title, short_description, date, image_url, status')
+        .select('id, title, short_description, date, image_url, status, created_by')
         .eq('status', 'Published')
         .order('date', { ascending: false })
         .limit(6);
@@ -75,6 +82,21 @@ export default function NewsSection() {
       supabase.removeChannel(channel);
     };
   }, []);
+
+  const handleReadMore = (newsItem: NewsItem) => {
+    setSelectedNews(newsItem);
+    setIsModalOpen(true);
+  };
+
+  const handleViewFullPage = (id: string) => {
+    setIsModalOpen(false);
+    navigate(`/news/${id}`);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedNews(null);
+  };
 
   return (
     <section
@@ -188,10 +210,13 @@ export default function NewsSection() {
                     {item.short_description || 'No description available'}
                   </p>
 
-                  <div className="flex items-center gap-2 text-yellow-600 font-semibold text-sm group-hover:gap-3 transition-all duration-300">
+                  <button 
+                    onClick={() => handleReadMore(item)}
+                    className="flex items-center gap-2 text-yellow-600 font-semibold text-sm group-hover:gap-3 transition-all duration-300"
+                  >
                     <span>Read more</span>
                     <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-                  </div>
+                  </button>
                 </div>
               </motion.div>
             ))
@@ -231,6 +256,13 @@ export default function NewsSection() {
           </motion.div>
         )}
       </div>
+
+      <NewsModal
+        news={selectedNews}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onViewFullPage={handleViewFullPage}
+      />
     </section>
   );
 }
