@@ -243,7 +243,7 @@ export default function BlogNewsSection() {
                       <span className="text-sm text-gray-500">GSAI Team</span>
                     </div>
 
-                    <button 
+                    <button
                       onClick={() => handleReadMore(post.id)}
                       className="inline-flex items-center gap-2 text-yellow-600 hover:text-orange-600 font-semibold text-sm transition-colors duration-200 group-hover:gap-3"
                     >

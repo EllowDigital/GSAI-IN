@@ -11,7 +11,9 @@ const EventsSection: React.FC = () => {
   const navigate = useNavigate();
   const { data: events, isLoading, error, isFetching } = useEventsQuery();
   const eventList = events ?? [];
-  const [selectedEvent, setSelectedEvent] = React.useState<EventRow | null>(null);
+  const [selectedEvent, setSelectedEvent] = React.useState<EventRow | null>(
+    null
+  );
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const formatDateRange = (from?: string | null, to?: string | null) => {

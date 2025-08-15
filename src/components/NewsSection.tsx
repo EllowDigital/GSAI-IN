@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Calendar, ArrowRight, Clock, User, Newspaper, Sparkles } from 'lucide-react';
+import {
+  Calendar,
+  ArrowRight,
+  Clock,
+  User,
+  Newspaper,
+  Sparkles,
+} from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
 import { NewsModal } from '@/components/modals/NewsModal';
 
@@ -54,7 +61,9 @@ export default function NewsSection() {
       setLoading(true);
       const { data, error } = await supabase
         .from('news')
-        .select('id, title, short_description, date, image_url, status, created_by')
+        .select(
+          'id, title, short_description, date, image_url, status, created_by'
+        )
         .eq('status', 'Published')
         .order('date', { ascending: false })
         .limit(6);
@@ -210,7 +219,7 @@ export default function NewsSection() {
                     {item.short_description || 'No description available'}
                   </p>
 
-                  <button 
+                  <button
                     onClick={() => handleReadMore(item)}
                     className="flex items-center gap-2 text-yellow-600 font-semibold text-sm group-hover:gap-3 transition-all duration-300"
                   >

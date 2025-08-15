@@ -49,21 +49,29 @@ export default function EventDetail() {
     fetchEvent();
   }, [id, navigate]);
 
-  const formatDateRange = (fromDate: string | null, endDate: string | null, fallbackDate: string) => {
+  const formatDateRange = (
+    fromDate: string | null,
+    endDate: string | null,
+    fallbackDate: string
+  ) => {
     const startDate = fromDate || fallbackDate;
     const start = new Date(startDate);
-    
+
     if (endDate && endDate !== startDate) {
       const end = new Date(endDate);
       return {
         display: `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
-        isMultiDay: true
+        isMultiDay: true,
       };
     }
-    
+
     return {
-      display: start.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-      isMultiDay: false
+      display: start.toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      }),
+      isMultiDay: false,
     };
   };
 
@@ -112,7 +120,9 @@ export default function EventDetail() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Event not found</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-4">
+            Event not found
+          </h1>
           <Button onClick={() => navigate('/')} variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Go Back Home
@@ -128,18 +138,21 @@ export default function EventDetail() {
     <>
       <Seo
         title={`${event.title} | Ghatak Sports Academy India™`}
-        description={event.description || `Join us for ${event.title} - An exciting event at Ghatak Sports Academy India, your premier martial arts training institute.`}
+        description={
+          event.description ||
+          `Join us for ${event.title} - An exciting event at Ghatak Sports Academy India, your premier martial arts training institute.`
+        }
         canonical={`/event/${event.id}`}
       />
-      
+
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             {/* Navigation */}
             <div className="mb-8">
-              <Button 
-                onClick={() => navigate('/')} 
-                variant="ghost" 
+              <Button
+                onClick={() => navigate('/')}
+                variant="ghost"
                 className="mb-4 hover:bg-muted"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -159,12 +172,14 @@ export default function EventDetail() {
                   </Badge>
                 )}
               </div>
-              
+
               <div className="flex flex-wrap items-center gap-6 text-muted-foreground mb-6">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-primary" />
                   <div>
-                    <span className="text-sm font-medium">{dateInfo.display}</span>
+                    <span className="text-sm font-medium">
+                      {dateInfo.display}
+                    </span>
                     {dateInfo.isMultiDay && (
                       <div className="flex items-center gap-1 text-xs">
                         <Clock className="h-3 w-3" />
@@ -173,12 +188,14 @@ export default function EventDetail() {
                     )}
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   <MapPin className="h-5 w-5 text-primary" />
-                  <span className="text-sm">Ghatak Sports Academy India, Lucknow</span>
+                  <span className="text-sm">
+                    Ghatak Sports Academy India, Lucknow
+                  </span>
                 </div>
-                
+
                 <Button
                   onClick={handleShare}
                   variant="ghost"
@@ -209,7 +226,9 @@ export default function EventDetail() {
               <div className="md:col-span-2 space-y-6">
                 {event.description && (
                   <section>
-                    <h2 className="text-2xl font-semibold text-foreground mb-4">Event Details</h2>
+                    <h2 className="text-2xl font-semibold text-foreground mb-4">
+                      Event Details
+                    </h2>
                     <div className="prose prose-lg max-w-none">
                       <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
                         {event.description}
@@ -219,23 +238,41 @@ export default function EventDetail() {
                 )}
 
                 <section>
-                  <h2 className="text-2xl font-semibold text-foreground mb-4">What to Expect</h2>
+                  <h2 className="text-2xl font-semibold text-foreground mb-4">
+                    What to Expect
+                  </h2>
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="p-4 bg-muted/50 rounded-lg">
-                      <h3 className="font-medium text-foreground mb-2">Professional Training</h3>
-                      <p className="text-sm text-muted-foreground">Learn from certified martial arts coaches</p>
+                      <h3 className="font-medium text-foreground mb-2">
+                        Professional Training
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Learn from certified martial arts coaches
+                      </p>
                     </div>
                     <div className="p-4 bg-muted/50 rounded-lg">
-                      <h3 className="font-medium text-foreground mb-2">All Skill Levels</h3>
-                      <p className="text-sm text-muted-foreground">Suitable for beginners to advanced practitioners</p>
+                      <h3 className="font-medium text-foreground mb-2">
+                        All Skill Levels
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Suitable for beginners to advanced practitioners
+                      </p>
                     </div>
                     <div className="p-4 bg-muted/50 rounded-lg">
-                      <h3 className="font-medium text-foreground mb-2">Equipment Provided</h3>
-                      <p className="text-sm text-muted-foreground">All necessary training equipment included</p>
+                      <h3 className="font-medium text-foreground mb-2">
+                        Equipment Provided
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        All necessary training equipment included
+                      </p>
                     </div>
                     <div className="p-4 bg-muted/50 rounded-lg">
-                      <h3 className="font-medium text-foreground mb-2">Certificate</h3>
-                      <p className="text-sm text-muted-foreground">Receive completion certificate</p>
+                      <h3 className="font-medium text-foreground mb-2">
+                        Certificate
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Receive completion certificate
+                      </p>
                     </div>
                   </div>
                 </section>
@@ -244,7 +281,9 @@ export default function EventDetail() {
               {/* Sidebar */}
               <div className="space-y-6">
                 <div className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg border border-primary/20">
-                  <h3 className="text-lg font-semibold text-foreground mb-4">Event Information</h3>
+                  <h3 className="text-lg font-semibold text-foreground mb-4">
+                    Event Information
+                  </h3>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Duration:</span>
@@ -254,7 +293,9 @@ export default function EventDetail() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Venue:</span>
-                      <span className="font-medium text-foreground">GSAI Campus</span>
+                      <span className="font-medium text-foreground">
+                        GSAI Campus
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Category:</span>
@@ -266,16 +307,19 @@ export default function EventDetail() {
                 </div>
 
                 <div className="p-6 bg-muted/30 rounded-lg">
-                  <h3 className="text-lg font-semibold text-foreground mb-4">Contact Information</h3>
+                  <h3 className="text-lg font-semibold text-foreground mb-4">
+                    Contact Information
+                  </h3>
                   <div className="space-y-2 text-sm">
                     <p className="text-muted-foreground">
-                      <strong>Phone:</strong> +91 9554191006
+                      <strong>Phone:</strong> +91 6394135988
                     </p>
                     <p className="text-muted-foreground">
-                      <strong>Email:</strong> info@ghataksportsacademy.com
+                      <strong>Email:</strong> ghatakgsai@gmail.com
                     </p>
                     <p className="text-muted-foreground">
-                      <strong>Address:</strong> Badshah kheda, Takrohi Rd, Indira Nagar, Lucknow
+                      <strong>Address:</strong> Badshah kheda, Takrohi Rd,
+                      Indira Nagar, Lucknow
                     </p>
                   </div>
                 </div>
@@ -288,13 +332,21 @@ export default function EventDetail() {
                 Interested in This Event?
               </h3>
               <p className="text-muted-foreground mb-4">
-                Contact us to register or learn more about upcoming events at Ghatak Sports Academy India.
+                Contact us to register or learn more about upcoming events at
+                Ghatak Sports Academy India.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button onClick={() => navigate('/#contact')} className="flex-1 sm:flex-none">
+                <Button
+                  onClick={() => navigate('/#contact')}
+                  className="flex-1 sm:flex-none"
+                >
                   Contact Us
                 </Button>
-                <Button onClick={() => navigate('/#programs')} variant="outline" className="flex-1 sm:flex-none">
+                <Button
+                  onClick={() => navigate('/#programs')}
+                  variant="outline"
+                  className="flex-1 sm:flex-none"
+                >
                   View All Programs
                 </Button>
               </div>
