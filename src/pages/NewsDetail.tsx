@@ -52,7 +52,7 @@ export default function NewsDetail() {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -101,7 +101,9 @@ export default function NewsDetail() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">News article not found</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-4">
+            News article not found
+          </h1>
           <Button onClick={() => navigate('/')} variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Go Back Home
@@ -115,18 +117,21 @@ export default function NewsDetail() {
     <>
       <Seo
         title={`${news.title} | Ghatak Sports Academy India™`}
-        description={news.short_description || `Read the latest news: ${news.title} from Ghatak Sports Academy India, your premier martial arts training institute.`}
+        description={
+          news.short_description ||
+          `Read the latest news: ${news.title} from Ghatak Sports Academy India, your premier martial arts training institute.`
+        }
         canonical={`/news/${news.id}`}
       />
-      
+
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             {/* Navigation */}
             <div className="mb-8">
-              <Button 
-                onClick={() => navigate('/')} 
-                variant="ghost" 
+              <Button
+                onClick={() => navigate('/')}
+                variant="ghost"
                 className="mb-4 hover:bg-muted"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -141,27 +146,29 @@ export default function NewsDetail() {
                   {news.title}
                 </h1>
                 {news.status && (
-                  <Badge 
-                    variant={news.status === 'published' ? 'default' : 'secondary'}
+                  <Badge
+                    variant={
+                      news.status === 'published' ? 'default' : 'secondary'
+                    }
                   >
                     {news.status}
                   </Badge>
                 )}
               </div>
-              
+
               <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-6">
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
                   <span className="text-sm">{formatDate(news.date)}</span>
                 </div>
-                
+
                 {news.created_by && (
                   <div className="flex items-center gap-1">
                     <User className="h-4 w-4" />
                     <span className="text-sm">by {news.created_by}</span>
                   </div>
                 )}
-                
+
                 <Button
                   onClick={handleShare}
                   variant="ghost"
@@ -202,15 +209,17 @@ export default function NewsDetail() {
                 <p className="text-muted-foreground leading-relaxed text-lg">
                   {news.short_description}
                 </p>
-                
+
                 <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 rounded-lg border border-blue-200/50 dark:border-blue-800/50">
                   <h3 className="text-xl font-semibold text-blue-800 dark:text-blue-200 mb-3">
                     Stay Connected with Ghatak Sports Academy India
                   </h3>
                   <p className="text-blue-700 dark:text-blue-300 leading-relaxed">
-                    Follow our latest news and announcements to stay updated with all the exciting developments 
-                    at Ghatak Sports Academy India. From tournament results to new program launches, we keep 
-                    our community informed about everything happening in our martial arts family.
+                    Follow our latest news and announcements to stay updated
+                    with all the exciting developments at Ghatak Sports Academy
+                    India. From tournament results to new program launches, we
+                    keep our community informed about everything happening in
+                    our martial arts family.
                   </p>
                 </div>
               </div>
@@ -219,32 +228,44 @@ export default function NewsDetail() {
             {/* Related Information */}
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               <div className="p-6 bg-muted/30 rounded-lg">
-                <h3 className="text-lg font-semibold text-foreground mb-3">About Our Programs</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-3">
+                  About Our Programs
+                </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  Discover our comprehensive martial arts programs including Karate, Taekwondo, 
-                  Self-Defense, and Fitness training designed for all age groups and skill levels.
+                  Discover our comprehensive martial arts programs including
+                  Karate, Taekwondo, Self-Defense, and Fitness training designed
+                  for all age groups and skill levels.
                 </p>
-                <Button 
-                  onClick={() => navigate('/#programs')} 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  onClick={() => navigate('/#programs')}
+                  variant="outline"
+                  size="sm"
                   className="mt-3"
                 >
                   View Programs
                 </Button>
               </div>
-              
+
               <div className="p-6 bg-muted/30 rounded-lg">
-                <h3 className="text-lg font-semibold text-foreground mb-3">Get in Touch</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-3">
+                  Get in Touch
+                </h3>
                 <div className="space-y-2 text-sm text-muted-foreground">
-                  <p><strong>Phone:</strong> +91 9554191006</p>
-                  <p><strong>Email:</strong> info@ghataksportsacademy.com</p>
-                  <p><strong>Location:</strong> Badshah kheda, Takrohi Rd, Indira Nagar, Lucknow</p>
+                  <p>
+                    <strong>Phone:</strong> +91 6394135988
+                  </p>
+                  <p>
+                    <strong>Email:</strong> ghatakgsai@gmail.com
+                  </p>
+                  <p>
+                    <strong>Location:</strong> Badshah kheda, Takrohi Rd, Indira
+                    Nagar, Lucknow
+                  </p>
                 </div>
-                <Button 
-                  onClick={() => navigate('/#contact')} 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  onClick={() => navigate('/#contact')}
+                  variant="outline"
+                  size="sm"
                   className="mt-3"
                 >
                   Contact Us
@@ -258,7 +279,8 @@ export default function NewsDetail() {
                 Join Our Martial Arts Community
               </h3>
               <p className="text-muted-foreground mb-4">
-                Be part of Ghatak Sports Academy India and start your journey in martial arts with professional guidance.
+                Be part of Ghatak Sports Academy India and start your journey in
+                martial arts with professional guidance.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button onClick={() => navigate('/#contact')}>

@@ -70,7 +70,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
   const { signOut } = useAdminAuth();
-  const APP_VERSION = '1.4.6'; // Update this version as needed
+  const APP_VERSION = '1.6.0'; // Update this version as needed
 
   const NavSection = ({
     title,

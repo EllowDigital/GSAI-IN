@@ -1,7 +1,12 @@
 import React from 'react';
 import { X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
-import { Drawer, DrawerContent, DrawerHeader, DrawerClose } from '@/components/ui/drawer';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerClose,
+} from '@/components/ui/drawer';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 
@@ -21,7 +26,12 @@ interface BlogPostModalProps {
   onViewFullPage: (id: string) => void;
 }
 
-export function BlogPostModal({ post, isOpen, onClose, onViewFullPage }: BlogPostModalProps) {
+export function BlogPostModal({
+  post,
+  isOpen,
+  onClose,
+  onViewFullPage,
+}: BlogPostModalProps) {
   const isMobile = useIsMobile();
 
   if (!post) return null;
@@ -31,7 +41,7 @@ export function BlogPostModal({ post, isOpen, onClose, onViewFullPage }: BlogPos
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -46,32 +56,36 @@ export function BlogPostModal({ post, isOpen, onClose, onViewFullPage }: BlogPos
           />
         </div>
       )}
-      
+
       <div className="space-y-4">
         <div>
-          <h2 className="text-2xl font-bold text-foreground mb-2">{post.title}</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-2">
+            {post.title}
+          </h2>
           {post.published_at && (
             <p className="text-sm text-muted-foreground">
               Published on {formatDate(post.published_at)}
             </p>
           )}
         </div>
-        
+
         {post.description && (
           <div className="p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
-            <p className="text-muted-foreground font-medium">{post.description}</p>
+            <p className="text-muted-foreground font-medium">
+              {post.description}
+            </p>
           </div>
         )}
-        
+
         <div className="prose prose-sm max-w-none">
-          <div 
+          <div
             className="text-foreground leading-relaxed"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
         </div>
-        
+
         <div className="pt-4 border-t">
-          <Button 
+          <Button
             onClick={() => onViewFullPage(post.id)}
             className="w-full sm:w-auto"
             variant="default"
@@ -92,9 +106,7 @@ export function BlogPostModal({ post, isOpen, onClose, onViewFullPage }: BlogPos
               <X className="h-4 w-4" />
             </DrawerClose>
           </DrawerHeader>
-          <div className="px-4 pb-4 overflow-y-auto">
-            {content}
-          </div>
+          <div className="px-4 pb-4 overflow-y-auto">{content}</div>
         </DrawerContent>
       </Drawer>
     );

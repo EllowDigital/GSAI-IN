@@ -52,7 +52,7 @@ export default function BlogPost() {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -109,7 +109,9 @@ export default function BlogPost() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Blog post not found</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-4">
+            Blog post not found
+          </h1>
           <Button onClick={() => navigate('/')} variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Go Back Home
@@ -123,18 +125,21 @@ export default function BlogPost() {
     <>
       <Seo
         title={`${post.title} | Ghatak Sports Academy India™`}
-        description={post.description || `Read ${post.title} - Latest blog post from Ghatak Sports Academy India, your premier martial arts training institute.`}
+        description={
+          post.description ||
+          `Read ${post.title} - Latest blog post from Ghatak Sports Academy India, your premier martial arts training institute.`
+        }
         canonical={`/blog/${post.id}`}
       />
-      
+
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             {/* Navigation */}
             <div className="mb-8">
-              <Button 
-                onClick={() => navigate('/')} 
-                variant="ghost" 
+              <Button
+                onClick={() => navigate('/')}
+                variant="ghost"
                 className="mb-4 hover:bg-muted"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -147,24 +152,28 @@ export default function BlogPost() {
               <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4 leading-tight">
                 {post.title}
               </h1>
-              
+
               <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-6">
                 {post.published_at && (
                   <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
-                    <span className="text-sm">{formatDate(post.published_at)}</span>
+                    <span className="text-sm">
+                      {formatDate(post.published_at)}
+                    </span>
                   </div>
                 )}
-                
+
                 <div className="flex items-center gap-1">
                   <Clock className="h-4 w-4" />
-                  <span className="text-sm">{getReadingTime(post.content)}</span>
+                  <span className="text-sm">
+                    {getReadingTime(post.content)}
+                  </span>
                 </div>
-                
+
                 {post.created_by && (
                   <span className="text-sm">by {post.created_by}</span>
                 )}
-                
+
                 <Button
                   onClick={handleShare}
                   variant="ghost"
@@ -200,7 +209,7 @@ export default function BlogPost() {
 
             {/* Content */}
             <article className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-li:text-foreground">
-              <div 
+              <div
                 className="leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: post.content }}
               />
@@ -212,9 +221,13 @@ export default function BlogPost() {
                 Ready to Start Your Martial Arts Journey?
               </h3>
               <p className="text-muted-foreground mb-4">
-                Join Ghatak Sports Academy India and train with certified professional coaches.
+                Join Ghatak Sports Academy India and train with certified
+                professional coaches.
               </p>
-              <Button onClick={() => navigate('/#contact')} className="w-full sm:w-auto">
+              <Button
+                onClick={() => navigate('/#contact')}
+                className="w-full sm:w-auto"
+              >
                 Contact Us Today
               </Button>
             </div>
