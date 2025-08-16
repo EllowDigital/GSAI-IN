@@ -1,11 +1,10 @@
 import React from 'react';
 import StudentManager from '@/components/admin/StudentManager';
-import { AdminContainer } from '@/components/admin/AdminContainer';
 
 export default function Students() {
   return (
-    <AdminContainer>
+    <div className="w-full min-h-full p-3 sm:p-4 lg:p-6 xl:p-8">
       <StudentManager />
-    </AdminContainer>
+    </div>
   );
 }
