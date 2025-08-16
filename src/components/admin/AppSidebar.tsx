@@ -15,6 +15,7 @@ import {
   X,
 } from 'lucide-react';
 import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
+import { cn } from '@/lib/utils';
 
 const navItems = [
   {
@@ -79,8 +80,8 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
     title: string;
     items: typeof navItems;
   }) => (
-    <div className="space-y-1">
-      <h3 className="px-3 sm:px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+    <div className="space-y-3">
+      <h3 className="px-2 text-xs font-bold text-sidebar-foreground/60 uppercase tracking-wider">
         {title}
       </h3>
       <ul className="space-y-1">
@@ -92,17 +93,17 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
                   signOut();
                   window.location.href = '/';
                 }}
-                className="group flex w-full items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl mx-2 transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 dark:hover:from-blue-900/30 dark:hover:to-blue-800/30 hover:shadow-sm text-left text-slate-700 dark:text-slate-300 hover:text-blue-800 dark:hover:text-blue-200"
+                className="group flex w-full items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 hover:bg-sidebar-accent/80 hover:shadow-md text-left text-sidebar-foreground/80 hover:text-sidebar-foreground focus-visible-ring"
               >
-                <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                  <div className="p-1 sm:p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 group-hover:bg-blue-200 dark:group-hover:bg-blue-800 transition-colors duration-200 flex-shrink-0">
-                    <Icon className="w-3 h-3 sm:w-4 sm:h-4" />
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="p-2 rounded-lg bg-sidebar-accent group-hover:bg-primary/20 transition-colors duration-200 flex-shrink-0">
+                    <Icon className="w-4 h-4" />
                   </div>
-                  <span className="font-medium text-xs sm:text-sm truncate text-slate-800 dark:text-slate-200">
+                  <span className="font-medium text-sm truncate">
                     {title}
                   </span>
                 </div>
-                <ChevronRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0" />
+                <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0" />
               </button>
             ) : (
               <NavLink
@@ -112,31 +113,33 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
                   if (window.innerWidth < 1024 && setOpen) setOpen(false);
                 }}
                 className={({ isActive }) =>
-                  `group flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl mx-2 transition-all duration-200 font-medium text-xs sm:text-sm ${
+                  cn(
+                    'group flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 font-medium text-sm focus-visible-ring',
                     isActive
-                      ? 'bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900/40 dark:to-blue-800/40 text-blue-800 dark:text-blue-200 shadow-sm border border-blue-300/50 dark:border-blue-600/50'
-                      : 'hover:bg-gradient-to-r hover:from-slate-50 hover:to-slate-100 dark:hover:from-slate-800/50 dark:hover:to-slate-700/50 hover:shadow-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100'
-                  }`
+                      ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-lg border border-sidebar-primary/20'
+                      : 'hover:bg-sidebar-accent/80 hover:shadow-md text-sidebar-foreground/80 hover:text-sidebar-foreground'
+                  )
                 }
               >
                 {({ isActive }) => (
                   <>
-                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0">
                       <div
-                        className={`p-1 sm:p-1.5 rounded-lg transition-colors duration-200 flex-shrink-0 ${
+                        className={cn(
+                          'p-2 rounded-lg transition-colors duration-200 flex-shrink-0',
                           isActive
-                            ? 'bg-blue-200 dark:bg-blue-800'
-                            : 'bg-slate-100 dark:bg-slate-700 group-hover:bg-slate-200 dark:group-hover:bg-slate-600'
-                        }`}
+                            ? 'bg-sidebar-primary-foreground/20'
+                            : 'bg-sidebar-accent group-hover:bg-primary/20'
+                        )}
                       >
-                        <Icon className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <Icon className="w-4 h-4" />
                       </div>
-                      <span className="truncate text-slate-800 dark:text-slate-200">
+                      <span className="truncate">
                         {title}
                       </span>
                     </div>
                     {isActive && (
-                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-500 flex-shrink-0" />
+                      <div className="w-2 h-2 rounded-full bg-sidebar-primary-foreground/60 flex-shrink-0" />
                     )}
                   </>
                 )}
@@ -150,43 +153,49 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
 
   return (
     <nav
-      className={`fixed left-0 top-0 z-50 h-full bg-white dark:bg-slate-900 shadow-2xl border-r border-slate-200/60 dark:border-slate-700/60 transform transition-all duration-300 ease-out ${
-        open ? 'translate-x-0' : '-translate-x-full'
-      } w-[280px] xs:w-[300px] sm:w-[320px] md:w-[280px] lg:w-64 xl:w-72 lg:translate-x-0 lg:max-w-none lg:static lg:block flex flex-col max-w-[85vw] xs:max-w-[80vw] sm:max-w-[75vw] lg:max-w-none min-h-screen`}
+      className={cn(
+        'fixed left-0 top-0 z-50 h-full bg-sidebar-background shadow-2xl border-r border-sidebar-border transform transition-all duration-300 ease-out lg:translate-x-0 lg:static lg:shadow-none flex flex-col min-h-screen',
+        open ? 'translate-x-0' : '-translate-x-full',
+        'w-[280px] sm:w-[300px] lg:w-72 max-w-[85vw] sm:max-w-[80vw] lg:max-w-none'
+      )}
       aria-label="Sidebar"
     >
+      {/* Mobile Close Button */}
       {setOpen && (
         <button
-          className="lg:hidden absolute top-3 sm:top-4 right-3 sm:right-4 p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors z-10 shadow-sm"
+          className="lg:hidden absolute top-4 right-4 p-2 rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80 transition-colors z-10 shadow-sm focus-visible-ring"
           onClick={() => setOpen(false)}
           aria-label="Close sidebar"
         >
-          <X className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+          <X className="w-4 h-4 text-sidebar-foreground" />
         </button>
       )}
 
-      {/* Header */}
-      <div className="flex flex-col items-center pt-4 sm:pt-6 pb-3 sm:pb-4 gap-2 sm:gap-3 select-none border-b border-slate-100 dark:border-slate-700">
-        <div className="relative">
-          <img
-            src="/assets/img/logo.webp"
-            alt="Logo"
-            className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 object-contain"
-          />
-          <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full border-2 border-white dark:border-slate-900 shadow-sm animate-pulse" />
-        </div>
-        <div className="text-center">
-          <span className="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-200">
-            GSAI Admin
-          </span>
-          <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
-            Nitesh Yadav
-          </p>
+      {/* Enhanced Header */}
+      <div className="glass-header border-b border-sidebar-border p-6 space-y-4">
+        <div className="flex flex-col items-center space-y-3">
+          <div className="relative">
+            <img
+              src="/assets/img/logo.webp"
+              alt="GSAI Logo"
+              className="w-12 h-12 sm:w-14 sm:h-14 object-contain rounded-xl shadow-lg"
+              loading="lazy"
+            />
+            <div className="absolute -top-1 -right-1 w-4 h-4 bg-success rounded-full border-2 border-sidebar-background shadow-sm animate-pulse" />
+          </div>
+          <div className="text-center space-y-1">
+            <h2 className="text-lg font-bold text-sidebar-foreground">
+              GSAI Admin
+            </h2>
+            <p className="text-sm text-sidebar-foreground/70">
+              Management Portal
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Navigation */}
-      <div className="flex-1 py-3 sm:py-4 px-1 sm:px-2 overflow-y-auto space-y-3 sm:space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
+      {/* Enhanced Navigation */}
+      <div className="flex-1 py-6 px-4 overflow-y-auto space-y-6">
         <NavSection
           title="Overview"
           items={navItems.filter((i) => i.category === 'main')}
@@ -205,24 +214,25 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
         />
       </div>
 
-      {/* Footer */}
-      <div className="p-3 sm:p-4 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900">
+      {/* Enhanced Footer */}
+      <div className="p-4 border-t border-sidebar-border glass-header space-y-4">
         <button
           onClick={() => signOut()}
-          className="w-full flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-red-400 transition-all duration-200 font-semibold text-xs sm:text-sm"
+          className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-error to-error/90 hover:from-error/90 hover:to-error text-white px-4 py-3 rounded-xl shadow-lg hover:shadow-xl focus-visible-ring transition-all duration-200 font-semibold text-sm interactive-button"
         >
-          <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
+          <LogOut className="w-4 h-4" />
           <span>Sign Out</span>
         </button>
-        <div className="mt-2 sm:mt-3 text-center">
-          <div className="flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
+        
+        <div className="text-center space-y-2">
+          <div className="flex items-center justify-center gap-2 text-xs text-sidebar-foreground/50">
             <span>© 2025 GSAI</span>
-            <span className="text-slate-300 dark:text-slate-600">•</span>
+            <span className="text-sidebar-foreground/30">•</span>
             <div
-              className="flex items-center gap-1 hover:text-slate-600 dark:hover:text-slate-400 transition-colors duration-200 cursor-pointer"
+              className="flex items-center gap-1 hover:text-sidebar-foreground/70 transition-colors duration-200 cursor-pointer"
               title={`Version ${APP_VERSION}`}
             >
-              <GitBranch className="w-2.5 h-2.5" />
+              <GitBranch className="w-3 h-3" />
               <span>v{APP_VERSION}</span>
             </div>
           </div>
