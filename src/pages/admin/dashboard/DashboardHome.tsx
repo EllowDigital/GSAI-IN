@@ -453,18 +453,18 @@ export default function DashboardHome() {
   return (
     <div className="w-full min-h-full p-2 sm:p-4 lg:p-6 xl:p-8 space-y-4 sm:space-y-6 lg:space-y-8">
       {/* Executive Summary Header */}
-      <div className="bg-gradient-to-br from-primary/10 via-background to-accent/10 rounded-2xl p-4 sm:p-6 lg:p-8 border border-primary/20 shadow-lg">
+      <div className="bg-gradient-to-br from-slate-50 via-white to-blue-50/30 rounded-2xl p-4 sm:p-6 lg:p-8 border border-gray-200 shadow-lg">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-primary/20 rounded-xl">
-                <BarChart3 className="w-6 h-6 text-primary" />
+              <div className="p-3 bg-blue-100 rounded-xl">
+                <BarChart3 className="w-6 h-6 text-blue-600" />
               </div>
               <div>
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
                   Executive Dashboard
                 </h1>
-                <p className="text-sm sm:text-base text-muted-foreground">
+                <p className="text-sm sm:text-base text-gray-600">
                   Real-time business intelligence & performance metrics
                 </p>
               </div>
@@ -472,22 +472,22 @@ export default function DashboardHome() {
           </div>
           <div className="flex items-center gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-primary">
+              <div className="text-2xl font-bold text-blue-600">
                 {analytics.collectionEfficiency.efficiency.toFixed(0)}%
               </div>
-              <div className="text-xs text-muted-foreground">Performance</div>
+              <div className="text-xs text-gray-500">Performance</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-accent">
+              <div className="text-2xl font-bold text-green-600">
                 ₹{analytics.totals.totalRevenue.toLocaleString()}
               </div>
-              <div className="text-xs text-muted-foreground">Revenue</div>
+              <div className="text-xs text-gray-500">Revenue</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-secondary">
+              <div className="text-2xl font-bold text-purple-600">
                 {analytics.totals.totalStudents}
               </div>
-              <div className="text-xs text-muted-foreground">Students</div>
+              <div className="text-xs text-gray-500">Students</div>
             </div>
           </div>
         </div>
