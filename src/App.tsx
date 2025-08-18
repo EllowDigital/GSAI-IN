@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { HelmetProvider } from 'react-helmet-async';
 
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as Sonner } from '@/components/ui/sonner';
@@ -9,15 +10,18 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import Preloader from './components/Preloader';
 import OfflineBanner from './components/OfflineBanner';
 import InstallPWAButton from './components/InstallPWAButton';
+import ErrorBoundary from './components/ErrorBoundary';
 
-import HomePageWrapper from './pages/HomePageWrapper';
-import NotFound from './pages/NotFound';
-import PrivacyPage from './pages/PrivacyPage';
-import TermsPage from './pages/TermsPage';
-import BlogPost from './pages/BlogPost';
-import EventDetail from './pages/EventDetail';
-import NewsDetail from './pages/NewsDetail';
+// Lazy load components for better performance
+const HomePageWrapper = lazy(() => import('./pages/HomePageWrapper'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
+const BlogPost = lazy(() => import('./pages/BlogPost'));
+const EventDetail = lazy(() => import('./pages/EventDetail'));
+const NewsDetail = lazy(() => import('./pages/NewsDetail'));
 
+// Admin components (keep eager loading for admin as they're less critical for SEO)
 import { AdminAuthProvider } from './pages/admin/AdminAuthProvider';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminLayout from './pages/admin/AdminLayout';
@@ -30,7 +34,26 @@ import Students from './pages/admin/dashboard/Students';
 import FeesManager from './pages/admin/dashboard/FeesManager';
 import Events from './pages/admin/dashboard/Events';
 
-const queryClient = new QueryClient();
+// Enhanced QueryClient with better error handling and performance
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: (failureCount, error: any) => {
+        // Don't retry auth errors
+        if (error?.message?.includes('refresh_token_not_found') || 
+            error?.message?.includes('Invalid Refresh Token')) {
+          return false;
+        }
+        return failureCount < 2;
+      },
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      retry: 1,
+    },
+  },
+});
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -75,59 +98,65 @@ const App = () => {
     (window.navigator as any).standalone;
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        {loading && <Preloader />}
+    <ErrorBoundary>
+      <HelmetProvider>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            {loading && <Preloader />}
 
-        {!loading && (
-          <>
-            {!isOnline && <OfflineBanner />}
-            {installPrompt && !isPWAInstalled() && (
-              <InstallPWAButton onInstall={handleInstallClick} />
+            {!loading && (
+              <>
+                {!isOnline && <OfflineBanner />}
+                {installPrompt && !isPWAInstalled() && (
+                  <InstallPWAButton onInstall={handleInstallClick} />
+                )}
+
+                <BrowserRouter>
+                  <Suspense fallback={<Preloader />}>
+                    <Routes>
+                      <Route path="/" element={<HomePageWrapper />} />
+
+                      {/* --- ADMIN ROUTES --- */}
+                      <Route
+                        path="/admin/*"
+                        element={
+                          <AdminAuthProvider>
+                            <Routes>
+                              <Route path="login" element={<AdminLogin />} />
+                              <Route path="dashboard" element={<AdminLayout />}>
+                                <Route index element={<DashboardHome />} />
+                                <Route path="fees" element={<FeesManager />} />
+                                <Route path="blogs" element={<Blogs />} />
+                                <Route path="news" element={<News />} />
+                                <Route path="gallery" element={<Gallery />} />
+                                <Route path="students" element={<Students />} />
+                                <Route path="events" element={<Events />} />
+                                <Route path="*" element={<NotFoundAdmin />} />
+                              </Route>
+                              <Route path="*" element={<NotFoundAdmin />} />
+                            </Routes>
+                          </AdminAuthProvider>
+                        }
+                      />
+
+                      {/* CUSTOM ROUTES */}
+                      <Route path="/privacy" element={<PrivacyPage />} />
+                      <Route path="/terms" element={<TermsPage />} />
+                      <Route path="/blog/:id" element={<BlogPost />} />
+                      <Route path="/event/:id" element={<EventDetail />} />
+                      <Route path="/news/:id" element={<NewsDetail />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </Suspense>
+                </BrowserRouter>
+              </>
             )}
-
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<HomePageWrapper />} />
-
-                {/* --- ADMIN ROUTES --- */}
-                <Route
-                  path="/admin/*"
-                  element={
-                    <AdminAuthProvider>
-                      <Routes>
-                        <Route path="login" element={<AdminLogin />} />
-                        <Route path="dashboard" element={<AdminLayout />}>
-                          <Route index element={<DashboardHome />} />
-                          <Route path="fees" element={<FeesManager />} />
-                          <Route path="blogs" element={<Blogs />} />
-                          <Route path="news" element={<News />} />
-                          <Route path="gallery" element={<Gallery />} />
-                          <Route path="students" element={<Students />} />
-                          <Route path="events" element={<Events />} />
-                          <Route path="*" element={<NotFoundAdmin />} />
-                        </Route>
-                        <Route path="*" element={<NotFoundAdmin />} />
-                      </Routes>
-                    </AdminAuthProvider>
-                  }
-                />
-
-                {/* CUSTOM ROUTES */}
-                <Route path="/privacy" element={<PrivacyPage />} />
-                <Route path="/terms" element={<TermsPage />} />
-                <Route path="/blog/:id" element={<BlogPost />} />
-                <Route path="/event/:id" element={<EventDetail />} />
-                <Route path="/news/:id" element={<NewsDetail />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </>
-        )}
-      </TooltipProvider>
-    </QueryClientProvider>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </HelmetProvider>
+    </ErrorBoundary>
   );
 };
 

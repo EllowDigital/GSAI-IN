@@ -65,20 +65,40 @@ const faqStructuredData = {
 export default function Index() {
   return (
     <div className="bg-background w-full min-h-screen flex flex-col font-sans antialiased">
-      {/* SEO Meta Tags & Structured Data */}
+      {/* Advanced SEO with comprehensive optimization */}
       <Seo
         title="Ghatak Sports Academy India™ | Modern Martial Arts, Fitness & Excellence"
-        description="Experience world-class martial arts training at Ghatak Sports Academy India™. Modern facilities, expert coaching, and comprehensive programs for all ages and skill levels."
+        description="Experience world-class martial arts training at Ghatak Sports Academy India™. Modern facilities, expert coaching, and comprehensive programs for all ages and skill levels in Karate, MMA, Boxing, and more."
         canonical="https://ghatakgsai.netlify.app/"
         image="https://ghatakgsai.netlify.app/assets/img/logo.webp"
+        imageAlt="Ghatak Sports Academy India Logo - Modern Martial Arts Academy"
+        type="website"
+        keywords={[
+          'martial arts academy',
+          'karate classes',
+          'MMA training',
+          'boxing classes',
+          'fitness training',
+          'self defense',
+          'sports academy India',
+          'martial arts coaching',
+          'combat sports training',
+          'youth sports programs'
+        ]}
+        category="Sports & Fitness"
         structuredData={[orgStructuredData, faqStructuredData]}
-      />
+      >
+        {/* Additional performance meta tags */}
+        <link rel="preload" href="/assets/img/logo.webp" as="image" />
+        <link rel="preload" href="/assets/slider/slider.webp" as="image" />
+        <meta name="google-site-verification" content="7c06ba0fd23ccdce" />
+      </Seo>
 
       {/* Navbar */}
       <Navbar />
 
-      {/* Main Content */}
-      <main className="pt-16 md:pt-20 flex-1 flex flex-col gap-0">
+      {/* Main Content with improved semantic structure */}
+      <main className="pt-16 md:pt-20 flex-1 flex flex-col gap-0" role="main">
         <HeroSection />
         <AboutSection />
         <FounderSection />

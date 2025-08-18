@@ -1,14 +1,38 @@
-User-agent: Googlebot
+User-agent: *
 Allow: /
 
-User-agent: Bingbot
+# Sitemap location
+Sitemap: https://ghatakgsai.netlify.app/sitemap.xml
+
+# Common crawl delay (optional - helps prevent server overload)
+Crawl-delay: 1
+
+# Disallow admin areas for security
+Disallow: /admin/
+Disallow: /api/
+
+# Allow specific social media crawlers full access
+User-agent: facebookexternalhit/1.1
 Allow: /
 
 User-agent: Twitterbot
 Allow: /
 
-User-agent: facebookexternalhit
+User-agent: LinkedInBot
 Allow: /
 
-User-agent: *
+User-agent: WhatsApp
 Allow: /
+
+# Block certain file types from indexing
+Disallow: /*.json$
+Disallow: /*.xml$
+Disallow: /manifest.webmanifest
+
+# Allow search engines to crawl images
+Allow: /assets/
+Allow: /public/assets/
+
+# Performance optimization: Block crawling of large/unnecessary files
+Disallow: /*.pdf$
+Disallow: /*.zip$
