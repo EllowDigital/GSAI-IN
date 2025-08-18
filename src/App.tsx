@@ -40,8 +40,10 @@ const queryClient = new QueryClient({
     queries: {
       retry: (failureCount, error: any) => {
         // Don't retry auth errors
-        if (error?.message?.includes('refresh_token_not_found') || 
-            error?.message?.includes('Invalid Refresh Token')) {
+        if (
+          error?.message?.includes('refresh_token_not_found') ||
+          error?.message?.includes('Invalid Refresh Token')
+        ) {
           return false;
         }
         return failureCount < 2;

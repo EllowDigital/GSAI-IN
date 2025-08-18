@@ -52,9 +52,13 @@ export function Seo({
   noIndex = false,
   noFollow = false,
 }: SeoProps) {
-  const fullImageUrl = image ? (image.startsWith('http') ? image : `${defaultSiteUrl}${image}`) : defaultImage;
+  const fullImageUrl = image
+    ? image.startsWith('http')
+      ? image
+      : `${defaultSiteUrl}${image}`
+    : defaultImage;
   const fullCanonicalUrl = canonical ?? defaultSiteUrl;
-  
+
   // Generate robots meta tag
   const robots = [];
   if (noIndex) robots.push('noindex');
@@ -67,7 +71,9 @@ export function Seo({
       <title>{title}</title>
       <meta name="description" content={description} />
       <meta name="robots" content={robotsContent} />
-      {keywords.length > 0 && <meta name="keywords" content={keywords.join(', ')} />}
+      {keywords.length > 0 && (
+        <meta name="keywords" content={keywords.join(', ')} />
+      )}
       {author && <meta name="author" content={author} />}
       {category && <meta name="category" content={category} />}
 
@@ -83,12 +89,16 @@ export function Seo({
       <meta property="og:image:width" content={imageWidth.toString()} />
       <meta property="og:image:height" content={imageHeight.toString()} />
       <meta property="og:image:type" content="image/png" />
-      
+
       {/* Article specific meta tags */}
       {type === 'article' && (
         <>
-          {publishDate && <meta property="article:published_time" content={publishDate} />}
-          {modifiedDate && <meta property="article:modified_time" content={modifiedDate} />}
+          {publishDate && (
+            <meta property="article:published_time" content={publishDate} />
+          )}
+          {modifiedDate && (
+            <meta property="article:modified_time" content={modifiedDate} />
+          )}
           {author && <meta property="article:author" content={author} />}
           {category && <meta property="article:section" content={category} />}
           {keywords.map((keyword) => (
@@ -120,7 +130,7 @@ export function Seo({
       <link rel="canonical" href={fullCanonicalUrl} />
       <link rel="alternate" hrefLang="x-default" href={fullCanonicalUrl} />
       <link rel="alternate" hrefLang="en" href={fullCanonicalUrl} />
-      
+
       {alternateLanguages.map(({ hreflang, href }) => (
         <link key={hreflang} rel="alternate" hrefLang={hreflang} href={href} />
       ))}

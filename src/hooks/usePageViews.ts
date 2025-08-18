@@ -12,7 +12,7 @@ export function usePageViews() {
     if (typeof window !== 'undefined') {
       // You can integrate with Google Analytics, Mixpanel, etc. here
       console.log(`Page view: ${location.pathname}${location.search}`);
-      
+
       // Send to analytics service
       // gtag?.('config', 'GA_MEASUREMENT_ID', {
       //   page_path: location.pathname + location.search,

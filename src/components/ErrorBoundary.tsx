@@ -56,25 +56,26 @@ export class ErrorBoundary extends Component<Props, State> {
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <AlertTriangle className="w-8 h-8 text-red-500" />
             </div>
-            
+
             <h1 className="text-2xl font-bold text-gray-900 mb-4">
               Oops! Something went wrong
             </h1>
-            
+
             <p className="text-gray-600 mb-8">
-              We encountered an unexpected error. Please try refreshing the page or return to the homepage.
+              We encountered an unexpected error. Please try refreshing the page
+              or return to the homepage.
             </p>
 
             <div className="space-y-4">
-              <Button 
+              <Button
                 onClick={this.handleRefresh}
                 className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Refresh Page
               </Button>
-              
-              <Button 
+
+              <Button
                 onClick={this.handleGoHome}
                 variant="outline"
                 className="w-full border-yellow-200 hover:bg-yellow-50"
