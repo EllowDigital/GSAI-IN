@@ -28,7 +28,7 @@ export function OptimizedImage({
   const createSrcSet = (baseSrc: string) => {
     const ext = baseSrc.split('.').pop();
     const baseUrl = baseSrc.replace(`.${ext}`, '');
-    
+
     // For now, return the original src. In a real production setup,
     // you'd generate multiple sizes during build time
     return baseSrc;
@@ -57,7 +57,7 @@ export function OptimizedImage({
 
   // For non-critical images, use lazy loading
   const { onLoad, onError, ...otherProps } = props;
-  
+
   return (
     <LazyImage
       src={src}

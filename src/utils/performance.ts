@@ -77,13 +77,15 @@ class PerformanceMonitor {
 
       // Measure TTFB using Navigation Timing API
       window.addEventListener('load', () => {
-        const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+        const navigation = performance.getEntriesByType(
+          'navigation'
+        )[0] as PerformanceNavigationTiming;
         if (navigation) {
-          this.metrics.ttfb = navigation.responseStart - navigation.requestStart;
+          this.metrics.ttfb =
+            navigation.responseStart - navigation.requestStart;
           this.logMetric('TTFB', this.metrics.ttfb);
         }
       });
-
     } catch (error) {
       console.warn('Performance monitoring initialization failed:', error);
     }
@@ -103,7 +105,7 @@ class PerformanceMonitor {
   }
 
   public disconnect() {
-    this.observers.forEach(observer => {
+    this.observers.forEach((observer) => {
       try {
         observer.disconnect();
       } catch (error) {
@@ -119,19 +121,16 @@ class PerformanceMonitor {
     operation: () => Promise<T>
   ): Promise<T> {
     const startTime = performance.now();
-    
+
     return operation().finally(() => {
       const duration = performance.now() - startTime;
       this.logMetric(`Async Operation: ${name}`, duration);
     });
   }
 
-  public measureSyncOperation<T>(
-    name: string,
-    operation: () => T
-  ): T {
+  public measureSyncOperation<T>(name: string, operation: () => T): T {
     const startTime = performance.now();
-    
+
     try {
       return operation();
     } finally {
@@ -161,7 +160,7 @@ export const preloadResource = (href: string, as: string, type?: string) => {
   link.href = href;
   link.as = as;
   if (type) link.type = type;
-  
+
   document.head.appendChild(link);
 };
 
@@ -171,7 +170,7 @@ export const preconnectToOrigin = (origin: string) => {
   const link = document.createElement('link');
   link.rel = 'preconnect';
   link.href = origin;
-  
+
   document.head.appendChild(link);
 };
 

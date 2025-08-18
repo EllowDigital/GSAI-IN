@@ -83,7 +83,7 @@ export default function Index() {
           'sports academy India',
           'martial arts coaching',
           'combat sports training',
-          'youth sports programs'
+          'youth sports programs',
         ]}
         category="Sports & Fitness"
         structuredData={[orgStructuredData, faqStructuredData]}

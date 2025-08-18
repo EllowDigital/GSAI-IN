@@ -8,7 +8,7 @@ const ADMIN_EMAIL = 'ghatakgsai@gmail.com';
 
 const HomePageWrapper: React.FC = () => {
   const navigate = useNavigate();
-  
+
   // Track page views and performance
   usePageViews();
 
@@ -24,20 +24,22 @@ const HomePageWrapper: React.FC = () => {
     const checkInitialSession = async () => {
       try {
         const { data, error } = await supabase.auth.getSession();
-        
+
         // Handle refresh token errors gracefully
-        if (error?.message?.includes('refresh_token_not_found') || 
-            error?.message?.includes('Invalid Refresh Token')) {
+        if (
+          error?.message?.includes('refresh_token_not_found') ||
+          error?.message?.includes('Invalid Refresh Token')
+        ) {
           // Clear potentially corrupted session
           await supabase.auth.signOut();
           return;
         }
-        
+
         if (error) {
           console.warn('Auth session check error:', error.message);
           return;
         }
-        
+
         const email = data?.session?.user?.email;
         redirectIfAdmin(email);
       } catch (err) {
