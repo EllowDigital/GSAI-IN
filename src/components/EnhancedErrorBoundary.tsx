@@ -37,7 +37,7 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Enhanced ErrorBoundary caught an error:', error, errorInfo);
-    
+
     this.setState({
       error,
       errorInfo,
@@ -94,11 +94,14 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
             <div className="p-8">
               <div className="text-center mb-8">
                 <p className="text-gray-700 text-lg mb-4">
-                  Don't worry! This happens sometimes. Here are a few things you can try:
+                  Don't worry! This happens sometimes. Here are a few things you
+                  can try:
                 </p>
-                
+
                 <div className="bg-gray-50 rounded-2xl p-6 mb-6">
-                  <h3 className="font-semibold text-gray-900 mb-3">Troubleshooting Steps</h3>
+                  <h3 className="font-semibold text-gray-900 mb-3">
+                    Troubleshooting Steps
+                  </h3>
                   <ul className="text-left text-gray-600 space-y-2">
                     <li className="flex items-start gap-2">
                       <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
@@ -128,7 +131,7 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
                     <RefreshCw className="w-5 h-5 mr-2" />
                     Refresh Page
                   </Button>
-                  
+
                   <Button
                     onClick={this.handleGoHome}
                     variant="outline"
@@ -137,7 +140,7 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
                     <Home className="w-5 h-5 mr-2" />
                     Go to Homepage
                   </Button>
-                  
+
                   <Button
                     onClick={this.handleResetError}
                     variant="ghost"
@@ -150,7 +153,8 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
                 {/* Error ID for support */}
                 <div className="bg-gray-100 rounded-xl p-4 mb-6">
                   <p className="text-sm text-gray-600 mb-2">
-                    If the problem persists, please contact support with this error ID:
+                    If the problem persists, please contact support with this
+                    error ID:
                   </p>
                   <code className="bg-white px-3 py-2 rounded-lg text-sm font-mono text-gray-800 border">
                     {this.state.errorId}
@@ -159,7 +163,9 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
 
                 {/* Contact Information */}
                 <div className="text-center">
-                  <p className="text-gray-600 mb-2">Need immediate assistance?</p>
+                  <p className="text-gray-600 mb-2">
+                    Need immediate assistance?
+                  </p>
                   <a
                     href="tel:+916394135988"
                     className="inline-flex items-center gap-2 text-red-600 hover:text-red-700 font-semibold transition-colors duration-300"
@@ -178,16 +184,23 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
                   </summary>
                   <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm overflow-auto max-h-96">
                     <div className="mb-4">
-                      <strong className="text-red-400">Error:</strong> {this.state.error.toString()}
+                      <strong className="text-red-400">Error:</strong>{' '}
+                      {this.state.error.toString()}
                     </div>
                     <div className="mb-4">
                       <strong className="text-red-400">Stack Trace:</strong>
-                      <pre className="whitespace-pre-wrap">{this.state.error.stack}</pre>
+                      <pre className="whitespace-pre-wrap">
+                        {this.state.error.stack}
+                      </pre>
                     </div>
                     {this.state.errorInfo && (
                       <div>
-                        <strong className="text-red-400">Component Stack:</strong>
-                        <pre className="whitespace-pre-wrap">{this.state.errorInfo.componentStack}</pre>
+                        <strong className="text-red-400">
+                          Component Stack:
+                        </strong>
+                        <pre className="whitespace-pre-wrap">
+                          {this.state.errorInfo.componentStack}
+                        </pre>
                       </div>
                     )}
                   </div>

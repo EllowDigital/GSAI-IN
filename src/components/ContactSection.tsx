@@ -236,10 +236,12 @@ export default function ContactSection() {
                 const name = formData.get('name') as string;
                 const email = formData.get('email') as string;
                 const message = formData.get('message') as string;
-                
+
                 if (!name?.trim() || !email?.trim() || !message?.trim()) {
                   e.preventDefault();
-                  alert('Please fill in all required fields before submitting.');
+                  alert(
+                    'Please fill in all required fields before submitting.'
+                  );
                   return;
                 }
               }}
@@ -252,7 +254,11 @@ export default function ContactSection() {
               />
               <input type="hidden" name="_captcha" value="false" />
               <input type="hidden" name="_template" value="table" />
-              <input type="hidden" name="_subject" value="New Contact Form Submission - Ghatak Sports Academy" />
+              <input
+                type="hidden"
+                name="_subject"
+                value="New Contact Form Submission - Ghatak Sports Academy"
+              />
               {/* CC: Add other recipients here */}
               <input
                 type="hidden"

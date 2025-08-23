@@ -62,43 +62,68 @@ export function handleSupabaseError(error: any): AppError {
   // Handle specific Supabase error codes
   switch (error.code) {
     case 'PGRST301':
-      return new ValidationError('Invalid data provided. Please check your input.');
+      return new ValidationError(
+        'Invalid data provided. Please check your input.'
+      );
     case 'PGRST204':
       return new DatabaseError('The requested resource was not found.');
     case '23505':
-      return new ValidationError('This record already exists. Please use different data.');
+      return new ValidationError(
+        'This record already exists. Please use different data.'
+      );
     case '23503':
-      return new ValidationError('Cannot delete this record as it is referenced by other data.');
+      return new ValidationError(
+        'Cannot delete this record as it is referenced by other data.'
+      );
     case '23514':
-      return new ValidationError('Invalid data format. Please check your input.');
+      return new ValidationError(
+        'Invalid data format. Please check your input.'
+      );
     case '42501':
-      return new AuthenticationError('You do not have permission to perform this action.');
+      return new AuthenticationError(
+        'You do not have permission to perform this action.'
+      );
     case '42P01':
-      return new DatabaseError('Database table not found. Please contact support.');
+      return new DatabaseError(
+        'Database table not found. Please contact support.'
+      );
     default:
       // Handle authentication errors
-      if (error.message?.includes('refresh_token_not_found') || 
-          error.message?.includes('Invalid Refresh Token') ||
-          error.message?.includes('JWT expired')) {
-        return new AuthenticationError('Your session has expired. Please log in again.');
+      if (
+        error.message?.includes('refresh_token_not_found') ||
+        error.message?.includes('Invalid Refresh Token') ||
+        error.message?.includes('JWT expired')
+      ) {
+        return new AuthenticationError(
+          'Your session has expired. Please log in again.'
+        );
       }
 
       // Handle row level security errors
-      if (error.message?.includes('row-level security') || 
-          error.message?.includes('RLS') ||
-          error.message?.includes('policy')) {
-        return new AuthenticationError('You do not have permission to access this data.');
+      if (
+        error.message?.includes('row-level security') ||
+        error.message?.includes('RLS') ||
+        error.message?.includes('policy')
+      ) {
+        return new AuthenticationError(
+          'You do not have permission to access this data.'
+        );
       }
 
       // Handle network errors
-      if (error.message?.includes('fetch') || 
-          error.message?.includes('network') ||
-          error.message?.includes('connection')) {
-        return new DatabaseError('Network error. Please check your internet connection and try again.');
+      if (
+        error.message?.includes('fetch') ||
+        error.message?.includes('network') ||
+        error.message?.includes('connection')
+      ) {
+        return new DatabaseError(
+          'Network error. Please check your internet connection and try again.'
+        );
       }
 
       return new DatabaseError(
-        error.message || 'An unexpected database error occurred. Please try again.',
+        error.message ||
+          'An unexpected database error occurred. Please try again.',
         error.code,
         error
       );
@@ -115,7 +140,9 @@ export function handleFormValidationError(error: any): AppError {
     return new ValidationError(messages);
   }
 
-  return new ValidationError(error.message || 'Form validation failed. Please check your input.');
+  return new ValidationError(
+    error.message || 'Form validation failed. Please check your input.'
+  );
 }
 
 /**
@@ -125,11 +152,14 @@ export function logError(error: AppError | Error | unknown, context?: string) {
   const errorInfo = {
     timestamp: new Date().toISOString(),
     context: context || 'Unknown',
-    error: error instanceof Error ? {
-      name: error.name,
-      message: error.message,
-      stack: error.stack
-    } : error
+    error:
+      error instanceof Error
+        ? {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+          }
+        : error,
   };
 
   console.error('Application Error:', errorInfo);
@@ -151,10 +181,11 @@ export async function safeAsync<T>(
     const data = await operation();
     return { data };
   } catch (error) {
-    const appError = error instanceof Error ? 
-      handleSupabaseError(error) : 
-      new DatabaseError('Unknown error occurred');
-    
+    const appError =
+      error instanceof Error
+        ? handleSupabaseError(error)
+        : new DatabaseError('Unknown error occurred');
+
     logError(appError, context);
     return { error: appError };
   }
@@ -175,19 +206,21 @@ export async function retryOperation<T>(
       return await operation();
     } catch (error) {
       lastError = error as Error;
-      
+
       if (attempt === maxRetries) {
         throw lastError;
       }
 
       // Don't retry on authentication or validation errors
-      if (error instanceof AuthenticationError || 
-          error instanceof ValidationError) {
+      if (
+        error instanceof AuthenticationError ||
+        error instanceof ValidationError
+      ) {
         throw error;
       }
 
       // Wait before retrying
-      await new Promise(resolve => setTimeout(resolve, delay * attempt));
+      await new Promise((resolve) => setTimeout(resolve, delay * attempt));
     }
   }
 
@@ -201,7 +234,7 @@ export function formatErrorForDisplay(error: unknown): string {
   if (error && typeof error === 'object' && 'message' in error) {
     return (error as { message: string }).message;
   }
-  
+
   if (error instanceof Error) {
     return error.message;
   }

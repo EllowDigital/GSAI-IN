@@ -7,7 +7,11 @@ import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { FeeReceiptUploader } from './FeeReceiptUploader';
 import { getFeeStatus } from '@/utils/feeStatusUtils';
-import { handleSupabaseError, safeAsync, formatErrorForDisplay } from '@/utils/errorHandling';
+import {
+  handleSupabaseError,
+  safeAsync,
+  formatErrorForDisplay,
+} from '@/utils/errorHandling';
 
 type Props = {
   student: any;
@@ -84,11 +88,12 @@ export function FeeForm({
       });
       return;
     }
-    
+
     if (paid_amount > monthly_fee + carryForward) {
       toast({
         title: 'Invalid Paid Amount',
-        description: 'Paid amount cannot exceed monthly fee plus carry-forward balance.',
+        description:
+          'Paid amount cannot exceed monthly fee plus carry-forward balance.',
         variant: 'error',
       });
       return;
@@ -123,10 +128,11 @@ export function FeeForm({
           balance_due: calcBalance(),
         }),
       };
-      
-      const payload = fee && fee.id ? 
-        { ...basePayload } : 
-        { ...basePayload, created_at: now };
+
+      const payload =
+        fee && fee.id
+          ? { ...basePayload }
+          : { ...basePayload, created_at: now };
 
       if (fee && fee.id) {
         const { data, error } = await supabase
@@ -135,7 +141,7 @@ export function FeeForm({
           .eq('id', fee.id)
           .select()
           .maybeSingle();
-        
+
         if (error) throw error;
         return data;
       } else {
@@ -144,7 +150,7 @@ export function FeeForm({
           .upsert([payload], { onConflict: 'student_id,month,year' })
           .select()
           .maybeSingle();
-        
+
         if (error) throw error;
         return data;
       }

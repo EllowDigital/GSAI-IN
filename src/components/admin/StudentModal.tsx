@@ -28,7 +28,11 @@ import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
 import StudentAvatarUploader from './StudentAvatarUploader';
-import { handleSupabaseError, safeAsync, formatErrorForDisplay } from '@/utils/errorHandling';
+import {
+  handleSupabaseError,
+  safeAsync,
+  formatErrorForDisplay,
+} from '@/utils/errorHandling';
 
 // List of valid programs
 const programOptions = [
@@ -137,7 +141,9 @@ export default function StudentModal({
       .map(([field]) => field.replace('_', ' '));
 
     if (missingFields.length > 0) {
-      toast.error(`Please fill all required fields: ${missingFields.join(', ')}`);
+      toast.error(
+        `Please fill all required fields: ${missingFields.join(', ')}`
+      );
       return;
     }
 
@@ -161,13 +167,15 @@ export default function StudentModal({
           .select('id, name')
           .eq('aadhar_number', values.aadhar_number)
           .maybeSingle();
-        
+
         if (checkError && checkError.code !== 'PGRST116') {
           throw checkError;
         }
-        
+
         if (existing) {
-          throw new Error(`A student with this Aadhar number already exists: ${existing.name}`);
+          throw new Error(
+            `A student with this Aadhar number already exists: ${existing.name}`
+          );
         }
       }
 
@@ -189,7 +197,7 @@ export default function StudentModal({
           .eq('id', student.id)
           .select()
           .single();
-        
+
         if (error) throw error;
         return data;
       } else {
@@ -198,7 +206,7 @@ export default function StudentModal({
           .insert([payload])
           .select()
           .single();
-        
+
         if (error) throw error;
         return data;
       }
