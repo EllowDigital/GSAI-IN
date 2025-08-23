@@ -75,8 +75,8 @@ export default function FounderSection() {
               Leadership
             </span>
           </div>
-          
-          <h2 
+
+          <h2
             id="founder-heading"
             className="text-5xl md:text-6xl lg:text-7xl font-black text-gray-900 mb-8 leading-tight"
           >
@@ -85,7 +85,7 @@ export default function FounderSection() {
               Visionary Leader
             </span>
           </h2>
-          
+
           <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed font-medium">
             Guiding champions with decades of martial arts mastery and
             unwavering dedication to excellence.
@@ -95,7 +95,7 @@ export default function FounderSection() {
         {/* Main Content Grid */}
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center mb-20">
           {/* Left: Founder Image */}
-          <motion.div 
+          <motion.div
             className="relative"
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -105,18 +105,22 @@ export default function FounderSection() {
             <div className="relative group">
               {/* Background Glow */}
               <div className="absolute -inset-6 bg-gradient-to-r from-yellow-400/20 via-orange-400/20 to-red-400/20 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500" />
-              
+
               {/* Achievement Badge */}
               <div className="absolute -top-4 -left-4 z-20">
-                <motion.div 
+                <motion.div
                   className="w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center shadow-2xl"
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  transition={{
+                    duration: 20,
+                    repeat: Infinity,
+                    ease: 'linear',
+                  }}
                 >
                   <Medal className="w-8 h-8 text-white" />
                 </motion.div>
               </div>
-              
+
               {/* Main Image Container */}
               <div className="relative bg-gradient-to-br from-yellow-100 via-orange-100 to-red-100 rounded-3xl p-4 shadow-2xl group-hover:scale-105 transition-all duration-500">
                 <div className="relative w-full aspect-square rounded-2xl overflow-hidden">
@@ -129,12 +133,16 @@ export default function FounderSection() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
               </div>
-              
+
               {/* Floating Element */}
               <div className="absolute -bottom-4 -right-4">
                 <motion.div
                   animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }}
                 >
                   <Sparkles className="w-8 h-8 text-yellow-500 opacity-80" />
                 </motion.div>
@@ -158,7 +166,7 @@ export default function FounderSection() {
                   Founder & Director
                 </span>
               </div>
-              
+
               <h3 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
                 Mr. Nitesh Yadav{' '}
                 <span className="ml-2 text-2xl md:text-3xl">🥇</span>
@@ -168,14 +176,15 @@ export default function FounderSection() {
             {/* Description */}
             <div className="space-y-6">
               <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
-                With a lifetime devoted to martial arts excellence, Mr. Nitesh Yadav{' '}
+                With a lifetime devoted to martial arts excellence, Mr. Nitesh
+                Yadav{' '}
                 <strong className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-red-600">
                   inspires champions
                 </strong>{' '}
-                and empowers individuals to unlock their hidden potential through 
-                disciplined training and mentorship.
+                and empowers individuals to unlock their hidden potential
+                through disciplined training and mentorship.
               </p>
-              
+
               <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
                 His unwavering dedication as a mentor instills{' '}
                 <strong className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600">
@@ -203,8 +212,16 @@ export default function FounderSection() {
             {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-6">
               {[
-                { number: '8+', label: 'Years Experience', gradient: 'from-yellow-500 to-orange-500' },
-                { number: '500+', label: 'Students Trained', gradient: 'from-orange-500 to-red-500' }
+                {
+                  number: '8+',
+                  label: 'Years Experience',
+                  gradient: 'from-yellow-500 to-orange-500',
+                },
+                {
+                  number: '500+',
+                  label: 'Students Trained',
+                  gradient: 'from-orange-500 to-red-500',
+                },
               ].map((stat, index) => (
                 <motion.div
                   key={stat.label}
@@ -215,7 +232,9 @@ export default function FounderSection() {
                   viewport={{ once: true }}
                   whileHover={{ scale: 1.05 }}
                 >
-                  <div className={`text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r ${stat.gradient} mb-2`}>
+                  <div
+                    className={`text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r ${stat.gradient} mb-2`}
+                  >
                     {stat.number}
                   </div>
                   <div className="text-sm md:text-base font-semibold text-gray-700">
