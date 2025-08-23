@@ -192,13 +192,33 @@ export default function LocationSection() {
           <div className="relative w-full rounded-2xl shadow-xl overflow-hidden h-64 md:h-96 border-4 border-yellow-100/40 group">
             <iframe
               title="Ghatak Sports Academy Locations Map"
-              src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d853.8389217119833!2d81.01773516625347!3d26.90489409352698!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3999596def6ea9c7%3A0x23d2ceb539bff92!2sGhatak%20Sports%20Academy%20India!5e1!3m2!1sen!2sin!4v1755108480308!5m2!1sen!2sin"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3558.268!2d81.035803!3d26.8949872!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3999596def6ea9c7%3A0x23d2ceb539bff92!2sGhatak%20Sports%20Academy%20India!5e0!3m2!1sen!2sin!4v1734875064321!5m2!1sen!2sin"
               width="100%"
               height="100%"
+              style={{ border: 0 }}
               allowFullScreen={true}
               loading="lazy"
-              className="absolute inset-0 w-full h-full border-0 group-hover:scale-105 transition-transform duration-700"
               referrerPolicy="no-referrer-when-downgrade"
+              className="absolute inset-0 w-full h-full"
+              onError={(e) => {
+                console.error('Map failed to load');
+                const target = e.target as HTMLElement;
+                if (target.parentElement) {
+                  target.parentElement.innerHTML = `
+                    <div class="flex items-center justify-center h-full bg-gradient-to-br from-gray-100 to-gray-200 text-gray-600">
+                      <div class="text-center p-8">
+                        <div class="text-4xl mb-4">📍</div>
+                        <h3 class="text-lg font-semibold mb-2">Map Unavailable</h3>
+                        <p class="text-sm">Click the button below to view our location on Google Maps</p>
+                        <a href="https://maps.app.goo.gl/JQRsU9jEfZZY4TVL8" target="_blank" rel="noopener noreferrer" 
+                           class="inline-flex items-center gap-2 px-4 py-2 mt-4 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                          View on Google Maps
+                        </a>
+                      </div>
+                    </div>
+                  `;
+                }
+              }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>

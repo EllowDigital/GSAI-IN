@@ -11,6 +11,7 @@ import Preloader from './components/Preloader';
 import OfflineBanner from './components/OfflineBanner';
 import InstallPWAButton from './components/InstallPWAButton';
 import ErrorBoundary from './components/ErrorBoundary';
+import EnhancedErrorBoundary from './components/EnhancedErrorBoundary';
 
 // Lazy load components for better performance
 const HomePageWrapper = lazy(() => import('./pages/HomePageWrapper'));
@@ -100,7 +101,7 @@ const App = () => {
     (window.navigator as any).standalone;
 
   return (
-    <ErrorBoundary>
+    <EnhancedErrorBoundary>
       <HelmetProvider>
         <QueryClientProvider client={queryClient}>
           <TooltipProvider>
@@ -158,7 +159,7 @@ const App = () => {
           </TooltipProvider>
         </QueryClientProvider>
       </HelmetProvider>
-    </ErrorBoundary>
+    </EnhancedErrorBoundary>
   );
 };
 
