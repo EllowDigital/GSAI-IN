@@ -7,6 +7,7 @@ import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { FeeReceiptUploader } from './FeeReceiptUploader';
 import { getFeeStatus } from '@/utils/feeStatusUtils';
+import { handleSupabaseError, safeAsync, formatErrorForDisplay } from '@/utils/errorHandling';
 
 type Props = {
   student: any;
@@ -74,6 +75,7 @@ export function FeeForm({
     notes: string;
     receipt_url?: string | null;
   }) {
+    // Validation
     if (!student || typeof student.id !== 'string') {
       toast({
         title: 'Student data missing',
@@ -82,62 +84,84 @@ export function FeeForm({
       });
       return;
     }
+    
     if (paid_amount > monthly_fee + carryForward) {
       toast({
         title: 'Invalid Paid Amount',
-        description: 'Paid cannot exceed monthly fee + carry-forward!',
+        description: 'Paid amount cannot exceed monthly fee plus carry-forward balance.',
         variant: 'error',
       });
       return;
     }
+
+    if (monthly_fee < 0 || paid_amount < 0) {
+      toast({
+        title: 'Invalid Amount',
+        description: 'Monthly fee and paid amount must be non-negative.',
+        variant: 'error',
+      });
+      return;
+    }
+
     setLoading(true);
-    const now = new Date().toISOString();
-    const basePayload = {
-      student_id: student.id,
-      month,
-      year,
-      monthly_fee,
-      paid_amount,
-      balance_due: calcBalance(),
-      notes: values.notes || null,
-      receipt_url: values.receipt_url ?? null,
-      updated_at: now,
-      status: getFeeStatus({
+
+    const { data: result, error } = await safeAsync(async () => {
+      const now = new Date().toISOString();
+      const basePayload = {
+        student_id: student.id,
+        month,
+        year,
         monthly_fee,
         paid_amount,
         balance_due: calcBalance(),
-      }),
-    };
-    const payload =
-      fee && fee.id ? { ...basePayload } : { ...basePayload, created_at: now };
+        notes: values.notes?.trim() || null,
+        receipt_url: values.receipt_url ?? null,
+        updated_at: now,
+        status: getFeeStatus({
+          monthly_fee,
+          paid_amount,
+          balance_due: calcBalance(),
+        }),
+      };
+      
+      const payload = fee && fee.id ? 
+        { ...basePayload } : 
+        { ...basePayload, created_at: now };
 
-    let result, error;
-    if (fee && fee.id) {
-      ({ error, data: result } = await supabase
-        .from('fees')
-        .update(payload)
-        .eq('id', fee.id)
-        .select()
-        .maybeSingle());
-    } else {
-      ({ error, data: result } = await supabase
-        .from('fees')
-        .upsert([payload], { onConflict: 'student_id,month,year' })
-        .select()
-        .maybeSingle());
-    }
+      if (fee && fee.id) {
+        const { data, error } = await supabase
+          .from('fees')
+          .update(payload)
+          .eq('id', fee.id)
+          .select()
+          .maybeSingle();
+        
+        if (error) throw error;
+        return data;
+      } else {
+        const { data, error } = await supabase
+          .from('fees')
+          .upsert([payload], { onConflict: 'student_id,month,year' })
+          .select()
+          .maybeSingle();
+        
+        if (error) throw error;
+        return data;
+      }
+    }, 'Fee Form Submission');
+
     setLoading(false);
 
     if (error) {
       toast({
         title: 'Failed to save fee',
-        description: (error.message || '') + ' (see console for RLS info)',
+        description: formatErrorForDisplay(error),
         variant: 'error',
       });
     } else {
       toast({
-        title: 'Fee saved!',
-        description: 'The fee record has been saved successfully.',
+        title: 'Fee saved successfully',
+        description: `Fee record for ${student.name} has been ${fee?.id ? 'updated' : 'created'}.`,
       });
       onClose();
     }

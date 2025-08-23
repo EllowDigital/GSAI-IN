@@ -230,19 +230,34 @@ export default function ContactSection() {
               action="https://formsubmit.co/ghatakgsai@gmail.com"
               method="POST"
               className="space-y-6"
+              onSubmit={(e) => {
+                // Add basic validation before submission
+                const formData = new FormData(e.currentTarget);
+                const name = formData.get('name') as string;
+                const email = formData.get('email') as string;
+                const message = formData.get('message') as string;
+                
+                if (!name?.trim() || !email?.trim() || !message?.trim()) {
+                  e.preventDefault();
+                  alert('Please fill in all required fields before submitting.');
+                  return;
+                }
+              }}
             >
               {/* Redirect after submission */}
               <input
                 type="hidden"
                 name="_next"
-                value="http://ghatakgsai.netlify.app/pages/success.html"
+                value={`${window.location.origin}/pages/success.html`}
               />
               <input type="hidden" name="_captcha" value="false" />
+              <input type="hidden" name="_template" value="table" />
+              <input type="hidden" name="_subject" value="New Contact Form Submission - Ghatak Sports Academy" />
               {/* CC: Add other recipients here */}
               <input
                 type="hidden"
                 name="_cc"
-                value="sarwanyadav6174@gmail.com, ellowdigitalindia@gmail.com"
+                value="sarwanyadav6174@gmail.com,ellowdigitalindia@gmail.com"
               />
 
               {/* Name & Email */}

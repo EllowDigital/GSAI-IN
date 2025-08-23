@@ -28,6 +28,7 @@ import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
 import StudentAvatarUploader from './StudentAvatarUploader';
+import { handleSupabaseError, safeAsync, formatErrorForDisplay } from '@/utils/errorHandling';
 
 // List of valid programs
 const programOptions = [
@@ -121,55 +122,94 @@ export default function StudentModal({
 
   // Submit Handler
   const onSubmit = async (values: StudentFormValues) => {
-    try {
-      if (
-        !values.name ||
-        !values.aadhar_number ||
-        !values.program ||
-        !values.join_date ||
-        !values.parent_name ||
-        !values.parent_contact
-      ) {
-        toast.error('Please fill all required fields.');
-        return;
-      }
+    // Client-side validation
+    const requiredFields = {
+      name: values.name?.trim(),
+      aadhar_number: values.aadhar_number?.trim(),
+      program: values.program?.trim(),
+      join_date: values.join_date?.trim(),
+      parent_name: values.parent_name?.trim(),
+      parent_contact: values.parent_contact?.trim(),
+    };
+
+    const missingFields = Object.entries(requiredFields)
+      .filter(([_, value]) => !value)
+      .map(([field]) => field.replace('_', ' '));
+
+    if (missingFields.length > 0) {
+      toast.error(`Please fill all required fields: ${missingFields.join(', ')}`);
+      return;
+    }
+
+    // Validate Aadhar number format
+    if (!/^\d{12}$/.test(values.aadhar_number)) {
+      toast.error('Aadhar number must be exactly 12 digits.');
+      return;
+    }
+
+    // Validate phone number format
+    if (!/^\d{10}$/.test(values.parent_contact)) {
+      toast.error('Contact number must be exactly 10 digits.');
+      return;
+    }
+
+    const { data: result, error } = await safeAsync(async () => {
       // Uniqueness check for Aadhar Number on create
       if (!student) {
-        const { data: existing, error: err1 } = await supabase
+        const { data: existing, error: checkError } = await supabase
           .from('students')
-          .select('id')
-          .eq('aadhar_number', values.aadhar_number);
-        if (err1) throw err1;
-        if (existing && existing.length > 0) {
-          toast.error('A student with this Aadhar Number already exists.');
-          return;
+          .select('id, name')
+          .eq('aadhar_number', values.aadhar_number)
+          .maybeSingle();
+        
+        if (checkError && checkError.code !== 'PGRST116') {
+          throw checkError;
+        }
+        
+        if (existing) {
+          throw new Error(`A student with this Aadhar number already exists: ${existing.name}`);
         }
       }
-      // Prepare DB payload (keep only DB fields)
+
+      // Prepare payload
       const payload = {
-        name: values.name,
-        aadhar_number: values.aadhar_number,
-        program: values.program,
+        name: values.name.trim(),
+        aadhar_number: values.aadhar_number.trim(),
+        program: values.program.trim(),
         join_date: values.join_date,
-        parent_name: values.parent_name,
-        parent_contact: values.parent_contact,
-        profile_image_url: values.profile_image_url,
+        parent_name: values.parent_name.trim(),
+        parent_contact: values.parent_contact.trim(),
+        profile_image_url: values.profile_image_url || null,
       };
+
       if (student) {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('students')
           .update(payload)
-          .eq('id', student.id);
+          .eq('id', student.id)
+          .select()
+          .single();
+        
         if (error) throw error;
-        toast.success('Student updated.');
+        return data;
       } else {
-        const { error } = await supabase.from('students').insert([payload]);
+        const { data, error } = await supabase
+          .from('students')
+          .insert([payload])
+          .select()
+          .single();
+        
         if (error) throw error;
-        toast.success('Student created.');
+        return data;
       }
+    }, 'Student Form Submission');
+
+    if (error) {
+      toast.error(formatErrorForDisplay(error));
+    } else {
+      const action = student ? 'updated' : 'created';
+      toast.success(`Student ${action} successfully: ${result?.name}`);
       onOpenChange(false);
-    } catch (err: any) {
-      toast.error('Error saving student: ' + err.message);
     }
   };
 
