@@ -1,6 +1,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Images, X, ChevronLeft, ChevronRight, RefreshCw, AlertCircle } from 'lucide-react';
+import {
+  Images,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  RefreshCw,
+  AlertCircle,
+} from 'lucide-react';
 import { useGalleryQuery } from '@/hooks/useEnhancedQuery';
 import { formatErrorForDisplay } from '@/utils/errorHandling';
 
@@ -17,7 +24,12 @@ export default function GallerySection() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Enhanced data fetching with error handling and retry
-  const { data: images = [], isLoading: loading, error, refresh } = useGalleryQuery();
+  const {
+    data: images = [],
+    isLoading: loading,
+    error,
+    refresh,
+  } = useGalleryQuery();
 
   const openLightbox = (image: GalleryImage, index: number) => {
     setSelectedImage(image);
@@ -113,7 +125,9 @@ export default function GallerySection() {
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
               <div className="flex-1">
                 <p className="font-medium">Failed to load gallery images</p>
-                <p className="text-sm text-red-600 mt-1">{formatErrorForDisplay(error)}</p>
+                <p className="text-sm text-red-600 mt-1">
+                  {formatErrorForDisplay(error)}
+                </p>
               </div>
               <button
                 onClick={() => refresh()}

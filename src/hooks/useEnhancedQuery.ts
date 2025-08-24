@@ -1,7 +1,15 @@
-import { useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query';
+import {
+  useQuery,
+  useQueryClient,
+  UseQueryResult,
+} from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { handleSupabaseError, retryOperation, logError } from '@/utils/errorHandling';
+import {
+  handleSupabaseError,
+  retryOperation,
+  logError,
+} from '@/utils/errorHandling';
 
 interface EnhancedQueryOptions {
   queryKey: string[];
@@ -83,10 +91,10 @@ export function useEnhancedQuery<T = any>({
         },
         (payload) => {
           console.log(`Real-time update for ${realtimeTable}:`, payload);
-          
+
           // Invalidate and refetch queries
           queryClient.invalidateQueries({ queryKey });
-          
+
           // Also invalidate dashboard stats if available
           queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
         }
@@ -151,7 +159,7 @@ export function useNewsQuery() {
         .from('news')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data || [];
     },
@@ -170,7 +178,7 @@ export function useGalleryQuery() {
         .select('*')
         .order('created_at', { ascending: false })
         .limit(100);
-      
+
       if (error) throw error;
       return data || [];
     },
@@ -188,7 +196,7 @@ export function useStudentsQuery() {
         .from('students')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data || [];
     },
@@ -207,7 +215,7 @@ export function useEventsQueryEnhanced() {
         .select('*')
         .order('from_date', { ascending: false })
         .limit(6);
-      
+
       if (error) throw error;
       return data || [];
     },

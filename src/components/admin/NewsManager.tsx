@@ -9,7 +9,10 @@ import { Tables } from '@/integrations/supabase/types';
 import RefreshButton from './RefreshButton';
 import { toast } from '@/hooks/use-toast';
 import { useNewsQuery } from '@/hooks/useEnhancedQuery';
-import { formatErrorForDisplay, handleSupabaseError } from '@/utils/errorHandling';
+import {
+  formatErrorForDisplay,
+  handleSupabaseError,
+} from '@/utils/errorHandling';
 import { supabase } from '@/integrations/supabase/client';
 
 type NewsRow = Tables<'news'>;
@@ -25,7 +28,12 @@ export default function NewsManager() {
   const queryClient = useQueryClient();
 
   // Enhanced data fetching
-  const { data: news = [], isLoading, error, refresh: refreshNews } = useNewsQuery();
+  const {
+    data: news = [],
+    isLoading,
+    error,
+    refresh: refreshNews,
+  } = useNewsQuery();
 
   // Real-time updates are now handled by useNewsQuery hook
 
@@ -309,7 +317,9 @@ export default function NewsManager() {
                 <AlertCircle className="w-5 h-5 flex-shrink-0" />
                 <div className="flex-1">
                   <p className="font-medium">Failed to load news</p>
-                  <p className="text-sm text-red-600 mt-1">{formatErrorForDisplay(error)}</p>
+                  <p className="text-sm text-red-600 mt-1">
+                    {formatErrorForDisplay(error)}
+                  </p>
                 </div>
                 <Button
                   variant="outline"

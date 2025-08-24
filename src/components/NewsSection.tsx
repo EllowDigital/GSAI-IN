@@ -54,12 +54,19 @@ export default function NewsSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Enhanced data fetching with retry mechanism
-  const { data: news = [], isLoading: loading, error, refresh } = useEnhancedQuery({
+  const {
+    data: news = [],
+    isLoading: loading,
+    error,
+    refresh,
+  } = useEnhancedQuery({
     queryKey: ['news', 'public', 'published'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('news')
-        .select('id, title, short_description, date, image_url, status, created_by')
+        .select(
+          'id, title, short_description, date, image_url, status, created_by'
+        )
         .eq('status', 'Published')
         .order('date', { ascending: false })
         .limit(6);
@@ -141,7 +148,9 @@ export default function NewsSection() {
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
               <div className="flex-1">
                 <p className="font-medium">Failed to load news</p>
-                <p className="text-sm text-red-600 mt-1">{formatErrorForDisplay(error)}</p>
+                <p className="text-sm text-red-600 mt-1">
+                  {formatErrorForDisplay(error)}
+                </p>
               </div>
               <button
                 onClick={() => refresh()}
