@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Plus, Grid, List, Newspaper } from 'lucide-react';
+import { Plus, Grid, List, Newspaper, AlertCircle } from 'lucide-react';
 import NewsEditorModal from './NewsEditorModal';
 import NewsDeleteDialog from './NewsDeleteDialog';
 import { exportNewsToCsv } from '@/utils/exportToCsv';
 import { Tables } from '@/integrations/supabase/types';
 import RefreshButton from './RefreshButton';
 import { toast } from '@/hooks/use-toast';
+import { useNewsQuery } from '@/hooks/useEnhancedQuery';
+import { formatErrorForDisplay, handleSupabaseError } from '@/utils/errorHandling';
+import { supabase } from '@/integrations/supabase/client';
 
 type NewsRow = Tables<'news'>;
 
@@ -22,36 +24,10 @@ export default function NewsManager() {
 
   const queryClient = useQueryClient();
 
-  // Fetch news
-  const { data: news = [], isLoading } = useQuery({
-    queryKey: ['news'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('news')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      return data || [];
-    },
-  });
+  // Enhanced data fetching
+  const { data: news = [], isLoading, error, refresh: refreshNews } = useNewsQuery();
 
-  // Real-time updates
-  useEffect(() => {
-    const channel = supabase
-      .channel('news-realtime')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'news' },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['news'] });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
+  // Real-time updates are now handled by useNewsQuery hook
 
   // Delete mutation
   const deleteMutation = useMutation({
@@ -113,16 +89,16 @@ export default function NewsManager() {
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
-      await queryClient.invalidateQueries({ queryKey: ['news'] });
-      await queryClient.refetchQueries({ queryKey: ['news'] });
+      await refreshNews();
       toast({
         title: 'Success',
         description: 'News refreshed successfully',
       });
     } catch (error: any) {
+      const appError = handleSupabaseError(error);
       toast({
         title: 'Error',
-        description: 'Failed to refresh news',
+        description: appError.message,
         variant: 'error',
       });
     } finally {
@@ -326,6 +302,27 @@ export default function NewsManager() {
         </div>
 
         <div className="p-4 sm:p-6 space-y-6">
+          {/* Error State */}
+          {error && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
+              <div className="flex items-center gap-3 text-red-700">
+                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="font-medium">Failed to load news</p>
+                  <p className="text-sm text-red-600 mt-1">{formatErrorForDisplay(error)}</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRefresh}
+                  className="text-red-600 border-red-200 hover:bg-red-100"
+                >
+                  Retry
+                </Button>
+              </div>
+            </div>
+          )}
+
           {/* View Controls */}
           <div className="flex flex-wrap gap-2 sm:gap-3 justify-between">
             {/* View Mode Toggle */}
