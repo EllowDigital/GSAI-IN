@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import {
   Calendar,
   ArrowRight,
   Clock,
-  User,
   Newspaper,
-  Sparkles,
+  RefreshCw,
+  AlertCircle,
 } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
 import { NewsModal } from '@/components/modals/NewsModal';
+import { useEnhancedQuery } from '@/hooks/useEnhancedQuery';
+import { supabase } from '@/integrations/supabase/client';
+import { formatErrorForDisplay } from '@/utils/errorHandling';
 
 type NewsItem = {
   id: string;
@@ -48,49 +50,28 @@ const formatDate = (date: string) =>
 
 export default function NewsSection() {
   const navigate = useNavigate();
-  const [news, setNews] = useState<NewsItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Fetch published news from Supabase
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchNews = async () => {
-      setLoading(true);
+  // Enhanced data fetching with retry mechanism
+  const { data: news = [], isLoading: loading, error, refresh } = useEnhancedQuery({
+    queryKey: ['news', 'public', 'published'],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from('news')
-        .select(
-          'id, title, short_description, date, image_url, status, created_by'
-        )
+        .select('id, title, short_description, date, image_url, status, created_by')
         .eq('status', 'Published')
         .order('date', { ascending: false })
         .limit(6);
 
-      if (!error && data && isMounted) {
-        setNews(data as NewsItem[]);
-      }
-      setLoading(false);
-    };
-
-    fetchNews();
-
-    // Live update subscription
-    const channel = supabase
-      .channel('news-public')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'news' },
-        fetchNews
-      )
-      .subscribe();
-
-    return () => {
-      isMounted = false;
-      supabase.removeChannel(channel);
-    };
-  }, []);
+      if (error) throw error;
+      return (data as NewsItem[]) || [];
+    },
+    enableRealtime: true,
+    realtimeTable: 'news',
+    staleTime: 1000 * 60 * 2, // 2 minutes for news
+    retryAttempts: 3,
+  });
 
   const handleReadMore = (newsItem: NewsItem) => {
     setSelectedNews(newsItem);
@@ -149,13 +130,37 @@ export default function NewsSection() {
           </p>
         </motion.div>
 
+        {/* Error State */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-4 bg-red-50 border border-red-200 rounded-xl"
+          >
+            <div className="flex items-center gap-3 text-red-700">
+              <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="font-medium">Failed to load news</p>
+                <p className="text-sm text-red-600 mt-1">{formatErrorForDisplay(error)}</p>
+              </div>
+              <button
+                onClick={() => refresh()}
+                className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                title="Retry loading news"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+
         {/* News Grid */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
         >
           {loading ? (
             Array.from({ length: 6 }).map((_, idx) => (

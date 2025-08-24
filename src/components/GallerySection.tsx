@@ -1,8 +1,8 @@
-// unchanged imports
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '@/integrations/supabase/client';
-import { Images, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Images, X, ChevronLeft, ChevronRight, RefreshCw, AlertCircle } from 'lucide-react';
+import { useGalleryQuery } from '@/hooks/useEnhancedQuery';
+import { formatErrorForDisplay } from '@/utils/errorHandling';
 
 type GalleryImage = {
   id: string;
@@ -13,43 +13,11 @@ type GalleryImage = {
 };
 
 export default function GallerySection() {
-  const [images, setImages] = useState<GalleryImage[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  useEffect(() => {
-    let ignore = false;
-    const fetchImages = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('gallery_images')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(100);
-      if (!ignore) {
-        setImages(data || []);
-        setLoading(false);
-      }
-    };
-    fetchImages();
-    const channel = supabase
-      .channel('gsai-gallery-public-realtime')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'gallery_images',
-        },
-        () => fetchImages()
-      )
-      .subscribe();
-    return () => {
-      ignore = true;
-      supabase.removeChannel(channel);
-    };
-  }, []);
+  // Enhanced data fetching with error handling and retry
+  const { data: images = [], isLoading: loading, error, refresh } = useGalleryQuery();
 
   const openLightbox = (image: GalleryImage, index: number) => {
     setSelectedImage(image);
@@ -133,6 +101,30 @@ export default function GallerySection() {
             achievements.
           </p>
         </motion.div>
+
+        {/* Error State */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-4 bg-red-50 border border-red-200 rounded-xl max-w-2xl mx-auto"
+          >
+            <div className="flex items-center gap-3 text-red-700">
+              <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="font-medium">Failed to load gallery images</p>
+                <p className="text-sm text-red-600 mt-1">{formatErrorForDisplay(error)}</p>
+              </div>
+              <button
+                onClick={() => refresh()}
+                className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                title="Retry loading gallery"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </button>
+            </div>
+          </motion.div>
+        )}
 
         {/* Gallery Content */}
         {loading ? (
