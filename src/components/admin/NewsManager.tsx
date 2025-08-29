@@ -193,7 +193,7 @@ export default function NewsManager() {
                     size="sm"
                     variant="outline"
                     onClick={() => handleEdit(item)}
-                    className="h-8 w-8 rounded-xl"
+                    className="px-3 py-1.5 h-auto text-xs font-medium hover:bg-primary/10 hover:text-primary border-slate-300"
                   >
                     Edit
                   </Button>
@@ -202,9 +202,16 @@ export default function NewsManager() {
                     variant="destructive"
                     onClick={() => handleDelete(item.id)}
                     disabled={isDeleting(item.id)}
-                    className="h-8 w-8 rounded-xl"
+                    className="px-3 py-1.5 h-auto text-xs font-medium disabled:opacity-50"
                   >
-                    {isDeleting(item.id) ? 'Del...' : 'Delete'}
+                    {isDeleting(item.id) ? (
+                      <span className="flex items-center gap-1">
+                        <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>Deleting</span>
+                      </span>
+                    ) : (
+                      'Delete'
+                    )}
                   </Button>
                 </div>
               </td>
