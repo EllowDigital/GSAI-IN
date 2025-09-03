@@ -21,6 +21,9 @@ const TermsPage = lazy(() => import('./pages/TermsPage'));
 const BlogPost = lazy(() => import('./pages/BlogPost'));
 const EventDetail = lazy(() => import('./pages/EventDetail'));
 const NewsDetail = lazy(() => import('./pages/NewsDetail'));
+const AllEventsPage = lazy(() => import('./pages/AllEventsPage'));
+const AllNewsPage = lazy(() => import('./pages/AllNewsPage'));
+const AllBlogsPage = lazy(() => import('./pages/AllBlogsPage'));
 
 // Admin components (keep eager loading for admin as they're less critical for SEO)
 import { AdminAuthProvider } from './pages/admin/AdminAuthProvider';
@@ -150,6 +153,12 @@ const App = () => {
                       <Route path="/blog/:id" element={<BlogPost />} />
                       <Route path="/event/:id" element={<EventDetail />} />
                       <Route path="/news/:id" element={<NewsDetail />} />
+                      
+                      {/* VIEW ALL PAGES */}
+                      <Route path="/events" element={<AllEventsPage />} />
+                      <Route path="/news" element={<AllNewsPage />} />
+                      <Route path="/blogs" element={<AllBlogsPage />} />
+                      
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Suspense>

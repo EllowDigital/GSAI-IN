@@ -289,7 +289,10 @@ export default function BlogNewsSection() {
             viewport={{ once: true, amount: 0.3 }}
             variants={itemVariants}
           >
-            <button className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+            <button
+              onClick={() => navigate('/blogs')}
+              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            >
               <span>View All Articles</span>
               <ArrowRight className="w-5 h-5" />
             </button>
