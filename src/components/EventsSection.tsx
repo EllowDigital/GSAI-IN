@@ -280,12 +280,12 @@ const EventsSection: React.FC = () => {
             className="text-center mt-16"
           >
             <div className="inline-flex flex-col sm:flex-row items-center gap-4">
-              <a
-                href="#events"
+              <button
+                onClick={() => navigate('/events')}
                 className="px-8 py-4 bg-gradient-to-r from-yellow-500 to-amber-600 text-white font-bold text-lg rounded-xl hover:from-yellow-600 hover:to-amber-700 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
               >
                 View All Events
-              </a>
+              </button>
               <span className="text-gray-600 text-sm">
                 Stay updated with our latest events and tournaments
               </span>

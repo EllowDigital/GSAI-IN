@@ -270,12 +270,13 @@ export default function NewsSection() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-center mt-16"
           >
-            <a href="#news">
-              <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-full font-semibold hover:from-yellow-600 hover:to-orange-700 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                <span>View All News</span>
-                <ArrowRight className="w-4 h-4" />
-              </div>
-            </a>
+            <button
+              onClick={() => navigate('/news')}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-full font-semibold hover:from-yellow-600 hover:to-orange-700 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            >
+              <span>View All News</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </motion.div>
         )}
       </div>
