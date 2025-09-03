@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, ArrowRight, ArrowLeft, Clock, Newspaper, AlertCircle, RefreshCw } from 'lucide-react';
+import {
+  Calendar,
+  ArrowRight,
+  ArrowLeft,
+  Clock,
+  Newspaper,
+  AlertCircle,
+  RefreshCw,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import FooterSection from '@/components/FooterSection';
@@ -35,7 +43,9 @@ const AllNewsPage: React.FC = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('news')
-        .select('id, title, short_description, date, image_url, status, created_by')
+        .select(
+          'id, title, short_description, date, image_url, status, created_by'
+        )
         .eq('status', 'Published')
         .order('date', { ascending: false });
 
@@ -75,11 +85,17 @@ const AllNewsPage: React.FC = () => {
       <Seo
         title="All News - Ghatak Sports Academy India"
         description="Read all the latest news, announcements, and achievements from Ghatak Sports Academy India. Stay updated with our martial arts community updates."
-        keywords={["martial arts news", "sports academy news", "karate updates", "taekwondo news", "academy announcements"]}
+        keywords={[
+          'martial arts news',
+          'sports academy news',
+          'karate updates',
+          'taekwondo news',
+          'academy announcements',
+        ]}
       />
-      
+
       <Navbar />
-      
+
       <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-yellow-50/30">
         {/* Header Section */}
         <section className="relative py-20 lg:py-28 px-4 sm:px-6 lg:px-8 overflow-hidden">
@@ -126,8 +142,8 @@ const AllNewsPage: React.FC = () => {
               </h1>
 
               <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Stay updated with all the latest announcements, achievements, and
-                inspiring moments from Ghatak Sports Academy.
+                Stay updated with all the latest announcements, achievements,
+                and inspiring moments from Ghatak Sports Academy.
               </p>
             </motion.div>
           </div>
@@ -260,8 +276,8 @@ const AllNewsPage: React.FC = () => {
                       No News Yet
                     </h3>
                     <p className="text-gray-600 max-w-md mx-auto">
-                      We'll share exciting updates and achievements here soon. Stay
-                      tuned!
+                      We'll share exciting updates and achievements here soon.
+                      Stay tuned!
                     </p>
                   </div>
                 </motion.div>

@@ -1,6 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpenText, Calendar, ArrowRight, ArrowLeft, Clock, User } from 'lucide-react';
+import {
+  BookOpenText,
+  Calendar,
+  ArrowRight,
+  ArrowLeft,
+  Clock,
+  User,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import FooterSection from '@/components/FooterSection';
@@ -46,7 +53,7 @@ const AllBlogsPage: React.FC = () => {
         .from('blogs')
         .select('id, image_url, title, description, content, published_at')
         .order('published_at', { ascending: false });
-      
+
       if (error) throw error;
       return (data as Blog[]) || [];
     },
@@ -84,11 +91,17 @@ const AllBlogsPage: React.FC = () => {
       <Seo
         title="All Blog Articles - Ghatak Sports Academy India"
         description="Read all our blog articles covering martial arts insights, training tips, athlete journeys, and academy highlights. Expert guidance and inspiring stories from our community."
-        keywords={["martial arts blog", "karate training tips", "taekwondo articles", "sports academy blog", "martial arts insights"]}
+        keywords={[
+          'martial arts blog',
+          'karate training tips',
+          'taekwondo articles',
+          'sports academy blog',
+          'martial arts insights',
+        ]}
       />
-      
+
       <Navbar />
-      
+
       <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-yellow-50/30">
         {/* Header Section */}
         <section className="relative py-20 lg:py-28 px-4 sm:px-6 lg:px-8 overflow-hidden">
@@ -134,8 +147,9 @@ const AllBlogsPage: React.FC = () => {
               </h1>
 
               <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Explore all our stories, expert tips, and inspiration from Ghatak Sports
-                Academy—community highlights, athlete journeys, and martial arts wisdom.
+                Explore all our stories, expert tips, and inspiration from
+                Ghatak Sports Academy—community highlights, athlete journeys,
+                and martial arts wisdom.
               </p>
             </motion.div>
           </div>
@@ -230,7 +244,9 @@ const AllBlogsPage: React.FC = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1">
                           <User className="w-4 h-4 text-gray-400" />
-                          <span className="text-sm text-gray-500">GSAI Team</span>
+                          <span className="text-sm text-gray-500">
+                            GSAI Team
+                          </span>
                         </div>
 
                         <button
@@ -260,14 +276,16 @@ const AllBlogsPage: React.FC = () => {
                   </h3>
 
                   <p className="text-gray-600 text-lg leading-relaxed mb-8">
-                    We're working on creating amazing content for you. Stay tuned
-                    for our latest insights, training tips, and inspiring stories
-                    from the world of martial arts!
+                    We're working on creating amazing content for you. Stay
+                    tuned for our latest insights, training tips, and inspiring
+                    stories from the world of martial arts!
                   </p>
 
                   <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-full border border-yellow-200">
                     <Clock className="w-5 h-5 text-yellow-600" />
-                    <span className="text-orange-700 font-medium">Coming Soon</span>
+                    <span className="text-orange-700 font-medium">
+                      Coming Soon
+                    </span>
                   </div>
                 </motion.div>
               )}
