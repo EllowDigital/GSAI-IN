@@ -1,6 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Clock, MapPin, ArrowRight, ArrowLeft, Sparkles } from 'lucide-react';
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  ArrowRight,
+  ArrowLeft,
+  Sparkles,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import FooterSection from '@/components/FooterSection';
@@ -24,17 +31,23 @@ type EventRow = {
 
 const AllEventsPage: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedEvent, setSelectedEvent] = React.useState<EventRow | null>(null);
+  const [selectedEvent, setSelectedEvent] = React.useState<EventRow | null>(
+    null
+  );
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  const { data: events = [], isLoading, error } = useEnhancedQuery({
+  const {
+    data: events = [],
+    isLoading,
+    error,
+  } = useEnhancedQuery({
     queryKey: ['events', 'all'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('events')
         .select('*')
         .order('from_date', { ascending: false });
-      
+
       if (error) throw error;
       return (data as EventRow[]) || [];
     },
@@ -82,11 +95,17 @@ const AllEventsPage: React.FC = () => {
       <Seo
         title="All Events - Ghatak Sports Academy India"
         description="Browse all upcoming events, tournaments, and workshops at Ghatak Sports Academy India. Join our martial arts community for exciting competitions and training sessions."
-        keywords={["martial arts events", "tournaments", "karate competitions", "taekwondo tournaments", "sports academy events"]}
+        keywords={[
+          'martial arts events',
+          'tournaments',
+          'karate competitions',
+          'taekwondo tournaments',
+          'sports academy events',
+        ]}
       />
-      
+
       <Navbar />
-      
+
       <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-amber-50/30">
         {/* Header Section */}
         <section className="relative py-20 lg:py-28 px-4 sm:px-6 lg:px-8 overflow-hidden">
@@ -133,8 +152,9 @@ const AllEventsPage: React.FC = () => {
               </h1>
 
               <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Discover all our exciting tournaments, workshops, and special events.
-                Join our martial arts community and be part of something amazing.
+                Discover all our exciting tournaments, workshops, and special
+                events. Join our martial arts community and be part of something
+                amazing.
               </p>
             </motion.div>
           </div>
@@ -148,7 +168,9 @@ const AllEventsPage: React.FC = () => {
               <div className="flex justify-center py-16">
                 <div className="flex flex-col items-center gap-4">
                   <Spinner />
-                  <span className="text-gray-500 font-medium">Loading all events...</span>
+                  <span className="text-gray-500 font-medium">
+                    Loading all events...
+                  </span>
                 </div>
               </div>
             )}
@@ -193,7 +215,8 @@ const AllEventsPage: React.FC = () => {
                   No Events Scheduled
                 </h3>
                 <p className="text-gray-600 max-w-md mx-auto mb-6">
-                  We're planning exciting events and tournaments. Stay tuned for updates!
+                  We're planning exciting events and tournaments. Stay tuned for
+                  updates!
                 </p>
                 <div className="inline-flex items-center gap-2 text-yellow-600 font-semibold">
                   <Sparkles className="w-5 h-5" />
@@ -237,7 +260,9 @@ const AllEventsPage: React.FC = () => {
                         )}
                         <div className="absolute top-4 left-4 bg-white/90 rounded-lg px-3 py-1 text-sm font-medium shadow">
                           <Calendar className="w-4 h-4 inline-block mr-1" />
-                          {date.single ? date.start : `${date.start} - ${date.end}`}
+                          {date.single
+                            ? date.start
+                            : `${date.start} - ${date.end}`}
                         </div>
                         {event.tag && (
                           <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-500 to-amber-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
