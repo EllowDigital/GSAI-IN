@@ -87,11 +87,11 @@ export default function GallerySection() {
   return (
     <section
       id="gallery"
-      className="py-20 md:py-32 px-4 md:px-6 lg:px-8 bg-gradient-to-br from-background via-background to-accent/5 relative overflow-hidden"
+      className="py-20 md:py-32 px-4 md:px-6 lg:px-8 bg-gradient-to-br from-background via-background to-muted/30 relative overflow-hidden"
     >
       {/* Background blobs */}
-      <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-primary/5 to-accent/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 right-16 w-96 h-96 bg-gradient-to-br from-accent/5 to-primary/5 rounded-full blur-3xl" />
+      <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 right-16 w-96 h-96 bg-gradient-to-br from-accent/10 to-primary/10 rounded-full blur-3xl" />
 
       <div className="max-w-7xl mx-auto relative">
         {/* Header */}
@@ -101,7 +101,7 @@ export default function GallerySection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="inline-flex items-center justify-center p-3 mb-8 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full backdrop-blur-sm border border-primary/20">
+          <div className="inline-flex items-center justify-center p-3 mb-8 bg-gradient-to-r from-primary/20 to-accent/20 rounded-full backdrop-blur-sm border border-primary/30">
             <Images className="w-6 h-6 text-primary mr-3" />
             <span className="text-sm font-semibold text-primary uppercase tracking-wider">
               Gallery
