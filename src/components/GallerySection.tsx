@@ -36,7 +36,11 @@ export default function GallerySection() {
 
   // Show only 6 most recent images on main page
   const images = allImages
-    .sort((a, b) => new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime())
+    .sort(
+      (a, b) =>
+        new Date(b.created_at || '').getTime() -
+        new Date(a.created_at || '').getTime()
+    )
     .slice(0, 6);
 
   const openLightbox = (image: GalleryImage, index: number) => {
@@ -196,9 +200,9 @@ export default function GallerySection() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform group-hover:scale-110">
-                    <div className="bg-primary/20 backdrop-blur-lg rounded-full p-4 border border-primary/30 shadow-lg">
-                      <Images className="w-8 h-8 text-primary-foreground" />
-                    </div>
+                      <div className="bg-primary/20 backdrop-blur-lg rounded-full p-4 border border-primary/30 shadow-lg">
+                        <Images className="w-8 h-8 text-primary-foreground" />
+                      </div>
                     </div>
                   </div>
                   {img.caption && (
@@ -221,7 +225,7 @@ export default function GallerySection() {
 
             {/* View All Gallery Button */}
             {allImages.length > 6 && (
-              <motion.div 
+              <motion.div
                 className="flex justify-center"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
