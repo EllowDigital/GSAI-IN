@@ -123,7 +123,7 @@ export default function AllGalleryPage() {
       scale: 1,
       transition: {
         duration: 0.4,
-        ease: [0.4, 0, 0.2, 1],
+        ease: "easeOut" as const,
       },
     },
   };
@@ -133,7 +133,7 @@ export default function AllGalleryPage() {
       <Seo 
         title="Gallery - Academy Moments"
         description="Explore our complete collection of academy moments, training sessions, events, and achievements. Discover the energy and community spirit that defines our academy."
-        keywords="martial arts academy, gallery, training photos, events, achievements, community"
+        keywords={["martial arts academy", "gallery", "training photos", "events", "achievements", "community"]}
       />
       
       <Navbar />
@@ -562,38 +562,6 @@ export default function AllGalleryPage() {
           )}
         </AnimatePresence>
       </div>
-      
-      <FooterSection />
-    </>
-  );
-}
-                  src={selectedImage.image_url}
-                  alt={selectedImage.caption || 'Gallery image'}
-                  className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
-                />
-                {selectedImage.caption && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-8 rounded-b-2xl backdrop-blur-sm">
-                    <p className="text-white text-xl font-semibold leading-relaxed">
-                      {selectedImage.caption}
-                    </p>
-                    {selectedImage.created_at && (
-                      <p className="text-white/80 text-sm mt-2">
-                        {formatDate(selectedImage.created_at)}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </motion.div>
-
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
-                <span className="text-white text-lg font-semibold">
-                  {currentIndex + 1} / {processedImages.length}
-                </span>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </main>
       
       <FooterSection />
     </>
