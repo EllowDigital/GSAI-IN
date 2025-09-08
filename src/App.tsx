@@ -156,10 +156,10 @@ const App = () => {
                       <Route path="/news/:id" element={<NewsDetail />} />
 
                       {/* VIEW ALL PAGES */}
-        <Route path="/events" element={<AllEventsPage />} />
-        <Route path="/news" element={<AllNewsPage />} />
-        <Route path="/blogs" element={<AllBlogsPage />} />
-        <Route path="/gallery" element={<AllGalleryPage />} />
+                      <Route path="/events" element={<AllEventsPage />} />
+                      <Route path="/news" element={<AllNewsPage />} />
+                      <Route path="/blogs" element={<AllBlogsPage />} />
+                      <Route path="/gallery" element={<AllGalleryPage />} />
 
                       <Route path="*" element={<NotFound />} />
                     </Routes>

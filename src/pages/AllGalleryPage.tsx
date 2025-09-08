@@ -22,7 +22,13 @@ import { useGalleryQuery } from '@/hooks/useEnhancedQuery';
 import { formatErrorForDisplay } from '@/utils/errorHandling';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import Navbar from '@/components/Navbar';
 import FooterSection from '@/components/FooterSection';
@@ -54,7 +60,7 @@ export default function AllGalleryPage() {
   // Get unique tags for filtering
   const uniqueTags = useMemo(() => {
     const tags = allImages
-      .map(img => img.tag)
+      .map((img) => img.tag)
       .filter(Boolean)
       .reduce((acc, tag) => {
         if (tag && !acc.includes(tag)) acc.push(tag);
@@ -65,10 +71,11 @@ export default function AllGalleryPage() {
 
   // Filter and sort images
   const filteredImages = useMemo(() => {
-    let filtered = allImages.filter(img => {
-      const matchesSearch = !searchTerm || 
-        (img.caption?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-         img.tag?.toLowerCase().includes(searchTerm.toLowerCase()));
+    let filtered = allImages.filter((img) => {
+      const matchesSearch =
+        !searchTerm ||
+        img.caption?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        img.tag?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesTag = selectedTag === 'all' || img.tag === selectedTag;
       return matchesSearch && matchesTag;
     });
@@ -123,28 +130,35 @@ export default function AllGalleryPage() {
       scale: 1,
       transition: {
         duration: 0.4,
-        ease: "easeOut" as const,
+        ease: 'easeOut' as const,
       },
     },
   };
 
   return (
     <>
-      <Seo 
+      <Seo
         title="Gallery - Academy Moments"
         description="Explore our complete collection of academy moments, training sessions, events, and achievements. Discover the energy and community spirit that defines our academy."
-        keywords={["martial arts academy", "gallery", "training photos", "events", "achievements", "community"]}
+        keywords={[
+          'martial arts academy',
+          'gallery',
+          'training photos',
+          'events',
+          'achievements',
+          'community',
+        ]}
       />
-      
+
       <Navbar />
-      
+
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
         {/* Header Section */}
         <section className="pt-20 md:pt-24 pb-8 md:pb-12 px-4 md:px-6 lg:px-8 relative overflow-hidden">
           {/* Background elements */}
           <div className="absolute top-10 left-10 w-48 h-48 md:w-72 md:h-72 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 right-16 w-64 h-64 md:w-96 md:h-96 bg-gradient-to-br from-accent/10 to-primary/10 rounded-full blur-3xl" />
-          
+
           <div className="max-w-7xl mx-auto relative">
             {/* Back Button */}
             <motion.div
@@ -153,9 +167,9 @@ export default function AllGalleryPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <Button 
-                asChild 
-                variant="outline" 
+              <Button
+                asChild
+                variant="outline"
                 size="sm"
                 className="bg-background/80 backdrop-blur-sm border-border/50 hover:bg-background/90 text-sm"
               >
@@ -188,7 +202,8 @@ export default function AllGalleryPage() {
               </h1>
 
               <p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4">
-                Explore our complete collection of academy moments, training sessions, and achievements
+                Explore our complete collection of academy moments, training
+                sessions, and achievements
               </p>
             </motion.div>
 
@@ -200,16 +215,28 @@ export default function AllGalleryPage() {
               transition={{ duration: 0.6, delay: 0.3 }}
             >
               <div className="text-center p-4 md:p-6 bg-card/50 backdrop-blur-sm rounded-xl md:rounded-2xl border border-border/50">
-                <div className="text-2xl md:text-3xl font-bold text-primary mb-1 md:mb-2">{allImages.length}</div>
-                <div className="text-xs md:text-sm text-muted-foreground">Total Images</div>
+                <div className="text-2xl md:text-3xl font-bold text-primary mb-1 md:mb-2">
+                  {allImages.length}
+                </div>
+                <div className="text-xs md:text-sm text-muted-foreground">
+                  Total Images
+                </div>
               </div>
               <div className="text-center p-4 md:p-6 bg-card/50 backdrop-blur-sm rounded-xl md:rounded-2xl border border-border/50">
-                <div className="text-2xl md:text-3xl font-bold text-accent mb-1 md:mb-2">{uniqueTags.length}</div>
-                <div className="text-xs md:text-sm text-muted-foreground">Categories</div>
+                <div className="text-2xl md:text-3xl font-bold text-accent mb-1 md:mb-2">
+                  {uniqueTags.length}
+                </div>
+                <div className="text-xs md:text-sm text-muted-foreground">
+                  Categories
+                </div>
               </div>
               <div className="text-center p-4 md:p-6 bg-card/50 backdrop-blur-sm rounded-xl md:rounded-2xl border border-border/50">
-                <div className="text-2xl md:text-3xl font-bold text-primary mb-1 md:mb-2">{filteredImages.length}</div>
-                <div className="text-xs md:text-sm text-muted-foreground">Filtered Results</div>
+                <div className="text-2xl md:text-3xl font-bold text-primary mb-1 md:mb-2">
+                  {filteredImages.length}
+                </div>
+                <div className="text-xs md:text-sm text-muted-foreground">
+                  Filtered Results
+                </div>
               </div>
             </motion.div>
           </div>
@@ -244,16 +271,27 @@ export default function AllGalleryPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Categories</SelectItem>
-                    {uniqueTags.map(tag => (
-                      <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                    {uniqueTags.map((tag) => (
+                      <SelectItem key={tag} value={tag}>
+                        {tag}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
 
                 {/* Sort */}
-                <Select value={sortBy} onValueChange={(value: 'newest' | 'oldest') => setSortBy(value)}>
+                <Select
+                  value={sortBy}
+                  onValueChange={(value: 'newest' | 'oldest') =>
+                    setSortBy(value)
+                  }
+                >
                   <SelectTrigger className="bg-background/50 border-border/50 text-sm">
-                    {sortBy === 'newest' ? <SortDesc className="w-4 h-4 mr-2" /> : <SortAsc className="w-4 h-4 mr-2" />}
+                    {sortBy === 'newest' ? (
+                      <SortDesc className="w-4 h-4 mr-2" />
+                    ) : (
+                      <SortAsc className="w-4 h-4 mr-2" />
+                    )}
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -267,8 +305,8 @@ export default function AllGalleryPage() {
                   <button
                     onClick={() => setGridSize('large')}
                     className={`flex-1 flex items-center justify-center p-2 rounded transition-colors ${
-                      gridSize === 'large' 
-                        ? 'bg-primary text-primary-foreground' 
+                      gridSize === 'large'
+                        ? 'bg-primary text-primary-foreground'
                         : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >
@@ -277,8 +315,8 @@ export default function AllGalleryPage() {
                   <button
                     onClick={() => setGridSize('small')}
                     className={`flex-1 flex items-center justify-center p-2 rounded transition-colors ${
-                      gridSize === 'small' 
-                        ? 'bg-primary text-primary-foreground' 
+                      gridSize === 'small'
+                        ? 'bg-primary text-primary-foreground'
                         : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >
@@ -291,7 +329,10 @@ export default function AllGalleryPage() {
               {(searchTerm || selectedTag !== 'all') && (
                 <div className="flex flex-wrap gap-2 mt-3 md:mt-4 pt-3 md:pt-4 border-t border-border/50">
                   {searchTerm && (
-                    <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-xs">
+                    <Badge
+                      variant="secondary"
+                      className="bg-primary/10 text-primary border-primary/20 text-xs"
+                    >
                       Search: "{searchTerm}"
                       <button
                         onClick={() => setSearchTerm('')}
@@ -302,7 +343,10 @@ export default function AllGalleryPage() {
                     </Badge>
                   )}
                   {selectedTag !== 'all' && (
-                    <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20 text-xs">
+                    <Badge
+                      variant="secondary"
+                      className="bg-accent/10 text-accent border-accent/20 text-xs"
+                    >
                       Tag: {selectedTag}
                       <button
                         onClick={() => setSelectedTag('all')}
@@ -331,7 +375,9 @@ export default function AllGalleryPage() {
                 <div className="flex items-center gap-3 text-destructive">
                   <AlertCircle className="w-5 h-5 flex-shrink-0" />
                   <div className="flex-1">
-                    <p className="font-semibold text-sm md:text-base">Failed to load gallery images</p>
+                    <p className="font-semibold text-sm md:text-base">
+                      Failed to load gallery images
+                    </p>
                     <p className="text-xs md:text-sm text-destructive/80 mt-1">
                       {formatErrorForDisplay(error)}
                     </p>
@@ -365,13 +411,14 @@ export default function AllGalleryPage() {
               >
                 <Images className="w-16 h-16 md:w-24 md:h-24 text-muted-foreground/40 mx-auto mb-4 md:mb-6" />
                 <h3 className="text-xl md:text-2xl font-bold text-muted-foreground mb-3 md:mb-4">
-                  {searchTerm || selectedTag !== 'all' ? 'No Results Found' : 'No Images Yet'}
+                  {searchTerm || selectedTag !== 'all'
+                    ? 'No Results Found'
+                    : 'No Images Yet'}
                 </h3>
                 <p className="text-sm md:text-base text-muted-foreground/80 max-w-md mx-auto mb-4 md:mb-6">
-                  {searchTerm || selectedTag !== 'all' 
+                  {searchTerm || selectedTag !== 'all'
                     ? 'Try adjusting your search terms or filters'
-                    : 'Check back soon for amazing moments from our academy!'
-                  }
+                    : 'Check back soon for amazing moments from our academy!'}
                 </p>
                 {(searchTerm || selectedTag !== 'all') && (
                   <Button
@@ -389,8 +436,8 @@ export default function AllGalleryPage() {
             ) : (
               <motion.div
                 className={`grid gap-4 md:gap-6 ${
-                  gridSize === 'large' 
-                    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' 
+                  gridSize === 'large'
+                    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
                     : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'
                 }`}
                 variants={containerVariants}
@@ -406,12 +453,16 @@ export default function AllGalleryPage() {
                     whileHover={{ y: -2, scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <div className={`relative overflow-hidden bg-muted ${
-                      gridSize === 'large' ? 'aspect-[4/3]' : 'aspect-square'
-                    }`}>
+                    <div
+                      className={`relative overflow-hidden bg-muted ${
+                        gridSize === 'large' ? 'aspect-[4/3]' : 'aspect-square'
+                      }`}
+                    >
                       <img
                         src={img.image_url}
-                        alt={img.caption || `Academy gallery image ${index + 1}`}
+                        alt={
+                          img.caption || `Academy gallery image ${index + 1}`
+                        }
                         loading="lazy"
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
@@ -422,7 +473,7 @@ export default function AllGalleryPage() {
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Image Info */}
                     {(img.caption || img.tag) && gridSize === 'large' && (
                       <div className="p-3 md:p-4">
@@ -432,23 +483,29 @@ export default function AllGalleryPage() {
                           </p>
                         )}
                         {img.tag && (
-                          <Badge variant="secondary" className="text-xs bg-primary/10 text-primary border-primary/20">
+                          <Badge
+                            variant="secondary"
+                            className="text-xs bg-primary/10 text-primary border-primary/20"
+                          >
                             <Tag className="w-3 h-3 mr-1" />
                             {img.tag}
                           </Badge>
                         )}
                       </div>
                     )}
-                    
+
                     {/* Tag overlay for small grid */}
                     {img.tag && gridSize === 'small' && (
                       <div className="absolute top-2 left-2">
-                        <Badge variant="secondary" className="text-xs bg-primary/90 text-primary-foreground backdrop-blur-sm px-2 py-1">
+                        <Badge
+                          variant="secondary"
+                          className="text-xs bg-primary/90 text-primary-foreground backdrop-blur-sm px-2 py-1"
+                        >
                           {img.tag}
                         </Badge>
                       </div>
                     )}
-                    
+
                     {/* Date overlay */}
                     {img.created_at && (
                       <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -525,7 +582,7 @@ export default function AllGalleryPage() {
                   alt={selectedImage.caption || 'Gallery image'}
                   className="max-w-full max-h-full object-contain rounded-xl md:rounded-2xl shadow-2xl"
                 />
-                
+
                 {/* Image Info Overlay */}
                 {(selectedImage.caption || selectedImage.tag) && (
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 md:p-6 lg:p-8 rounded-b-xl md:rounded-b-2xl backdrop-blur-sm">
@@ -544,7 +601,9 @@ export default function AllGalleryPage() {
                       {selectedImage.created_at && (
                         <div className="flex items-center">
                           <Calendar className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-                          {new Date(selectedImage.created_at).toLocaleDateString()}
+                          {new Date(
+                            selectedImage.created_at
+                          ).toLocaleDateString()}
                         </div>
                       )}
                     </div>
@@ -562,7 +621,7 @@ export default function AllGalleryPage() {
           )}
         </AnimatePresence>
       </div>
-      
+
       <FooterSection />
     </>
   );
