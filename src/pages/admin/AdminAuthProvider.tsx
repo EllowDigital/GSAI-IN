@@ -45,14 +45,14 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
   // Check if user is admin via database lookup
   const checkAdminStatus = async (email: string | null): Promise<boolean> => {
     if (!email) return false;
-    
+
     try {
       const { data: adminUser } = await supabase
         .from('admin_users')
         .select('email')
         .eq('email', email)
         .maybeSingle();
-      
+
       return !!adminUser;
     } catch (error) {
       console.error('Admin status check failed:', error);
@@ -60,7 +60,9 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     }
   };
 
-  const updateAuthState = async (newSession: Session | null): Promise<boolean> => {
+  const updateAuthState = async (
+    newSession: Session | null
+  ): Promise<boolean> => {
     const email = newSession?.user?.email ?? null;
     const isAdminUser = await checkAdminStatus(email);
 

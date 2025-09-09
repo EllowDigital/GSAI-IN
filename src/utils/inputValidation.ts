@@ -9,7 +9,7 @@
  */
 export function sanitizeText(input: string): string {
   if (!input || typeof input !== 'string') return '';
-  
+
   return input
     .replace(/[<>'"&]/g, '') // Remove common XSS vectors
     .replace(/javascript:/gi, '') // Remove javascript: protocols
@@ -23,15 +23,18 @@ export function sanitizeText(input: string): string {
  */
 export function sanitizeHTML(input: string): string {
   if (!input || typeof input !== 'string') return '';
-  
+
   // Remove script tags and their content
-  let sanitized = input.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-  
+  let sanitized = input.replace(
+    /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+    ''
+  );
+
   // Remove potentially dangerous attributes
   sanitized = sanitized.replace(/\son\w+\s*=\s*["'][^"']*["']/gi, ''); // onclick, onload, etc.
   sanitized = sanitized.replace(/javascript:\s*[^"'\s]+/gi, ''); // javascript: urls
   sanitized = sanitized.replace(/data:\s*[^"'\s]+/gi, ''); // data: urls
-  
+
   return sanitized.trim().slice(0, 5000);
 }
 
