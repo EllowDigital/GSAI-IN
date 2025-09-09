@@ -94,8 +94,8 @@ export default function GallerySection() {
       className="py-20 md:py-32 px-4 md:px-6 lg:px-8 bg-gradient-to-br from-background via-background to-muted/30 relative overflow-hidden"
     >
       {/* Background blobs */}
-      <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-primary/5 to-accent/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 right-16 w-96 h-96 bg-gradient-to-br from-accent/5 to-primary/5 rounded-full blur-3xl" />
+      <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 right-16 w-96 h-96 bg-gradient-to-br from-accent/10 to-primary/10 rounded-full blur-3xl" />
 
       <div className="max-w-7xl mx-auto relative">
         {/* Header */}
@@ -105,7 +105,7 @@ export default function GallerySection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="inline-flex items-center justify-center p-3 mb-8 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full backdrop-blur-sm border border-primary/20">
+          <div className="inline-flex items-center justify-center p-3 mb-8 bg-gradient-to-r from-primary/20 to-accent/20 rounded-full backdrop-blur-sm border border-primary/30">
             <Images className="w-6 h-6 text-primary mr-3" />
             <span className="text-sm font-semibold text-primary uppercase tracking-wider">
               Gallery
@@ -114,7 +114,7 @@ export default function GallerySection() {
 
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-foreground mb-8 leading-tight">
             Academy{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary animate-pulse">
               Moments
             </span>
           </h2>
@@ -200,7 +200,7 @@ export default function GallerySection() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform group-hover:scale-110">
-                      <div className="bg-primary/20 backdrop-blur-lg rounded-full p-4 border border-primary/30 shadow-lg">
+                      <div className="bg-gradient-to-r from-primary/30 to-accent/30 backdrop-blur-lg rounded-full p-4 border border-primary/50 shadow-lg">
                         <Images className="w-8 h-8 text-primary-foreground" />
                       </div>
                     </div>
@@ -231,10 +231,10 @@ export default function GallerySection() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8 }}
               >
-                <Button
+                  <Button
                   asChild
                   size="lg"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
                   <Link to="/gallery">
                     View All Gallery
