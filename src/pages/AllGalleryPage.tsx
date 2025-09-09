@@ -156,8 +156,8 @@ export default function AllGalleryPage() {
         {/* Header Section */}
         <section className="pt-20 md:pt-24 pb-8 md:pb-12 px-4 md:px-6 lg:px-8 relative overflow-hidden">
           {/* Background elements */}
-          <div className="absolute top-10 left-10 w-48 h-48 md:w-72 md:h-72 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-16 w-64 h-64 md:w-96 md:h-96 bg-gradient-to-br from-accent/10 to-primary/10 rounded-full blur-3xl" />
+          <div className="absolute top-10 left-10 w-48 h-48 md:w-72 md:h-72 bg-gradient-to-br from-primary/15 to-accent/15 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-16 w-64 h-64 md:w-96 md:h-96 bg-gradient-to-br from-accent/15 to-primary/15 rounded-full blur-3xl" />
 
           <div className="max-w-7xl mx-auto relative">
             {/* Back Button */}
@@ -187,7 +187,7 @@ export default function AllGalleryPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <div className="inline-flex items-center justify-center p-3 mb-6 md:mb-8 bg-gradient-to-r from-primary/20 to-accent/20 rounded-full backdrop-blur-sm border border-primary/30">
+              <div className="inline-flex items-center justify-center p-3 mb-6 md:mb-8 bg-gradient-to-r from-primary/25 to-accent/25 rounded-full backdrop-blur-sm border border-primary/40">
                 <Images className="w-5 h-5 md:w-6 md:h-6 text-primary mr-2 md:mr-3" />
                 <span className="text-xs md:text-sm font-semibold text-primary uppercase tracking-wider">
                   Complete Gallery
@@ -196,7 +196,7 @@ export default function AllGalleryPage() {
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-foreground mb-4 md:mb-6 leading-tight">
                 Academy{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary animate-pulse">
                   Gallery
                 </span>
               </h1>
