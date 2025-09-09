@@ -33,7 +33,11 @@ import {
   safeAsync,
   formatErrorForDisplay,
 } from '@/utils/errorHandling';
-import { sanitizeText, validateAadharNumber, validatePhoneNumber } from '@/utils/inputValidation';
+import {
+  sanitizeText,
+  validateAadharNumber,
+  validatePhoneNumber,
+} from '@/utils/inputValidation';
 
 // List of valid programs
 const programOptions = [
@@ -151,7 +155,9 @@ export default function StudentModal({
     }
 
     // Enhanced validation using utility functions
-    const aadharValidation = validateAadharNumber(sanitizedValues.aadhar_number);
+    const aadharValidation = validateAadharNumber(
+      sanitizedValues.aadhar_number
+    );
     if (!aadharValidation.isValid) {
       toast.error('Aadhar number must be exactly 12 digits.');
       return;
@@ -159,7 +165,9 @@ export default function StudentModal({
 
     const phoneValidation = validatePhoneNumber(sanitizedValues.parent_contact);
     if (!phoneValidation.isValid) {
-      toast.error('Contact number must be exactly 10 digits starting with 6-9.');
+      toast.error(
+        'Contact number must be exactly 10 digits starting with 6-9.'
+      );
       return;
     }
 

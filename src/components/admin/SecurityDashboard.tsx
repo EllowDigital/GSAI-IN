@@ -1,6 +1,12 @@
 import React from 'react';
 import { Shield, Database, Eye, Lock, AlertTriangle } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 export function SecurityDashboard() {
@@ -21,7 +27,7 @@ export function SecurityDashboard() {
     },
     {
       icon: <Eye className="h-5 w-5" />,
-      title: 'Data Masking', 
+      title: 'Data Masking',
       status: 'Enabled',
       description: 'Aadhar numbers and phone numbers are masked in display',
       variant: 'default' as const,
@@ -61,7 +67,7 @@ export function SecurityDashboard() {
           </CardContent>
         </Card>
       ))}
-      
+
       <Card className="md:col-span-2 lg:col-span-4">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

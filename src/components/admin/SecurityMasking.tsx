@@ -11,15 +11,18 @@ interface MaskedDataProps {
 export function MaskedData({ value, type, className = '' }: MaskedDataProps) {
   const [isVisible, setIsVisible] = React.useState(false);
 
-  const getMaskedValue = (val: string, dataType: 'aadhar' | 'phone'): string => {
+  const getMaskedValue = (
+    val: string,
+    dataType: 'aadhar' | 'phone'
+  ): string => {
     if (!val) return '';
-    
+
     if (dataType === 'aadhar') {
       return val.length >= 4 ? `****-****-${val.slice(-4)}` : '****-****-****';
     } else if (dataType === 'phone') {
       return val.length >= 4 ? `******${val.slice(-4)}` : '**********';
     }
-    
+
     return val;
   };
 
@@ -62,7 +65,9 @@ export function AuditLogViewer({ className = '' }: AuditLogViewerProps) {
       try {
         // Note: This would require proper admin authentication
         // and the audit_logs table to be accessible via API
-        console.log('Audit logging is active - check database for detailed logs');
+        console.log(
+          'Audit logging is active - check database for detailed logs'
+        );
         setLoading(false);
       } catch (error) {
         console.error('Failed to fetch audit logs:', error);
@@ -79,8 +84,8 @@ export function AuditLogViewer({ className = '' }: AuditLogViewerProps) {
         Security Audit Status
       </h3>
       <p className="text-xs text-gray-600 dark:text-gray-400">
-        🔒 All sensitive data access is being logged for security audit purposes.
-        Database-level encryption and validation triggers are active.
+        🔒 All sensitive data access is being logged for security audit
+        purposes. Database-level encryption and validation triggers are active.
       </p>
     </div>
   );
