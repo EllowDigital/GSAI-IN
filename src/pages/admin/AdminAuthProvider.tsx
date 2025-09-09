@@ -28,9 +28,6 @@ const AdminAuthContext = createContext<AdminAuthContextType>({
   signOut: async () => {},
 });
 
-// Change this to a list if more admins are allowed in future
-const ADMIN_EMAIL = 'ghatakgsai@gmail.com';
-
 function AdminAuthProviderInner({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -45,9 +42,27 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     setIsLoading(false);
   };
 
-  const updateAuthState = (newSession: Session | null): boolean => {
+  // Check if user is admin via database lookup
+  const checkAdminStatus = async (email: string | null): Promise<boolean> => {
+    if (!email) return false;
+    
+    try {
+      const { data: adminUser } = await supabase
+        .from('admin_users')
+        .select('email')
+        .eq('email', email)
+        .maybeSingle();
+      
+      return !!adminUser;
+    } catch (error) {
+      console.error('Admin status check failed:', error);
+      return false;
+    }
+  };
+
+  const updateAuthState = async (newSession: Session | null): Promise<boolean> => {
     const email = newSession?.user?.email ?? null;
-    const isAdminUser = email === ADMIN_EMAIL;
+    const isAdminUser = await checkAdminStatus(email);
 
     setSession(newSession);
     setUserEmail(email);
@@ -60,7 +75,7 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     const initializeAuth = async () => {
       const { data } = await supabase.auth.getSession();
       const session = data.session;
-      const isAdminUser = updateAuthState(session);
+      const isAdminUser = await updateAuthState(session);
 
       setIsLoading(false);
 
@@ -73,8 +88,8 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     initializeAuth();
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, newSession) => {
-        const isAdminUser = updateAuthState(newSession);
+      async (_event, newSession) => {
+        const isAdminUser = await updateAuthState(newSession);
         setIsLoading(false);
 
         if (!isAdminUser) {
@@ -104,15 +119,16 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     }
 
     const signedInEmail = data.user.email;
+    const isAdminUser = await checkAdminStatus(signedInEmail);
 
-    if (signedInEmail !== ADMIN_EMAIL) {
+    if (!isAdminUser) {
       toast.error('Unauthorized: Not an admin account.');
       await supabase.auth.signOut();
       clearState();
       return;
     }
 
-    updateAuthState(data.session ?? null);
+    await updateAuthState(data.session ?? null);
     toast.success('Logged in as admin.');
     navigate('/admin/dashboard', { replace: true });
   };

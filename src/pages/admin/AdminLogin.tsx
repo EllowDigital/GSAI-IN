@@ -10,6 +10,9 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
 const LoginSchema = Yup.object().shape({
+  email: Yup.string()
+    .email('Invalid email format')
+    .required('Email is required'),
   password: Yup.string()
     .min(6, 'Password must be at least 6 characters')
     .required('Password is required'),
@@ -21,7 +24,7 @@ export default function AdminLogin() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const email = 'ghatakgsai@gmail.com';
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
     if (!isLoading && isAdmin) {
@@ -40,13 +43,13 @@ export default function AdminLogin() {
     };
   }, []);
 
-  const handleSubmit = async (values: { password: string }) => {
+  const handleSubmit = async (values: { email: string; password: string }) => {
     if (!isOnline) {
       setError('You are offline. Please check your internet connection.');
       return;
     }
     setError(null);
-    await signIn(email.trim(), values.password);
+    await signIn(values.email.trim(), values.password);
   };
 
   return (
@@ -73,13 +76,13 @@ export default function AdminLogin() {
         </div>
 
         <Formik
-          initialValues={{ password: '' }}
+          initialValues={{ email: '', password: '' }}
           validationSchema={LoginSchema}
           onSubmit={handleSubmit}
         >
           {({ values }) => (
             <Form className="flex flex-col gap-4">
-              {/* Email (read-only) */}
+              {/* Email */}
               <div>
                 <label
                   htmlFor="email"
@@ -87,12 +90,18 @@ export default function AdminLogin() {
                 >
                   Email Address
                 </label>
-                <Input
+                <Field
                   id="email"
+                  name="email"
                   type="email"
-                  value={email}
-                  disabled
-                  className="bg-gray-100 dark:bg-gray-800 dark:text-white text-sm rounded-lg border-yellow-300 dark:border-gray-600"
+                  autoComplete="email"
+                  className="w-full bg-gray-50 dark:bg-gray-800 dark:text-white border-yellow-300 dark:border-gray-600 text-sm rounded-lg"
+                  as={Input}
+                />
+                <ErrorMessage
+                  name="email"
+                  component="div"
+                  className="text-xs text-red-500 mt-1"
                 />
               </div>
 

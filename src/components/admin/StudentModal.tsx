@@ -33,6 +33,7 @@ import {
   safeAsync,
   formatErrorForDisplay,
 } from '@/utils/errorHandling';
+import { sanitizeText, validateAadharNumber, validatePhoneNumber } from '@/utils/inputValidation';
 
 // List of valid programs
 const programOptions = [
@@ -126,18 +127,20 @@ export default function StudentModal({
 
   // Submit Handler
   const onSubmit = async (values: StudentFormValues) => {
-    // Client-side validation
-    const requiredFields = {
-      name: values.name?.trim(),
-      aadhar_number: values.aadhar_number?.trim(),
-      program: values.program?.trim(),
-      join_date: values.join_date?.trim(),
-      parent_name: values.parent_name?.trim(),
-      parent_contact: values.parent_contact?.trim(),
+    // Enhanced client-side validation with sanitization
+    const sanitizedValues = {
+      name: sanitizeText(values.name?.trim() || ''),
+      aadhar_number: values.aadhar_number?.trim() || '',
+      program: sanitizeText(values.program?.trim() || ''),
+      join_date: values.join_date?.trim() || '',
+      parent_name: sanitizeText(values.parent_name?.trim() || ''),
+      parent_contact: values.parent_contact?.trim() || '',
+      profile_image_url: values.profile_image_url,
     };
 
-    const missingFields = Object.entries(requiredFields)
-      .filter(([_, value]) => !value)
+    // Validate required fields
+    const missingFields = Object.entries(sanitizedValues)
+      .filter(([key, value]) => key !== 'profile_image_url' && !value)
       .map(([field]) => field.replace('_', ' '));
 
     if (missingFields.length > 0) {
@@ -147,15 +150,16 @@ export default function StudentModal({
       return;
     }
 
-    // Validate Aadhar number format
-    if (!/^\d{12}$/.test(values.aadhar_number)) {
+    // Enhanced validation using utility functions
+    const aadharValidation = validateAadharNumber(sanitizedValues.aadhar_number);
+    if (!aadharValidation.isValid) {
       toast.error('Aadhar number must be exactly 12 digits.');
       return;
     }
 
-    // Validate phone number format
-    if (!/^\d{10}$/.test(values.parent_contact)) {
-      toast.error('Contact number must be exactly 10 digits.');
+    const phoneValidation = validatePhoneNumber(sanitizedValues.parent_contact);
+    if (!phoneValidation.isValid) {
+      toast.error('Contact number must be exactly 10 digits starting with 6-9.');
       return;
     }
 
@@ -165,7 +169,7 @@ export default function StudentModal({
         const { data: existing, error: checkError } = await supabase
           .from('students')
           .select('id, name')
-          .eq('aadhar_number', values.aadhar_number)
+          .eq('aadhar_number', aadharValidation.sanitized)
           .maybeSingle();
 
         if (checkError && checkError.code !== 'PGRST116') {
@@ -179,15 +183,15 @@ export default function StudentModal({
         }
       }
 
-      // Prepare payload
+      // Prepare payload with sanitized values
       const payload = {
-        name: values.name.trim(),
-        aadhar_number: values.aadhar_number.trim(),
-        program: values.program.trim(),
-        join_date: values.join_date,
-        parent_name: values.parent_name.trim(),
-        parent_contact: values.parent_contact.trim(),
-        profile_image_url: values.profile_image_url || null,
+        name: sanitizedValues.name,
+        aadhar_number: aadharValidation.sanitized,
+        program: sanitizedValues.program,
+        join_date: sanitizedValues.join_date,
+        parent_name: sanitizedValues.parent_name,
+        parent_contact: phoneValidation.sanitized,
+        profile_image_url: sanitizedValues.profile_image_url || null,
       };
 
       if (student) {
