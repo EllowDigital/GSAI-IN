@@ -22,23 +22,27 @@ const SUPABASE_ANON_KEY: string =
 /**
  * Optimized Supabase client instance with performance enhancements
  */
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  db: {
-    schema: 'public',
-  },
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-  realtime: {
-    params: {
-      eventsPerSecond: 10,
+export const supabase = createClient<Database>(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY,
+  {
+    db: {
+      schema: 'public',
     },
-  },
-  global: {
-    headers: {
-      'X-Client-Info': 'supabase-js-web',
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: false,
     },
-  },
-});
+    realtime: {
+      params: {
+        eventsPerSecond: 10,
+      },
+    },
+    global: {
+      headers: {
+        'X-Client-Info': 'supabase-js-web',
+      },
+    },
+  }
+);

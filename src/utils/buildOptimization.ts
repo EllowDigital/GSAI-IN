@@ -6,10 +6,10 @@
 export const typeGuards = {
   isString: (value: unknown): value is string => typeof value === 'string',
   isNumber: (value: unknown): value is number => typeof value === 'number',
-  isObject: (value: unknown): value is Record<string, unknown> => 
+  isObject: (value: unknown): value is Record<string, unknown> =>
     typeof value === 'object' && value !== null && !Array.isArray(value),
   isArray: (value: unknown): value is unknown[] => Array.isArray(value),
-  isDefined: <T>(value: T | undefined | null): value is T => 
+  isDefined: <T>(value: T | undefined | null): value is T =>
     value !== undefined && value !== null,
 };
 
@@ -83,7 +83,7 @@ export const memoryOptimization = {
     if (typeof window !== 'undefined') {
       // Remove any global event listeners that might cause memory leaks
       const events = ['resize', 'scroll', 'orientationchange'];
-      events.forEach(event => {
+      events.forEach((event) => {
         window.removeEventListener(event, () => {});
       });
     }
@@ -118,7 +118,7 @@ export const buildSafety = {
       () => 'sessionStorage' in window,
     ];
 
-    return checks.every(check => {
+    return checks.every((check) => {
       try {
         return check();
       } catch {
@@ -142,7 +142,9 @@ export const initializeBuildOptimizations = () => {
 
     // Validate environment
     if (!buildSafety.validateEnvironment()) {
-      console.warn('Environment validation failed - some features may not work');
+      console.warn(
+        'Environment validation failed - some features may not work'
+      );
     }
   }
 };

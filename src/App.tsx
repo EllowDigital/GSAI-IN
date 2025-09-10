@@ -78,7 +78,7 @@ const App = () => {
   useEffect(() => {
     // Initialize performance monitoring and optimizations
     initializeSupabaseOptimization();
-    
+
     const timeout = setTimeout(() => setLoading(false), 1000); // Reduced loading time
 
     const handleOnline = () => setIsOnline(true);

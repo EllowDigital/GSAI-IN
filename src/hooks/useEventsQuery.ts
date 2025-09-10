@@ -40,7 +40,7 @@ export function useEventsQuery() {
   // Add optimized real-time subscription
   useEffect(() => {
     const channelKey = 'events-realtime';
-    
+
     const channel = supabase
       .channel('public-events-realtime')
       .on(

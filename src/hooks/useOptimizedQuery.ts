@@ -1,4 +1,8 @@
-import { useQuery, UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
+import {
+  useQuery,
+  UseQueryOptions,
+  UseQueryResult,
+} from '@tanstack/react-query';
 import { optimizedQuery } from '@/utils/supabaseOptimization';
 
 /**
@@ -17,11 +21,12 @@ export function useOptimizedQuery<TData = any, TError = Error>(
 
   return useQuery({
     queryKey,
-    queryFn: () => optimizedQuery(
-      queryKey.join('-'),
-      queryFn,
-      { cacheKey, cacheDuration, retries }
-    ),
+    queryFn: () =>
+      optimizedQuery(queryKey.join('-'), queryFn, {
+        cacheKey,
+        cacheDuration,
+        retries,
+      }),
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 30, // 30 minutes
     refetchOnWindowFocus: false,

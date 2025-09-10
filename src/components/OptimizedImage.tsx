@@ -28,14 +28,13 @@ export function OptimizedImage({
   format = 'auto',
   ...props
 }: OptimizedImageProps) {
-  
   // Generate optimized srcSet for different screen densities
   const srcSet = useMemo(() => {
     const baseUrl = src;
     const densities = [1, 2];
-    
+
     // For now, return the original src until we implement image optimization
-    return densities.map(density => `${baseUrl} ${density}x`).join(', ');
+    return densities.map((density) => `${baseUrl} ${density}x`).join(', ');
   }, [src]);
 
   // Generate placeholder for better perceived performance
@@ -50,7 +49,7 @@ export function OptimizedImage({
         </text>
       </svg>
     `)}`;
-    
+
     return svgPlaceholder;
   }, [width, height]);
 
@@ -58,9 +57,9 @@ export function OptimizedImage({
   if (priority) {
     return (
       <>
-        <link 
-          rel="preload" 
-          as="image" 
+        <link
+          rel="preload"
+          as="image"
           href={src}
           imageSizes={sizes}
           imageSrcSet={srcSet}
@@ -84,7 +83,7 @@ export function OptimizedImage({
 
   // For non-critical images, use lazy loading with intersection observer
   const { onLoad, onError, ...otherProps } = props;
-  
+
   return (
     <LazyImage
       src={src}
