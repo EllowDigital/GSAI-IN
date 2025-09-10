@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Tables } from '@/integrations/supabase/types';
+import { useOptimizedQuery } from './useOptimizedQuery';
+import { realtimeManager } from '@/utils/supabaseOptimization';
 
 export type EventRow = Tables<'events'>;
 
@@ -22,26 +24,30 @@ async function fetchEvents(): Promise<EventRow[]> {
 export function useEventsQuery() {
   const queryClient = useQueryClient();
 
-  // Use react-query for fetching and retry mechanism
-  const query = useQuery<EventRow[], Error>({
-    queryKey: ['events', 'public', 'cards'],
-    queryFn: fetchEvents,
-    retry: 2, // Retry up to 2 times on failure
-    staleTime: 1000 * 60, // 1 minute
-    // cacheTime removed due to API change
-    refetchOnWindowFocus: true, // Refetch when user returns to page
-  });
+  // Use optimized query for better performance
+  const query = useOptimizedQuery<EventRow[], Error>(
+    ['events', 'public', 'cards'],
+    fetchEvents,
+    {
+      cacheKey: 'events_public_cards',
+      cacheDuration: 1000 * 60 * 2, // 2 minutes
+      retries: 2,
+      staleTime: 1000 * 60, // 1 minute
+      refetchOnWindowFocus: true,
+    }
+  );
 
-  // Add supabase real-time subscription for live event updates
+  // Add optimized real-time subscription
   useEffect(() => {
-    // Subscribe to events changes from Supabase
+    const channelKey = 'events-realtime';
+    
     const channel = supabase
       .channel('public-events-realtime')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'events' },
         () => {
-          // Refetch on any event change
+          // Invalidate and refetch on any event change
           queryClient.invalidateQueries({
             queryKey: ['events', 'public', 'cards'],
           });
@@ -49,8 +55,10 @@ export function useEventsQuery() {
       )
       .subscribe();
 
+    realtimeManager.subscribe(channelKey, channel);
+
     return () => {
-      supabase.removeChannel(channel);
+      realtimeManager.unsubscribe(channelKey);
     };
   }, [queryClient]);
 

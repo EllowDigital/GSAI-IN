@@ -6,6 +6,8 @@ import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as Sonner } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { initializeSupabaseOptimization } from '@/utils/supabaseOptimization';
+import { performanceMonitor } from '@/utils/performance';
 
 import Preloader from './components/Preloader';
 import OfflineBanner from './components/OfflineBanner';
@@ -47,17 +49,22 @@ const queryClient = new QueryClient({
         // Don't retry auth errors
         if (
           error?.message?.includes('refresh_token_not_found') ||
-          error?.message?.includes('Invalid Refresh Token')
+          error?.message?.includes('Invalid Refresh Token') ||
+          error?.status === 401
         ) {
           return false;
         }
         return failureCount < 2;
       },
       staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 30, // 30 minutes (replaced cacheTime)
       refetchOnWindowFocus: false,
+      refetchOnReconnect: 'always',
+      networkMode: 'offlineFirst',
     },
     mutations: {
       retry: 1,
+      networkMode: 'offlineFirst',
     },
   },
 });
@@ -69,7 +76,10 @@ const App = () => {
     useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
-    const timeout = setTimeout(() => setLoading(false), 1300);
+    // Initialize performance monitoring and optimizations
+    initializeSupabaseOptimization();
+    
+    const timeout = setTimeout(() => setLoading(false), 1000); // Reduced loading time
 
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -83,6 +93,7 @@ const App = () => {
     window.addEventListener('offline', handleOffline);
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
+    // Cleanup performance monitoring on unmount
     return () => {
       clearTimeout(timeout);
       window.removeEventListener('online', handleOnline);
@@ -91,6 +102,7 @@ const App = () => {
         'beforeinstallprompt',
         handleBeforeInstallPrompt
       );
+      performanceMonitor.disconnect();
     };
   }, []);
 
