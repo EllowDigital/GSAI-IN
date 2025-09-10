@@ -78,7 +78,7 @@ export async function optimizedQuery<T = any>(
       queryName,
       async () => {
         let lastError: Error | null = null;
-        
+
         for (let attempt = 0; attempt <= retries; attempt++) {
           try {
             return await queryFn();
@@ -86,23 +86,26 @@ export async function optimizedQuery<T = any>(
             lastError = error as Error;
             if (attempt < retries) {
               // Exponential backoff
-              await new Promise(resolve => 
+              await new Promise((resolve) =>
                 setTimeout(resolve, Math.pow(2, attempt) * 1000)
               );
             }
           }
         }
-        
+
         throw lastError;
       }
     );
 
     // Cache successful result
     if (cacheKey && typeof window !== 'undefined') {
-      localStorage.setItem(`supabase_cache_${cacheKey}`, JSON.stringify({
-        data: result,
-        timestamp: Date.now()
-      }));
+      localStorage.setItem(
+        `supabase_cache_${cacheKey}`,
+        JSON.stringify({
+          data: result,
+          timestamp: Date.now(),
+        })
+      );
     }
 
     return result;
@@ -119,18 +122,20 @@ export async function batchQuery<T>(
   batchSize: number = 5
 ): Promise<T[]> {
   const results: T[] = [];
-  
+
   for (let i = 0; i < queries.length; i += batchSize) {
     const batch = queries.slice(i, i + batchSize);
     const batchResults = await Promise.all(
-      batch.map(query => query().catch(error => {
-        console.warn('Batch query failed:', error);
-        return null;
-      }))
+      batch.map((query) =>
+        query().catch((error) => {
+          console.warn('Batch query failed:', error);
+          return null;
+        })
+      )
     );
-    results.push(...batchResults.filter(Boolean) as T[]);
+    results.push(...(batchResults.filter(Boolean) as T[]));
   }
-  
+
   return results;
 }
 
@@ -139,14 +144,15 @@ export async function batchQuery<T>(
  */
 export function clearExpiredCache(): void {
   if (typeof window === 'undefined') return;
-  
+
   const keys = Object.keys(localStorage);
-  const cacheKeys = keys.filter(key => key.startsWith('supabase_cache_'));
-  
-  cacheKeys.forEach(key => {
+  const cacheKeys = keys.filter((key) => key.startsWith('supabase_cache_'));
+
+  cacheKeys.forEach((key) => {
     try {
       const { timestamp } = JSON.parse(localStorage.getItem(key) || '{}');
-      if (Date.now() - timestamp > 300000) { // 5 minutes
+      if (Date.now() - timestamp > 300000) {
+        // 5 minutes
         localStorage.removeItem(key);
       }
     } catch {
@@ -161,7 +167,7 @@ export function clearExpiredCache(): void {
 export function initializeSupabaseOptimization(): void {
   // Clear expired cache on page load
   clearExpiredCache();
-  
+
   // Set up periodic cache cleanup
   if (typeof window !== 'undefined') {
     setInterval(clearExpiredCache, 300000); // Every 5 minutes
@@ -172,9 +178,11 @@ export function initializeSupabaseOptimization(): void {
     if (event === 'SIGNED_OUT') {
       // Clear cache on sign out
       const keys = Object.keys(localStorage);
-      keys.filter(key => key.startsWith('supabase_cache_')).forEach(key => {
-        localStorage.removeItem(key);
-      });
+      keys
+        .filter((key) => key.startsWith('supabase_cache_'))
+        .forEach((key) => {
+          localStorage.removeItem(key);
+        });
     }
   });
 }
@@ -198,7 +206,7 @@ export class RealtimeManager {
     if (this.subscriptions.has(key)) {
       this.unsubscribe(key);
     }
-    
+
     this.subscriptions.set(key, channel);
   }
 
