@@ -50,11 +50,20 @@ const textVariants: Variants = {
 };
 
 const staggerContainer: Variants = {
+  initial: {}, // Keep initial state empty, children will use their own initial
   animate: {
     transition: {
       staggerChildren: 0.15,
       delayChildren: 0.2,
     },
+  },
+};
+
+const scrollIndicatorVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { duration: 0.8, delay: 0.5 },
   },
 };
 
@@ -213,10 +222,12 @@ export default function App() {
 
       {/* Main Content */}
       <div className="relative z-10 w-full max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+        {/* MODIFICATION: The 'animate' prop is now controlled by the 'videoFinished' state. */}
+        {/* The text will be in its 'initial' state (hidden) until the video finishes. */}
         <motion.div
           variants={staggerContainer}
           initial="initial"
-          animate="animate"
+          animate={videoFinished ? 'animate' : 'initial'}
         >
           <motion.div
             variants={textVariants}
@@ -302,11 +313,13 @@ export default function App() {
           )}
         </AnimatePresence>
         <a href="#about" aria-label="Scroll down">
+          {/* MODIFICATION: This animation is now also controlled by 'videoFinished'. */}
+          {/* It will stay hidden and only animate to 'visible' when the video ends. */}
           <motion.div
             className="flex flex-col items-center gap-1 text-white/70 hover:text-white transition-colors"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5, duration: 0.8 }}
+            variants={scrollIndicatorVariants}
+            initial="hidden"
+            animate={videoFinished ? 'visible' : 'hidden'}
           >
             <ArrowDownCircle className="w-6 h-6 animate-bounce" />
             <span className="text-xs font-medium tracking-wider uppercase">
