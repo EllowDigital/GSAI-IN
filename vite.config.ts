@@ -18,4 +18,30 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  esbuild: {
+    legalComments: "none",
+  },
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "react-router-dom",
+      "@tanstack/react-query",
+      "@supabase/supabase-js",
+      "recharts",
+      "framer-motion",
+    ],
+    esbuildOptions: {
+      target: "es2020",
+    },
+  },
+  build: {
+    target: "es2020",
+    minify: "esbuild",
+    sourcemap: false,
+    cssCodeSplit: true,
+    modulePreload: { polyfill: false },
+    reportCompressedSize: false,
+    chunkSizeWarningLimit: 1500,
+  },
 }));

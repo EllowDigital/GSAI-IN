@@ -1,11 +1,12 @@
 {
   "name": "vite-react-shadcn-ts",
-  "version": "3.4.4",
+  "version": "3.8.2",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build && npm run generate:sitemap",
+    "build:fast": "vite build --mode production --emptyOutDir=false",
     "build:dev": "vite build --mode development && npm run generate:sitemap",
     "preview": "vite preview",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
