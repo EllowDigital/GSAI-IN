@@ -211,8 +211,8 @@ export default function TestimonialSection() {
           viewport={{ once: true, amount: 0.3 }}
           variants={itemVariants}
         >
-          <Carousel 
-            opts={{ align: 'start', loop: true }} 
+          <Carousel
+            opts={{ align: 'start', loop: true }}
             plugins={[plugin.current]}
             setApi={setApi}
             className="w-full"
@@ -230,45 +230,45 @@ export default function TestimonialSection() {
                     transition={{ duration: 0.3 }}
                   >
                     <Card className="h-full bg-white/80 border-yellow-100/50 shadow-md hover:shadow-xl transition-all duration-300 rounded-2xl">
-                    <CardHeader className="pb-4">
-                      <div className="flex justify-between items-start mb-3">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-red-500 text-white flex items-center justify-center font-bold shadow-md">
-                            {t.avatar}
+                      <CardHeader className="pb-4">
+                        <div className="flex justify-between items-start mb-3">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-red-500 text-white flex items-center justify-center font-bold shadow-md">
+                              {t.avatar}
+                            </div>
+                            <div>
+                              <CardTitle className="text-base font-semibold text-gray-900">
+                                {t.name}
+                              </CardTitle>
+                              <StarRating rating={t.rating} />
+                            </div>
                           </div>
-                          <div>
-                            <CardTitle className="text-base font-semibold text-gray-900">
-                              {t.name}
-                            </CardTitle>
-                            <StarRating rating={t.rating} />
-                          </div>
+                          <Quote className="w-6 h-6 text-yellow-400/40" />
                         </div>
-                        <Quote className="w-6 h-6 text-yellow-400/40" />
-                      </div>
-                      <div className="flex gap-2 flex-wrap">
-                        <span className="bg-yellow-100 text-yellow-800 px-3 py-1 text-xs rounded-full font-semibold">
-                          {t.program}
-                        </span>
-                        <span className="bg-red-100 text-red-800 px-3 py-1 text-xs rounded-full font-semibold">
-                          {t.experience}
-                        </span>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <blockquote className="relative text-gray-700 text-sm leading-relaxed">
-                        <span className="absolute -top-2 -left-1 text-3xl text-yellow-300">
-                          “
-                        </span>
-                        <span className="pl-4">{t.quote}</span>
-                        <span className="absolute -bottom-4 right-1 text-3xl text-yellow-300">
-                          ”
-                        </span>
-                      </blockquote>
-                      <CardDescription className="pt-4 border-t border-gray-100 mt-4 text-yellow-600 font-medium text-xs">
-                        {t.role}
-                      </CardDescription>
-                    </CardContent>
-                  </Card>
+                        <div className="flex gap-2 flex-wrap">
+                          <span className="bg-yellow-100 text-yellow-800 px-3 py-1 text-xs rounded-full font-semibold">
+                            {t.program}
+                          </span>
+                          <span className="bg-red-100 text-red-800 px-3 py-1 text-xs rounded-full font-semibold">
+                            {t.experience}
+                          </span>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <blockquote className="relative text-gray-700 text-sm leading-relaxed">
+                          <span className="absolute -top-2 -left-1 text-3xl text-yellow-300">
+                            “
+                          </span>
+                          <span className="pl-4">{t.quote}</span>
+                          <span className="absolute -bottom-4 right-1 text-3xl text-yellow-300">
+                            ”
+                          </span>
+                        </blockquote>
+                        <CardDescription className="pt-4 border-t border-gray-100 mt-4 text-yellow-600 font-medium text-xs">
+                          {t.role}
+                        </CardDescription>
+                      </CardContent>
+                    </Card>
                   </motion.div>
                 </CarouselItem>
               ))}
@@ -277,7 +277,7 @@ export default function TestimonialSection() {
             <CarouselPrevious className="absolute -left-6 top-1/2 -translate-y-1/2 bg-white/90 border border-yellow-200 text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50 shadow-md w-10 h-10 transition-all" />
             <CarouselNext className="absolute -right-6 top-1/2 -translate-y-1/2 bg-white/90 border border-yellow-200 text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50 shadow-md w-10 h-10 transition-all" />
           </Carousel>
-          
+
           {/* Progress Indicators */}
           <div className="flex justify-center gap-2 mt-8">
             {testimonials.map((_, index) => (
