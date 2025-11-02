@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import {
   Card,
   CardHeader,
@@ -12,9 +12,11 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from '@/components/ui/carousel';
 import { Star, Quote, User, Award } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
+import Autoplay from 'embla-carousel-autoplay';
 
 const testimonials = [
   {
@@ -113,6 +115,23 @@ const StarRating = ({ rating }: { rating: number }) => (
 );
 
 export default function TestimonialSection() {
+  const [api, setApi] = React.useState<CarouselApi>();
+  const [current, setCurrent] = React.useState(0);
+
+  const plugin = React.useRef(
+    Autoplay({ delay: 4000, stopOnInteraction: true })
+  );
+
+  useEffect(() => {
+    if (!api) return;
+
+    setCurrent(api.selectedScrollSnap());
+
+    api.on('select', () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
+
   return (
     <section
       id="testimonials"
@@ -192,14 +211,25 @@ export default function TestimonialSection() {
           viewport={{ once: true, amount: 0.3 }}
           variants={itemVariants}
         >
-          <Carousel opts={{ align: 'start', loop: true }} className="w-full">
+          <Carousel 
+            opts={{ align: 'start', loop: true }} 
+            plugins={[plugin.current]}
+            setApi={setApi}
+            className="w-full"
+            onMouseEnter={plugin.current.stop}
+            onMouseLeave={plugin.current.reset}
+          >
             <CarouselContent className="-ml-4">
               {testimonials.map((t, i) => (
                 <CarouselItem
                   key={`${t.name}-${i}`}
                   className="pl-4 basis-full md:basis-1/2 lg:basis-1/3"
                 >
-                  <Card className="h-full bg-white/80 border-yellow-100/50 shadow-md hover:shadow-xl transition rounded-2xl">
+                  <motion.div
+                    whileHover={{ y: -8 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Card className="h-full bg-white/80 border-yellow-100/50 shadow-md hover:shadow-xl transition-all duration-300 rounded-2xl">
                     <CardHeader className="pb-4">
                       <div className="flex justify-between items-start mb-3">
                         <div className="flex items-center gap-4">
@@ -239,13 +269,30 @@ export default function TestimonialSection() {
                       </CardDescription>
                     </CardContent>
                   </Card>
+                  </motion.div>
                 </CarouselItem>
               ))}
             </CarouselContent>
 
-            <CarouselPrevious className="absolute -left-6 top-1/2 -translate-y-1/2 bg-white/90 border border-yellow-200 text-yellow-600 hover:text-yellow-800 shadow-md w-10 h-10" />
-            <CarouselNext className="absolute -right-6 top-1/2 -translate-y-1/2 bg-white/90 border border-yellow-200 text-yellow-600 hover:text-yellow-800 shadow-md w-10 h-10" />
+            <CarouselPrevious className="absolute -left-6 top-1/2 -translate-y-1/2 bg-white/90 border border-yellow-200 text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50 shadow-md w-10 h-10 transition-all" />
+            <CarouselNext className="absolute -right-6 top-1/2 -translate-y-1/2 bg-white/90 border border-yellow-200 text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50 shadow-md w-10 h-10 transition-all" />
           </Carousel>
+          
+          {/* Progress Indicators */}
+          <div className="flex justify-center gap-2 mt-8">
+            {testimonials.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => api?.scrollTo(index)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  index === current
+                    ? 'w-8 bg-gradient-to-r from-yellow-500 to-red-500'
+                    : 'w-2 bg-gray-300 hover:bg-gray-400'
+                }`}
+                aria-label={`Go to testimonial ${index + 1}`}
+              />
+            ))}
+          </div>
         </motion.div>
 
         {/* Call to Action */}
