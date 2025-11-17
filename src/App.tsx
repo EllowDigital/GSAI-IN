@@ -62,8 +62,10 @@ const App = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [dismissedInstallToast, setDismissedInstallToast] = useState(false);
+  const [showInstallCTA, setShowInstallCTA] = useState(false);
   const location = useLocation();
   const interceptInstallPromptRef = useRef(false);
+  const installPromptRef = useRef<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
     interceptInstallPromptRef.current = location.pathname.startsWith('/admin');
@@ -82,7 +84,10 @@ const App = () => {
       }
       event.preventDefault();
       setDismissedInstallToast(false);
-      setInstallPrompt(event as BeforeInstallPromptEvent);
+      const promptEvent = event as BeforeInstallPromptEvent;
+      installPromptRef.current = promptEvent;
+      setInstallPrompt(promptEvent);
+      setShowInstallCTA(true);
     };
 
     window.addEventListener('online', handleOnline);
@@ -98,20 +103,27 @@ const App = () => {
     };
   }, []);
 
-  const handleInstallClick = useCallback(() => {
-    if (!installPrompt) return;
+  const dismissInstallToast = useCallback(() => {
+    setShowInstallCTA(false);
+    setDismissedInstallToast(true);
+    installPromptRef.current = null;
+    setInstallPrompt(null);
+  }, []);
 
-    installPrompt
+  const handleInstallClick = useCallback(() => {
+    const promptEvent = installPromptRef.current ?? installPrompt;
+    if (!promptEvent) return;
+
+    promptEvent
       .prompt()
-      .then(() => installPrompt.userChoice)
+      .then(() => promptEvent.userChoice)
       .catch((error) => {
         console.warn('PWA install prompt failed:', error);
       })
       .finally(() => {
-        setInstallPrompt(null);
-        setDismissedInstallToast(true);
+        dismissInstallToast();
       });
-  }, [installPrompt]);
+  }, [dismissInstallToast, installPrompt]);
 
   const isPWAInstalled = useCallback(
     () =>
@@ -122,7 +134,11 @@ const App = () => {
 
   const isAdminRoute = location.pathname.startsWith('/admin');
   const shouldShowInstallToast =
-    installPrompt && !isPWAInstalled() && isAdminRoute && !dismissedInstallToast;
+    showInstallCTA &&
+    !isPWAInstalled() &&
+    isAdminRoute &&
+    !dismissedInstallToast &&
+    !!(installPromptRef.current ?? installPrompt);
 
   return (
     <EnhancedErrorBoundary>
@@ -139,9 +155,7 @@ const App = () => {
                 {shouldShowInstallToast && (
                   <PWAInstallToast
                     onInstall={handleInstallClick}
-                    onDismiss={() => {
-                      setDismissedInstallToast(true);
-                    }}
+                    onDismiss={dismissInstallToast}
                   />
                 )}
 
