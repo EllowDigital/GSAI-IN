@@ -68,7 +68,6 @@ export default defineConfig(async ({ mode }) => {
           if (id.includes('node_modules')) {
             if (id.includes('react')) return 'react-vendors';
             if (id.includes('@tanstack')) return 'tanstack';
-            if (id.includes('@supabase')) return 'supabase';
             if (id.includes('framer-motion')) return 'framer-motion';
             if (id.includes('recharts')) return 'recharts';
             if (id.includes('@radix-ui')) return 'radix';
