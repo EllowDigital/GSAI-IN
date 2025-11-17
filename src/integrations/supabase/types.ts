@@ -76,6 +76,30 @@ export type Database = {
         };
         Relationships: [];
       };
+      user_roles: {
+        Row: {
+          created_at: string | null;
+          created_by: string | null;
+          id: string;
+          role: Database['public']['Enums']['app_role'];
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          created_by?: string | null;
+          id?: string;
+          role: Database['public']['Enums']['app_role'];
+          user_id: string;
+        };
+        Update: {
+          created_at?: string | null;
+          created_by?: string | null;
+          id?: string;
+          role?: Database['public']['Enums']['app_role'];
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       audit_logs: {
         Row: {
           created_at: string | null;
@@ -384,13 +408,6 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: 'student_progress_assessed_by_fkey';
-            columns: ['assessed_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
-          },
-          {
             foreignKeyName: 'student_progress_belt_level_id_fkey';
             columns: ['belt_level_id'];
             isOneToOne: false;
@@ -408,27 +425,7 @@ export type Database = {
       };
     };
     Views: {
-      profiles: {
-        Row: {
-          email: string | null;
-          id: string;
-          raw_user_meta_data: Json | null;
-          role: string | null;
-        };
-        Insert: {
-          email?: string | null;
-          id?: string;
-          raw_user_meta_data?: Json | null;
-          role?: string | null;
-        };
-        Update: {
-          email?: string | null;
-          id?: string;
-          raw_user_meta_data?: Json | null;
-          role?: string | null;
-        };
-        Relationships: [];
-      };
+      [_ in never]: never;
     };
     Functions: {
       mask_aadhar: {
@@ -439,9 +436,13 @@ export type Database = {
         Args: { phone_number: string };
         Returns: string;
       };
+      has_role: {
+        Args: { required_role: string };
+        Returns: boolean;
+      };
     };
     Enums: {
-      [_ in never]: never;
+      app_role: 'admin' | 'instructor' | 'staff' | 'student';
     };
     CompositeTypes: {
       [_ in never]: never;
