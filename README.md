@@ -115,6 +115,42 @@ We maintain code quality through continuous integration pipelines and testing to
 
 ---
 
+## 🛠️ Local Development & QA
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the Vite dev server on port 8080 |
+| `npm run lint` | ESLint over `.ts/.tsx/.js/.jsx` |
+| `npm run test` | Headless Vitest run (jsdom, globals, coverage) |
+| `npm run test:watch` | Interactive Vitest watcher |
+| `npm run prepare` | Installs Husky hooks (run once after cloning) |
+
+Git hooks: `.husky/pre-commit` blocks commits unless `npm run lint` and `npm run test` succeed. Update the hook if you add formatting or type-check steps.
+
+---
+
+## 📱 PWA Install & Deferred Prompt Flow
+
+- The browser’s `beforeinstallprompt` event is intercepted in `src/App.tsx` so we can show a custom CTA (`PWAInstallToast`).
+- The toast appears only on admin routes, when the app isn’t already installed, and after the event fires. Dismissing or successfully installing clears the saved prompt.
+- To customize the copy or placement, edit `src/components/PWAInstallToast.tsx`. If you prefer the default browser banner, remove the `event.preventDefault()` call in `App.tsx`.
+
+---
+
+## 🔐 Supabase Environment Variables
+
+Create an `.env` (or `.env.local`) with the following client-safe values before running the app locally or deploying:
+
+```
+VITE_SUPABASE_URL=your-project-url
+VITE_SUPABASE_PUBLISHABLE_KEY=your-anon-key
+VITE_SUPABASE_PROJECT_ID=project-id-or-reference
+```
+
+These map to `src/integrations/supabase` helpers and the admin data hooks (`useRealtime`, `useEventsQuery`, etc.). Never commit service-role keys—only the anon/publishable key belongs here.
+
+---
+
 ## 🌍 Internationalization
 
 We aim to serve a global audience with support for multiple languages (in development):
