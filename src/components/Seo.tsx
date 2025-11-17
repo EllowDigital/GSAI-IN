@@ -30,6 +30,14 @@ const defaultSiteUrl = 'https://ghatakgsai.netlify.app';
 const defaultImage = `${defaultSiteUrl}/assets/img/social-preview.png`;
 const defaultAuthor = 'Ghatak Sports Academy India';
 const siteName = 'Ghatak Sports Academy India™';
+const siteLogo = `${defaultSiteUrl}/assets/img/logo.webp`;
+const twitterHandle = '@ghatakgsai';
+const socialProfiles = [
+  'https://www.facebook.com/ghatakgsai',
+  'https://www.instagram.com/ghatakgsai',
+  'https://twitter.com/ghatakgsai',
+  'https://www.linkedin.com/company/ghatakgsai',
+];
 
 export function Seo({
   title,
@@ -58,6 +66,74 @@ export function Seo({
       : `${defaultSiteUrl}${image}`
     : defaultImage;
   const fullCanonicalUrl = canonical ?? defaultSiteUrl;
+  const canonicalLower = fullCanonicalUrl.toLowerCase();
+  const canonicalIsHome =
+    canonicalLower === defaultSiteUrl ||
+    canonicalLower === `${defaultSiteUrl}/`;
+  const normalizedStructuredData = structuredData ?? [];
+
+  const defaultStructuredDataEntries: object[] = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: siteName,
+      url: defaultSiteUrl,
+      logo: {
+        '@type': 'ImageObject',
+        url: siteLogo,
+        width: 512,
+        height: 512,
+      },
+      sameAs: socialProfiles,
+      contactPoint: [
+        {
+          '@type': 'ContactPoint',
+          contactType: 'customer support',
+          telephone: '+91-63941-35988',
+          email: 'ghatakgsai@gmail.com',
+          areaServed: 'IN',
+          availableLanguage: ['en', 'hi'],
+        },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: siteName,
+      url: defaultSiteUrl,
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: `${defaultSiteUrl}/?s={search_term_string}`,
+        'query-input': 'required name=search_term_string',
+      },
+    },
+  ];
+
+  if (!canonicalIsHome) {
+    defaultStructuredDataEntries.push({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: defaultSiteUrl,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: title,
+          item: fullCanonicalUrl,
+        },
+      ],
+    });
+  }
+
+  const structuredDataPayload = [
+    ...defaultStructuredDataEntries,
+    ...normalizedStructuredData,
+  ];
 
   // Generate robots meta tag
   const robots = [];
@@ -76,6 +152,8 @@ export function Seo({
       )}
       {author && <meta name="author" content={author} />}
       {category && <meta name="category" content={category} />}
+      <meta name="application-name" content={siteName} />
+      <meta name="apple-mobile-web-app-title" content={siteName} />
 
       {/* Open Graph Meta Tags */}
       <meta property="og:title" content={title} />
@@ -84,11 +162,28 @@ export function Seo({
       <meta property="og:url" content={fullCanonicalUrl} />
       <meta property="og:site_name" content={siteName} />
       <meta property="og:locale" content={locale} />
+      {alternateLanguages.map(({ hreflang }) => (
+        <meta
+          key={`og-locale-${hreflang}`}
+          property="og:locale:alternate"
+          content={hreflang}
+        />
+      ))}
       <meta property="og:image" content={fullImageUrl} />
+      <meta property="og:image:secure_url" content={fullImageUrl} />
       <meta property="og:image:alt" content={imageAlt || title} />
       <meta property="og:image:width" content={imageWidth.toString()} />
       <meta property="og:image:height" content={imageHeight.toString()} />
       <meta property="og:image:type" content="image/png" />
+      {(modifiedDate || publishDate) && (
+        <meta
+          property="og:updated_time"
+          content={(modifiedDate || publishDate) as string}
+        />
+      )}
+      {socialProfiles.map((profileUrl) => (
+        <meta key={profileUrl} property="og:see_also" content={profileUrl} />
+      ))}
 
       {/* Article specific meta tags */}
       {type === 'article' && (
@@ -113,6 +208,8 @@ export function Seo({
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={fullImageUrl} />
       <meta name="twitter:image:alt" content={imageAlt || title} />
+      <meta name="twitter:site" content={twitterHandle} />
+      <meta name="twitter:creator" content={twitterHandle} />
 
       {/* Performance & Technical Meta Tags */}
       <meta name="theme-color" content="#eab308" />
@@ -120,11 +217,15 @@ export function Seo({
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       <meta name="format-detection" content="telephone=no" />
+      <meta httpEquiv="x-dns-prefetch-control" content="on" />
 
       {/* DNS Prefetch for Performance */}
       <link rel="dns-prefetch" href="//fonts.googleapis.com" />
       <link rel="dns-prefetch" href="//fonts.gstatic.com" />
       <link rel="dns-prefetch" href="//jddeuhrocglnisujixdt.supabase.co" />
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+      <link rel="preconnect" href="https://jddeuhrocglnisujixdt.supabase.co" />
 
       {/* Canonical and Language Tags */}
       <link rel="canonical" href={fullCanonicalUrl} />
@@ -136,7 +237,7 @@ export function Seo({
       ))}
 
       {/* Structured Data as JSON-LD */}
-      {structuredData?.map((sd, i) => (
+      {structuredDataPayload.map((sd, i) => (
         <script
           key={`jsonld-${i}`}
           type="application/ld+json"

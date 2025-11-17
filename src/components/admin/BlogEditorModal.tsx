@@ -59,7 +59,6 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
     if (open) {
       reset(defaultValues);
     }
-    // eslint-disable-next-line
   }, [blog, open]);
 
   // Mutations

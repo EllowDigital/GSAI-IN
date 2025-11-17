@@ -117,8 +117,14 @@ export default function ProgramsSection() {
 
       {/* Floating Icons */}
       <Sparkles className="absolute top-20 right-16 w-8 h-8 text-yellow-400 opacity-30 animate-float" />
-      <Zap className="absolute bottom-24 left-16 w-10 h-10 text-orange-400 opacity-25 animate-float delay-[2s]" />
-      <Target className="absolute top-1/3 left-8 w-6 h-6 text-red-400 opacity-20 animate-float delay-[4s]" />
+      <Zap
+        className="absolute bottom-24 left-16 w-10 h-10 text-orange-400 opacity-25 animate-float"
+        style={{ animationDelay: '2s' }}
+      />
+      <Target
+        className="absolute top-1/3 left-8 w-6 h-6 text-red-400 opacity-20 animate-float"
+        style={{ animationDelay: '4s' }}
+      />
 
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Section Header */}

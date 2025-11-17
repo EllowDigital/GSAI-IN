@@ -45,7 +45,9 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
           <img
             src="/assets/img/logo.webp"
             alt="Ghatak Sports Academy India Logo"
-            className="w-10 h-10 rounded-full border-2 border-yellow-400 object-contain shadow-md transition-transform duration-300 group-hover:scale-110"
+            className="h-10 w-auto max-w-[140px] object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.15)] transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+            decoding="async"
           />
           <div className="flex flex-col">
             <span className="text-base font-bold text-gray-900 tracking-tight group-hover:text-red-600 transition-colors duration-300">
@@ -91,8 +93,10 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
             <div className="flex items-center space-x-3">
               <img
                 src="/assets/img/logo.webp"
-                alt="Logo"
-                className="w-12 h-12 rounded-full border-2 border-yellow-400 object-contain shadow-lg"
+                alt="Ghatak Sports Academy India Logo"
+                className="h-12 w-auto max-w-[160px] object-contain drop-shadow-[0_12px_18px_rgba(0,0,0,0.18)]"
+                loading="lazy"
+                decoding="async"
               />
               <div>
                 <h2

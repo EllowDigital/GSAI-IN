@@ -11,6 +11,10 @@ import { NavLinkItem } from './NavLinkItem';
 import { navLinks } from '../../data/navLinks';
 
 export function DesktopNavbar() {
+  const primaryTabletLinks = navLinks.slice(0, 5);
+  const overflowTabletLinks = navLinks.slice(5);
+  const hasTabletOverflow = overflowTabletLinks.length > 0;
+
   return (
     <>
       {/* Desktop Navigation - lg and above */}
@@ -21,14 +25,13 @@ export function DesktopNavbar() {
           className="flex items-center space-x-4 group"
           aria-label="Go to homepage"
         >
-          <div className="relative">
-            <img
-              src="/assets/img/logo.webp"
-              alt="Ghatak Sports Academy India"
-              className="w-12 h-12 object-contain rounded-full border-2 border-yellow-400 shadow-lg transition-transform duration-300 group-hover:scale-110"
-            />
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-400/20 to-red-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </div>
+          <img
+            src="/assets/img/logo.webp"
+            alt="Ghatak Sports Academy India"
+            className="h-12 w-auto max-w-[160px] object-contain drop-shadow-[0_10px_18px_rgba(0,0,0,0.18)] transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+            decoding="async"
+          />
           <div className="flex flex-col">
             <span className="text-lg font-bold text-gray-900 tracking-tight group-hover:text-red-600 transition-colors duration-300">
               GSAI
@@ -45,7 +48,7 @@ export function DesktopNavbar() {
           role="menubar"
           aria-label="Primary navigation"
         >
-          {navLinks.map((link, index) => (
+          {navLinks.map((link) => (
             <NavLinkItem
               key={link.name}
               href={link.href}
@@ -63,16 +66,22 @@ export function DesktopNavbar() {
         {/* CTA Button */}
         <Link
           to="/admin/login"
-          className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-yellow-300/50"
+          className="flex items-center justify-center h-12 w-12 bg-gradient-to-r from-yellow-500 to-red-500 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-yellow-300/50"
           aria-label="Access admin panel"
         >
-          <LogIn className="w-5 h-5" />
-          <span>Admin Login</span>
+          <img
+            src="/assets/img/logo.webp"
+            alt="GSAI Admin"
+            className="h-8 w-auto object-contain"
+            loading="lazy"
+            decoding="async"
+          />
+          <span className="sr-only">Admin Login</span>
         </Link>
       </div>
 
       {/* Tablet Navigation - md to lg */}
-      <div className="hidden md:flex lg:hidden items-center justify-between px-6 py-3">
+      <div className="hidden md:flex lg:hidden items-center gap-6 px-6 py-4 bg-white/95 border-y border-gray-100/80 backdrop-blur">
         {/* Logo Section */}
         <Link
           to="/"
@@ -81,8 +90,10 @@ export function DesktopNavbar() {
         >
           <img
             src="/assets/img/logo.webp"
-            alt="Logo"
-            className="w-10 h-10 object-contain rounded-full border-2 border-yellow-400 shadow-md transition-transform duration-300 group-hover:scale-110"
+            alt="Ghatak Sports Academy India"
+            className="h-10 w-auto max-w-[140px] object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.15)] transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+            decoding="async"
           />
           <div className="flex flex-col">
             <span className="text-base font-bold text-gray-900 group-hover:text-red-600 transition-colors duration-300">
@@ -95,57 +106,63 @@ export function DesktopNavbar() {
         </Link>
 
         {/* Condensed Navigation */}
-        <div className="flex items-center space-x-6">
-          {navLinks.slice(0, 4).map((link) => (
-            <NavLinkItem
-              key={link.name}
-              href={link.href}
-              name={link.name}
-              className="text-gray-700 font-medium text-sm hover:text-red-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded-md px-2 py-1"
-            />
-          ))}
+        <div className="flex flex-1 items-center justify-end gap-3">
+          <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-gray-100 bg-white px-3 py-2 shadow-sm">
+            {primaryTabletLinks.map((link) => (
+              <NavLinkItem
+                key={link.name}
+                href={link.href}
+                name={link.name}
+                className="px-3 py-2 text-sm font-semibold text-gray-700 rounded-xl bg-white hover:bg-gradient-to-r hover:from-yellow-50 hover:to-red-50 hover:text-red-600 transition-all duration-300 shadow-[0_1px_3px_rgba(15,23,42,0.08)]"
+              />
+            ))}
+          </div>
 
-          {/* More Menu Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                className="flex items-center space-x-1 px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors duration-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                aria-label="More navigation options"
-                aria-haspopup="true"
-              >
-                <Menu className="w-4 h-4 text-gray-600" />
-                <ChevronDown className="w-3 h-3 text-gray-600" />
-              </button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent
-              className="z-[60] mt-2 w-56 rounded-xl border border-gray-200 shadow-xl bg-white backdrop-blur-md"
-              sideOffset={8}
-              align="end"
-            >
-              {navLinks.slice(4).map((link) => (
-                <DropdownMenuItem key={link.name} asChild>
-                  <NavLinkItem
-                    href={link.href}
-                    name={link.name}
-                    className="w-full px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 hover:text-red-600 transition-colors duration-300 rounded-lg cursor-pointer focus:outline-none focus:bg-gray-50"
-                  />
-                </DropdownMenuItem>
-              ))}
-
-              <div className="border-t border-gray-100 my-2"></div>
-
-              <DropdownMenuItem asChild>
-                <Link
-                  to="/admin/login"
-                  className="flex items-center space-x-2 w-full px-4 py-3 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold rounded-lg hover:shadow-md transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-300"
+          {hasTabletOverflow && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="flex items-center space-x-1 rounded-2xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm transition-colors duration-300 hover:border-yellow-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  aria-label="More navigation options"
+                  aria-haspopup="true"
                 >
-                  <LogIn className="w-4 h-4" />
-                  <span>Admin Login</span>
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  <Menu className="w-4 h-4" />
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent
+                className="z-[60] mt-2 w-60 rounded-2xl border border-gray-200 shadow-2xl bg-white/95 backdrop-blur"
+                sideOffset={8}
+                align="end"
+              >
+                {overflowTabletLinks.map((link) => (
+                  <DropdownMenuItem key={link.name} asChild>
+                    <NavLinkItem
+                      href={link.href}
+                      name={link.name}
+                      className="w-full px-4 py-3 text-gray-700 font-medium hover:bg-gradient-to-r hover:from-yellow-50 hover:to-red-50 hover:text-red-600 transition-colors duration-300 rounded-xl cursor-pointer focus:outline-none"
+                    />
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+
+          <Link
+            to="/admin/login"
+            className="flex items-center justify-center h-11 w-11 rounded-2xl bg-gradient-to-r from-yellow-500 to-red-500 shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-300"
+            aria-label="Access admin panel"
+          >
+            <img
+              src="/assets/img/logo.webp"
+              alt="GSAI Admin"
+              className="h-7 w-auto object-contain"
+              loading="lazy"
+              decoding="async"
+            />
+            <span className="sr-only">Admin Login</span>
+          </Link>
         </div>
       </div>
     </>

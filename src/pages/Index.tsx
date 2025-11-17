@@ -90,7 +90,6 @@ export default function Index() {
       >
         {/* Additional performance meta tags */}
         <link rel="preload" href="/assets/img/logo.webp" as="image" />
-        <link rel="preload" href="/assets/slider/slider.webp" as="image" />
         <meta name="google-site-verification" content="7c06ba0fd23ccdce" />
       </Seo>
 
