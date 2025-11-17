@@ -147,13 +147,13 @@ async function generateAdvancedSitemap() {
       }),
       fetchCollection({
         table: 'news',
-        select: 'id, date, updated_at, status',
+        select: 'id, date, status',
         filters: [{ column: 'status', value: 'Published' }],
         orderBy: { column: 'date', ascending: false },
       }),
       fetchCollection({
         table: 'events',
-        select: 'id, from_date, updated_at',
+        select: 'id, from_date',
         orderBy: { column: 'from_date', ascending: false },
       }),
     ]);
