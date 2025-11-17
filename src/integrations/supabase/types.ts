@@ -14,6 +14,50 @@ export type Database = {
   };
   public: {
     Tables: {
+      belt_levels: {
+        Row: {
+          color: string;
+          created_at: string;
+          id: string;
+          min_age: number | null;
+          min_sessions: number | null;
+          next_level_id: string | null;
+          rank: number;
+          requirements: Json;
+          updated_at: string;
+        };
+        Insert: {
+          color: string;
+          created_at?: string;
+          id?: string;
+          min_age?: number | null;
+          min_sessions?: number | null;
+          next_level_id?: string | null;
+          rank: number;
+          requirements?: Json;
+          updated_at?: string;
+        };
+        Update: {
+          color?: string;
+          created_at?: string;
+          id?: string;
+          min_age?: number | null;
+          min_sessions?: number | null;
+          next_level_id?: string | null;
+          rank?: number;
+          requirements?: Json;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'belt_levels_next_level_id_fkey';
+            columns: ['next_level_id'];
+            isOneToOne: false;
+            referencedRelation: 'belt_levels';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       admin_users: {
         Row: {
           created_at: string | null;
@@ -301,9 +345,90 @@ export type Database = {
         };
         Relationships: [];
       };
+      student_progress: {
+        Row: {
+          assessed_by: string | null;
+          assessment_date: string | null;
+          belt_level_id: string;
+          coach_notes: string | null;
+          created_at: string;
+          evidence_media_urls: string[];
+          id: string;
+          status: string;
+          student_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          assessed_by?: string | null;
+          assessment_date?: string | null;
+          belt_level_id: string;
+          coach_notes?: string | null;
+          created_at?: string;
+          evidence_media_urls?: string[];
+          id?: string;
+          status?: string;
+          student_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          assessed_by?: string | null;
+          assessment_date?: string | null;
+          belt_level_id?: string;
+          coach_notes?: string | null;
+          created_at?: string;
+          evidence_media_urls?: string[];
+          id?: string;
+          status?: string;
+          student_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'student_progress_assessed_by_fkey';
+            columns: ['assessed_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'student_progress_belt_level_id_fkey';
+            columns: ['belt_level_id'];
+            isOneToOne: false;
+            referencedRelation: 'belt_levels';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'student_progress_student_id_fkey';
+            columns: ['student_id'];
+            isOneToOne: false;
+            referencedRelation: 'students';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Views: {
-      [_ in never]: never;
+      profiles: {
+        Row: {
+          email: string | null;
+          id: string;
+          raw_user_meta_data: Json | null;
+          role: string | null;
+        };
+        Insert: {
+          email?: string | null;
+          id?: string;
+          raw_user_meta_data?: Json | null;
+          role?: string | null;
+        };
+        Update: {
+          email?: string | null;
+          id?: string;
+          raw_user_meta_data?: Json | null;
+          role?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       mask_aadhar: {

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, lazy, Suspense } from 'react';
+import React, { useCallback, useEffect, useState, useRef, lazy, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
@@ -63,6 +63,11 @@ const App = () => {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [dismissedInstallToast, setDismissedInstallToast] = useState(false);
   const location = useLocation();
+  const interceptInstallPromptRef = useRef(false);
+
+  useEffect(() => {
+    interceptInstallPromptRef.current = location.pathname.startsWith('/admin');
+  }, [location.pathname]);
 
   useEffect(() => {
     initializeSupabaseOptimization();
@@ -72,6 +77,9 @@ const App = () => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
     const handleBeforeInstallPrompt = (event: Event) => {
+      if (!interceptInstallPromptRef.current) {
+        return;
+      }
       event.preventDefault();
       setDismissedInstallToast(false);
       setInstallPrompt(event as BeforeInstallPromptEvent);

@@ -9,6 +9,7 @@ import StudentsTable from './students/StudentsTable';
 import StudentsCards from './students/StudentsCards';
 import RefreshButton from './RefreshButton';
 import { useStudents } from '@/hooks/useStudents';
+import ProgressionBoard from './progression/ProgressionBoard';
 // import { toast } from '@/hooks/use-toast'; // Optional: for success/error toasts
 
 type StudentRow = {
@@ -56,7 +57,8 @@ export default function StudentManager() {
   };
 
   return (
-    <div className="w-full p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1400px] mx-auto space-y-6">
+    <>
+      <div className="w-full p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1400px] mx-auto space-y-6">
       {/* Header Card */}
       <Card className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 shadow-sm rounded-none sm:rounded-2xl">
         <CardHeader className="border-b border-slate-200/60 dark:border-slate-700/60 p-4 sm:p-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -196,6 +198,11 @@ export default function StudentManager() {
           onClose={() => setDeleteStudent(null)}
         />
       )}
-    </div>
+      </div>
+
+      <div className="w-full p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1400px] mx-auto">
+        <ProgressionBoard />
+      </div>
+    </>
   );
 }
