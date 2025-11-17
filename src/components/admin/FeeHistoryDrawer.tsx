@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import {
   Table,
@@ -34,6 +35,10 @@ export default function FeeHistoryDrawer({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Fee History - {student?.name}</DialogTitle>
+          <DialogDescription>
+            Review the monthly invoices, payments, balances, and any receipts
+            linked to this student.
+          </DialogDescription>
         </DialogHeader>
         <div className="text-xs text-gray-500 mb-2">
           Each row shows a month's fee. Recent first.

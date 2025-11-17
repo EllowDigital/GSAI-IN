@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogFooter,
   DialogClose,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -134,6 +135,10 @@ export default function NewsEditorModal({
             <DialogTitle className="text-lg sm:text-xl">
               {editingNews ? 'Edit News' : 'Add News'}
             </DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground">
+              Manage the headline, summary, schedule, status, and cover image
+              used on the public news pages.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="flex-1 overflow-y-auto px-4 sm:px-6">

@@ -1,6 +1,9 @@
 begin;
 
 drop policy if exists "Admins manage belt levels" on public.belt_levels;
+drop policy if exists "Admins manage belt levels - insert" on public.belt_levels;
+drop policy if exists "Admins manage belt levels - update" on public.belt_levels;
+drop policy if exists "Admins manage belt levels - delete" on public.belt_levels;
 drop policy if exists "Admins manage student progress" on public.student_progress;
 drop policy if exists "Admins write student progress" on public.student_progress;
 drop policy if exists "Admins update student progress" on public.student_progress;
@@ -8,7 +11,7 @@ drop policy if exists "Instructors add evidence" on public.student_progress;
 
 drop function if exists public.is_progress_status_unchanged(uuid, text);
 
-drop view if exists public.profiles cascade;
+drop view if exists public.profiles;
 
 create view public.profiles as
 select
@@ -34,8 +37,30 @@ $$;
 
 create policy "Admins manage belt levels"
   on public.belt_levels
-  for all
-  using (
+  for select using (
+    auth.role() = 'authenticated'
+    and exists (
+      select 1 from public.profiles p
+      where p.id = auth.uid()
+        and p.role = 'admin'
+    )
+  );
+
+create policy "Admins manage belt levels - insert"
+  on public.belt_levels
+  for insert
+  with check (
+    auth.role() = 'authenticated'
+    and exists (
+      select 1 from public.profiles p
+      where p.id = auth.uid()
+        and p.role = 'admin'
+    )
+  );
+
+create policy "Admins manage belt levels - update"
+  on public.belt_levels
+  for update using (
     auth.role() = 'authenticated'
     and exists (
       select 1 from public.profiles p
@@ -44,6 +69,17 @@ create policy "Admins manage belt levels"
     )
   )
   with check (
+    auth.role() = 'authenticated'
+    and exists (
+      select 1 from public.profiles p
+      where p.id = auth.uid()
+        and p.role = 'admin'
+    )
+  );
+
+create policy "Admins manage belt levels - delete"
+  on public.belt_levels
+  for delete using (
     auth.role() = 'authenticated'
     and exists (
       select 1 from public.profiles p
@@ -65,14 +101,7 @@ create policy "Admins manage student progress"
 
 create policy "Admins write student progress"
   on public.student_progress
-  for insert using (
-    auth.role() = 'authenticated'
-    and exists (
-      select 1 from public.profiles p
-      where p.id = auth.uid()
-        and p.role = 'admin'
-    )
-  )
+  for insert
   with check (
     auth.role() = 'authenticated'
     and exists (

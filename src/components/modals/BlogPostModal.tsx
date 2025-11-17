@@ -1,6 +1,12 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import {
   Drawer,
   DrawerContent,
@@ -115,14 +121,20 @@ export function BlogPostModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <button
-            onClick={onClose}
-            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-          >
-            <X className="h-4 w-4" />
-          </button>
+        <DialogHeader className="sr-only">
+          <DialogTitle>{post.title}</DialogTitle>
+          <DialogDescription>
+            {post.description || 'Blog article preview'}{' '}
+            {post.published_at &&
+              `Published on ${formatDate(post.published_at)}.`}
+          </DialogDescription>
         </DialogHeader>
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+        >
+          <X className="h-4 w-4" />
+        </button>
         {content}
       </DialogContent>
     </Dialog>

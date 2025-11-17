@@ -1,6 +1,12 @@
 import React from 'react';
 import { X, Calendar } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import {
   Drawer,
   DrawerContent,
@@ -131,14 +137,19 @@ export function NewsModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <button
-            onClick={onClose}
-            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-          >
-            <X className="h-4 w-4" />
-          </button>
+        <DialogHeader className="sr-only">
+          <DialogTitle>{news.title}</DialogTitle>
+          <DialogDescription>
+            Published on {formatDate(news.date)}.{' '}
+            {news.short_description || 'Expanded news preview for admins.'}
+          </DialogDescription>
         </DialogHeader>
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+        >
+          <X className="h-4 w-4" />
+        </button>
         {content}
       </DialogContent>
     </Dialog>
