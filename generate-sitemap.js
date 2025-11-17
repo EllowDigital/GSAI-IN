@@ -54,24 +54,62 @@ const writeStaticUrls = (sitemap) => {
   });
 };
 
+const normalizeSelectColumns = (select) => {
+  if (!select) {
+    return ['*'];
+  }
+  if (Array.isArray(select)) {
+    return select;
+  }
+
+  return select
+    .split(',')
+    .map((col) => col.trim())
+    .filter(Boolean);
+};
+
 const fetchCollection = async ({ table, select, filters = [], orderBy }) => {
-  let query = supabase.from(table).select(select);
+  const selectColumns = normalizeSelectColumns(select);
 
-  filters.forEach(({ column, value, operator = 'eq' }) => {
-    query = query[operator](column, value);
-  });
+  const executeQuery = async (columns) => {
+    if (!columns.length) {
+      return [];
+    }
 
-  if (orderBy) {
-    query = query.order(orderBy.column, { ascending: orderBy.ascending ?? false });
-  }
+    const selectClause = columns.join(', ');
+    let query = supabase.from(table).select(selectClause === '*' ? '*' : selectClause);
 
-  const { data, error } = await query;
-  if (error) {
-    console.warn(`⚠️ Unable to fetch ${table} for sitemap:`, error.message);
-    return [];
-  }
+    filters.forEach(({ column, value, operator = 'eq' }) => {
+      query = query[operator](column, value);
+    });
 
-  return data ?? [];
+    if (orderBy) {
+      query = query.order(orderBy.column, { ascending: orderBy.ascending ?? false });
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      const missingColumnMatch = error.message.match(/column\s+(?:[\w]+\.)?([\w]+)\s+does not exist/i);
+      if (missingColumnMatch) {
+        const missingColumn = missingColumnMatch[1];
+        const filteredColumns = columns.filter((col) => col !== missingColumn);
+
+        if (filteredColumns.length !== columns.length) {
+          console.info(
+            `ℹ️ Column "${missingColumn}" missing on ${table}; retrying sitemap query without it.`
+          );
+          return executeQuery(filteredColumns);
+        }
+      }
+
+      console.warn(`⚠️ Unable to fetch ${table} for sitemap:`, error.message);
+      return [];
+    }
+
+    return data ?? [];
+  };
+
+  return executeQuery(selectColumns);
 };
 
 async function generateAdvancedSitemap() {
