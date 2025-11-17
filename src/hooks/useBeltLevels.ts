@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/sonner';
 
 export interface BeltLevel {
   id: string;
@@ -19,6 +20,11 @@ async function fetchBeltLevels(): Promise<BeltLevel[]> {
     .order('rank', { ascending: true });
 
   if (error) {
+    const fallback =
+      error.message?.toLowerCase().includes('permission')
+        ? 'Missing admin role: add your account to user_roles to manage belts.'
+        : `Failed to load belt levels: ${error.message}`;
+    toast.error(fallback);
     throw error;
   }
 
