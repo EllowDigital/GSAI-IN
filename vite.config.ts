@@ -1,19 +1,21 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
-import componentTagger from 'lovable-tagger/vite';
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig(async ({ mode }) => {
+  const plugins = [react()];
+
+  if (mode === 'development') {
+    const { default: componentTagger } = await import('lovable-tagger/vite');
+    plugins.push(componentTagger());
+  }
+
+  return {
   server: {
     host: '::',
     port: 8080,
   },
-  plugins: [
-    react(),
-
-    // Lovable Tagger works only in development mode
-    mode === 'development' && componentTagger(),
-  ].filter(Boolean),
+    plugins,
 
   resolve: {
     alias: {
@@ -82,4 +84,5 @@ export default defineConfig(({ mode }) => ({
       reporter: ['text', 'lcov'],
     },
   },
-}));
+  };
+});
