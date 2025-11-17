@@ -137,6 +137,16 @@ Git hooks: `.husky/pre-commit` blocks commits unless `npm run lint` and `npm run
 
 ---
 
+## 🥋 Belt Progression Workflow
+
+- **Database schema**: `supabase/migrations/20251117120000_add_belt_progression.sql` creates `belt_levels` (ranked colors + requirements) and `student_progress` (status per student/belt). `20251117153000_backfill_belt_links.sql` links each belt to its successor via `next_level_id` so promotions know the next color.
+- **Backend access control**: RLS policies in `supabase/migrations/20251117143000_update_progression_policies.sql` allow admins/instructors to read and update belts, statuses, and evidence with optimistic locking via `is_progress_status_unchanged()`.
+- **Frontend hooks**: `src/hooks/useBeltLevels.ts` fetches belt metadata (id, color, rank). `src/hooks/useProgressionQuery.ts` handles listing, filtering, drag/drop status changes, uploading evidence, *assigning* students to belts, and *promoting* them to the next level.
+- **UI flow**: Open **Admin → Students → Progression**. Use the new “Assign student” button to pick any roster student + belt + starting status. Each card shows the current belt, evidence, and status chips. When a card is in **Passed**, click “Promote to …” to move the student to the next color—this resets the status to “Needs work” and keeps the history in Supabase.
+- **Filters**: Search by name/program/notes, slice by program, belt, or coach, and reset quickly via the header button. Columns map to the four statuses (`needs_work`, `ready`, `passed`, `deferred`).
+
+---
+
 ## 🔐 Supabase Environment Variables
 
 Create an `.env` (or `.env.local`) with the following client-safe values before running the app locally or deploying:

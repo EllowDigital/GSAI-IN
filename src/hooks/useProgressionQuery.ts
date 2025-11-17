@@ -239,6 +239,110 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
     },
   });
 
+  const assignMutation = useMutation({
+    mutationFn: async ({
+      studentId,
+      beltLevelId,
+      status = 'needs_work',
+    }: {
+      studentId: string;
+      beltLevelId: string;
+      status?: ProgressStatus;
+    }) => {
+      const { error } = await supabase
+        .from('student_progress')
+        .upsert(
+          {
+            student_id: studentId,
+            belt_level_id: beltLevelId,
+            status,
+          },
+          { onConflict: 'student_id,belt_level_id' }
+        );
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Student assigned to belt');
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : 'Assignment failed');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+  });
+
+  const promoteMutation = useMutation({
+    mutationFn: async ({
+      id,
+      nextBelt,
+    }: {
+      id: string;
+      nextBelt: {
+        id: string;
+        color: string;
+        rank: number;
+        requirements: Record<string, unknown>[] | null;
+      };
+    }) => {
+      const { error } = await supabase
+        .from('student_progress')
+        .update({
+          belt_level_id: nextBelt.id,
+          status: 'needs_work',
+          assessment_date: null,
+          coach_notes: null,
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+      return { id, nextBelt };
+    },
+    onMutate: async ({ id, nextBelt }) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData<ProgressionRecord[]>(queryKey);
+
+      if (previous) {
+        queryClient.setQueryData<ProgressionRecord[]>(queryKey, (old) =>
+          old?.map((record) =>
+            record.id === id
+              ? {
+                  ...record,
+                  belt_levels: record.belt_levels
+                    ? {
+                        ...record.belt_levels,
+                        id: nextBelt.id,
+                        color: nextBelt.color,
+                        rank: nextBelt.rank,
+                        requirements: nextBelt.requirements,
+                      }
+                    : record.belt_levels,
+                  status: 'needs_work',
+                  assessment_date: null,
+                  coach_notes: null,
+                }
+              : record
+          ) ?? []
+        );
+      }
+
+      return { previous };
+    },
+    onError: (error, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(queryKey, context.previous);
+      }
+      toast.error(error instanceof Error ? error.message : 'Promotion failed');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onSuccess: () => {
+      toast.success('Student promoted to next belt');
+    },
+  });
+
   const filteredRecords = useMemo(
     () => filterRecords(query.data, filters),
     [query.data, filters]
@@ -268,5 +372,9 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
     updating: updateMutation.isPending,
     appendEvidence: evidenceMutation.mutate,
     appendingEvidence: evidenceMutation.isPending,
+    assignStudent: assignMutation.mutateAsync,
+    assigningStudent: assignMutation.isPending,
+    promoteStudent: promoteMutation.mutateAsync,
+    promotingStudent: promoteMutation.isPending,
   };
 }

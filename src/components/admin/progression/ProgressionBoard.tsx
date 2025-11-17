@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
+  ArrowUpCircle,
   BadgeHelp,
   CalendarIcon,
   Download,
@@ -35,10 +36,11 @@ import {
 import EvidenceUploadButton from './EvidenceUploadButton';
 import OptimizedImage from '@/components/OptimizedImage';
 import { ProgressionRecord, ProgressStatus, useProgressionQuery } from '@/hooks/useProgressionQuery';
-import { useBeltLevels } from '@/hooks/useBeltLevels';
+import { useBeltLevels, BeltLevel } from '@/hooks/useBeltLevels';
 import { useStudents } from '@/hooks/useStudents';
 import { cn } from '@/lib/utils';
 import { toast } from '@/components/ui/sonner';
+import AssignStudentBeltDialog from './AssignStudentBeltDialog';
 
 const STATUS_CONFIG: Record<ProgressStatus, { label: string; color: string; accent: string }> = {
   needs_work: {
@@ -108,10 +110,16 @@ function DraggableCard({
   record,
   onStatusClick,
   onUploadEvidence,
+  onPromote,
+  nextBeltLabel,
+  promoting,
 }: {
   record: ProgressionRecord;
   onStatusClick: (status: ProgressStatus) => void;
   onUploadEvidence: (url: string) => void;
+  onPromote?: () => void;
+  nextBeltLabel?: string;
+  promoting?: boolean;
 }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: record.id,
@@ -223,6 +231,19 @@ function DraggableCard({
           >
             <Download className="h-4 w-4" /> Certificate
           </Button>
+          {onPromote && nextBeltLabel && (
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className="gap-2"
+              onClick={onPromote}
+              disabled={promoting}
+            >
+              <ArrowUpCircle className="h-4 w-4" />
+              {promoting ? 'Promoting…' : `Promote to ${nextBeltLabel}`}
+            </Button>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -250,14 +271,24 @@ function DraggableCard({
 
 export default function ProgressionBoard() {
   const [filters, setFilters] = useState<FilterState>({ search: '' });
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 8 },
     })
   );
 
-  const { beltOptions } = useBeltLevels();
+  const { beltOptions, beltMap } = useBeltLevels();
   const { students } = useStudents();
+
+  const studentOptions = useMemo(
+    () =>
+      students.map((student) => ({
+        label: `${student.name} • ${student.program}`,
+        value: student.id,
+      })),
+    [students]
+  );
 
   const programOptions = useMemo(() => {
     return Array.from(new Set(students.map((student) => student.program))).map(
@@ -272,6 +303,10 @@ export default function ProgressionBoard() {
     error,
     updateProgress,
     appendEvidence,
+    assignStudent,
+    assigningStudent,
+    promoteStudent,
+    promotingStudent,
   } = useProgressionQuery({
     search: filters.search,
     program: filters.program,
@@ -313,8 +348,71 @@ export default function ProgressionBoard() {
     setFilters({ search: '' });
   };
 
+  const handleAssignSubmit = useCallback(
+    async ({
+      studentId,
+      beltLevelId,
+      status,
+    }: {
+      studentId: string;
+      beltLevelId: string;
+      status: ProgressStatus;
+    }) => {
+      await assignStudent({ studentId, beltLevelId, status });
+    },
+    [assignStudent]
+  );
+
+  const sortedBelts = useMemo(() => {
+    return beltOptions
+      .map((belt) => beltMap.get(belt.value))
+      .filter(Boolean)
+      .map((belt) => belt as BeltLevel)
+      .sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0));
+  }, [beltOptions, beltMap]);
+
+  const getNextBeltDetails = useCallback(
+    (currentBeltId?: string | null) => {
+      if (!currentBeltId) return null;
+      const current = beltMap.get(currentBeltId);
+      if (!current) return null;
+      if (current.next_level_id) {
+        const next = beltMap.get(current.next_level_id);
+        if (next) return next;
+      }
+      const orderedIndex = sortedBelts.findIndex((belt) => belt?.id === currentBeltId);
+      if (orderedIndex >= 0 && orderedIndex < sortedBelts.length - 1) {
+        return sortedBelts[orderedIndex + 1] ?? null;
+      }
+      return null;
+    },
+    [beltMap, sortedBelts]
+  );
+
+  const handlePromote = useCallback(
+    async (record: ProgressionRecord) => {
+      const nextBelt = getNextBeltDetails(record.belt_levels?.id);
+      if (!nextBelt) {
+        toast.info('Already at the highest belt.');
+        return;
+      }
+
+      await promoteStudent({
+        id: record.id,
+        nextBelt: {
+          id: nextBelt.id,
+          color: nextBelt.color,
+          rank: nextBelt.rank,
+          requirements: (nextBelt.requirements as Record<string, unknown>[] | null) ?? null,
+        },
+      });
+    },
+    [getNextBeltDetails, promoteStudent]
+  );
+
   return (
-    <Card className="border border-slate-200 bg-gradient-to-b from-white to-slate-50 shadow-sm">
+    <>
+      <Card className="border border-slate-200 bg-gradient-to-b from-white to-slate-50 shadow-sm">
       <CardHeader className="gap-2">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div>
@@ -325,9 +423,19 @@ export default function ProgressionBoard() {
               Drag athletes between columns, attach sparring clips, and keep coaches aligned.
             </p>
           </div>
-          <Button variant="outline" size="sm" className="gap-2" onClick={resetFilters}>
-            <Filter className="h-4 w-4" /> Reset filters
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="default"
+              size="sm"
+              className="gap-2"
+              onClick={() => setAssignDialogOpen(true)}
+            >
+              <PlayCircle className="h-4 w-4" /> Assign student
+            </Button>
+            <Button variant="outline" size="sm" className="gap-2" onClick={resetFilters}>
+              <Filter className="h-4 w-4" /> Reset filters
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 pt-4">
@@ -439,18 +547,24 @@ export default function ProgressionBoard() {
                           Drop students here
                         </div>
                       ) : (
-                        list.map((record) => (
-                          <DraggableCard
-                            key={record.id}
-                            record={record}
-                            onStatusClick={(nextStatus) =>
-                              updateProgress({ id: record.id, status: nextStatus })
-                            }
-                            onUploadEvidence={(url) =>
-                              appendEvidence({ id: record.id, mediaUrl: url })
-                            }
-                          />
-                        ))
+                        list.map((record) => {
+                          const nextBelt = getNextBeltDetails(record.belt_levels?.id);
+                          return (
+                            <DraggableCard
+                              key={record.id}
+                              record={record}
+                              onStatusClick={(nextStatus) =>
+                                updateProgress({ id: record.id, status: nextStatus })
+                              }
+                              onUploadEvidence={(url) =>
+                                appendEvidence({ id: record.id, mediaUrl: url })
+                              }
+                              onPromote={nextBelt ? () => handlePromote(record) : undefined}
+                              nextBeltLabel={nextBelt?.color}
+                              promoting={promotingStudent}
+                            />
+                          );
+                        })
                       )}
                     </div>
                   </ScrollArea>
@@ -460,6 +574,15 @@ export default function ProgressionBoard() {
           </div>
         </DndContext>
       </CardContent>
-    </Card>
+      </Card>
+      <AssignStudentBeltDialog
+        open={assignDialogOpen}
+        onOpenChange={setAssignDialogOpen}
+        students={studentOptions}
+        belts={beltOptions.map((belt) => ({ label: belt.label, value: belt.value }))}
+        onSubmit={handleAssignSubmit}
+        loading={assigningStudent}
+      />
+    </>
   );
 }
