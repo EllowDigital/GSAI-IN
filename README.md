@@ -119,13 +119,42 @@ We maintain code quality through continuous integration pipelines and testing to
 
 | Command | Description |
 | --- | --- |
-| `npm run dev` | Start the Vite dev server on port 8080 |
+| `npm run dev` | Start the Vite dev server (defaults to port 8080) |
 | `npm run lint` | ESLint over `.ts/.tsx/.js/.jsx` |
 | `npm run test` | Headless Vitest run (jsdom, globals, coverage) |
 | `npm run test:watch` | Interactive Vitest watcher |
-| `npm run prepare` | Installs Husky hooks (run once after cloning) |
+| `npm run build` | Production Vite build plus sitemap generation |
+| `npm run preview` | Serve the built app locally via Vite preview |
+| `npm run generate:sitemap` | Run the Supabase-powered sitemap generator |
 
-Git hooks: `.husky/pre-commit` blocks commits unless `npm run lint` and `npm run test` succeed. Update the hook if you add formatting or type-check steps.
+> Tip: copy `.env` to `.env.local` and adjust the Supabase values before running `npm run dev`.
+
+There are no Git hooks included; feel free to wire up Husky/lefthook if you need automated checks before commits.
+
+---
+
+## 🚀 Deployment Profiles
+
+### Netlify (production + previews)
+
+- `netlify.toml` pins the build command (`npm run build`), publish directory (`dist`), and Node 20 runtime so installs stay deterministic.
+- Required environment variables (set in Netlify UI or CLI):
+  - `VITE_SUPABASE_URL`
+  - `VITE_SUPABASE_PUBLISHABLE_KEY`
+  - `VITE_SUPABASE_PROJECT_ID`
+  - `SUPABASE_URL` and `SUPABASE_ANON_KEY` (for `generate-sitemap.js`) — can reuse the same values as the Vite vars.
+- Optional: override `SITE_URL` if you use a custom domain; otherwise Netlify injects `URL`/`DEPLOY_PRIME_URL` automatically and the sitemap falls back to those.
+
+### Lovable.dev sandbox
+
+- The `lovable-tagger` plugin now loads **only** when `LOVABLE_DEV_SERVER=true` and `npm run dev` runs in development mode.
+- Set `LOVABLE_DEV_SERVER=true` in the Lovable environment (already provided via `netlify.toml` template env). Local devs outside Lovable do not need the plugin.
+- Keep `lovable-tagger` installed (devDependency) so component tagging works when you open the repo inside Lovable.
+
+### Manual static hosting
+
+- Run `npm run build` and deploy the `dist/` folder.
+- Ensure the same Supabase environment variables are available when running `npm run generate:sitemap`; otherwise only static marketing routes are emitted.
 
 ---
 

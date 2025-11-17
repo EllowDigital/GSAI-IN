@@ -4,12 +4,17 @@ import path from 'path';
 
 export default defineConfig(async ({ mode }) => {
   const plugins = [react()];
+  const isLovableDev = mode === 'development' && process.env.LOVABLE_DEV_SERVER === 'true';
 
-  if (mode === 'development') {
+  if (isLovableDev) {
     try {
-      const { componentTagger } = await import('lovable-tagger');
-      if (typeof componentTagger === 'function') {
-        plugins.push(componentTagger());
+      const taggerModule = await import('lovable-tagger');
+      const taggerFactory = taggerModule.componentTagger ?? taggerModule.default;
+
+      if (typeof taggerFactory === 'function') {
+        plugins.push(taggerFactory());
+      } else {
+        console.warn('lovable-tagger loaded but no plugin factory was found.');
       }
     } catch (error) {
       console.warn('lovable-tagger not available, continuing without it:', error);

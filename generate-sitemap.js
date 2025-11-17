@@ -1,15 +1,32 @@
 // Advanced Dynamic Sitemap Generator
+import 'dotenv/config';
 import { SitemapStream, streamToPromise } from 'sitemap';
 import { writeFileSync } from 'fs';
 import { createClient } from '@supabase/supabase-js';
 
-const hostname = 'https://ghatakgsai.netlify.app';
+const hostname =
+  process.env.SITE_URL ||
+  process.env.URL ||
+  process.env.DEPLOY_PRIME_URL ||
+  'https://ghatakgsai.netlify.app';
 
-// Supabase configuration
-const supabaseUrl = 'https://jddeuhrocglnisujixdt.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkZGV1aHJvY2dsbmlzdWppeGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MzYyNjYsImV4cCI6MjA2NTUxMjI2Nn0.cPsO_rAxqhGEUEotfIFfbbxlujKdtgZ3MrFctOOcoE4';
+// Supabase configuration (falls back to historic defaults for convenience)
+const supabaseUrl =
+  process.env.SUPABASE_URL ||
+  process.env.VITE_SUPABASE_URL ||
+  'https://jddeuhrocglnisujixdt.supabase.co';
+const supabaseAnonKey =
+  process.env.SUPABASE_ANON_KEY ||
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.VITE_SUPABASE_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkZGV1aHJvY2dsbmlzdWppeGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MzYyNjYsImV4cCI6MjA2NTUxMjI2Nn0.cPsO_rAxqhGEUEotfIFfbbxlujKdtgZ3MrFctOOcoE4';
 
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const hasSupabaseCredentials = Boolean(supabaseUrl && supabaseAnonKey);
+const supabase = hasSupabaseCredentials ? createClient(supabaseUrl, supabaseAnonKey) : null;
+if (!hasSupabaseCredentials) {
+  console.warn('⚠️ Supabase credentials were not found – the sitemap will include only static routes.');
+}
 
 // Static pages configuration
 const marketingPages = [
@@ -69,6 +86,11 @@ const normalizeSelectColumns = (select) => {
 };
 
 const fetchCollection = async ({ table, select, filters = [], orderBy }) => {
+  if (!supabase) {
+    console.warn(`⚠️ Skipping dynamic ${table} entries because Supabase is not configured.`);
+    return [];
+  }
+
   const selectColumns = normalizeSelectColumns(select);
 
   const executeQuery = async (columns) => {
