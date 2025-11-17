@@ -9,22 +9,25 @@ import { supabase } from '@/integrations/supabase/client';
 
 /**
  * Checks if the current authenticated user is an admin
- * by verifying their presence in the admin_users table
+ * by verifying their presence in the user_roles table
  */
 export async function isCurrentUserAdmin(): Promise<boolean> {
   try {
     const { data: session } = await supabase.auth.getSession();
-    const userEmail = session?.session?.user?.email;
+    const userId = session?.session?.user?.id;
 
-    if (!userEmail) return false;
+    if (!userId) return false;
 
-    const { data: adminUser } = await supabase
-      .from('admin_users')
-      .select('email')
-      .eq('email', userEmail)
+    const { data, error } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .eq('role', 'admin')
       .maybeSingle();
 
-    return !!adminUser;
+    if (error) return false;
+
+    return !!data;
   } catch (error) {
     return false;
   }
@@ -39,20 +42,23 @@ export async function getCurrentUserAdminInfo(): Promise<{
 }> {
   try {
     const { data: session } = await supabase.auth.getSession();
-    const userEmail = session?.session?.user?.email ?? null;
+    const user = session?.session?.user;
+    const userEmail = user?.email ?? null;
+    const userId = user?.id ?? null;
 
-    if (!userEmail) {
+    if (!userId) {
       return { isAdmin: false, email: null };
     }
 
-    const { data: adminUser } = await supabase
-      .from('admin_users')
-      .select('email')
-      .eq('email', userEmail)
+    const { data, error } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .eq('role', 'admin')
       .maybeSingle();
 
     return {
-      isAdmin: !!adminUser,
+      isAdmin: !error && !!data,
       email: userEmail,
     };
   } catch (error) {

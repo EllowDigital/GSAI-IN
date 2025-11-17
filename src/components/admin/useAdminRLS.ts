@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-// Hook: Handles checking if the current user is in the admin_users table for RLS operations
+// Hook: Handles checking if the current user has the admin role for RLS protections
 export function useAdminRLS() {
   const [adminEmail, setAdminEmail] = useState<string | null>(null);
   const [isAdminInTable, setIsAdminInTable] = useState<boolean | null>(null);
@@ -12,20 +12,24 @@ export function useAdminRLS() {
     setCheckingAdminEntry(true);
     (async () => {
       const { data: sessionData } = await supabase.auth.getSession();
-      const userEmail = sessionData?.session?.user?.email;
-      setAdminEmail(userEmail ?? null);
+      const user = sessionData?.session?.user;
+      const userEmail = user?.email ?? null;
+      const userId = user?.id ?? null;
+      setAdminEmail(userEmail);
 
-      if (userEmail) {
-        const { data: foundUser } = await supabase
-          .from('admin_users')
-          .select('*')
-          .eq('email', userEmail)
+      if (userId) {
+        const { data: roleEntry, error } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', userId)
+          .eq('role', 'admin')
           .maybeSingle();
-        setIsAdminInTable(!!foundUser);
-        if (!foundUser) {
+
+        setIsAdminInTable(!error && !!roleEntry);
+
+        if (error || !roleEntry) {
           setRlsError(
-            `Your email (${userEmail}) is NOT present in the admin_users table. 
-            Please add your admin email to the "admin_users" table in Supabase Dashboard.`
+            `Your account is missing the admin role. Visit the new user_roles table and add role "admin" for ${userEmail ?? 'this user'}.`
           );
         } else {
           setRlsError(null);
