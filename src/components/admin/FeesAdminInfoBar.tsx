@@ -16,7 +16,7 @@ export default function FeesAdminInfoBar({
   return (
     <div className="mb-2 text-xs text-gray-400 flex flex-wrap items-center gap-2">
       <span>
-        In admin_users?{' '}
+        Has admin role?{' '}
         <b>{isAdminInTable === null ? '...' : isAdminInTable ? '✅' : '❌'}</b>
       </span>
       <span>

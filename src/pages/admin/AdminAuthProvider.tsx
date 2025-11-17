@@ -11,6 +11,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { Session } from '@supabase/supabase-js';
 import { toast } from '@/components/ui/sonner';
 import { AuthCelebration } from '@/components/admin/AuthCelebration';
+import type { Enums } from '@/integrations/supabase/types';
+
+const ADMIN_ROLE: Enums<'app_role'> = 'admin';
 
 type AdminAuthContextType = {
   session: Session | null;
@@ -73,18 +76,23 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     );
   };
 
-  // Check if user is admin via database lookup
-  const checkAdminStatus = async (email: string | null): Promise<boolean> => {
-    if (!email) return false;
+  const checkAdminStatus = async (userId: string | null): Promise<boolean> => {
+    if (!userId) return false;
 
     try {
-      const { data: adminUser } = await supabase
-        .from('admin_users')
-        .select('email')
-        .eq('email', email)
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('role', ADMIN_ROLE)
         .maybeSingle();
 
-      return !!adminUser;
+      if (error) {
+        console.error('Admin role lookup failed', error);
+        return false;
+      }
+
+      return !!data;
     } catch (error) {
       console.error('Admin status check failed:', error);
       return false;
@@ -96,6 +104,7 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     adminStatusOverride?: boolean
   ): Promise<boolean> => {
     const email = newSession?.user?.email ?? null;
+    const userId = newSession?.user?.id ?? null;
     const roleFromMetadata = (newSession?.user?.user_metadata?.role ?? '')
       .toString()
       .toLowerCase();
@@ -104,7 +113,7 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     if (typeof adminStatusOverride === 'boolean') {
       isAdminUser = adminStatusOverride;
     } else if (!isAdminUser) {
-      isAdminUser = await checkAdminStatus(email);
+      isAdminUser = await checkAdminStatus(userId);
     }
 
     setSession(newSession);
@@ -175,8 +184,8 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
         throw new Error(error.message);
       }
 
-      const signedInEmail = data.user?.email ?? null;
-      const isAdminUser = await checkAdminStatus(signedInEmail);
+      const signedInUserId = data.user?.id ?? null;
+      const isAdminUser = await checkAdminStatus(signedInUserId);
 
       if (!isAdminUser) {
         await supabase.auth.signOut();
