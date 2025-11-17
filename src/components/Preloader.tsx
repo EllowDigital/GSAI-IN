@@ -85,7 +85,10 @@ export default function Preloader() {
               src="/assets/img/logo.webp" // Restored your original logo path
               alt="Ghatak Sports Academy India"
               className="w-full h-full object-contain" // Use object-contain to fit, removed rounded-full
-              onError={(e) => { e.currentTarget.src = 'https://placehold.co/120x120/FFF/333?text=Logo'; }} // Fallback to placeholder
+              onError={(e) => {
+                e.currentTarget.src =
+                  'https://placehold.co/120x120/FFF/333?text=Logo';
+              }} // Fallback to placeholder
             />
           </motion.div>
 
@@ -148,4 +151,3 @@ export default function Preloader() {
     </AnimatePresence>
   );
 }
-

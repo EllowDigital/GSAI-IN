@@ -13,13 +13,6 @@ export const typeGuards = {
     value !== undefined && value !== null,
 };
 
-// Bundle size optimization - dynamic imports for heavy libraries
-export const loadHeavyDependencies = {
-  loadDateLibrary: () => import('date-fns'),
-  loadChartLibrary: () => import('recharts'),
-  loadFormsLibrary: () => import('react-hook-form'),
-};
-
 // Performance optimized utilities
 export const optimizedUtils = {
   debounce: <T extends (...args: any[]) => void>(

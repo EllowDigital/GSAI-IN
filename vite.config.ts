@@ -43,5 +43,39 @@ export default defineConfig(({ mode }) => ({
     modulePreload: { polyfill: false },
     reportCompressedSize: false,
     chunkSizeWarningLimit: 1500,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("react")) {
+              return "react-vendors";
+            }
+            if (id.includes("@tanstack")) {
+              return "tanstack";
+            }
+            if (id.includes("@supabase")) {
+              return "supabase";
+            }
+            if (id.includes("framer-motion")) {
+              return "framer-motion";
+            }
+            if (id.includes("recharts")) {
+              return "recharts";
+            }
+            if (id.includes("@radix-ui")) {
+              return "radix";
+            }
+          }
+
+          if (id.includes(`${path.resolve(__dirname, "src/pages/admin")}`)) {
+            return "admin-pages";
+          }
+
+          if (id.includes(`${path.resolve(__dirname, "src/pages")}`)) {
+            return "pages";
+          }
+        },
+      },
+    },
   },
 }));

@@ -71,7 +71,7 @@ export default function AllGalleryPage() {
 
   // Filter and sort images
   const filteredImages = useMemo(() => {
-    let filtered = allImages.filter((img) => {
+    const filtered = allImages.filter((img) => {
       const matchesSearch =
         !searchTerm ||
         img.caption?.toLowerCase().includes(searchTerm.toLowerCase()) ||

@@ -61,7 +61,6 @@ export function FeeForm({
       notes: fee?.notes ?? '',
       receipt_url: fee?.receipt_url || null,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fee, student]);
 
   const monthly_fee = Number(form.watch('monthly_fee') || 0);
