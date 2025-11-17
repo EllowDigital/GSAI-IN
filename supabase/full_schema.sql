@@ -513,9 +513,31 @@ BEFORE INSERT OR UPDATE ON public.fees
 FOR EACH ROW EXECUTE FUNCTION public.validate_fee_data();
 
 -- Table constraints depending on helper functions --------------------------------
-ALTER TABLE public.students
-  ADD CONSTRAINT IF NOT EXISTS valid_aadhar_format CHECK (validate_aadhar(aadhar_number)),
-  ADD CONSTRAINT IF NOT EXISTS valid_parent_contact_format CHECK (validate_phone(parent_contact));
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'valid_aadhar_format'
+      AND conrelid = 'public.students'::regclass
+  ) THEN
+    ALTER TABLE public.students
+      ADD CONSTRAINT valid_aadhar_format CHECK (validate_aadhar(aadhar_number));
+  END IF;
+END;
+$$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'valid_parent_contact_format'
+      AND conrelid = 'public.students'::regclass
+  ) THEN
+    ALTER TABLE public.students
+      ADD CONSTRAINT valid_parent_contact_format CHECK (validate_phone(parent_contact));
+  END IF;
+END;
+$$;
 
 -- Row Level Security policies -----------------------------------------------------
 DROP POLICY IF EXISTS "Admin can read own admin record" ON public.admin_users;
