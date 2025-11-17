@@ -6,8 +6,14 @@ export default defineConfig(async ({ mode }) => {
   const plugins = [react()];
 
   if (mode === 'development') {
-    const { default: componentTagger } = await import('lovable-tagger/vite');
-    plugins.push(componentTagger());
+    try {
+      const { componentTagger } = await import('lovable-tagger');
+      if (typeof componentTagger === 'function') {
+        plugins.push(componentTagger());
+      }
+    } catch (error) {
+      console.warn('lovable-tagger not available, continuing without it:', error);
+    }
   }
 
   return {
