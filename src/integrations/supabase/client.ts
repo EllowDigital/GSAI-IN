@@ -31,7 +31,7 @@ export const supabase = createClient<Database>(
     },
     auth: {
       autoRefreshToken: true,
-      persistSession: true,
+      persistSession: false,
       detectSessionInUrl: false,
     },
     realtime: {

@@ -5,7 +5,6 @@ import React, {
   useState,
   ReactNode,
   useRef,
-  useCallback,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -31,8 +30,6 @@ const AdminAuthContext = createContext<AdminAuthContextType>({
   signOut: async () => {},
 });
 
-const ADMIN_SESSION_CACHE_KEY = 'gsai-admin-session-cache';
-
 function AdminAuthProviderInner({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -48,59 +45,10 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
   );
   const navigate = useNavigate();
 
-  const persistSessionTokens = useCallback((sessionToPersist: Session | null) => {
-    if (typeof window === 'undefined') return;
-    if (!sessionToPersist?.access_token || !sessionToPersist?.refresh_token) {
-      sessionStorage.removeItem(ADMIN_SESSION_CACHE_KEY);
-      return;
-    }
-
-    sessionStorage.setItem(
-      ADMIN_SESSION_CACHE_KEY,
-      JSON.stringify({
-        access_token: sessionToPersist.access_token,
-        refresh_token: sessionToPersist.refresh_token,
-      })
-    );
-  }, []);
-
-  const restoreSessionFromCache = useCallback(async (): Promise<Session | null> => {
-    if (typeof window === 'undefined') return null;
-    const cached = sessionStorage.getItem(ADMIN_SESSION_CACHE_KEY);
-    if (!cached) return null;
-
-    try {
-      const parsed = JSON.parse(cached) as {
-        access_token?: string;
-        refresh_token?: string;
-      };
-      if (!parsed.access_token || !parsed.refresh_token) {
-        sessionStorage.removeItem(ADMIN_SESSION_CACHE_KEY);
-        return null;
-      }
-
-      const { data, error } = await supabase.auth.setSession({
-        access_token: parsed.access_token,
-        refresh_token: parsed.refresh_token,
-      });
-
-      if (error) {
-        sessionStorage.removeItem(ADMIN_SESSION_CACHE_KEY);
-        return null;
-      }
-
-      return data.session;
-    } catch {
-      sessionStorage.removeItem(ADMIN_SESSION_CACHE_KEY);
-      return null;
-    }
-  }, []);
-
   const clearState = (options?: { keepLoading?: boolean }) => {
     setSession(null);
     setUserEmail(null);
     setIsAdmin(false);
-    persistSessionTokens(null);
     if (!options?.keepLoading) {
       setIsLoading(false);
     }
@@ -162,7 +110,6 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     setSession(newSession);
     setUserEmail(email);
     setIsAdmin(isAdminUser);
-    persistSessionTokens(newSession);
 
     return isAdminUser;
   };
@@ -170,7 +117,6 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        await restoreSessionFromCache();
         const { data } = await supabase.auth.getSession();
         const session = data.session;
         const isAdminUser = await updateAuthState(session);
@@ -214,7 +160,7 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
         clearTimeout(authAnimationTimeoutRef.current);
       }
     };
-  }, [navigate, restoreSessionFromCache]);
+  }, [navigate]);
 
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
@@ -238,7 +184,6 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
       }
 
       await updateAuthState(data.session ?? null, true);
-      persistSessionTokens(data.session ?? null);
       toast.success('Logged in as admin.');
       triggerAuthAnimation('login');
       await delay(1200);
