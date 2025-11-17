@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -148,6 +149,10 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
             <DialogTitle className="text-lg sm:text-xl">
               {mode === 'create' ? 'Create New Blog' : 'Edit Blog'}
             </DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground">
+              Update the blog title, summary, hero image, content, and
+              published date before pushing it live.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="flex-1 overflow-y-auto px-4 sm:px-6">

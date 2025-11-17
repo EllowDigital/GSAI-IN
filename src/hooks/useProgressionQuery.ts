@@ -1,9 +1,17 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
 
 export type ProgressStatus = 'needs_work' | 'ready' | 'passed' | 'deferred';
+
+export interface ProgressionFilters {
+  search?: string;
+  program?: string;
+  coachId?: string;
+  beltLevelId?: string;
+  statuses?: ProgressStatus[];
+}
 
 export interface ProgressionRecord {
   id: string;
@@ -11,6 +19,8 @@ export interface ProgressionRecord {
   assessment_date: string | null;
   coach_notes: string | null;
   evidence_media_urls: string[];
+  assessed_by: string | null;
+  updated_at: string;
   belt_levels?: {
     id: string;
     color: string;
@@ -29,7 +39,7 @@ async function fetchProgression(): Promise<ProgressionRecord[]> {
   const { data, error } = await supabase
     .from('student_progress')
     .select(
-      `id, status, assessment_date, coach_notes, evidence_media_urls,
+      `id, status, assessment_date, coach_notes, evidence_media_urls, assessed_by, updated_at,
        belt_levels:belt_levels (id, color, rank, requirements),
        students:students (id, name, program, profile_image_url)`
     )
@@ -42,14 +52,82 @@ async function fetchProgression(): Promise<ProgressionRecord[]> {
   return (data as ProgressionRecord[]) ?? [];
 }
 
-export function useProgressionQuery() {
+function filterRecords(
+  records: ProgressionRecord[] | undefined,
+  filters: ProgressionFilters
+) {
+  if (!records) return [];
+
+  const search = filters.search?.trim().toLowerCase();
+  const allowedStatuses = filters.statuses && filters.statuses.length > 0
+    ? filters.statuses
+    : (['needs_work', 'ready', 'passed', 'deferred'] as ProgressStatus[]);
+
+  return records.filter((record) => {
+    if (!allowedStatuses.includes(record.status)) {
+      return false;
+    }
+
+    if (filters.program && record.students?.program !== filters.program) {
+      return false;
+    }
+
+    if (filters.beltLevelId && record.belt_levels?.id !== filters.beltLevelId) {
+      return false;
+    }
+
+    if (filters.coachId && record.assessed_by !== filters.coachId) {
+      return false;
+    }
+
+    if (search) {
+      const candidate = [
+        record.students?.name ?? '',
+        record.students?.program ?? '',
+        record.belt_levels?.color ?? '',
+        record.belt_levels?.rank != null
+          ? record.belt_levels.rank.toString()
+          : '',
+        record.status ?? '',
+        record.coach_notes ?? '',
+      ]
+        .join(' ')
+        .toLowerCase();
+      if (!candidate.includes(search)) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+}
+
+export function useProgressionQuery(filters: ProgressionFilters = {}) {
   const queryClient = useQueryClient();
+  const queryKey = ['student-progress'];
 
   const query = useQuery({
-    queryKey: ['student-progress'],
+    queryKey,
     queryFn: fetchProgression,
     staleTime: 1000 * 30,
+    refetchInterval: 1000 * 60,
+    refetchOnWindowFocus: false,
   });
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('student-progress-admin-stream')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'student_progress' },
+        () => queryClient.invalidateQueries({ queryKey })
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   const updateMutation = useMutation({
     mutationFn: async ({
@@ -76,13 +154,11 @@ export function useProgressionQuery() {
       return { id, ...payload };
     },
     onMutate: async (variables) => {
-      await queryClient.cancelQueries({ queryKey: ['student-progress'] });
-      const previous = queryClient.getQueryData<ProgressionRecord[]>([
-        'student-progress',
-      ]);
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData<ProgressionRecord[]>(queryKey);
 
       if (previous) {
-        queryClient.setQueryData<ProgressionRecord[]>(['student-progress'], (old) =>
+        queryClient.setQueryData<ProgressionRecord[]>(queryKey, (old) =>
           old?.map((record) =>
             record.id === variables.id
               ? {
@@ -101,17 +177,72 @@ export function useProgressionQuery() {
     },
     onError: (error, _vars, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(['student-progress'], context.previous);
+        queryClient.setQueryData(queryKey, context.previous);
       }
       toast.error(error instanceof Error ? error.message : 'Update failed');
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['student-progress'] });
+      queryClient.invalidateQueries({ queryKey });
     },
     onSuccess: () => {
       toast.success('Progress updated');
     },
   });
+
+  const evidenceMutation = useMutation({
+    mutationFn: async ({ id, mediaUrl }: { id: string; mediaUrl: string }) => {
+      const current = queryClient.getQueryData<ProgressionRecord[]>(queryKey) ?? [];
+      const target = current.find((record) => record.id === id);
+      const nextEvidence = [...(target?.evidence_media_urls ?? []), mediaUrl];
+
+      const { error } = await supabase
+        .from('student_progress')
+        .update({ evidence_media_urls: nextEvidence })
+        .eq('id', id);
+
+      if (error) throw error;
+      return { id, evidence_media_urls: nextEvidence };
+    },
+    onMutate: async ({ id, mediaUrl }) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData<ProgressionRecord[]>(queryKey);
+
+      if (previous) {
+        queryClient.setQueryData<ProgressionRecord[]>(queryKey, (old) =>
+          old?.map((record) =>
+            record.id === id
+              ? {
+                  ...record,
+                  evidence_media_urls: [
+                    ...(record.evidence_media_urls ?? []),
+                    mediaUrl,
+                  ],
+                }
+              : record
+          ) ?? []
+        );
+      }
+
+      return { previous };
+    },
+    onError: (error, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(queryKey, context.previous);
+      }
+      toast.error(error instanceof Error ? error.message : 'Upload failed');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onSuccess: () => {
+      toast.success('Evidence attached');
+    },
+  });
+
+  const filteredRecords = useMemo(
+    () => filterRecords(query.data, filters),
+    [query.data, filters]
+  );
 
   const grouped = useMemo(() => {
     const base: Record<ProgressStatus, ProgressionRecord[]> = {
@@ -121,18 +252,21 @@ export function useProgressionQuery() {
       deferred: [],
     };
 
-    (query.data ?? []).forEach((record) => {
-      const status = record.status ?? 'needs_work';
-      base[status]?.push(record);
+    filteredRecords.forEach((record) => {
+      base[record.status]?.push(record);
     });
 
     return base;
-  }, [query.data]);
+  }, [filteredRecords]);
 
   return {
     ...query,
+    records: filteredRecords,
     grouped,
     updateProgress: updateMutation.mutate,
+    updateProgressAsync: updateMutation.mutateAsync,
     updating: updateMutation.isPending,
+    appendEvidence: evidenceMutation.mutate,
+    appendingEvidence: evidenceMutation.isPending,
   };
 }

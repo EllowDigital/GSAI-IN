@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogTitle,
   DialogHeader,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -238,6 +239,10 @@ export default function StudentModal({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{student ? 'Edit Student' : 'Add Student'}</DialogTitle>
+          <DialogDescription>
+            Provide enrollment details, guardian contact info, and the current
+            training program for this student.
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">

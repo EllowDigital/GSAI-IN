@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -58,6 +59,10 @@ export default function FeeEditModal({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{fee ? 'Edit Payment' : 'Add Payment'}</DialogTitle>
+          <DialogDescription>
+            Capture the monthly fee amount, payment status, and any balance or
+            carry-forward adjustments for {student?.name || 'this student'}.
+          </DialogDescription>
         </DialogHeader>
 
         <FeeForm
