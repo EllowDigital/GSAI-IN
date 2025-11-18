@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Message Sent Successfully | Ghatak Sports Academy India</title>
+
+    <!-- SEO + Meta -->
+    <meta name="description" content="Your message has been successfully sent to Ghatak Sports Academy India." />
+    <meta name="robots" content="noindex, follow" />
+    <meta name="theme-color" content="#00c853" />
+    <link rel="canonical" href="https://ghatakgsai.netlify.app/assets/pages/success.html" />
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+        integrity="sha384-oS3vJWb95yYg5rZZYwoSbUbWzJc8Yj+U8/I8JkaTAtF+2vFQiv6r8kXW/E0+I6Mg" crossorigin="anonymous" />
+
+    <style>
+        :root {
+            --primary: #00c853;
+            --bg: #f4f4f4;
+            --font: "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: var(--font);
+            background-color: var(--bg);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .wrapper {
+            text-align: center;
+            padding: 2rem;
+            max-width: 90%;
+        }
+
+        .success-message {
+            background: var(--primary);
+            color: #fff;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .success-message i {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            animation: popIn 0.5s ease;
+        }
+
+        .success-message p {
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .loader-wrapper {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e0e0e0;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loader-text {
+            font-size: 1rem;
+            color: #555;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.6);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .success-message {
+                padding: 1.5rem;
+            }
+
+            .success-message p {
+                font-size: 1rem;
+            }
+
+            .success-message i {
+                font-size: 2.5rem;
+            }
+
+            .loader {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="success-message" id="successMessage" role="alert" aria-live="polite">
+            <i class="fas fa-check-circle" aria-hidden="true"></i>
+            <p>Your message has been sent successfully!</p>
+        </div>
+
+        <div class="loader-wrapper" id="loaderWrapper" aria-hidden="true">
+            <div class="loader" role="status" aria-label="Loading spinner"></div>
+            <div class="loader-text">Redirecting to homepage...</div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            const successMessage = document.getElementById("successMessage");
+            const loaderWrapper = document.getElementById("loaderWrapper");
+
+            setTimeout(() => {
+                successMessage.style.display = "none";
+                loaderWrapper.style.display = "flex";
+
+                setTimeout(() => {
+                    window.location.href = "https://ghatakgsai.netlify.app/";
+                }, 3500);
+            }, 3000);
+        });
+    </script>
+</body>
+
+</html>
