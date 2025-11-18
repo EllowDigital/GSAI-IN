@@ -1,8 +1,0 @@
-<svg width="320" height="280" viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg">
-  <rect width="320" height="280" rx="32" fill="#ECFCCB"/>
-  <path d="M60 60l100-28 100 28v78c0 64-45 106-100 122-55-16-100-58-100-122V60z" fill="#FFF" stroke="#4D7C0F" stroke-width="5"/>
-  <path d="M115 110l45-17 45 17v35c0 36-27 59-45 66-18-7-45-30-45-66v-35z" fill="#DCFCE7"/>
-  <circle cx="160" cy="150" r="26" fill="#4D7C0F"/>
-  <path d="M160 132c8 0 15 7 15 15 0 11-14 25-15 25s-15-14-15-25c0-8 7-15 15-15z" fill="#A3E635"/>
-  <text x="32" y="48" fill="#365314" font-size="18" font-family="'Segoe UI',sans-serif" font-weight="600">GSAI SECURITY</text>
-</svg>
