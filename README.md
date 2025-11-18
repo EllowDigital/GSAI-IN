@@ -127,7 +127,7 @@ We maintain code quality through continuous integration pipelines and testing to
 | `npm run preview` | Serve the built app locally via Vite preview |
 | `npm run generate:sitemap` | Run the Supabase-powered sitemap generator |
 
-> Tip: copy `.env` to `.env.local` and adjust the Supabase values before running `npm run dev`.
+> Tip: copy `.env.example` to `.env.local` (or `.env`) and adjust the Supabase values before running `npm run dev`.
 
 There are no Git hooks included; feel free to wire up Husky/lefthook if you need automated checks before commits.
 

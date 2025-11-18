@@ -40,7 +40,9 @@ export default function StudentManager() {
   const [editingStudent, setEditingStudent] = useState<StudentRow | null>(null);
   const [deleteStudent, setDeleteStudent] = useState<StudentRow | null>(null);
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
-  const [activeTab, setActiveTab] = useState<'roster' | 'progression'>('roster');
+  const [activeTab, setActiveTab] = useState<'roster' | 'progression'>(
+    'roster'
+  );
 
   const handleEdit = (student: StudentRow) => {
     setEditingStudent(student);
@@ -61,12 +63,21 @@ export default function StudentManager() {
   return (
     <>
       <div className="w-full p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1400px] mx-auto">
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'roster' | 'progression')} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) =>
+            setActiveTab(value as 'roster' | 'progression')
+          }
+          className="space-y-6"
+        >
           <TabsList className="grid grid-cols-2 rounded-2xl bg-white shadow-sm border">
             <TabsTrigger value="roster" className="flex items-center gap-2">
               <Users className="h-4 w-4" /> Roster
             </TabsTrigger>
-            <TabsTrigger value="progression" className="flex items-center gap-2">
+            <TabsTrigger
+              value="progression"
+              className="flex items-center gap-2"
+            >
               <KanbanSquare className="h-4 w-4" /> Progression
             </TabsTrigger>
           </TabsList>
@@ -178,7 +189,8 @@ export default function StudentManager() {
                           No Students Found
                         </h3>
                         <p className="text-sm sm:text-base text-muted-foreground mb-4">
-                          Get started by adding your first student to the academy.
+                          Get started by adding your first student to the
+                          academy.
                         </p>
                         <Button
                           onClick={() => setIsModalOpen(true)}
@@ -195,7 +207,10 @@ export default function StudentManager() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="progression" className="focus-visible:outline-none">
+          <TabsContent
+            value="progression"
+            className="focus-visible:outline-none"
+          >
             <ProgressionBoard />
           </TabsContent>
         </Tabs>

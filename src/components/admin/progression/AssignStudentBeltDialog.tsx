@@ -104,7 +104,8 @@ export default function AssignStudentBeltDialog({
           <DialogTitle>Assign student to a belt</DialogTitle>
           <DialogDescription>
             Pick any rostered student, choose their current belt, and optionally
-            set their initial status before they appear on the progression board.
+            set their initial status before they appear on the progression
+            board.
           </DialogDescription>
         </DialogHeader>
         <form className="space-y-4" onSubmit={handleSubmit}>
@@ -148,7 +149,10 @@ export default function AssignStudentBeltDialog({
             <label className="text-sm font-medium text-foreground">
               Status
             </label>
-            <Select value={status} onValueChange={(value) => setStatus(value as ProgressStatus)}>
+            <Select
+              value={status}
+              onValueChange={(value) => setStatus(value as ProgressStatus)}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
@@ -176,7 +180,7 @@ export default function AssignStudentBeltDialog({
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? 'Saving…' : 'Assign' }
+              {loading ? 'Saving…' : 'Assign'}
             </Button>
           </div>
         </form>

@@ -157,8 +157,9 @@ export function EventModal({
         <DialogHeader className="sr-only">
           <DialogTitle>{event.title}</DialogTitle>
           <DialogDescription>
-            Event runs {formatDateRange(event.from_date, event.end_date, event.date)}{' '}
-            at Ghatak Sports Academy India.
+            Event runs{' '}
+            {formatDateRange(event.from_date, event.end_date, event.date)} at
+            Ghatak Sports Academy India.
           </DialogDescription>
         </DialogHeader>
         <button

@@ -59,9 +59,10 @@ function filterRecords(
   if (!records) return [];
 
   const search = filters.search?.trim().toLowerCase();
-  const allowedStatuses = filters.statuses && filters.statuses.length > 0
-    ? filters.statuses
-    : (['needs_work', 'ready', 'passed', 'deferred'] as ProgressStatus[]);
+  const allowedStatuses =
+    filters.statuses && filters.statuses.length > 0
+      ? filters.statuses
+      : (['needs_work', 'ready', 'passed', 'deferred'] as ProgressStatus[]);
 
   return records.filter((record) => {
     if (!allowedStatuses.includes(record.status)) {
@@ -142,7 +143,8 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
       coach_notes?: string | null;
     }) => {
       const payload: Record<string, unknown> = { status };
-      if (assessment_date !== undefined) payload.assessment_date = assessment_date;
+      if (assessment_date !== undefined)
+        payload.assessment_date = assessment_date;
       if (coach_notes !== undefined) payload.coach_notes = coach_notes;
 
       const { error } = await supabase
@@ -158,18 +160,20 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
       const previous = queryClient.getQueryData<ProgressionRecord[]>(queryKey);
 
       if (previous) {
-        queryClient.setQueryData<ProgressionRecord[]>(queryKey, (old) =>
-          old?.map((record) =>
-            record.id === variables.id
-              ? {
-                  ...record,
-                  status: variables.status,
-                  assessment_date:
-                    variables.assessment_date ?? record.assessment_date,
-                  coach_notes: variables.coach_notes ?? record.coach_notes,
-                }
-              : record
-          ) ?? []
+        queryClient.setQueryData<ProgressionRecord[]>(
+          queryKey,
+          (old) =>
+            old?.map((record) =>
+              record.id === variables.id
+                ? {
+                    ...record,
+                    status: variables.status,
+                    assessment_date:
+                      variables.assessment_date ?? record.assessment_date,
+                    coach_notes: variables.coach_notes ?? record.coach_notes,
+                  }
+                : record
+            ) ?? []
         );
       }
 
@@ -191,7 +195,8 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
 
   const evidenceMutation = useMutation({
     mutationFn: async ({ id, mediaUrl }: { id: string; mediaUrl: string }) => {
-      const current = queryClient.getQueryData<ProgressionRecord[]>(queryKey) ?? [];
+      const current =
+        queryClient.getQueryData<ProgressionRecord[]>(queryKey) ?? [];
       const target = current.find((record) => record.id === id);
       const nextEvidence = [...(target?.evidence_media_urls ?? []), mediaUrl];
 
@@ -208,18 +213,20 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
       const previous = queryClient.getQueryData<ProgressionRecord[]>(queryKey);
 
       if (previous) {
-        queryClient.setQueryData<ProgressionRecord[]>(queryKey, (old) =>
-          old?.map((record) =>
-            record.id === id
-              ? {
-                  ...record,
-                  evidence_media_urls: [
-                    ...(record.evidence_media_urls ?? []),
-                    mediaUrl,
-                  ],
-                }
-              : record
-          ) ?? []
+        queryClient.setQueryData<ProgressionRecord[]>(
+          queryKey,
+          (old) =>
+            old?.map((record) =>
+              record.id === id
+                ? {
+                    ...record,
+                    evidence_media_urls: [
+                      ...(record.evidence_media_urls ?? []),
+                      mediaUrl,
+                    ],
+                  }
+                : record
+            ) ?? []
         );
       }
 
@@ -249,16 +256,14 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
       beltLevelId: string;
       status?: ProgressStatus;
     }) => {
-      const { error } = await supabase
-        .from('student_progress')
-        .upsert(
-          {
-            student_id: studentId,
-            belt_level_id: beltLevelId,
-            status,
-          },
-          { onConflict: 'student_id,belt_level_id' }
-        );
+      const { error } = await supabase.from('student_progress').upsert(
+        {
+          student_id: studentId,
+          belt_level_id: beltLevelId,
+          status,
+        },
+        { onConflict: 'student_id,belt_level_id' }
+      );
 
       if (error) throw error;
     },
@@ -304,26 +309,28 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
       const previous = queryClient.getQueryData<ProgressionRecord[]>(queryKey);
 
       if (previous) {
-        queryClient.setQueryData<ProgressionRecord[]>(queryKey, (old) =>
-          old?.map((record) =>
-            record.id === id
-              ? {
-                  ...record,
-                  belt_levels: record.belt_levels
-                    ? {
-                        ...record.belt_levels,
-                        id: nextBelt.id,
-                        color: nextBelt.color,
-                        rank: nextBelt.rank,
-                        requirements: nextBelt.requirements,
-                      }
-                    : record.belt_levels,
-                  status: 'needs_work',
-                  assessment_date: null,
-                  coach_notes: null,
-                }
-              : record
-          ) ?? []
+        queryClient.setQueryData<ProgressionRecord[]>(
+          queryKey,
+          (old) =>
+            old?.map((record) =>
+              record.id === id
+                ? {
+                    ...record,
+                    belt_levels: record.belt_levels
+                      ? {
+                          ...record.belt_levels,
+                          id: nextBelt.id,
+                          color: nextBelt.color,
+                          rank: nextBelt.rank,
+                          requirements: nextBelt.requirements,
+                        }
+                      : record.belt_levels,
+                    status: 'needs_work',
+                    assessment_date: null,
+                    coach_notes: null,
+                  }
+                : record
+            ) ?? []
         );
       }
 

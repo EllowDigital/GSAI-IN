@@ -10,17 +10,13 @@ const hostname =
   process.env.DEPLOY_PRIME_URL ||
   'https://ghatakgsai.netlify.app';
 
-// Supabase configuration (falls back to historic defaults for convenience)
-const supabaseUrl =
-  process.env.SUPABASE_URL ||
-  process.env.VITE_SUPABASE_URL ||
-  'https://jddeuhrocglnisujixdt.supabase.co';
+// Supabase configuration (must be provided via env vars)
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const supabaseAnonKey =
   process.env.SUPABASE_ANON_KEY ||
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
   process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-  process.env.VITE_SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkZGV1aHJvY2dsbmlzdWppeGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MzYyNjYsImV4cCI6MjA2NTUxMjI2Nn0.cPsO_rAxqhGEUEotfIFfbbxlujKdtgZ3MrFctOOcoE4';
+  process.env.VITE_SUPABASE_ANON_KEY;
 
 const hasSupabaseCredentials = Boolean(supabaseUrl && supabaseAnonKey);
 const supabase = hasSupabaseCredentials ? createClient(supabaseUrl, supabaseAnonKey) : null;

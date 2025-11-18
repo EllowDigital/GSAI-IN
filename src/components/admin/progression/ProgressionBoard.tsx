@@ -35,14 +35,21 @@ import {
 } from 'lucide-react';
 import EvidenceUploadButton from './EvidenceUploadButton';
 import OptimizedImage from '@/components/OptimizedImage';
-import { ProgressionRecord, ProgressStatus, useProgressionQuery } from '@/hooks/useProgressionQuery';
+import {
+  ProgressionRecord,
+  ProgressStatus,
+  useProgressionQuery,
+} from '@/hooks/useProgressionQuery';
 import { useBeltLevels, BeltLevel } from '@/hooks/useBeltLevels';
 import { useStudents } from '@/hooks/useStudents';
 import { cn } from '@/lib/utils';
 import { toast } from '@/components/ui/sonner';
 import AssignStudentBeltDialog from './AssignStudentBeltDialog';
 
-const STATUS_CONFIG: Record<ProgressStatus, { label: string; color: string; accent: string }> = {
+const STATUS_CONFIG: Record<
+  ProgressStatus,
+  { label: string; color: string; accent: string }
+> = {
   needs_work: {
     label: 'Needs Work',
     color: 'bg-red-50 text-red-700',
@@ -65,7 +72,12 @@ const STATUS_CONFIG: Record<ProgressStatus, { label: string; color: string; acce
   },
 };
 
-const STATUS_ORDER: ProgressStatus[] = ['needs_work', 'ready', 'passed', 'deferred'];
+const STATUS_ORDER: ProgressStatus[] = [
+  'needs_work',
+  'ready',
+  'passed',
+  'deferred',
+];
 const ALL_OPTION = 'all';
 
 const formatDate = (value: string | null) => {
@@ -121,10 +133,11 @@ function DraggableCard({
   nextBeltLabel?: string;
   promoting?: boolean;
 }) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: record.id,
-    data: { record },
-  });
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: record.id,
+      data: { record },
+    });
 
   const style = transform
     ? {
@@ -154,23 +167,32 @@ function DraggableCard({
           <div className="flex items-center gap-3">
             <Avatar className="h-11 w-11 shadow-inner">
               {student?.profile_image_url ? (
-                <AvatarImage src={student.profile_image_url} alt={student?.name ?? 'student'} />
+                <AvatarImage
+                  src={student.profile_image_url}
+                  alt={student?.name ?? 'student'}
+                />
               ) : (
-                <AvatarFallback>{student?.name?.slice(0, 2).toUpperCase() ?? 'ST'}</AvatarFallback>
+                <AvatarFallback>
+                  {student?.name?.slice(0, 2).toUpperCase() ?? 'ST'}
+                </AvatarFallback>
               )}
             </Avatar>
             <div>
               <p className="font-semibold text-slate-900 leading-tight">
                 {student?.name ?? 'Unassigned'}
               </p>
-              <p className="text-xs text-slate-500">{student?.program ?? 'Program TBD'}</p>
+              <p className="text-xs text-slate-500">
+                {student?.program ?? 'Program TBD'}
+              </p>
             </div>
           </div>
           <div className="text-right space-y-1">
             <Badge variant="secondary" className="bg-slate-100 text-slate-700">
               {belt?.color ?? 'No Belt'}
             </Badge>
-            <p className="text-[11px] text-slate-400">Rank #{belt?.rank ?? '-'}</p>
+            <p className="text-[11px] text-slate-400">
+              Rank #{belt?.rank ?? '-'}
+            </p>
           </div>
         </div>
 
@@ -202,7 +224,13 @@ function DraggableCard({
                 return (
                   <div key={url} className="rounded-lg overflow-hidden border">
                     {video ? (
-                      <video src={url} className="h-24 w-full object-cover" muted loop controls={false} />
+                      <video
+                        src={url}
+                        className="h-24 w-full object-cover"
+                        muted
+                        loop
+                        controls={false}
+                      />
                     ) : (
                       <OptimizedImage
                         src={url}
@@ -324,7 +352,10 @@ export default function ProgressionBoard() {
         );
       }
     });
-    return Array.from(map.entries()).map(([value, label]) => ({ value, label }));
+    return Array.from(map.entries()).map(([value, label]) => ({
+      value,
+      label,
+    }));
   }, [rawRecords]);
 
   const handleDragEnd = useCallback(
@@ -332,7 +363,9 @@ export default function ProgressionBoard() {
       const { over, active } = event;
       if (!over) return;
       const nextStatus = over.id as ProgressStatus;
-      const record = active.data.current?.record as ProgressionRecord | undefined;
+      const record = active.data.current?.record as
+        | ProgressionRecord
+        | undefined;
       if (!record || record.status === nextStatus) return;
 
       updateProgress({
@@ -380,7 +413,9 @@ export default function ProgressionBoard() {
         const next = beltMap.get(current.next_level_id);
         if (next) return next;
       }
-      const orderedIndex = sortedBelts.findIndex((belt) => belt?.id === currentBeltId);
+      const orderedIndex = sortedBelts.findIndex(
+        (belt) => belt?.id === currentBeltId
+      );
       if (orderedIndex >= 0 && orderedIndex < sortedBelts.length - 1) {
         return sortedBelts[orderedIndex + 1] ?? null;
       }
@@ -403,7 +438,8 @@ export default function ProgressionBoard() {
           id: nextBelt.id,
           color: nextBelt.color,
           rank: nextBelt.rank,
-          requirements: (nextBelt.requirements as Record<string, unknown>[] | null) ?? null,
+          requirements:
+            (nextBelt.requirements as Record<string, unknown>[] | null) ?? null,
         },
       });
     },
@@ -413,173 +449,201 @@ export default function ProgressionBoard() {
   return (
     <>
       <Card className="border border-slate-200 bg-gradient-to-b from-white to-slate-50 shadow-sm">
-      <CardHeader className="gap-2">
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div>
-            <CardTitle className="text-xl font-semibold text-slate-900">
-              Progression Board
-            </CardTitle>
-            <p className="text-sm text-slate-500">
-              Drag athletes between columns, attach sparring clips, and keep coaches aligned.
-            </p>
+        <CardHeader className="gap-2">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <CardTitle className="text-xl font-semibold text-slate-900">
+                Progression Board
+              </CardTitle>
+              <p className="text-sm text-slate-500">
+                Drag athletes between columns, attach sparring clips, and keep
+                coaches aligned.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="default"
+                size="sm"
+                className="gap-2"
+                onClick={() => setAssignDialogOpen(true)}
+              >
+                <PlayCircle className="h-4 w-4" /> Assign student
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={resetFilters}
+              >
+                <Filter className="h-4 w-4" /> Reset filters
+              </Button>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="default"
-              size="sm"
-              className="gap-2"
-              onClick={() => setAssignDialogOpen(true)}
-            >
-              <PlayCircle className="h-4 w-4" /> Assign student
-            </Button>
-            <Button variant="outline" size="sm" className="gap-2" onClick={resetFilters}>
-              <Filter className="h-4 w-4" /> Reset filters
-            </Button>
-          </div>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 pt-4">
-          <div className="col-span-1 flex gap-2 items-center rounded-xl border bg-white px-3 py-2">
-            <Search className="h-4 w-4 text-slate-400" />
-            <Input
-              value={filters.search}
-              onChange={(event) =>
-                setFilters((prev) => ({ ...prev, search: event.target.value }))
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 pt-4">
+            <div className="col-span-1 flex gap-2 items-center rounded-xl border bg-white px-3 py-2">
+              <Search className="h-4 w-4 text-slate-400" />
+              <Input
+                value={filters.search}
+                onChange={(event) =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    search: event.target.value,
+                  }))
+                }
+                placeholder="Search athlete, belt, notes"
+                className="border-0 shadow-none focus-visible:ring-0"
+              />
+            </div>
+            <Select
+              value={filters.program ?? ALL_OPTION}
+              onValueChange={(value) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  program: value === ALL_OPTION ? undefined : value,
+                }))
               }
-              placeholder="Search athlete, belt, notes"
-              className="border-0 shadow-none focus-visible:ring-0"
-            />
+            >
+              <SelectTrigger className="bg-white">
+                <SelectValue placeholder="Program" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ALL_OPTION}>All Programs</SelectItem>
+                {programOptions.map((program) => (
+                  <SelectItem key={program.value} value={program.value}>
+                    {program.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select
+              value={filters.beltLevelId ?? ALL_OPTION}
+              onValueChange={(value) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  beltLevelId: value === ALL_OPTION ? undefined : value,
+                }))
+              }
+            >
+              <SelectTrigger className="bg-white">
+                <SelectValue placeholder="Belt color" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ALL_OPTION}>All Belts</SelectItem>
+                {beltOptions.map((belt) => (
+                  <SelectItem key={belt.value} value={belt.value}>
+                    {belt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select
+              value={filters.coachId ?? ALL_OPTION}
+              onValueChange={(value) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  coachId: value === ALL_OPTION ? undefined : value,
+                }))
+              }
+            >
+              <SelectTrigger className="bg-white">
+                <SelectValue placeholder="Coach" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ALL_OPTION}>All Coaches</SelectItem>
+                {coachOptions.map((coach) => (
+                  <SelectItem key={coach.value} value={coach.value}>
+                    {coach.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          <Select
-            value={filters.program ?? ALL_OPTION}
-            onValueChange={(value) =>
-              setFilters((prev) => ({
-                ...prev,
-                program: value === ALL_OPTION ? undefined : value,
-              }))
-            }
-          >
-            <SelectTrigger className="bg-white">
-              <SelectValue placeholder="Program" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL_OPTION}>All Programs</SelectItem>
-              {programOptions.map((program) => (
-                <SelectItem key={program.value} value={program.value}>
-                  {program.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={filters.beltLevelId ?? ALL_OPTION}
-            onValueChange={(value) =>
-              setFilters((prev) => ({
-                ...prev,
-                beltLevelId: value === ALL_OPTION ? undefined : value,
-              }))
-            }
-          >
-            <SelectTrigger className="bg-white">
-              <SelectValue placeholder="Belt color" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL_OPTION}>All Belts</SelectItem>
-              {beltOptions.map((belt) => (
-                <SelectItem key={belt.value} value={belt.value}>
-                  {belt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={filters.coachId ?? ALL_OPTION}
-            onValueChange={(value) =>
-              setFilters((prev) => ({
-                ...prev,
-                coachId: value === ALL_OPTION ? undefined : value,
-              }))
-            }
-          >
-            <SelectTrigger className="bg-white">
-              <SelectValue placeholder="Coach" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL_OPTION}>All Coaches</SelectItem>
-              {coachOptions.map((coach) => (
-                <SelectItem key={coach.value} value={coach.value}>
-                  {coach.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </CardHeader>
-      <CardContent>
-        {error && (
-          <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-            Failed to load progression data: {error.message}
-          </div>
-        )}
+        </CardHeader>
+        <CardContent>
+          {error && (
+            <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+              Failed to load progression data: {error.message}
+            </div>
+          )}
 
-        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-          <div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
-            {STATUS_ORDER.map((status) => {
-              const list = grouped[status] ?? [];
-              const config = STATUS_CONFIG[status];
-              return (
-                <DroppableColumn status={status} key={status}>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                        {config.label}
-                      </p>
-                      <p className="text-2xl font-bold text-slate-900">{list.length}</p>
+          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
+              {STATUS_ORDER.map((status) => {
+                const list = grouped[status] ?? [];
+                const config = STATUS_CONFIG[status];
+                return (
+                  <DroppableColumn status={status} key={status}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          {config.label}
+                        </p>
+                        <p className="text-2xl font-bold text-slate-900">
+                          {list.length}
+                        </p>
+                      </div>
+                      <Badge className={config.color}>
+                        {status.replace('_', ' ')}
+                      </Badge>
                     </div>
-                    <Badge className={config.color}>{status.replace('_', ' ')}</Badge>
-                  </div>
-                  <ScrollArea className="h-[540px] pr-2">
-                    <div className="space-y-3">
-                      {isLoading && list.length === 0 ? (
-                        <p className="text-xs text-slate-500">Loading…</p>
-                      ) : list.length === 0 ? (
-                        <div className="rounded-xl border border-dashed border-slate-200 p-6 text-center text-xs text-slate-400">
-                          Drop students here
-                        </div>
-                      ) : (
-                        list.map((record) => {
-                          const nextBelt = getNextBeltDetails(record.belt_levels?.id);
-                          return (
-                            <DraggableCard
-                              key={record.id}
-                              record={record}
-                              onStatusClick={(nextStatus) =>
-                                updateProgress({ id: record.id, status: nextStatus })
-                              }
-                              onUploadEvidence={(url) =>
-                                appendEvidence({ id: record.id, mediaUrl: url })
-                              }
-                              onPromote={nextBelt ? () => handlePromote(record) : undefined}
-                              nextBeltLabel={nextBelt?.color}
-                              promoting={promotingStudent}
-                            />
-                          );
-                        })
-                      )}
-                    </div>
-                  </ScrollArea>
-                </DroppableColumn>
-              );
-            })}
-          </div>
-        </DndContext>
-      </CardContent>
+                    <ScrollArea className="h-[540px] pr-2">
+                      <div className="space-y-3">
+                        {isLoading && list.length === 0 ? (
+                          <p className="text-xs text-slate-500">Loading…</p>
+                        ) : list.length === 0 ? (
+                          <div className="rounded-xl border border-dashed border-slate-200 p-6 text-center text-xs text-slate-400">
+                            Drop students here
+                          </div>
+                        ) : (
+                          list.map((record) => {
+                            const nextBelt = getNextBeltDetails(
+                              record.belt_levels?.id
+                            );
+                            return (
+                              <DraggableCard
+                                key={record.id}
+                                record={record}
+                                onStatusClick={(nextStatus) =>
+                                  updateProgress({
+                                    id: record.id,
+                                    status: nextStatus,
+                                  })
+                                }
+                                onUploadEvidence={(url) =>
+                                  appendEvidence({
+                                    id: record.id,
+                                    mediaUrl: url,
+                                  })
+                                }
+                                onPromote={
+                                  nextBelt
+                                    ? () => handlePromote(record)
+                                    : undefined
+                                }
+                                nextBeltLabel={nextBelt?.color}
+                                promoting={promotingStudent}
+                              />
+                            );
+                          })
+                        )}
+                      </div>
+                    </ScrollArea>
+                  </DroppableColumn>
+                );
+              })}
+            </div>
+          </DndContext>
+        </CardContent>
       </Card>
       <AssignStudentBeltDialog
         open={assignDialogOpen}
         onOpenChange={setAssignDialogOpen}
         students={studentOptions}
-        belts={beltOptions.map((belt) => ({ label: belt.label, value: belt.value }))}
+        belts={beltOptions.map((belt) => ({
+          label: belt.label,
+          value: belt.value,
+        }))}
         onSubmit={handleAssignSubmit}
         loading={assigningStudent}
       />

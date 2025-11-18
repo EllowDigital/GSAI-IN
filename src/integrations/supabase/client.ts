@@ -11,13 +11,34 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-/**
- * Supabase configuration
- * These should ideally come from environment variables.
- */
-const SUPABASE_URL: string = 'https://jddeuhrocglnisujixdt.supabase.co';
-const SUPABASE_ANON_KEY: string =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkZGV1aHJvY2dsbmlzdWppeGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MzYyNjYsImV4cCI6MjA2NTUxMjI2Nn0.cPsO_rAxqhGEUEotfIFfbbxlujKdtgZ3MrFctOOcoE4';
+type SupabaseEnvKey = 'VITE_SUPABASE_URL' | 'VITE_SUPABASE_PUBLISHABLE_KEY';
+
+const resolveEnv = (key: SupabaseEnvKey): string | undefined => {
+  const fromImportMeta =
+    typeof import.meta !== 'undefined'
+      ? (import.meta.env as Record<string, string | undefined>)[key]
+      : undefined;
+  const fromProcess =
+    typeof process !== 'undefined' && process?.env
+      ? process.env[key]
+      : undefined;
+
+  return fromImportMeta ?? fromProcess ?? undefined;
+};
+
+const requireSupabaseEnv = (key: SupabaseEnvKey): string => {
+  const value = resolveEnv(key);
+  if (!value) {
+    throw new Error(
+      `Missing Supabase environment variable: ${key}. ` +
+        'Define it in your .env/.env.local (never commit real keys) or the hosting provider dashboard.'
+    );
+  }
+  return value;
+};
+
+const SUPABASE_URL = requireSupabaseEnv('VITE_SUPABASE_URL');
+const SUPABASE_ANON_KEY = requireSupabaseEnv('VITE_SUPABASE_PUBLISHABLE_KEY');
 
 /**
  * Optimized Supabase client instance with performance enhancements
