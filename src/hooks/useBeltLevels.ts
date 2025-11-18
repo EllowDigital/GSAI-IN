@@ -16,14 +16,15 @@ export interface BeltLevel {
 async function fetchBeltLevels(): Promise<BeltLevel[]> {
   const { data, error } = await supabase
     .from('belt_levels')
-    .select('id, color, rank, requirements, min_age, min_sessions, next_level_id')
+    .select(
+      'id, color, rank, requirements, min_age, min_sessions, next_level_id'
+    )
     .order('rank', { ascending: true });
 
   if (error) {
-    const fallback =
-      error.message?.toLowerCase().includes('permission')
-        ? 'Missing admin role: add your account to user_roles to manage belts.'
-        : `Failed to load belt levels: ${error.message}`;
+    const fallback = error.message?.toLowerCase().includes('permission')
+      ? 'Missing admin role: add your account to user_roles to manage belts.'
+      : `Failed to load belt levels: ${error.message}`;
     toast.error(fallback);
     throw error;
   }

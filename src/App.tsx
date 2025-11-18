@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useState, useRef, lazy, Suspense } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  useRef,
+  lazy,
+  Suspense,
+} from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
@@ -60,7 +67,8 @@ const queryClient = new QueryClient({
 const App = () => {
   const [loading, setLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [installPrompt, setInstallPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [dismissedInstallToast, setDismissedInstallToast] = useState(false);
   const [showInstallCTA, setShowInstallCTA] = useState(false);
   const location = useLocation();
@@ -98,7 +106,10 @@ const App = () => {
       clearTimeout(timeout);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener(
+        'beforeinstallprompt',
+        handleBeforeInstallPrompt
+      );
       performanceMonitor.disconnect();
     };
   }, []);

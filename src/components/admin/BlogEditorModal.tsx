@@ -150,8 +150,8 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
               {mode === 'create' ? 'Create New Blog' : 'Edit Blog'}
             </DialogTitle>
             <DialogDescription className="text-sm text-muted-foreground">
-              Update the blog title, summary, hero image, content, and
-              published date before pushing it live.
+              Update the blog title, summary, hero image, content, and published
+              date before pushing it live.
             </DialogDescription>
           </DialogHeader>
 

@@ -7,7 +7,10 @@ interface PWAInstallToastProps {
   onDismiss: () => void;
 }
 
-const PWAInstallToast: React.FC<PWAInstallToastProps> = ({ onInstall, onDismiss }) => {
+const PWAInstallToast: React.FC<PWAInstallToastProps> = ({
+  onInstall,
+  onDismiss,
+}) => {
   return (
     <div className="fixed top-4 left-0 right-0 z-[9998] px-4">
       <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 rounded-lg border border-yellow-300 bg-white/95 p-4 shadow-lg shadow-yellow-500/40 backdrop-blur-sm">
@@ -21,7 +24,11 @@ const PWAInstallToast: React.FC<PWAInstallToastProps> = ({ onInstall, onDismiss 
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button size="sm" onClick={onInstall} className="bg-yellow-500 hover:bg-yellow-600 text-white">
+          <Button
+            size="sm"
+            onClick={onInstall}
+            className="bg-yellow-500 hover:bg-yellow-600 text-white"
+          >
             Install App
           </Button>
           <button

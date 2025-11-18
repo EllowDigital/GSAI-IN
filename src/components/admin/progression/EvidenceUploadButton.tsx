@@ -48,9 +48,7 @@ export default function EvidenceUploadButton({
       onUploaded(data.publicUrl);
     } catch (error) {
       toast.error(
-        error instanceof Error
-          ? error.message
-          : 'Failed to upload evidence'
+        error instanceof Error ? error.message : 'Failed to upload evidence'
       );
     } finally {
       event.target.value = '';
