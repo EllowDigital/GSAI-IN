@@ -10,18 +10,32 @@ const hostname =
   process.env.DEPLOY_PRIME_URL ||
   'https://ghatakgsai.netlify.app';
 
-// Supabase configuration (must be provided via env vars)
-const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-const supabaseAnonKey =
+const isPlaceholder = (value, placeholders) => {
+  if (!value) return true;
+  const normalized = value.trim();
+  if (!normalized) return true;
+  return placeholders.some((placeholder) => normalized.includes(placeholder));
+};
+
+const normalizeEnvValue = (value, placeholders) =>
+  isPlaceholder(value, placeholders) ? undefined : value;
+
+const supabaseUrl = normalizeEnvValue(process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL, [
+  'example.supabase.co',
+  'your-project-url',
+]);
+const supabaseAnonKey = normalizeEnvValue(
   process.env.SUPABASE_ANON_KEY ||
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-  process.env.VITE_SUPABASE_ANON_KEY;
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.VITE_SUPABASE_ANON_KEY,
+  ['public-anon-key', 'your-anon-key']
+);
 
 const hasSupabaseCredentials = Boolean(supabaseUrl && supabaseAnonKey);
 const supabase = hasSupabaseCredentials ? createClient(supabaseUrl, supabaseAnonKey) : null;
 if (!hasSupabaseCredentials) {
-  console.warn('⚠️ Supabase credentials were not found – the sitemap will include only static routes.');
+  console.info('ℹ️ Supabase credentials were not detected – generating a static-only sitemap.');
 }
 
 // Static pages configuration
@@ -83,7 +97,7 @@ const normalizeSelectColumns = (select) => {
 
 const fetchCollection = async ({ table, select, filters = [], orderBy }) => {
   if (!supabase) {
-    console.warn(`⚠️ Skipping dynamic ${table} entries because Supabase is not configured.`);
+    console.info(`ℹ️ Skipping dynamic ${table} entries because Supabase is not configured.`);
     return [];
   }
 
