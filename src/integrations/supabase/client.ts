@@ -41,6 +41,27 @@ const SUPABASE_URL = requireSupabaseEnv('VITE_SUPABASE_URL');
 const SUPABASE_ANON_KEY = requireSupabaseEnv('VITE_SUPABASE_PUBLISHABLE_KEY');
 
 /**
+ * Use sessionStorage so ctrl/cmd+R keeps the session, while a full app close clears it.
+ * Falls back to in-memory storage when the DOM is unavailable (e.g. during SSR).
+ */
+const resolveSessionStorage = () => {
+  if (typeof window === 'undefined') {
+    return undefined;
+  }
+
+  try {
+    const testKey = '__supabase_session_test__';
+    window.sessionStorage.setItem(testKey, '1');
+    window.sessionStorage.removeItem(testKey);
+    return window.sessionStorage;
+  } catch (_error) {
+    return undefined;
+  }
+};
+
+const sessionStorageAdapter = resolveSessionStorage();
+
+/**
  * Optimized Supabase client instance with performance enhancements
  */
 export const supabase = createClient<Database>(
@@ -52,8 +73,10 @@ export const supabase = createClient<Database>(
     },
     auth: {
       autoRefreshToken: true,
-      persistSession: false,
+      persistSession: true,
       detectSessionInUrl: false,
+      storage: sessionStorageAdapter,
+      storageKey: 'gsai-admin-session',
     },
     realtime: {
       params: {
