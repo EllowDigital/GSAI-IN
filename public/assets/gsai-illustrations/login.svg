@@ -1,0 +1,11 @@
+<svg width="320" height="280" viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="280" rx="32" fill="#FFF9DB"/>
+  <circle cx="80" cy="110" r="36" fill="#FDE047"/>
+  <circle cx="80" cy="110" r="20" fill="#FACC15"/>
+  <rect x="60" y="160" width="40" height="68" rx="12" fill="#FEF08A"/>
+  <path d="M150 90h120c11 0 20 9 20 20v100c0 11-9 20-20 20H150c-11 0-20-9-20-20V110c0-11 9-20 20-20z" fill="#FFF" stroke="#FACC15" stroke-width="4"/>
+  <rect x="170" y="130" width="80" height="12" rx="6" fill="#FACC15" opacity="0.9"/>
+  <rect x="170" y="160" width="100" height="12" rx="6" fill="#FDE047" opacity="0.6"/>
+  <rect x="170" y="190" width="70" height="12" rx="6" fill="#FACC15" opacity="0.5"/>
+  <text x="32" y="60" fill="#A16207" font-size="20" font-family="'Segoe UI',sans-serif" font-weight="600">GSAI LOGIN</text>
+</svg>

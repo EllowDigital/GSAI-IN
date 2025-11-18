@@ -1,0 +1,22 @@
+[build]
+command = "npm run build"
+publish = "dist"
+# Netlify automatically caches node_modules when the Node version is pinned.
+environment = { NODE_VERSION = "20.17.0" }
+
+[dev]
+command = "npm run dev"
+port = 8888
+framework = "vite"
+
+# Allow sitemap + clients to know the canonical URL during production builds.
+[context.production.environment]
+SITE_URL = "https://ghatakgsai.netlify.app"
+
+# Preview deploys get their own unique URL, so fall back to DEPLOY_PRIME_URL.
+[context.deploy-preview.environment]
+SITE_URL = "${DEPLOY_PRIME_URL}"
+
+# Lovable.dev uses its own dev server flag so we can enable the tagging plugin.
+[template.environment]
+LOVABLE_DEV_SERVER = "true"
