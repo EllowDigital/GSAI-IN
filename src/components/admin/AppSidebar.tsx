@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   Home,
   BadgeDollarSign,
@@ -70,6 +70,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
   const { signOut } = useAdminAuth();
+  const navigate = useNavigate();
   const APP_VERSION = '4.1.0'; // Increment this version whenever the entire project code is updated
 
   const NavSection = ({
@@ -90,7 +91,7 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
               <button
                 onClick={() => {
                   signOut();
-                  window.location.href = '/';
+                  navigate('/');
                 }}
                 className="group flex w-full items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl mx-2 transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 dark:hover:from-blue-900/30 dark:hover:to-blue-800/30 hover:shadow-sm text-left text-slate-700 dark:text-slate-300 hover:text-blue-800 dark:hover:text-blue-200"
               >
