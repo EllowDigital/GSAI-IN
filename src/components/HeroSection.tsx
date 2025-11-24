@@ -301,13 +301,19 @@ export default function App() {
                 <button
                   key={idx}
                   onClick={() => goToImage(idx)}
-                  className={`w-2 h-2 rounded-full border transition-all duration-300 ${
-                    imgIndex === idx
-                      ? 'bg-yellow-400 border-yellow-400 scale-125'
-                      : 'bg-transparent border-white/50 hover:border-white hover:bg-white/30'
+                  className={`group relative inline-flex items-center justify-center p-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white ${
+                    imgIndex === idx ? 'scale-105' : ''
                   }`}
                   aria-label={`Go to slide ${idx + 1}`}
-                />
+                >
+                  <span
+                    className={`h-2.5 w-2.5 rounded-full border ${
+                      imgIndex === idx
+                        ? 'bg-yellow-400 border-yellow-400 shadow-[0_0_12px_rgba(250,204,21,0.8)]'
+                        : 'bg-white/10 border-white/40 group-hover:border-white'
+                    }`}
+                  ></span>
+                </button>
               ))}
             </motion.div>
           )}
