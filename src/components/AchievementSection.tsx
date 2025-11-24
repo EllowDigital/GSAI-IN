@@ -118,48 +118,48 @@ export default function AchievementSection() {
   return (
     <section
       id="achievements"
-      className="section-shell relative bg-gradient-to-br from-slate-50 via-white to-blue-50/30 overflow-hidden"
+      className="section-shell relative bg-gradient-to-br from-slate-50 via-white to-blue-50/30 overflow-hidden py-12 md:py-20 lg:py-24"
       aria-labelledby="achievements-heading"
     >
       {/* Background decorative elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-yellow-200/40 to-amber-200/40 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-red-200/30 to-rose-200/30 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-blue-200/20 to-indigo-200/20 rounded-full blur-3xl" />
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
+        <div className="absolute top-20 left-10 w-64 h-64 md:w-72 md:h-72 bg-gradient-to-r from-yellow-200/40 to-amber-200/40 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-72 h-72 md:w-80 md:h-80 bg-gradient-to-r from-red-200/30 to-rose-200/30 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 md:w-64 md:h-64 bg-gradient-to-r from-blue-200/20 to-indigo-200/20 rounded-full blur-3xl" />
       </div>
 
       {/* Floating decorative elements */}
       <div className="absolute top-16 right-8 opacity-30 animate-float">
-        <Sparkles className="w-8 h-8 text-yellow-400" />
+        <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />
       </div>
       <div
         className="absolute bottom-20 left-8 opacity-25 animate-float"
         style={{ animationDelay: '2s' }}
       >
-        <Trophy className="w-10 h-10 text-amber-500" />
+        <Trophy className="w-8 h-8 sm:w-10 sm:h-10 text-amber-500" />
       </div>
 
-      <div className="section-stack relative z-10">
+      <div className="section-stack relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
-          className="text-center mb-16 lg:mb-20"
+          className="text-center mb-12 md:mb-16 lg:mb-20"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
           variants={headerVariants}
         >
-          <div className="inline-flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Award className="w-6 h-6 text-white" />
+          <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Award className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
-            <span className="text-lg font-semibold text-yellow-600 tracking-wide">
+            <span className="text-base sm:text-lg font-semibold text-yellow-600 tracking-wide uppercase">
               Excellence & Recognition
             </span>
           </div>
 
           <h2
             id="achievements-heading"
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight"
           >
             Our{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-amber-600 to-orange-600">
@@ -167,28 +167,28 @@ export default function AchievementSection() {
             </span>
           </h2>
 
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-6 sm:mb-8 px-2">
             Celebrating proud moments and milestones achieved by our dedicated
             athletes and academy, showcasing excellence in martial arts and
             character development.
           </p>
 
           {/* Decorative divider */}
-          <div className="flex items-center justify-center gap-4">
-            <div className="h-px w-16 bg-gradient-to-r from-transparent to-yellow-400"></div>
-            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
-            <div className="h-px w-32 bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400"></div>
+          <div className="flex items-center justify-center gap-2 sm:gap-4">
+            <div className="h-px w-10 sm:w-16 bg-gradient-to-r from-transparent to-yellow-400"></div>
+            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+            <div className="h-px w-20 sm:w-32 bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400"></div>
             <div
-              className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"
+              className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-orange-400 rounded-full animate-pulse"
               style={{ animationDelay: '0.5s' }}
             ></div>
-            <div className="h-px w-16 bg-gradient-to-r from-orange-400 to-transparent"></div>
+            <div className="h-px w-10 sm:w-16 bg-gradient-to-r from-orange-400 to-transparent"></div>
           </div>
         </motion.div>
 
         {/* Achievements Grid */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.1 }}
@@ -197,7 +197,7 @@ export default function AchievementSection() {
           {achievements.map((achievement, index) => (
             <motion.div
               key={achievement.title}
-              className="group relative bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl hover:border-yellow-200 transition-all duration-500 transform hover:-translate-y-2"
+              className="group relative bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl hover:border-yellow-200 transition-all duration-500 transform hover:-translate-y-2 flex flex-col h-full"
               variants={cardVariants}
               whileHover={{ y: -8 }}
             >
@@ -207,58 +207,60 @@ export default function AchievementSection() {
               ></div>
 
               {/* Content */}
-              <div className="relative z-10 p-6 lg:p-8">
+              <div className="relative z-10 p-5 sm:p-6 lg:p-8 flex flex-col h-full">
                 {/* Header with icon and category */}
                 <div className="flex items-start justify-between mb-4">
                   <div
-                    className={`w-16 h-16 ${achievement.iconBg} rounded-xl flex items-center justify-center text-white shadow-lg transform group-hover:scale-110 transition-transform duration-300`}
+                    className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 ${achievement.iconBg} rounded-xl flex items-center justify-center text-white shadow-lg transform group-hover:scale-110 transition-transform duration-300`}
                   >
-                    {achievement.icon}
+                    {React.cloneElement(achievement.icon as React.ReactElement, {
+                      className: 'w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9',
+                    })}
                   </div>
                   <div className="text-right">
-                    <span className="inline-block px-3 py-1 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 text-xs font-semibold rounded-full mb-1">
+                    <span className="inline-block px-2.5 py-1 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 text-[10px] sm:text-xs font-bold uppercase tracking-wider rounded-full mb-1">
                       {achievement.category}
                     </span>
-                    <div className="text-sm font-bold text-gray-500">
+                    <div className="text-xs sm:text-sm font-bold text-gray-500">
                       {achievement.year}
                     </div>
                   </div>
                 </div>
 
                 {/* Achievement Title */}
-                <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-yellow-600 group-hover:to-amber-600 transition-all duration-300">
+                <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-yellow-600 group-hover:to-amber-600 transition-all duration-300">
                   {achievement.title}
                 </h3>
 
                 {/* Achievement Description */}
-                <p className="text-gray-600 text-base leading-relaxed mb-6">
+                <p className="text-gray-600 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 flex-grow">
                   {achievement.description}
                 </p>
 
                 {/* Achievement Highlight */}
-                <div className="flex items-center gap-2 pt-4 border-t border-gray-100 group-hover:border-yellow-200 transition-colors duration-300">
-                  <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2 pt-4 border-t border-gray-100 group-hover:border-yellow-200 transition-colors duration-300 mt-auto">
+                  <div className="flex items-center gap-0.5 sm:gap-1">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className="w-4 h-4 text-yellow-400 fill-current"
+                        className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 fill-current"
                       />
                     ))}
                   </div>
-                  <span className="text-sm font-semibold text-gray-700 ml-2">
+                  <span className="text-xs sm:text-sm font-semibold text-gray-700 ml-2">
                     Excellence Rating
                   </span>
                 </div>
 
                 {/* Hover effect particles */}
                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  <Sparkles className="w-5 h-5 text-yellow-400 animate-pulse" />
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 animate-pulse" />
                 </div>
               </div>
 
               {/* Animated border effect */}
               <div
-                className={`absolute inset-0 border-2 border-transparent bg-gradient-to-r ${achievement.color} rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                className={`absolute inset-0 border-2 border-transparent bg-gradient-to-r ${achievement.color} rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`}
                 style={{ padding: '2px' }}
               >
                 <div className="w-full h-full bg-white rounded-xl"></div>
@@ -269,34 +271,42 @@ export default function AchievementSection() {
 
         {/* Stats Section */}
         <motion.div
-          className="mt-16 lg:mt-20"
+          className="mt-12 md:mt-16 lg:mt-20"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200/50 shadow-sm">
-              <div className="text-3xl font-bold text-yellow-600 mb-2">50+</div>
-              <div className="text-sm text-gray-600 font-medium">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+            <div className="text-center p-4 sm:p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200/50 shadow-sm hover:shadow-md transition-shadow">
+              <div className="text-2xl sm:text-3xl font-bold text-yellow-600 mb-1 sm:mb-2">
+                50+
+              </div>
+              <div className="text-xs sm:text-sm text-gray-600 font-medium">
                 Awards Won
               </div>
             </div>
-            <div className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200/50 shadow-sm">
-              <div className="text-3xl font-bold text-red-600 mb-2">15+</div>
-              <div className="text-sm text-gray-600 font-medium">
+            <div className="text-center p-4 sm:p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200/50 shadow-sm hover:shadow-md transition-shadow">
+              <div className="text-2xl sm:text-3xl font-bold text-red-600 mb-1 sm:mb-2">
+                15+
+              </div>
+              <div className="text-xs sm:text-sm text-gray-600 font-medium">
                 Championships
               </div>
             </div>
-            <div className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200/50 shadow-sm">
-              <div className="text-3xl font-bold text-blue-600 mb-2">200+</div>
-              <div className="text-sm text-gray-600 font-medium">
+            <div className="text-center p-4 sm:p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200/50 shadow-sm hover:shadow-md transition-shadow">
+              <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-1 sm:mb-2">
+                200+
+              </div>
+              <div className="text-xs sm:text-sm text-gray-600 font-medium">
                 Competitions
               </div>
             </div>
-            <div className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200/50 shadow-sm">
-              <div className="text-3xl font-bold text-green-600 mb-2">95%</div>
-              <div className="text-sm text-gray-600 font-medium">
+            <div className="text-center p-4 sm:p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200/50 shadow-sm hover:shadow-md transition-shadow">
+              <div className="text-2xl sm:text-3xl font-bold text-green-600 mb-1 sm:mb-2">
+                95%
+              </div>
+              <div className="text-xs sm:text-sm text-gray-600 font-medium">
                 Success Rate
               </div>
             </div>
@@ -305,17 +315,20 @@ export default function AchievementSection() {
 
         {/* Call to Action */}
         <motion.div
-          className="text-center mt-16"
+          className="text-center mt-12 md:mt-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.6 }}
         >
-          <div className="inline-flex flex-col sm:flex-row items-center gap-4">
-            <a href="#contact" className="btn-primary w-full sm:w-auto justify-center">
+          <div className="inline-flex flex-col sm:flex-row items-center gap-4 sm:gap-6 bg-white/50 backdrop-blur-sm p-6 rounded-2xl border border-white/60 shadow-sm">
+            <a
+              href="#contact"
+              className="btn-primary w-full sm:w-auto justify-center px-8 py-3 text-base sm:text-lg shadow-lg shadow-yellow-500/20"
+            >
               Join Our Champions
             </a>
-            <span className="text-gray-600 text-sm">
+            <span className="text-gray-600 text-sm sm:text-base font-medium">
               Start your journey to excellence today
             </span>
           </div>
