@@ -37,7 +37,7 @@ export default function Preloader() {
           />
         </div>
 
-        <div className="relative z-10 flex flex-col items-center justify-center p-8 sm:p-12 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
+        <div className="relative z-10 flex flex-col items-center justify-center">
           {/* Logo Container with Pulse */}
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
