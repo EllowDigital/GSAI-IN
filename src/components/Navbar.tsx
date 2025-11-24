@@ -7,8 +7,8 @@ export default function Navbar() {
   const { mobileOpen, setMobileOpen, scrolled } = useNavbar();
 
   const containerClasses = scrolled
-    ? 'bg-black/80 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.5)] border-white/10'
-    : 'bg-black/40 backdrop-blur-sm shadow-none border-white/5';
+    ? 'bg-black/40 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-white/10 supports-[backdrop-filter]:bg-black/20'
+    : 'bg-black/20 backdrop-blur-xl border border-white/5 supports-[backdrop-filter]:bg-white/5';
 
   const navSafePadding = {
     paddingLeft: 'max(0.75rem, env(safe-area-inset-left, 0px))',

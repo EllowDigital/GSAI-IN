@@ -86,12 +86,12 @@ export default function GallerySection() {
   return (
     <section
       id="gallery"
-      className="section-shell relative bg-gradient-to-b from-amber-50/30 to-white overflow-hidden py-12 md:py-20 lg:py-24"
+      className="section-shell relative bg-[#0a0a0a] overflow-hidden py-12 md:py-20 lg:py-24"
     >
       {/* Decorative Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-10 right-10 w-64 h-64 md:w-96 md:h-96 bg-yellow-200/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 left-10 w-64 h-64 md:w-80 md:h-80 bg-orange-200/20 rounded-full blur-3xl" />
+        <div className="absolute top-10 right-10 w-64 h-64 md:w-96 md:h-96 bg-yellow-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-10 w-64 h-64 md:w-80 md:h-80 bg-red-600/10 rounded-full blur-3xl" />
       </div>
 
       <div className="section-stack relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
@@ -104,36 +104,36 @@ export default function GallerySection() {
           variants={variants.header}
         >
           <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-yellow-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/20">
               <Camera className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
-            <span className="text-base sm:text-lg font-semibold text-yellow-600 tracking-wide uppercase">
+            <span className="text-base sm:text-lg font-semibold text-yellow-500 tracking-wide uppercase">
               Our Gallery
             </span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight">
             Academy{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-amber-600 to-orange-600">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500">
               Moments
             </span>
           </h2>
 
-          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-6 sm:mb-8 px-2">
+          <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed mb-6 sm:mb-8 px-2">
             A glimpse into our training sessions, tournaments, and the vibrant
             community at Ghatak Sports Academy.
           </p>
 
           {/* Divider */}
           <div className="flex items-center justify-center gap-2 sm:gap-4">
-            <div className="h-px w-10 sm:w-16 bg-gradient-to-r from-transparent to-yellow-400" />
-            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full animate-pulse" />
-            <div className="h-px w-20 sm:w-32 bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400" />
+            <div className="h-px w-10 sm:w-16 bg-gradient-to-r from-transparent to-yellow-500" />
+            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-500 rounded-full animate-pulse" />
+            <div className="h-px w-20 sm:w-32 bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500" />
             <div
-              className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-orange-400 rounded-full animate-pulse"
+              className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full animate-pulse"
               style={{ animationDelay: '0.5s' }}
             />
-            <div className="h-px w-10 sm:w-16 bg-gradient-to-r from-orange-400 to-transparent" />
+            <div className="h-px w-10 sm:w-16 bg-gradient-to-r from-red-500 to-transparent" />
           </div>
         </motion.div>
 
@@ -142,7 +142,7 @@ export default function GallerySection() {
           <div className="flex justify-center py-12 sm:py-16">
             <div className="flex flex-col items-center gap-4">
               <Spinner />
-              <span className="text-gray-500 font-medium text-sm sm:text-base">
+              <span className="text-gray-400 font-medium text-sm sm:text-base">
                 Loading gallery...
               </span>
             </div>
@@ -156,18 +156,18 @@ export default function GallerySection() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center py-12 sm:py-16"
           >
-            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
               <ImageIcon className="w-8 h-8 sm:w-10 sm:h-10 text-red-500" />
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">
+            <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3">
               Unable to Load Gallery
             </h3>
-            <p className="text-gray-600 mb-4 sm:mb-6 max-w-md mx-auto text-sm sm:text-base">
+            <p className="text-gray-400 mb-4 sm:mb-6 max-w-md mx-auto text-sm sm:text-base">
               {error.message}
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="btn-primary justify-center gap-2"
+              className="btn-primary justify-center gap-2 bg-gradient-to-r from-yellow-500 to-red-600 border-0"
             >
               Try Again
               <ArrowRight className="w-4 h-4" />
@@ -182,13 +182,13 @@ export default function GallerySection() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center py-12 sm:py-16"
           >
-            <div className="w-20 h-20 sm:w-24 sm:h-24 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
               <Camera className="w-10 h-10 sm:w-12 sm:h-12 text-yellow-500" />
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">
+            <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3">
               Gallery Empty
             </h3>
-            <p className="text-gray-600 max-w-md mx-auto mb-4 sm:mb-6 text-sm sm:text-base">
+            <p className="text-gray-400 max-w-md mx-auto mb-4 sm:mb-6 text-sm sm:text-base">
               We're capturing new moments. Check back soon!
             </p>
           </motion.div>
@@ -206,7 +206,7 @@ export default function GallerySection() {
             {galleryImages.slice(0, 8).map((image, idx) => (
               <motion.div
                 key={image.id}
-                className={`group relative overflow-hidden rounded-2xl shadow-md cursor-pointer ${
+                className={`group relative overflow-hidden rounded-2xl shadow-md cursor-pointer border border-white/10 ${
                   idx === 0 || idx === 7 ? 'md:col-span-2 md:row-span-2' : ''
                 }`}
                 variants={variants.item}
@@ -224,14 +224,14 @@ export default function GallerySection() {
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 sm:p-6">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 sm:p-6">
                     <p className="text-white font-medium text-sm sm:text-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                       {image.caption || 'Ghatak Sports Academy'}
                     </p>
-                    <div className="w-8 sm:w-12 h-1 bg-yellow-500 mt-2 sm:mt-3 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+                    <div className="w-8 sm:w-12 h-1 bg-gradient-to-r from-yellow-500 to-red-600 mt-2 sm:mt-3 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
                   </div>
-                  <div className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-white/20 backdrop-blur-md p-1.5 sm:p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white/40">
-                    <Maximize2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                  <div className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-black/40 backdrop-blur-md p-1.5 sm:p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-black/60 border border-white/10">
+                    <Maximize2 className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
                   </div>
                 </div>
               </motion.div>
@@ -250,7 +250,7 @@ export default function GallerySection() {
           >
             <button
               onClick={() => navigate('/gallery')}
-              className="btn-primary px-8 py-3 text-base sm:text-lg shadow-lg shadow-yellow-500/20"
+              className="btn-primary px-8 py-3 text-base sm:text-lg shadow-lg shadow-yellow-500/20 bg-gradient-to-r from-yellow-500 to-red-600 border-0 text-white"
             >
               View Full Gallery
             </button>
