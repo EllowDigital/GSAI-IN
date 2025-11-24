@@ -21,6 +21,7 @@ const bgImages = [
 
 // Path to your introductory video - using a placeholder
 const videoSrc = '/assets/slider/intro.mp4'; // <-- IMPORTANT: Set your video path here
+const IMAGE_DURATION = 4000;
 
 // --- Framer Motion Variants ---
 
@@ -69,74 +70,90 @@ const scrollIndicatorVariants: Variants = {
 
 export default function App() {
   const [imgIndex, setImgIndex] = useState(0);
-  const [videoFinished, setVideoFinished] = useState(false);
+  const [mediaMode, setMediaMode] = useState<'video' | 'images'>('video');
   const [isMuted, setIsMuted] = useState(true);
   const [hasInteracted, setHasInteracted] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const imageTimerRef = useRef<NodeJS.Timeout | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const isVideoActive = mediaMode === 'video';
+
+  // Preload hero images once to prevent flashes during the slideshow
+  useEffect(() => {
+    bgImages.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
 
   // --- Effect for Image Slider Logic ---
   useEffect(() => {
-    // Function to clear the existing interval
-    const clearSliderInterval = () => {
-      if (timeoutRef.current) {
-        clearInterval(timeoutRef.current);
+    if (mediaMode !== 'images') {
+      if (imageTimerRef.current) {
+        clearTimeout(imageTimerRef.current);
+        imageTimerRef.current = null;
       }
-    };
+      if (imgIndex !== 0) {
+        setImgIndex(0);
+      }
+      return;
+    }
 
-    if (videoFinished) {
-      // Preload images when the slider is about to start
-      bgImages.forEach((src) => {
-        const img = new Image();
-        img.src = src;
-      });
-
-      // Start the image slider
-      timeoutRef.current = setInterval(() => {
+    const scheduleNextFrame = () => {
+      imageTimerRef.current = setTimeout(() => {
         setImgIndex((prevIndex) => {
-          const nextIndex = (prevIndex + 1) % bgImages.length;
-          // When it loops back to the start, restart the video
-          if (nextIndex === 0) {
-            setVideoFinished(false);
+          const nextIndex = prevIndex + 1;
+          if (nextIndex >= bgImages.length) {
+            setMediaMode('video');
+            return 0;
           }
           return nextIndex;
         });
-      }, 4000); // 4-second interval
-    } else {
-      // If we are back to the video, clear any lingering slider interval
-      clearSliderInterval();
-    }
+      }, IMAGE_DURATION);
+    };
 
-    // Cleanup on unmount or when videoFinished changes
-    return clearSliderInterval;
-  }, [videoFinished]);
+    scheduleNextFrame();
+
+    return () => {
+      if (imageTimerRef.current) {
+        clearTimeout(imageTimerRef.current);
+        imageTimerRef.current = null;
+      }
+    };
+  }, [mediaMode, imgIndex]);
 
   // --- Effect for Video Playback ---
   useEffect(() => {
     const currentVideo = videoRef.current;
-    if (!videoFinished && currentVideo) {
+    if (!currentVideo) return;
+
+    if (isVideoActive) {
       currentVideo.currentTime = 0;
-      currentVideo.play().catch((error) => {
-        console.warn(
-          'Video autoplay was blocked by the browser. Starting image slider as a fallback.',
-          error
-        );
-        // If autoplay fails, immediately switch to the image slider
-        setVideoFinished(true);
-      });
+      const playPromise = currentVideo.play();
+      if (playPromise) {
+        playPromise.catch((error) => {
+          console.warn(
+            'Video autoplay was blocked by the browser. Showing slideshow as fallback.',
+            error
+          );
+          setMediaMode('images');
+        });
+      }
+      return;
     }
-  }, [videoFinished]);
+
+    currentVideo.pause();
+  }, [isVideoActive]);
 
   // --- Event Handlers ---
 
   const goToImage = (index: number) => {
     setImgIndex(index);
-    // Restart the interval from the selected image
-    setVideoFinished(true); // Ensure we are in slider mode
+    if (!isVideoActive) return;
+    setMediaMode('images');
   };
 
   const handleVideoEnd = () => {
-    setVideoFinished(true);
+    setMediaMode('images');
   };
 
   // Unmute video on the first user interaction anywhere on the hero section
@@ -163,71 +180,68 @@ export default function App() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black text-white cursor-default"
     >
       {/* Background Media Container */}
-      <div className="absolute inset-0 z-0">
-        <AnimatePresence mode="wait">
-          {!videoFinished ? (
-            <motion.div
-              key="video"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.8 }}
-              className="w-full h-full"
-            >
-              <video
-                ref={videoRef}
-                muted={isMuted}
-                playsInline
-                onEnded={handleVideoEnd}
-                className="w-full h-full object-cover"
-                src={videoSrc}
-                preload="auto"
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <div className="relative h-full w-full">
+          <AnimatePresence mode="wait">
+            {isVideoActive ? (
+              <motion.div
+                key="hero-video"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8 }}
+                className="absolute inset-0"
               >
-                Your browser does not support the video tag.
-              </video>
-            </motion.div>
-          ) : (
-            <motion.div
-              key={bgImages[imgIndex]}
-              variants={fadeVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              className="absolute inset-0 w-full h-full bg-cover bg-center"
-              style={{ backgroundImage: `url('${bgImages[imgIndex]}')` }}
-            />
+                <video
+                  ref={videoRef}
+                  muted={isMuted}
+                  playsInline
+                  onEnded={handleVideoEnd}
+                  className="h-full w-full object-cover"
+                  src={videoSrc}
+                  preload="auto"
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </motion.div>
+            ) : (
+              <motion.div
+                key={bgImages[imgIndex]}
+                variants={fadeVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="absolute inset-0 w-full h-full bg-cover bg-center"
+                style={{ backgroundImage: `url('${bgImages[imgIndex]}')` }}
+              />
+            )}
+          </AnimatePresence>
+          <div className="pointer-events-none absolute inset-0 bg-black/60" />
+          {isVideoActive && (
+            <motion.button
+              onClick={toggleMute}
+              className="pointer-events-auto absolute top-4 right-4 sm:top-5 sm:right-6 lg:top-8 lg:right-8 z-30 p-2.5 rounded-full bg-black/30 backdrop-blur-md border border-white/30 text-white hover:bg-black/50 transition-colors"
+              aria-label={isMuted ? 'Unmute video' : 'Mute video'}
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.6, duration: 0.4 }}
+            >
+              {isMuted ? (
+                <VolumeX className="w-5 h-5" />
+              ) : (
+                <Volume2 className="w-5 h-5" />
+              )}
+            </motion.button>
           )}
-        </AnimatePresence>
-        {/* Overlays for better text readability */}
-        <div className="absolute inset-0 bg-black/60" />
+        </div>
       </div>
-
-      {/* Mute/Unmute Button */}
-      {!videoFinished && (
-        <motion.button
-          onClick={toggleMute}
-          className="absolute top-5 right-5 md:top-8 md:right-8 z-30 p-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/80 hover:bg-white/20 transition-colors"
-          aria-label={isMuted ? 'Unmute video' : 'Mute video'}
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 1, duration: 0.5 }}
-        >
-          {isMuted ? (
-            <VolumeX className="w-5 h-5" />
-          ) : (
-            <Volume2 className="w-5 h-5" />
-          )}
-        </motion.button>
-      )}
 
       {/* Main Content */}
       <div className="relative z-10 w-full max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-        {/* MODIFICATION: The 'animate' prop is now controlled by the 'videoFinished' state. */}
-        {/* The text will be in its 'initial' state (hidden) until the video finishes. */}
         <motion.div
           variants={staggerContainer}
           initial="initial"
-          animate={videoFinished ? 'animate' : 'initial'}
+          animate={!isVideoActive ? 'animate' : 'initial'}
         >
           <motion.div
             variants={textVariants}
@@ -289,7 +303,7 @@ export default function App() {
       {/* Bottom Controls: Scroll Indicator and Slider Navigation */}
       <div className="absolute left-1/2 -translate-x-1/2 bottom-6 sm:bottom-8 flex flex-col items-center gap-4 z-20 w-full px-4">
         <AnimatePresence>
-          {videoFinished && (
+          {!isVideoActive && (
             <motion.div
               className="flex gap-2.5"
               initial={{ opacity: 0, y: 20 }}
@@ -319,13 +333,11 @@ export default function App() {
           )}
         </AnimatePresence>
         <a href="#about" aria-label="Scroll down">
-          {/* MODIFICATION: This animation is now also controlled by 'videoFinished'. */}
-          {/* It will stay hidden and only animate to 'visible' when the video ends. */}
           <motion.div
             className="flex flex-col items-center gap-1 text-white/70 hover:text-white transition-colors"
             variants={scrollIndicatorVariants}
             initial="hidden"
-            animate={videoFinished ? 'visible' : 'hidden'}
+            animate={!isVideoActive ? 'visible' : 'hidden'}
           >
             <ArrowDownCircle className="w-6 h-6 animate-bounce" />
             <span className="text-xs font-medium tracking-wider uppercase">
