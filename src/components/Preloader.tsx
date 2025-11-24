@@ -8,12 +8,12 @@ export default function Preloader() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[9999] flex items-center justify-center bg-white"
+        className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#0a0a0a]"
       >
         {/* Animated Background Gradients */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div
-            className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-yellow-200/20 rounded-full blur-[100px]"
+            className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-yellow-500/10 rounded-full blur-[100px]"
             animate={{
               scale: [1, 1.2, 1],
               x: [0, 50, 0],
@@ -22,7 +22,7 @@ export default function Preloader() {
             transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
           />
           <motion.div
-            className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-red-200/20 rounded-full blur-[100px]"
+            className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-red-500/10 rounded-full blur-[100px]"
             animate={{
               scale: [1, 1.3, 1],
               x: [0, -50, 0],
@@ -37,7 +37,7 @@ export default function Preloader() {
           />
         </div>
 
-        <div className="relative z-10 flex flex-col items-center justify-center">
+        <div className="relative z-10 flex flex-col items-center justify-center p-8 sm:p-12 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
           {/* Logo Container with Pulse */}
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -79,10 +79,10 @@ export default function Preloader() {
             transition={{ delay: 0.3, duration: 0.5 }}
             className="text-center space-y-2"
           >
-            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900">
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-white">
               GSAI
             </h1>
-            <p className="text-sm sm:text-base font-medium text-slate-500 tracking-widest uppercase">
+            <p className="text-sm sm:text-base font-medium text-gray-400 tracking-widest uppercase">
               Ghatak Sports Academy India
             </p>
           </motion.div>
