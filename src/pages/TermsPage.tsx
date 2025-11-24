@@ -1,4 +1,8 @@
 import React from 'react';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const sections = [
   {
@@ -22,7 +26,7 @@ const sections = [
     content: (
       <>
         Fees must be paid in full as per the selected program or membership
-        plan. <strong>All fees are non-refundable</strong> under any
+        plan. <strong className="text-white">All fees are non-refundable</strong> under any
         circumstances, including withdrawal, relocation, illness, or
         disciplinary removal.
       </>
@@ -55,28 +59,64 @@ const sections = [
 ];
 
 const TermsPage: React.FC = () => (
-  <div className="min-h-screen font-montserrat bg-gradient-to-br from-yellow-50 via-white to-yellow-100 py-0">
-    <div className="max-w-3xl mx-auto mt-8 px-4 py-10 rounded-2xl bg-white/95 shadow-xl border border-yellow-100">
-      <header className="border-b border-gray-200 pb-3 mb-7">
-        <h1 className="text-3xl font-bold text-yellow-500 mb-1 text-center select-none">
-          Terms &amp; Conditions
-        </h1>
-        <p className="text-sm text-gray-500 text-center">
-          Last updated: 12 February 2025
-        </p>
-      </header>
-
-      {sections.map((section, idx) => (
-        <section className="mb-7 last:mb-0" key={idx}>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            {section.heading}
-          </h2>
-          <div className="text-gray-700 text-base">{section.content}</div>
-        </section>
-      ))}
+  <div className="min-h-screen bg-black text-white font-montserrat relative overflow-hidden">
+    {/* Decorative Elements */}
+    <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-yellow-500/10 rounded-full blur-[120px]" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-red-600/10 rounded-full blur-[120px]" />
     </div>
-    <div className="w-full max-w-3xl mx-auto text-gray-400 text-xs text-center py-5">
-      &copy; 2025 Ghatak Sports Academy India. All rights reserved.
+
+    <div className="relative z-10 max-w-4xl mx-auto px-4 py-20">
+      <motion.div
+        className="mb-8"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+          className="bg-transparent border-white/10 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+        >
+          <Link to="/">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Home
+          </Link>
+        </Button>
+      </motion.div>
+
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-8 md:p-12 shadow-2xl"
+      >
+        <header className="border-b border-white/10 pb-8 mb-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-yellow-500 to-red-600 bg-clip-text text-transparent mb-4">
+            Terms &amp; Conditions
+          </h1>
+          <p className="text-gray-400">
+            Last updated: 12 February 2025
+          </p>
+        </header>
+
+        <div className="space-y-8">
+          {sections.map((section, idx) => (
+            <section key={idx} className="group">
+              <h2 className="text-xl md:text-2xl font-semibold text-yellow-500 mb-4 group-hover:text-yellow-400 transition-colors">
+                {section.heading}
+              </h2>
+              <div className="text-gray-300 leading-relaxed">
+                {section.content}
+              </div>
+            </section>
+          ))}
+        </div>
+      </motion.div>
+      
+      <div className="mt-12 text-center text-gray-500 text-sm">
+        &copy; 2025 Ghatak Sports Academy India. All rights reserved.
+      </div>
     </div>
   </div>
 );

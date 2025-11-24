@@ -54,7 +54,7 @@ export function BlogPostModal({
   const content = (
     <div className="space-y-6">
       {post.image_url && (
-        <div className="aspect-video w-full overflow-hidden rounded-lg">
+        <div className="aspect-video w-full overflow-hidden rounded-lg border border-white/10">
           <img
             src={post.image_url}
             alt={post.title}
@@ -65,36 +65,35 @@ export function BlogPostModal({
 
       <div className="space-y-4">
         <div>
-          <h2 className="text-2xl font-bold text-foreground mb-2">
+          <h2 className="text-2xl font-bold text-white mb-2">
             {post.title}
           </h2>
           {post.published_at && (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-400">
               Published on {formatDate(post.published_at)}
             </p>
           )}
         </div>
 
         {post.description && (
-          <div className="p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
-            <p className="text-muted-foreground font-medium">
+          <div className="p-4 bg-white/5 rounded-lg border-l-4 border-yellow-500">
+            <p className="text-gray-300 font-medium">
               {post.description}
             </p>
           </div>
         )}
 
-        <div className="prose prose-sm max-w-none">
+        <div className="prose prose-sm max-w-none prose-invert">
           <div
-            className="text-foreground leading-relaxed"
+            className="text-gray-300 leading-relaxed"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
         </div>
 
-        <div className="pt-4 border-t">
+        <div className="pt-4 border-t border-white/10">
           <Button
             onClick={() => onViewFullPage(post.id)}
-            className="w-full sm:w-auto"
-            variant="default"
+            className="w-full sm:w-auto bg-gradient-to-r from-yellow-500 to-red-600 text-white border-0 hover:from-yellow-600 hover:to-red-700"
           >
             View Full Article
           </Button>
@@ -106,9 +105,9 @@ export function BlogPostModal({
   if (isMobile) {
     return (
       <Drawer open={isOpen} onOpenChange={onClose}>
-        <DrawerContent className="max-h-[90vh]">
+        <DrawerContent className="max-h-[90vh] bg-[#0a0a0a] border-white/10 text-white">
           <DrawerHeader className="text-left">
-            <DrawerClose className="absolute right-4 top-4">
+            <DrawerClose className="absolute right-4 top-4 text-gray-400 hover:text-white">
               <X className="h-4 w-4" />
             </DrawerClose>
           </DrawerHeader>
@@ -120,7 +119,7 @@ export function BlogPostModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-[#0a0a0a] border-white/10 text-white">
         <DialogHeader className="sr-only">
           <DialogTitle>{post.title}</DialogTitle>
           <DialogDescription>
@@ -131,7 +130,7 @@ export function BlogPostModal({
         </DialogHeader>
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-gray-400 hover:text-white"
         >
           <X className="h-4 w-4" />
         </button>
