@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, Clock, Share2 } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Share2, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import Seo from '@/components/Seo';
+import { motion } from 'framer-motion';
 
 interface BlogPost {
   id: string;
@@ -72,7 +73,6 @@ export default function BlogPost() {
           url: window.location.href,
         });
       } catch (error) {
-        // User cancelled sharing or sharing failed
         copyToClipboard();
       }
     } else {
@@ -87,16 +87,16 @@ export default function BlogPost() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8">
+      <div className="min-h-screen bg-black relative overflow-hidden">
+        <div className="container mx-auto px-4 py-20">
           <div className="max-w-4xl mx-auto">
-            <div className="animate-pulse">
-              <div className="h-8 bg-muted rounded mb-4"></div>
-              <div className="aspect-video bg-muted rounded-lg mb-6"></div>
-              <div className="space-y-3">
-                <div className="h-4 bg-muted rounded"></div>
-                <div className="h-4 bg-muted rounded"></div>
-                <div className="h-4 bg-muted rounded w-3/4"></div>
+            <div className="animate-pulse space-y-8">
+              <div className="h-8 bg-white/10 rounded w-3/4"></div>
+              <div className="aspect-video bg-white/10 rounded-2xl"></div>
+              <div className="space-y-4">
+                <div className="h-4 bg-white/10 rounded w-full"></div>
+                <div className="h-4 bg-white/10 rounded w-full"></div>
+                <div className="h-4 bg-white/10 rounded w-2/3"></div>
               </div>
             </div>
           </div>
@@ -107,12 +107,22 @@ export default function BlogPost() {
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">
+      <div className="min-h-screen bg-black flex items-center justify-center relative overflow-hidden">
+         {/* Decorative Background */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-yellow-600/20 rounded-full blur-[100px]" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-red-600/20 rounded-full blur-[100px]" />
+        </div>
+        
+        <div className="text-center relative z-10">
+          <h1 className="text-3xl font-bold text-white mb-4">
             Blog post not found
           </h1>
-          <Button onClick={() => navigate('/')} variant="outline">
+          <Button 
+            onClick={() => navigate('/')} 
+            variant="outline"
+            className="border-white/20 text-white hover:bg-white/10 hover:text-yellow-500"
+          >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Go Back Home
           </Button>
@@ -132,63 +142,77 @@ export default function BlogPost() {
         canonical={`/blog/${post.id}`}
       />
 
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8">
-          <div className="max-w-4xl mx-auto">
+      <div className="min-h-screen bg-black relative overflow-hidden">
+        {/* Decorative Background */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-yellow-600/10 rounded-full blur-[100px]" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-red-600/10 rounded-full blur-[100px]" />
+        </div>
+
+        <div className="container mx-auto px-4 py-20 relative z-10">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-4xl mx-auto"
+          >
             {/* Navigation */}
             <div className="mb-8">
               <Button
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/blogs')}
                 variant="ghost"
-                className="mb-4 hover:bg-muted"
+                className="mb-4 text-gray-400 hover:text-yellow-500 hover:bg-white/5"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Home
+                Back to Blogs
               </Button>
             </div>
 
             {/* Header */}
-            <header className="mb-8">
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4 leading-tight">
+            <header className="mb-10">
+              <h1 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight">
                 {post.title}
               </h1>
 
-              <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-6">
+              <div className="flex flex-wrap items-center gap-6 text-gray-400 mb-8 border-b border-white/10 pb-8">
                 {post.published_at && (
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    <span className="text-sm">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-yellow-500" />
+                    <span className="text-sm font-medium">
                       {formatDate(post.published_at)}
                     </span>
                   </div>
                 )}
 
-                <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
-                  <span className="text-sm">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-yellow-500" />
+                  <span className="text-sm font-medium">
                     {getReadingTime(post.content)}
                   </span>
                 </div>
 
                 {post.created_by && (
-                  <span className="text-sm">by {post.created_by}</span>
+                  <div className="flex items-center gap-2">
+                    <User className="h-4 w-4 text-yellow-500" />
+                    <span className="text-sm font-medium">by {post.created_by}</span>
+                  </div>
                 )}
 
                 <Button
                   onClick={handleShare}
                   variant="ghost"
                   size="sm"
-                  className="ml-auto"
+                  className="ml-auto text-yellow-500 hover:text-yellow-400 hover:bg-yellow-500/10"
                 >
-                  <Share2 className="h-4 w-4 mr-1" />
+                  <Share2 className="h-4 w-4 mr-2" />
                   Share
                 </Button>
               </div>
 
               {post.description && (
-                <div className="p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
-                  <p className="text-muted-foreground text-lg leading-relaxed">
-                    {post.description}
+                <div className="p-6 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm">
+                  <p className="text-gray-300 text-lg leading-relaxed italic">
+                    "{post.description}"
                   </p>
                 </div>
               )}
@@ -196,8 +220,8 @@ export default function BlogPost() {
 
             {/* Featured Image */}
             {post.image_url && (
-              <div className="mb-8">
-                <div className="aspect-video w-full overflow-hidden rounded-lg shadow-lg">
+              <div className="mb-12">
+                <div className="aspect-video w-full overflow-hidden rounded-2xl shadow-2xl shadow-yellow-900/20 border border-white/10">
                   <img
                     src={post.image_url}
                     alt={post.title}
@@ -208,7 +232,7 @@ export default function BlogPost() {
             )}
 
             {/* Content */}
-            <article className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-li:text-foreground">
+            <article className="prose prose-lg max-w-none prose-invert prose-headings:text-white prose-p:text-gray-300 prose-strong:text-white prose-li:text-gray-300 prose-a:text-yellow-500 hover:prose-a:text-yellow-400">
               <div
                 className="leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: post.content }}
@@ -216,22 +240,27 @@ export default function BlogPost() {
             </article>
 
             {/* Call to Action */}
-            <div className="mt-12 p-6 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
-              <h3 className="text-xl font-semibold text-foreground mb-2">
-                Ready to Start Your Martial Arts Journey?
-              </h3>
-              <p className="text-muted-foreground mb-4">
-                Join Ghatak Sports Academy India and train with certified
-                professional coaches.
-              </p>
-              <Button
-                onClick={() => navigate('/#contact')}
-                className="w-full sm:w-auto"
-              >
-                Contact Us Today
-              </Button>
+            <div className="mt-16 p-8 bg-gradient-to-br from-yellow-500/10 to-red-600/10 rounded-3xl border border-white/10 backdrop-blur-md relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+              
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-3">
+                  Ready to Start Your Martial Arts Journey?
+                </h3>
+                <p className="text-gray-400 mb-6 max-w-2xl">
+                  Join Ghatak Sports Academy India and train with certified
+                  professional coaches. Transform your life through discipline and strength.
+                </p>
+                <Button
+                  onClick={() => navigate('/#contact')}
+                  className="bg-gradient-to-r from-yellow-500 to-red-600 text-white border-0 hover:from-yellow-600 hover:to-red-700 shadow-lg shadow-orange-500/20"
+                  size="lg"
+                >
+                  Contact Us Today
+                </Button>
+              </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </>

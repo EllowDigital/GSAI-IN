@@ -51,17 +51,23 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 text-center border border-red-100">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4 relative overflow-hidden">
+          {/* Background Elements */}
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-600/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-yellow-600/10 rounded-full blur-3xl" />
+          </div>
+
+          <div className="max-w-md w-full bg-white/5 backdrop-blur-xl rounded-2xl shadow-2xl p-8 text-center border border-white/10 relative z-10">
+            <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-red-500/20">
               <AlertTriangle className="w-8 h-8 text-red-500" />
             </div>
 
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            <h1 className="text-2xl font-bold text-white mb-4">
               Oops! Something went wrong
             </h1>
 
-            <p className="text-gray-600 mb-8">
+            <p className="text-gray-400 mb-8">
               We encountered an unexpected error. Please try refreshing the page
               or return to the homepage.
             </p>
@@ -69,7 +75,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <div className="space-y-4">
               <Button
                 onClick={this.handleRefresh}
-                className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+                className="w-full bg-gradient-to-r from-yellow-500 to-red-600 hover:from-yellow-400 hover:to-red-500 text-white border-0"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Refresh Page
@@ -78,7 +84,7 @@ export class ErrorBoundary extends Component<Props, State> {
               <Button
                 onClick={this.handleGoHome}
                 variant="outline"
-                className="w-full border-yellow-200 hover:bg-yellow-50"
+                className="w-full bg-transparent border-white/10 text-white hover:bg-white/5 hover:text-yellow-400"
               >
                 <Home className="w-4 h-4 mr-2" />
                 Go to Homepage
@@ -86,11 +92,11 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
 
             {process.env.NODE_ENV === 'development' && this.state.error && (
-              <details className="mt-6 text-left bg-red-50 rounded-lg p-4 text-sm">
-                <summary className="cursor-pointer font-medium text-red-700 mb-2">
+              <details className="mt-6 text-left bg-black/30 rounded-lg p-4 text-sm border border-white/5">
+                <summary className="cursor-pointer font-medium text-red-400 mb-2 hover:text-red-300 transition-colors">
                   Error Details (Development)
                 </summary>
-                <pre className="text-red-600 overflow-auto">
+                <pre className="text-red-300/80 overflow-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                   {this.state.error.toString()}
                   {this.state.errorInfo?.componentStack}
                 </pre>

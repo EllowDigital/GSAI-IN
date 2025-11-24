@@ -36,11 +36,11 @@ export default function AboutSection() {
       id="about"
       role="region"
       aria-label="About Ghatak Sports Academy India"
-      className="section-shell relative bg-gradient-to-br from-white via-gray-50/30 to-blue-50/20 overflow-hidden"
+      className="section-shell relative bg-[#0a0a0a] overflow-hidden"
     >
       {/* Modern Background Elements */}
-      <div className="absolute top-20 right-10 w-96 h-96 bg-gradient-to-br from-yellow-500/5 to-orange-500/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 left-16 w-72 h-72 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-full blur-3xl" />
+      <div className="absolute top-20 right-10 w-96 h-96 bg-gradient-to-br from-yellow-500/10 to-red-600/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 left-16 w-72 h-72 bg-gradient-to-br from-red-600/10 to-yellow-500/10 rounded-full blur-3xl" />
 
       <div className="section-stack relative z-10">
         {/* Header Section */}
@@ -51,21 +51,21 @@ export default function AboutSection() {
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
-          <div className="inline-flex items-center justify-center p-3 mb-8 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-full backdrop-blur-sm border border-yellow-200/30">
-            <Users className="w-6 h-6 text-yellow-600 mr-3" />
-            <span className="text-sm font-semibold text-yellow-600 uppercase tracking-wider">
+          <div className="inline-flex items-center justify-center p-3 mb-8 bg-yellow-500/10 rounded-full backdrop-blur-sm border border-yellow-500/20">
+            <Users className="w-6 h-6 text-yellow-500 mr-3" />
+            <span className="text-sm font-semibold text-yellow-500 uppercase tracking-wider">
               About Us
             </span>
           </div>
 
-          <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-gray-900 mb-8 leading-tight">
+          <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-white mb-8 leading-tight">
             Where Tradition Meets{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500">
               Excellence
             </span>
           </h2>
 
-          <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed font-medium">
+          <p className="text-xl md:text-2xl text-gray-400 max-w-4xl mx-auto leading-relaxed font-medium">
             Empowering champions since inception through the transformative
             power of martial arts, personal development, and unwavering
             dedication to excellence.
@@ -83,10 +83,10 @@ export default function AboutSection() {
             viewport={{ once: true }}
           >
             <div className="space-y-6">
-              <h3 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
+              <h3 className="text-3xl md:text-4xl font-bold text-white leading-tight">
                 Building Confident, Disciplined & Skilled Individuals
               </h3>
-              <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
+              <p className="text-lg md:text-xl text-gray-400 leading-relaxed">
                 At Ghatak Sports Academy India, we don't just teach martial arts
                 – we transform lives. Our comprehensive approach combines
                 ancient wisdom with modern training methods to create champions
@@ -99,44 +99,27 @@ export default function AboutSection() {
               {features.map((feature, index) => (
                 <motion.div
                   key={feature.title}
-                  className="flex items-start space-x-4 p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="flex items-start space-x-4 p-6 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 shadow-lg hover:shadow-yellow-500/10 transition-all duration-300"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
                   viewport={{ once: true }}
                   whileHover={{ y: -5, scale: 1.02 }}
                 >
-                  <div className="flex-shrink-0 p-3 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl shadow-lg">
+                  <div className="flex-shrink-0 p-3 bg-gradient-to-br from-yellow-500 to-red-600 rounded-xl shadow-lg">
                     <feature.icon className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold text-gray-900 mb-2">
+                    <h4 className="text-lg font-bold text-white mb-2">
                       {feature.title}
                     </h4>
-                    <p className="text-gray-600 leading-relaxed">
+                    <p className="text-gray-400 leading-relaxed">
                       {feature.description}
                     </p>
                   </div>
                 </motion.div>
               ))}
             </div>
-
-            {/* Quote
-            <motion.blockquote
-              className="border-l-4 border-gradient-to-b from-yellow-400 to-orange-500 pl-6 py-4 bg-gradient-to-r from-yellow-50/50 to-orange-50/50 rounded-r-2xl shadow-lg backdrop-blur-sm"
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <p className="text-lg md:text-xl font-semibold text-gray-800 italic leading-relaxed">
-                "Join our thriving community and discover your true
-                potential—physically, mentally, and morally!"
-              </p>
-              <cite className="block mt-2 text-sm font-medium text-gray-600">
-                — Ghatak Sports Academy India
-              </cite>
-            </motion.blockquote> */}
           </motion.div>
 
           {/* Right: Visual Element */}
@@ -147,27 +130,27 @@ export default function AboutSection() {
             transition={{ duration: 0.8, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            <div className="relative bg-gradient-to-br from-yellow-100 via-orange-100 to-red-100 rounded-3xl p-8 shadow-2xl">
+            <div className="relative bg-gradient-to-br from-yellow-500/10 via-orange-500/10 to-red-600/10 rounded-3xl p-8 shadow-2xl border border-white/10">
               {/* Decorative Elements */}
-              <div className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full blur-lg opacity-60"></div>
-              <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-gradient-to-br from-orange-400 to-red-500 rounded-full blur-lg opacity-40"></div>
+              <div className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-yellow-500 to-red-600 rounded-full blur-lg opacity-40"></div>
+              <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-gradient-to-br from-red-600 to-yellow-500 rounded-full blur-lg opacity-30"></div>
 
               {/* Stats Grid */}
               <div className="grid grid-cols-2 gap-6 relative z-10">
                 {stats.map((stat, index) => (
                   <motion.div
                     key={stat.label}
-                    className="text-center p-6 bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/30"
+                    className="text-center p-6 bg-black/40 backdrop-blur-sm rounded-2xl shadow-lg border border-white/10"
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
                     viewport={{ once: true }}
                     whileHover={{ scale: 1.05 }}
                   >
-                    <div className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-orange-600 mb-2">
+                    <div className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-red-500 mb-2">
                       {stat.number}
                     </div>
-                    <div className="text-sm md:text-base font-semibold text-gray-700">
+                    <div className="text-sm md:text-base font-semibold text-gray-300">
                       {stat.label}
                     </div>
                   </motion.div>
@@ -176,7 +159,7 @@ export default function AboutSection() {
 
               {/* Central Logo/Icon */}
               <motion.div
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-2xl"
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-gradient-to-br from-yellow-500 via-orange-500 to-red-600 rounded-full flex items-center justify-center shadow-2xl shadow-yellow-500/20"
                 initial={{ opacity: 0, scale: 0 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{
@@ -197,7 +180,7 @@ export default function AboutSection() {
 
         {/* Bottom CTA Section */}
         <motion.div
-          className="text-center bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 rounded-3xl p-12 md:p-16 shadow-2xl"
+          className="text-center bg-gradient-to-r from-yellow-900/20 via-red-900/20 to-black rounded-3xl p-12 md:p-16 shadow-2xl border border-white/10"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
@@ -206,13 +189,13 @@ export default function AboutSection() {
           <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Ready to Begin Your Journey?
           </h3>
-          <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
             Join thousands of students who have transformed their lives through
             our proven training methods.
           </p>
           <motion.a
             href="#programs"
-            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold text-lg rounded-full shadow-xl hover:shadow-2xl transition-all duration-300"
+            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-yellow-500 to-red-600 text-white font-bold text-lg rounded-full shadow-xl hover:shadow-2xl hover:shadow-yellow-500/20 transition-all duration-300"
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
           >
