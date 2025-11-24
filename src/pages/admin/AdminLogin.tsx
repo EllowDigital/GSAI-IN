@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAdminAuth } from './AdminAuthProvider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -186,6 +186,14 @@ export default function AdminLogin() {
                   'Sign In to Dashboard'
                 )}
               </Button>
+
+              {/* Back to Home */}
+              <Link
+                to="/"
+                className="h-12 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white font-semibold tracking-wide text-base transition-all duration-300 active:scale-[0.98]"
+              >
+                Back to Home
+              </Link>
             </Form>
           )}
         </Formik>

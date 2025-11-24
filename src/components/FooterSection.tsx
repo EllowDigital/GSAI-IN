@@ -63,18 +63,18 @@ const scrollToTop = () => {
 
 export default function FooterSection() {
   return (
-    <footer className="relative bg-black text-white overflow-hidden">
+    <footer className="relative bg-[#0a0a0a] text-white overflow-hidden">
       {/* Background Elements */}
-      <div className="absolute inset-0 opacity-10 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-yellow-500/30 to-orange-500/30 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-r from-orange-500/30 to-red-500/30 rounded-full blur-3xl" />
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-full blur-3xl" />
       </div>
 
       {/* Back to Top Button */}
       <div className="relative z-20 flex justify-center">
         <button
           onClick={scrollToTop}
-          className="absolute -top-6 bg-gradient-to-r from-yellow-500 to-orange-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-yellow-500/30 border-2 border-gray-900"
+          className="absolute -top-6 bg-gradient-to-r from-yellow-500 to-orange-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-yellow-500/30 border-2 border-[#0a0a0a]"
           aria-label="Back to top"
         >
           <ChevronUp className="w-5 h-5" />
@@ -106,7 +106,7 @@ export default function FooterSection() {
                 {/* Contact Info */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 group">
-                    <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-yellow-500/20 transition-colors">
+                    <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-yellow-500/20 transition-colors">
                       <Phone className="w-4 h-4 text-yellow-500" />
                     </div>
                     <div>
@@ -120,7 +120,7 @@ export default function FooterSection() {
                   </div>
 
                   <div className="flex items-center gap-3 group">
-                    <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-yellow-500/20 transition-colors">
+                    <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-yellow-500/20 transition-colors">
                       <Mail className="w-4 h-4 text-yellow-500" />
                     </div>
                     <div>
@@ -134,7 +134,7 @@ export default function FooterSection() {
                   </div>
 
                   <div className="flex items-start gap-3 group">
-                    <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center flex-shrink-0 mt-1 group-hover:bg-yellow-500/20 transition-colors">
+                    <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center flex-shrink-0 mt-1 group-hover:bg-yellow-500/20 transition-colors">
                       <MapPin className="w-4 h-4 text-yellow-500" />
                     </div>
                     <div>
@@ -146,7 +146,7 @@ export default function FooterSection() {
                   </div>
 
                   <div className="flex items-center gap-3 group">
-                    <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-yellow-500/20 transition-colors">
+                    <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-yellow-500/20 transition-colors">
                       <Clock className="w-4 h-4 text-yellow-500" />
                     </div>
                     <div>
@@ -215,7 +215,7 @@ export default function FooterSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="YouTube"
-                  className="group w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-red-600 transition-all duration-300 transform hover:-translate-y-1 shadow-lg"
+                  className="group w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center hover:bg-red-600 transition-all duration-300 transform hover:-translate-y-1 shadow-lg"
                 >
                   <Youtube className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors duration-300" />
                 </a>
@@ -224,14 +224,14 @@ export default function FooterSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram"
-                  className="group w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-pink-600 transition-all duration-300 transform hover:-translate-y-1 shadow-lg"
+                  className="group w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center hover:bg-pink-600 transition-all duration-300 transform hover:-translate-y-1 shadow-lg"
                 >
                   <Instagram className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors duration-300" />
                 </a>
               </div>
 
               {/* Call to Action */}
-              <div className="bg-gray-800/50 rounded-2xl p-6 backdrop-blur-sm border border-gray-700/50">
+              <div className="bg-white/5 rounded-2xl p-6 backdrop-blur-sm border border-white/10">
                 <h5 className="text-base font-semibold text-white mb-2">
                   Ready to Start?
                 </h5>
@@ -248,7 +248,7 @@ export default function FooterSection() {
                   </a>
                   <a
                     href="#contact"
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-700 text-white font-semibold rounded-xl shadow hover:bg-gray-600 transition-all duration-300 text-sm hover:-translate-y-0.5"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white/10 text-white font-semibold rounded-xl shadow hover:bg-white/20 transition-all duration-300 text-sm hover:-translate-y-0.5"
                   >
                     <span>Contact Us</span>
                   </a>

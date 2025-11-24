@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import usePageViews from '../hooks/usePageViews';
 import Index from './Index';
@@ -9,6 +9,7 @@ const ADMIN_EMAIL = 'ghatakgsai@gmail.com';
 
 const HomePageWrapper: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
 
   // Track page views and performance
@@ -20,6 +21,24 @@ const HomePageWrapper: React.FC = () => {
       navigate('/admin/dashboard', { replace: true });
     }
   };
+
+  // Handle hash scrolling after loading
+  useEffect(() => {
+    if (!isLoading && location.hash) {
+      const timer = setTimeout(() => {
+        const element = document.querySelector(location.hash);
+        if (element) {
+          const offsetTop =
+            element.getBoundingClientRect().top + window.pageYOffset - 80;
+          window.scrollTo({
+            top: offsetTop,
+            behavior: 'smooth',
+          });
+        }
+      }, 500); // Small delay to ensure content is rendered
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, location.hash]);
 
   useEffect(() => {
     // Enhanced auth session check with better error handling
