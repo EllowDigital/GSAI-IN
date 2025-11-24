@@ -1,5 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const privacySections = [
   {
@@ -120,6 +123,25 @@ const PrivacyPage: React.FC = () => (
     </div>
 
     <div className="relative z-10 max-w-4xl mx-auto px-4 py-20">
+      <motion.div
+        className="mb-8"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+          className="bg-transparent border-white/10 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+        >
+          <Link to="/">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Home
+          </Link>
+        </Button>
+      </motion.div>
+
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
