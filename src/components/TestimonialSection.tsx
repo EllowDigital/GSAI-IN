@@ -135,13 +135,13 @@ export default function TestimonialSection() {
   return (
     <section
       id="testimonials"
-      className="section-shell relative bg-gradient-to-br from-slate-50 via-white to-yellow-50/40 overflow-hidden py-12 md:py-20 lg:py-24"
+      className="section-shell relative bg-[#0a0a0a] overflow-hidden py-12 md:py-20 lg:py-24"
       aria-labelledby="testimonial-heading"
     >
       {/* Decorative Background */}
       <div className="absolute inset-0 -z-10 opacity-20 pointer-events-none">
-        <div className="absolute top-24 left-12 w-64 h-64 md:w-96 md:h-96 bg-gradient-to-r from-yellow-200/40 to-red-200/40 rounded-full blur-3xl" />
-        <div className="absolute bottom-24 right-12 w-64 h-64 md:w-80 md:h-80 bg-gradient-to-r from-red-200/30 to-yellow-200/30 rounded-full blur-3xl" />
+        <div className="absolute top-24 left-12 w-64 h-64 md:w-96 md:h-96 bg-gradient-to-r from-yellow-500/20 to-red-600/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-24 right-12 w-64 h-64 md:w-80 md:h-80 bg-gradient-to-r from-red-600/20 to-yellow-500/20 rounded-full blur-3xl" />
       </div>
 
       <div className="section-stack container mx-auto px-4 sm:px-6 lg:px-8">
@@ -154,23 +154,23 @@ export default function TestimonialSection() {
           variants={itemVariants}
         >
           <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-yellow-500 to-red-500 rounded-xl flex items-center justify-center shadow-md">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-yellow-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/20">
               <Quote className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
-            <span className="text-base sm:text-lg font-semibold text-yellow-600 tracking-wide uppercase">
+            <span className="text-base sm:text-lg font-semibold text-yellow-500 tracking-wide uppercase">
               Community Voices
             </span>
           </div>
           <h2
             id="testimonial-heading"
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight"
           >
             What Our{' '}
-            <span className="block sm:inline text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-red-600 to-yellow-700">
+            <span className="block sm:inline text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500">
               GSAI Community Says
             </span>
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-2">
+          <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed px-2">
             Real voices from students, parents, and athletes who’ve grown with
             Ghatak Sports Academy India.
           </p>
@@ -192,14 +192,14 @@ export default function TestimonialSection() {
           ].map(({ label, value, icon: Icon }) => (
             <motion.div
               key={label}
-              className="text-center bg-white/70 backdrop-blur-sm rounded-2xl border border-white/40 shadow-lg p-4 sm:p-6 hover:shadow-xl transition-shadow"
+              className="text-center bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 shadow-lg p-4 sm:p-6 hover:shadow-xl hover:shadow-yellow-500/10 transition-all"
               variants={itemVariants}
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
               <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 mx-auto mb-2" />
-              <div className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">{value}</div>
-              <div className="text-xs sm:text-sm text-gray-600 font-medium">{label}</div>
+              <div className="text-xl sm:text-2xl font-bold text-white mb-1">{value}</div>
+              <div className="text-xs sm:text-sm text-gray-400 font-medium">{label}</div>
             </motion.div>
           ))}
         </motion.div>
@@ -231,42 +231,42 @@ export default function TestimonialSection() {
                     transition={{ duration: 0.3 }}
                     className="h-full"
                   >
-                    <Card className="h-full bg-white/80 border-yellow-100/50 shadow-md hover:shadow-xl transition-all duration-300 rounded-2xl flex flex-col">
+                    <Card className="h-full bg-white/5 backdrop-blur-md border-white/10 shadow-lg hover:shadow-yellow-500/10 transition-all duration-300 rounded-2xl flex flex-col">
                       <CardHeader className="pb-4">
                         <div className="flex justify-between items-start mb-3">
                           <div className="flex items-center gap-3 sm:gap-4">
-                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-yellow-400 to-red-500 text-white flex items-center justify-center font-bold shadow-md text-sm sm:text-base">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-yellow-500 to-red-600 text-white flex items-center justify-center font-bold shadow-md text-sm sm:text-base">
                               {t.avatar}
                             </div>
                             <div>
-                              <CardTitle className="text-sm sm:text-base font-semibold text-gray-900">
+                              <CardTitle className="text-sm sm:text-base font-semibold text-white">
                                 {t.name}
                               </CardTitle>
                               <StarRating rating={t.rating} />
                             </div>
                           </div>
-                          <Quote className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400/40" />
+                          <Quote className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500/40" />
                         </div>
                         <div className="flex gap-2 flex-wrap">
-                          <span className="bg-yellow-100 text-yellow-800 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs rounded-full font-semibold">
+                          <span className="bg-yellow-500/10 text-yellow-500 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs rounded-full font-semibold border border-yellow-500/20">
                             {t.program}
                           </span>
-                          <span className="bg-red-100 text-red-800 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs rounded-full font-semibold">
+                          <span className="bg-red-500/10 text-red-500 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs rounded-full font-semibold border border-red-500/20">
                             {t.experience}
                           </span>
                         </div>
                       </CardHeader>
                       <CardContent className="flex-grow flex flex-col">
-                        <blockquote className="relative text-gray-700 text-sm leading-relaxed flex-grow">
-                          <span className="absolute -top-2 -left-1 text-2xl sm:text-3xl text-yellow-300">
+                        <blockquote className="relative text-gray-300 text-sm leading-relaxed flex-grow">
+                          <span className="absolute -top-2 -left-1 text-2xl sm:text-3xl text-yellow-500/50">
                             “
                           </span>
                           <span className="pl-4 block">{t.quote}</span>
-                          <span className="absolute -bottom-4 right-1 text-2xl sm:text-3xl text-yellow-300">
+                          <span className="absolute -bottom-4 right-1 text-2xl sm:text-3xl text-yellow-500/50">
                             ”
                           </span>
                         </blockquote>
-                        <CardDescription className="pt-4 border-t border-gray-100 mt-4 text-yellow-600 font-medium text-xs">
+                        <CardDescription className="pt-4 border-t border-white/10 mt-4 text-yellow-500 font-medium text-xs">
                           {t.role}
                         </CardDescription>
                       </CardContent>
@@ -277,8 +277,8 @@ export default function TestimonialSection() {
             </CarouselContent>
 
             <div className="hidden md:block">
-              <CarouselPrevious className="absolute -left-4 lg:-left-12 top-1/2 -translate-y-1/2 bg-white/90 border border-yellow-200 text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50 shadow-md w-10 h-10 transition-all" />
-              <CarouselNext className="absolute -right-4 lg:-right-12 top-1/2 -translate-y-1/2 bg-white/90 border border-yellow-200 text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50 shadow-md w-10 h-10 transition-all" />
+              <CarouselPrevious className="absolute -left-4 lg:-left-12 top-1/2 -translate-y-1/2 bg-black/50 border border-white/10 text-yellow-500 hover:text-yellow-400 hover:bg-black/70 shadow-md w-10 h-10 transition-all backdrop-blur-sm" />
+              <CarouselNext className="absolute -right-4 lg:-right-12 top-1/2 -translate-y-1/2 bg-black/50 border border-white/10 text-yellow-500 hover:text-yellow-400 hover:bg-black/70 shadow-md w-10 h-10 transition-all backdrop-blur-sm" />
             </div>
           </Carousel>
 
@@ -290,8 +290,8 @@ export default function TestimonialSection() {
                 onClick={() => api?.scrollTo(index)}
                 className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 ${
                   index === current
-                    ? 'w-6 sm:w-8 bg-gradient-to-r from-yellow-500 to-red-500'
-                    : 'w-1.5 sm:w-2 bg-gray-300 hover:bg-gray-400'
+                    ? 'w-6 sm:w-8 bg-gradient-to-r from-yellow-500 to-red-600'
+                    : 'w-1.5 sm:w-2 bg-white/20 hover:bg-white/40'
                 }`}
                 aria-label={`Go to testimonial ${index + 1}`}
               />
@@ -307,11 +307,11 @@ export default function TestimonialSection() {
           viewport={{ once: true, amount: 0.3 }}
           variants={itemVariants}
         >
-          <div className="bg-gradient-to-r from-yellow-50 to-red-50 border border-yellow-100/50 rounded-3xl shadow-md p-6 sm:p-10">
-            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
+          <div className="bg-gradient-to-r from-yellow-900/20 via-red-900/20 to-black border border-white/10 rounded-3xl shadow-md p-6 sm:p-10">
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-3 sm:mb-4">
               Ready to Start Your Journey?
             </h3>
-            <p className="text-sm sm:text-base text-gray-600 max-w-xl mx-auto mb-6 sm:mb-8">
+            <p className="text-sm sm:text-base text-gray-400 max-w-xl mx-auto mb-6 sm:mb-8">
               Join hundreds who have transformed their lives through our
               world-class programs in martial arts, fitness, and character
               development.
@@ -319,7 +319,7 @@ export default function TestimonialSection() {
             <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
               <a
                 href="/#contact"
-                className="btn-primary w-full sm:w-auto justify-center gap-2 py-2.5 sm:py-3 text-sm sm:text-base"
+                className="btn-primary w-full sm:w-auto justify-center gap-2 py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-yellow-500 to-red-600 hover:from-yellow-400 hover:to-red-500 border-0 text-white"
               >
                 Join Our Community <Award className="w-4 h-4 sm:w-5 sm:h-5" />
               </a>
@@ -327,7 +327,7 @@ export default function TestimonialSection() {
                 href="https://www.instagram.com/ghatakgsai/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-secondary w-full sm:w-auto justify-center gap-2 py-2.5 sm:py-3 text-sm sm:text-base"
+                className="btn-secondary w-full sm:w-auto justify-center gap-2 py-2.5 sm:py-3 text-sm sm:text-base bg-transparent border-white/10 text-white hover:bg-white/5 hover:text-yellow-500"
               >
                 Read More Stories <Quote className="w-4 h-4 sm:w-5 sm:h-5" />
               </a>
