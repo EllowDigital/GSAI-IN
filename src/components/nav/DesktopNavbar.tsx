@@ -7,7 +7,7 @@ export function DesktopNavbar() {
   return (
     <>
       {/* Desktop Navigation - xl and above */}
-      <div className="hidden xl:flex items-center px-6 py-2 gap-8 2xl:gap-12 min-h-[60px]">
+      <div className="hidden xl:flex items-center px-6 py-2.5 gap-8 2xl:gap-12 min-h-[64px]">
         {/* Logo Section */}
         <Link
           to="/"
@@ -17,15 +17,15 @@ export function DesktopNavbar() {
           <img
             src="/assets/img/logo.webp"
             alt="Ghatak Sports Academy India"
-            className="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+            className="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-[0_0_8px_rgba(234,179,8,0.3)]"
             loading="lazy"
             decoding="async"
           />
           <div className="flex flex-col">
-            <span className="text-base lg:text-lg font-bold text-slate-900 leading-none group-hover:text-primary transition-colors duration-300">
+            <span className="text-lg font-bold text-white leading-none group-hover:text-yellow-400 transition-colors duration-300 tracking-tight">
               GSAI
             </span>
-            <span className="text-[10px] lg:text-xs font-medium text-slate-500 leading-none mt-0.5">
+            <span className="text-[10px] font-medium text-gray-400 leading-none mt-1 group-hover:text-gray-300 transition-colors">
               Ghatak Sports Academy India
             </span>
           </div>
@@ -42,11 +42,12 @@ export function DesktopNavbar() {
               key={link.name}
               href={link.href}
               name={link.name}
-              className="text-sm lg:text-base font-semibold text-slate-600 hover:text-slate-900 transition-colors duration-200"
+              className="relative text-sm lg:text-base font-medium text-gray-300 hover:text-white transition-colors duration-300 py-2 group"
               role="menuitem"
               tabIndex={0}
             >
               {link.name}
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-yellow-400 to-red-500 transition-all duration-300 group-hover:w-full"></span>
             </NavLinkItem>
           ))}
         </nav>
@@ -54,15 +55,16 @@ export function DesktopNavbar() {
         {/* CTA Button */}
         <Link
           to="/admin/login"
-          className="btn-primary py-2 px-5 h-10 text-sm gap-2 flex-shrink-0"
+          className="relative overflow-hidden group py-2 px-6 h-10 rounded-full flex items-center gap-2 flex-shrink-0 bg-gradient-to-r from-yellow-500 to-red-600 text-white shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all duration-300 hover:-translate-y-0.5"
           aria-label="Access admin panel"
         >
-          <span className="font-semibold">Admin</span>
-          <div className="relative h-6 w-6 rounded-full bg-white/25 flex items-center justify-center">
+          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer"></span>
+          <span className="font-bold text-sm tracking-wide">Admin</span>
+          <div className="relative h-5 w-5 rounded-full bg-white/20 flex items-center justify-center">
             <img
               src="/assets/img/logo.webp"
               alt="GSAI Admin"
-              className="h-3.5 w-auto object-contain"
+              className="h-3 w-auto object-contain"
               loading="lazy"
               decoding="async"
             />

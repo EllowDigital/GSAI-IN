@@ -9,6 +9,7 @@ interface NavLinkItemProps
     onClick?: () => void;
     role?: string;
     tabIndex?: number;
+    style?: React.CSSProperties;
   }> {}
 
 export function NavLinkItem({
@@ -19,6 +20,7 @@ export function NavLinkItem({
   children,
   role,
   tabIndex,
+  style,
 }: NavLinkItemProps) {
   const content = children || name;
 
@@ -31,6 +33,7 @@ export function NavLinkItem({
         onClick={onClick}
         role={role}
         tabIndex={tabIndex}
+        style={style}
         aria-label={`Navigate to ${name}`}
       >
         {content}
@@ -70,6 +73,7 @@ export function NavLinkItem({
       onKeyDown={handleKeyDown}
       role={role}
       tabIndex={tabIndex}
+      style={style}
       aria-label={`Navigate to ${name} section`}
     >
       {content}

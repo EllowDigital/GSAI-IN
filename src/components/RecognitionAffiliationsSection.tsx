@@ -95,7 +95,7 @@ const highlights = [
     title: 'Sports Federations',
     description:
       'Affiliated with multiple national and state sports federations',
-    color: 'from-yellow-500 to-red-500',
+    color: 'from-yellow-500 to-orange-600',
   },
   {
     icon: Star,
@@ -110,53 +110,65 @@ export default function RecognitionAffiliationsSection() {
   return (
     <section
       id="recognitions"
-      className="section-shell relative bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden"
+      className="section-shell relative bg-gradient-to-br from-slate-50 via-white to-amber-50/30 overflow-hidden py-12 md:py-20 lg:py-24"
       aria-labelledby="recognitions-heading"
     >
       {/* Background Elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-yellow-200/40 to-red-200/40 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-red-200/30 to-yellow-200/30 rounded-full blur-3xl" />
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
+        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-yellow-200/40 to-orange-200/40 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-orange-200/30 to-yellow-200/30 rounded-full blur-3xl" />
       </div>
 
-      <div className="section-stack relative z-10 max-w-6xl">
+      <div className="section-stack relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-12 md:mb-16 lg:mb-20"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
           variants={itemVariants}
         >
-          <div className="inline-flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
-              <Award className="w-6 h-6 text-white" />
+          <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Award className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
-            <span className="text-lg font-semibold text-yellow-600 tracking-wide">
+            <span className="text-base sm:text-lg font-semibold text-yellow-600 tracking-wide uppercase">
               Trust & Excellence
             </span>
           </div>
 
           <h2
             id="recognitions-heading"
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight"
           >
-            Recognitions &
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-red-600 to-yellow-700">
+            Recognitions &{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-amber-600 to-orange-600">
               Affiliations
             </span>
           </h2>
 
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-6 sm:mb-8 px-2">
             Proudly recognized and affiliated with premier national and state
             organizations driving excellence in sports, fitness, and martial
             arts.
           </p>
+
+          {/* Divider */}
+          <div className="flex items-center justify-center gap-2 sm:gap-4">
+            <div className="h-px w-10 sm:w-16 bg-gradient-to-r from-transparent to-yellow-400" />
+            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full animate-pulse" />
+            <div className="h-px w-20 sm:w-32 bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400" />
+            <div
+              className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-orange-400 rounded-full animate-pulse"
+              style={{ animationDelay: '0.5s' }}
+            />
+            <div className="h-px w-10 sm:w-16 bg-gradient-to-r from-orange-400 to-transparent" />
+          </div>
         </motion.div>
 
         {/* Highlights Section */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-16 md:mb-20"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
@@ -165,82 +177,82 @@ export default function RecognitionAffiliationsSection() {
           {highlights.map((highlight, index) => (
             <motion.div
               key={highlight.title}
-              className="group bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-white/50 hover:border-yellow-200/50"
+              className="group bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-yellow-200 flex flex-col items-center text-center h-full"
               variants={itemVariants}
-              whileHover={{ y: -8, scale: 1.02 }}
+              whileHover={{ y: -8 }}
             >
               <div
-                className={`w-16 h-16 bg-gradient-to-r ${highlight.color} rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-lg group-hover:shadow-xl transition-shadow duration-300`}
+                className={`w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r ${highlight.color} rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}
               >
-                <highlight.icon className="w-8 h-8 text-white" />
+                <highlight.icon className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
               </div>
 
-              <div className="text-center">
-                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 group-hover:text-yellow-600 transition-colors duration-300">
-                  {highlight.title}
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {highlight.description}
-                </p>
-              </div>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 group-hover:text-yellow-700 transition-colors">
+                {highlight.title}
+              </h3>
+              <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
+                {highlight.description}
+              </p>
             </motion.div>
           ))}
         </motion.div>
 
         {/* Logo Carousel Section */}
         <motion.div
-          className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-2xl border border-white/50"
+          className="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-gray-100 relative overflow-hidden"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
           variants={itemVariants}
         >
-          <div className="text-center mb-12">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-50 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-50 rounded-full blur-3xl -ml-32 -mb-32 pointer-events-none" />
+
+          <div className="relative z-10 text-center mb-10 md:mb-12">
             <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
               Our Prestigious Affiliations
             </h3>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">
               These recognitions validate our commitment to excellence and
               ensure the highest standards in training and education.
             </p>
           </div>
 
-          <div className="relative flex items-center w-full justify-center">
+          <div className="relative flex items-center w-full justify-center z-10">
             <Carousel
               opts={{
                 align: 'center',
                 loop: true,
-                slidesToScroll: 2,
+                slidesToScroll: 1,
                 dragFree: true,
               }}
-              className="w-full max-w-5xl"
+              className="w-full max-w-6xl px-8 sm:px-12"
             >
               <CarouselPrevious
                 aria-label="Scroll left"
-                className="bg-white/80 hover:bg-white border-yellow-200 text-yellow-600 hover:text-yellow-700 shadow-lg hover:shadow-xl"
+                className="left-0 sm:-left-4 bg-white hover:bg-yellow-50 border-gray-200 hover:border-yellow-300 text-gray-600 hover:text-yellow-700 shadow-md hover:shadow-lg h-10 w-10 sm:h-12 sm:w-12"
               />
-              <CarouselContent className="gap-4 md:gap-6 py-6">
+              <CarouselContent className="-ml-4 py-4">
                 {logos.map((logo, index) => (
                   <CarouselItem
                     key={logo.name}
-                    className="basis-1/3 xs:basis-1/4 md:basis-1/6 flex justify-center"
+                    className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 flex justify-center"
                   >
                     <motion.div
-                      className="group flex flex-col items-center min-w-[100px] max-w-[120px] flex-shrink-0 p-4"
+                      className="group flex flex-col items-center w-full max-w-[140px]"
                       title={logo.name}
                       whileHover={{ scale: 1.05 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <div className="relative bg-white rounded-2xl p-4 shadow-lg group-hover:shadow-2xl transition-all duration-300 border border-yellow-100/50 group-hover:border-yellow-200 mb-4">
+                      <div className="relative w-full aspect-square bg-white rounded-2xl p-4 shadow-md group-hover:shadow-xl transition-all duration-300 border border-gray-100 group-hover:border-yellow-200 flex items-center justify-center mb-3">
                         <img
                           src={logo.url}
                           alt={logo.name}
                           loading="lazy"
-                          className="h-16 w-auto object-contain mx-auto grayscale group-hover:grayscale-0 transition-all duration-300"
+                          className="max-w-full max-h-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-500 opacity-80 group-hover:opacity-100"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-yellow-50/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
                       </div>
-                      <span className="text-xs text-center text-gray-600 group-hover:text-yellow-700 transition-colors font-medium leading-tight max-w-[100px]">
+                      <span className="text-xs sm:text-sm text-center text-gray-500 group-hover:text-yellow-700 transition-colors font-medium leading-tight line-clamp-2">
                         {logo.name}
                       </span>
                     </motion.div>
@@ -249,24 +261,24 @@ export default function RecognitionAffiliationsSection() {
               </CarouselContent>
               <CarouselNext
                 aria-label="Scroll right"
-                className="bg-white/80 hover:bg-white border-yellow-200 text-yellow-600 hover:text-yellow-700 shadow-lg hover:shadow-xl"
+                className="right-0 sm:-right-4 bg-white hover:bg-yellow-50 border-gray-200 hover:border-yellow-300 text-gray-600 hover:text-yellow-700 shadow-md hover:shadow-lg h-10 w-10 sm:h-12 sm:w-12"
               />
             </Carousel>
           </div>
 
-          <div className="text-center mt-12 pt-8 border-t border-gray-100">
+          <div className="text-center mt-10 md:mt-12 pt-8 border-t border-gray-100 relative z-10">
             <p className="text-gray-500 text-sm mb-6">
               These affiliations ensure our training programs meet the highest
               national and international standards.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <div className="btn-primary pointer-events-none gap-2">
+            <div className="flex flex-wrap gap-3 justify-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-50 text-yellow-700 rounded-full text-sm font-medium border border-yellow-100">
                 <Trophy className="w-4 h-4" />
                 <span>Excellence Recognized</span>
               </div>
 
-              <div className="btn-secondary pointer-events-none gap-2">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 text-orange-700 rounded-full text-sm font-medium border border-orange-100">
                 <Shield className="w-4 h-4" />
                 <span>Quality Assured</span>
               </div>
