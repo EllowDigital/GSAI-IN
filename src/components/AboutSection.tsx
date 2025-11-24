@@ -36,13 +36,13 @@ export default function AboutSection() {
       id="about"
       role="region"
       aria-label="About Ghatak Sports Academy India"
-      className="relative px-4 md:px-6 lg:px-8 py-20 md:py-32 bg-gradient-to-br from-white via-gray-50/30 to-blue-50/20 overflow-hidden"
+      className="section-shell relative bg-gradient-to-br from-white via-gray-50/30 to-blue-50/20 overflow-hidden"
     >
       {/* Modern Background Elements */}
       <div className="absolute top-20 right-10 w-96 h-96 bg-gradient-to-br from-yellow-500/5 to-orange-500/5 rounded-full blur-3xl" />
       <div className="absolute bottom-20 left-16 w-72 h-72 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-full blur-3xl" />
 
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="section-stack relative z-10">
         {/* Header Section */}
         <motion.div
           className="text-center mb-20"

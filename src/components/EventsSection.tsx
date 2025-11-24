@@ -70,7 +70,7 @@ const EventsSection: React.FC = () => {
   return (
     <section
       id="events"
-      className="relative py-20 lg:py-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 via-white to-amber-50/30 overflow-hidden"
+      className="section-shell relative bg-gradient-to-br from-slate-50 via-white to-amber-50/30 overflow-hidden"
     >
       {/* Decorative Background */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
@@ -86,7 +86,7 @@ const EventsSection: React.FC = () => {
         style={{ animationDelay: '2s' }}
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto">
+      <div className="section-stack relative z-10">
         {/* Heading */}
         <motion.div
           className="text-center mb-16 lg:mb-20"
@@ -158,7 +158,7 @@ const EventsSection: React.FC = () => {
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="btn-primary justify-center gap-2"
             >
               Try Again
               <ArrowRight className="w-4 h-4" />
@@ -282,7 +282,7 @@ const EventsSection: React.FC = () => {
             <div className="inline-flex flex-col sm:flex-row items-center gap-4">
               <button
                 onClick={() => navigate('/events')}
-                className="px-8 py-4 bg-gradient-to-r from-yellow-500 to-amber-600 text-white font-bold text-lg rounded-xl hover:from-yellow-600 hover:to-amber-700 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+                className="btn-primary w-full sm:w-auto justify-center"
               >
                 View All Events
               </button>
