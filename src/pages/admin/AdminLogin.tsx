@@ -108,8 +108,8 @@ export default function AdminLogin() {
                     type="email"
                     autoComplete="email"
                     className={`w-full bg-white/5 border ${
-                      errors.email && touched.email 
-                        ? 'border-red-500/50 focus:border-red-500' 
+                      errors.email && touched.email
+                        ? 'border-red-500/50 focus:border-red-500'
                         : 'border-white/10 focus:border-yellow-500/50'
                     } rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-500/20 transition-all duration-200`}
                     placeholder="admin@gsai.in"
@@ -137,8 +137,8 @@ export default function AdminLogin() {
                     type={showPassword ? 'text' : 'password'}
                     autoComplete="current-password"
                     className={`w-full bg-white/5 border ${
-                      errors.password && touched.password 
-                        ? 'border-red-500/50 focus:border-red-500' 
+                      errors.password && touched.password
+                        ? 'border-red-500/50 focus:border-red-500'
                         : 'border-white/10 focus:border-yellow-500/50'
                     } rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-500/20 transition-all duration-200 pr-12`}
                     placeholder="••••••••"

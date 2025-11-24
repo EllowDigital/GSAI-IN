@@ -1,6 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { ArrowDownCircle, Volume2, VolumeX, Play, Instagram } from 'lucide-react';
+import {
+  ArrowDownCircle,
+  Volume2,
+  VolumeX,
+  Play,
+  Instagram,
+} from 'lucide-react';
 
 // Array of background images for the slider
 const bgImages = [
@@ -62,7 +68,12 @@ const scrollIndicatorVariants: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, delay: 1, repeat: Infinity, repeatType: "reverse" },
+    transition: {
+      duration: 0.8,
+      delay: 1,
+      repeat: Infinity,
+      repeatType: 'reverse',
+    },
   },
 };
 
@@ -213,11 +224,11 @@ export default function HeroSection() {
               />
             )}
           </AnimatePresence>
-          
+
           {/* Enhanced Gradient Overlay */}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/90" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/50" />
-          
+
           {/* Mute Button */}
           {isVideoActive && (
             <motion.button
@@ -296,7 +307,7 @@ export default function HeroSection() {
                 <ArrowDownCircle className="w-5 h-5 group-hover:translate-y-1 transition-transform" />
               </span>
             </a>
-            
+
             <a
               href="https://www.instagram.com/ghatakgsai/"
               target="_blank"
@@ -315,38 +326,40 @@ export default function HeroSection() {
       {/* Bottom Controls: Scroll Indicator and Slider Navigation */}
       <div className="absolute left-0 right-0 bottom-8 flex flex-col items-center gap-6 z-20 px-4 pointer-events-none">
         <AnimatePresence>
-          {(!isVideoActive || true) && (
-            <motion.div
-              className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 w-auto max-w-[90vw] mx-auto px-4 py-2.5 rounded-full border border-white/10 bg-black/40 backdrop-blur-md shadow-xl"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.5 }}
-            >
-              {bgImages.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => goToImage(idx)}
-                  type="button"
-                  className={`group relative flex items-center justify-center w-3 h-3 rounded-full transition-all duration-300 focus:outline-none ${
-                    imgIndex === idx ? 'scale-125' : 'hover:scale-110'
+          <motion.div
+            className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 w-auto max-w-[90vw] mx-auto px-4 py-2.5 rounded-full border border-white/10 bg-black/40 backdrop-blur-md shadow-xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.5 }}
+          >
+            {bgImages.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => goToImage(idx)}
+                type="button"
+                className={`group relative flex items-center justify-center w-3 h-3 rounded-full transition-all duration-300 focus:outline-none ${
+                  imgIndex === idx ? 'scale-125' : 'hover:scale-110'
+                }`}
+                aria-label={`Go to slide ${idx + 1}`}
+              >
+                <span
+                  className={`absolute inset-0 rounded-full transition-all duration-300 ${
+                    imgIndex === idx
+                      ? 'bg-gradient-to-r from-yellow-400 to-red-500 opacity-100'
+                      : 'bg-white/30 group-hover:bg-white/60'
                   }`}
-                  aria-label={`Go to slide ${idx + 1}`}
-                >
-                  <span
-                    className={`absolute inset-0 rounded-full transition-all duration-300 ${
-                      imgIndex === idx
-                        ? 'bg-gradient-to-r from-yellow-400 to-red-500 opacity-100'
-                        : 'bg-white/30 group-hover:bg-white/60'
-                    }`}
-                  />
-                </button>
-              ))}
-            </motion.div>
-          )}
+                />
+              </button>
+            ))}
+          </motion.div>
         </AnimatePresence>
-        
-        <a href="#about" aria-label="Scroll down" className="pointer-events-auto group">
+
+        <a
+          href="#about"
+          aria-label="Scroll down"
+          className="pointer-events-auto group"
+        >
           <motion.div
             className="flex flex-col items-center gap-2 text-white/50 group-hover:text-yellow-400 transition-colors duration-300"
             variants={scrollIndicatorVariants}

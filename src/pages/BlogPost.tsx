@@ -108,18 +108,18 @@ export default function BlogPost() {
   if (!post) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center relative overflow-hidden">
-         {/* Decorative Background */}
+        {/* Decorative Background */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-yellow-600/20 rounded-full blur-[100px]" />
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-red-600/20 rounded-full blur-[100px]" />
         </div>
-        
+
         <div className="text-center relative z-10">
           <h1 className="text-3xl font-bold text-white mb-4">
             Blog post not found
           </h1>
-          <Button 
-            onClick={() => navigate('/')} 
+          <Button
+            onClick={() => navigate('/')}
             variant="outline"
             className="border-white/20 text-white hover:bg-white/10 hover:text-yellow-500"
           >
@@ -150,7 +150,7 @@ export default function BlogPost() {
         </div>
 
         <div className="container mx-auto px-4 py-20 relative z-10">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -194,7 +194,9 @@ export default function BlogPost() {
                 {post.created_by && (
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4 text-yellow-500" />
-                    <span className="text-sm font-medium">by {post.created_by}</span>
+                    <span className="text-sm font-medium">
+                      by {post.created_by}
+                    </span>
                   </div>
                 )}
 
@@ -242,14 +244,15 @@ export default function BlogPost() {
             {/* Call to Action */}
             <div className="mt-16 p-8 bg-gradient-to-br from-yellow-500/10 to-red-600/10 rounded-3xl border border-white/10 backdrop-blur-md relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-              
+
               <div className="relative z-10">
                 <h3 className="text-2xl font-bold text-white mb-3">
                   Ready to Start Your Martial Arts Journey?
                 </h3>
                 <p className="text-gray-400 mb-6 max-w-2xl">
                   Join Ghatak Sports Academy India and train with certified
-                  professional coaches. Transform your life through discipline and strength.
+                  professional coaches. Transform your life through discipline
+                  and strength.
                 </p>
                 <Button
                   onClick={() => navigate('/#contact')}

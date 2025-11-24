@@ -205,7 +205,8 @@ export default function AllGalleryPage() {
 
               <p className="text-base md:text-lg lg:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed px-4">
                 Explore our complete collection of academy moments, training
-                sessions, and achievements. Witness the journey of our champions.
+                sessions, and achievements. Witness the journey of our
+                champions.
               </p>
             </motion.div>
 
@@ -274,9 +275,18 @@ export default function AllGalleryPage() {
                     </div>
                   </SelectTrigger>
                   <SelectContent className="bg-[#0a0a0a] border-white/10 text-white">
-                    <SelectItem value="all" className="focus:bg-white/10 focus:text-white">All Categories</SelectItem>
+                    <SelectItem
+                      value="all"
+                      className="focus:bg-white/10 focus:text-white"
+                    >
+                      All Categories
+                    </SelectItem>
                     {uniqueTags.map((tag) => (
-                      <SelectItem key={tag} value={tag} className="focus:bg-white/10 focus:text-white">
+                      <SelectItem
+                        key={tag}
+                        value={tag}
+                        className="focus:bg-white/10 focus:text-white"
+                      >
                         {tag}
                       </SelectItem>
                     ))}
@@ -301,8 +311,18 @@ export default function AllGalleryPage() {
                     </div>
                   </SelectTrigger>
                   <SelectContent className="bg-[#0a0a0a] border-white/10 text-white">
-                    <SelectItem value="newest" className="focus:bg-white/10 focus:text-white">Newest First</SelectItem>
-                    <SelectItem value="oldest" className="focus:bg-white/10 focus:text-white">Oldest First</SelectItem>
+                    <SelectItem
+                      value="newest"
+                      className="focus:bg-white/10 focus:text-white"
+                    >
+                      Newest First
+                    </SelectItem>
+                    <SelectItem
+                      value="oldest"
+                      className="focus:bg-white/10 focus:text-white"
+                    >
+                      Oldest First
+                    </SelectItem>
                   </SelectContent>
                 </Select>
 

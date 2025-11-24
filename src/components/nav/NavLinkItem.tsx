@@ -47,7 +47,7 @@ export function NavLinkItem({
   const handleClick = (e: React.MouseEvent) => {
     if (href.startsWith('#')) {
       e.preventDefault();
-      
+
       if (location.pathname === '/') {
         // If on homepage, scroll to element
         const element = document.querySelector(href);
