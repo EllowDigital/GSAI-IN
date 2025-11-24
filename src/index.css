@@ -16,8 +16,11 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 48 100% 50%;
-    --primary-foreground: 0 0% 100%;
+     /* Brand primary color (updated for accessible contrast on light backgrounds)
+       Darker blue provides better contrast when `text-primary` is used on
+       light backgrounds while still working for primary backgrounds. */
+     --primary: 222.2 85% 42%;
+     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 94%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -60,7 +63,8 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 48 100% 50%;
+    /* Dark theme primary — keep consistent tone for contrast in dark mode */
+    --primary: 222.2 85% 42%;
     --primary-foreground: 0 0% 100%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;

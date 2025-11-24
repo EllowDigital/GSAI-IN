@@ -1,38 +1,27 @@
+# robots.txt
+# Simplified / validated robots file. Place at the site root so crawlers can
+# retrieve it at https://<your-domain>/robots.txt. Update the Sitemap URL to
+# your final production domain if it differs from the example below.
+
 User-agent: *
-Allow: /
-
-# Sitemap location
-Sitemap: https://ghatakgsai.netlify.app/sitemap.xml
-
-# Common crawl delay (optional - helps prevent server overload)
-Crawl-delay: 1
-
-# Disallow admin areas for security
+# Disallow admin and API endpoints from general crawlers
 Disallow: /admin/
 Disallow: /api/
-
-# Allow specific social media crawlers full access
-User-agent: facebookexternalhit/1.1
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: LinkedInBot
-Allow: /
-
-User-agent: WhatsApp
-Allow: /
-
-# Block certain file types from indexing
-Disallow: /*.json$
-Disallow: /*.xml$
 Disallow: /manifest.webmanifest
 
-# Allow search engines to crawl images
-Allow: /assets/
-Allow: /public/assets/
-
-# Performance optimization: Block crawling of large/unnecessary files
+# Block indexing of certain file types that are not useful in search results
+Disallow: /*.json$
+Disallow: /*.xml$
 Disallow: /*.pdf$
 Disallow: /*.zip$
+
+# Optional polite crawl delay for low-capacity hosts (some crawlers ignore)
+Crawl-delay: 1
+
+# If you host your sitemap at a canonical URL, list it here (replace domain)
+Sitemap: https://ghatakgsai.netlify.app/sitemap.xml
+
+# Specific allowed crawlers (optional). Keep these directives grouped under
+# the corresponding User-agent block if you need them. Most sites don't need
+# these explicit allow rules; the above `User-agent: *` with Disallow is
+# sufficient for common use cases.
