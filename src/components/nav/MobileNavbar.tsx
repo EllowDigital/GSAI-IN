@@ -41,22 +41,22 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
         {/* Logo & Brand */}
         <Link
           to="/"
-          className="flex items-center gap-3 min-w-0 group"
+          className="flex items-center gap-2.5 min-w-0 group"
           aria-label="Go to homepage"
           onClick={() => setMobileOpen(false)}
         >
           <img
             src="/assets/img/logo.webp"
             alt="Ghatak Sports Academy India Logo"
-            className="h-11 w-11 sm:h-12 sm:w-12 rounded-2xl object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-md"
+            className="h-10 w-10 sm:h-11 sm:w-11 rounded-2xl object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-md"
             loading="lazy"
             decoding="async"
           />
           <div className="flex flex-col leading-tight text-slate-900">
-            <span className="text-sm sm:text-base font-bold tracking-tight group-hover:text-primary transition-colors duration-300">
+            <span className="text-[0.95rem] sm:text-base font-bold tracking-tight group-hover:text-primary transition-colors duration-300">
               GSAI
             </span>
-            <span className="text-[0.65rem] sm:text-xs font-medium text-slate-500 truncate">
+            <span className="text-[0.62rem] sm:text-xs font-medium text-slate-500 truncate">
               Ghatak Sports Academy India
             </span>
           </div>
@@ -67,7 +67,7 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
           onClick={() => setMobileOpen(!mobileOpen)}
           className={`mobile-nav-trigger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/30 ${
             mobileOpen
-              ? 'bg-gradient-to-r from-orange-500 to-yellow-400 text-white shadow-[0_14px_30px_rgba(249,115,22,0.4)]'
+              ? 'bg-gradient-to-r from-orange-500 to-yellow-400 text-white shadow-[0_12px_26px_rgba(249,115,22,0.38)]'
               : 'text-slate-700'
           }`}
           aria-label={mobileOpen ? 'Close mobile menu' : 'Open mobile menu'}
@@ -77,7 +77,7 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
           <div
             className={`transition-transform duration-300 ${mobileOpen ? 'rotate-180' : ''}`}
           >
-            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </div>
         </button>
       </div>
