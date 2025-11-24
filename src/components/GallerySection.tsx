@@ -1,319 +1,320 @@
-import { useState } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Images,
+  Camera,
   X,
   ChevronLeft,
   ChevronRight,
-  RefreshCw,
-  AlertCircle,
-  ArrowRight,
+  Maximize2,
+  ImageIcon,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useGalleryQuery } from '@/hooks/useEnhancedQuery';
-import { formatErrorForDisplay } from '@/utils/errorHandling';
-
-type GalleryImage = {
-  id: string;
-  image_url: string;
-  caption?: string | null;
-  tag?: string | null;
-  created_at?: string | null;
-};
+import Spinner from './ui/spinner';
 
 export default function GallerySection() {
-  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const navigate = useNavigate();
+  const { data: images, isLoading, error } = useGalleryQuery();
+  const galleryImages = images ?? [];
+  const [selectedImageIndex, setSelectedImageIndex] = React.useState<
+    number | null
+  >(null);
 
-  // Enhanced data fetching with error handling and retry
-  const {
-    data: allImages = [],
-    isLoading: loading,
-    error,
-    refresh,
-  } = useGalleryQuery();
-
-  // Show only 6 most recent images on main page
-  const images = allImages
-    .sort(
-      (a, b) =>
-        new Date(b.created_at || '').getTime() -
-        new Date(a.created_at || '').getTime()
-    )
-    .slice(0, 6);
-
-  const openLightbox = (image: GalleryImage, index: number) => {
-    setSelectedImage(image);
-    setCurrentIndex(index);
-    document.body.style.overflow = 'hidden';
+  const handleImageClick = (index: number) => {
+    setSelectedImageIndex(index);
   };
 
-  const closeLightbox = () => {
-    setSelectedImage(null);
-    document.body.style.overflow = 'unset';
+  const handleCloseLightbox = () => {
+    setSelectedImageIndex(null);
   };
 
-  const navigateImage = (direction: 'prev' | 'next') => {
-    const newIndex =
-      direction === 'next'
-        ? (currentIndex + 1) % images.length
-        : (currentIndex - 1 + images.length) % images.length;
-
-    setCurrentIndex(newIndex);
-    setSelectedImage(images[newIndex]);
+  const handleNextImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (selectedImageIndex !== null) {
+      setSelectedImageIndex((prev) =>
+        prev === null || prev === galleryImages.length - 1 ? 0 : prev + 1
+      );
+    }
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
+  const handlePrevImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (selectedImageIndex !== null) {
+      setSelectedImageIndex((prev) =>
+        prev === null || prev === 0 ? galleryImages.length - 1 : prev - 1
+      );
+    }
+  };
+
+  // Keyboard navigation
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (selectedImageIndex === null) return;
+      if (e.key === 'Escape') handleCloseLightbox();
+      if (e.key === 'ArrowRight')
+        setSelectedImageIndex((prev) =>
+          prev === null || prev === galleryImages.length - 1 ? 0 : prev + 1
+        );
+      if (e.key === 'ArrowLeft')
+        setSelectedImageIndex((prev) =>
+          prev === null || prev === 0 ? galleryImages.length - 1 : prev - 1
+        );
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedImageIndex, galleryImages.length]);
+
+  const variants = {
+    container: {
+      hidden: { opacity: 0 },
+      visible: {
+        opacity: 1,
+        transition: { staggerChildren: 0.1, delayChildren: 0.2 },
       },
     },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30, scale: 0.9 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.6,
-        ease: [0.4, 0, 0.2, 1] as [number, number, number, number],
-      },
+    item: {
+      hidden: { opacity: 0, scale: 0.8 },
+      visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } },
+    },
+    header: {
+      hidden: { opacity: 0, y: 30 },
+      visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
     },
   };
 
   return (
     <section
       id="gallery"
-      className="section-shell bg-gradient-to-br from-background via-background to-muted/30 relative overflow-hidden"
+      className="section-shell relative bg-gradient-to-b from-amber-50/30 to-white overflow-hidden py-12 md:py-20 lg:py-24"
     >
-      {/* Background blobs */}
-      <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 right-16 w-96 h-96 bg-gradient-to-br from-accent/10 to-primary/10 rounded-full blur-3xl" />
+      {/* Decorative Elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-10 right-10 w-64 h-64 md:w-96 md:h-96 bg-yellow-200/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-10 w-64 h-64 md:w-80 md:h-80 bg-orange-200/20 rounded-full blur-3xl" />
+      </div>
 
-      <div className="section-stack relative">
+      <div className="section-stack relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
-          className="text-center mb-20"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          className="text-center mb-12 md:mb-16 lg:mb-20"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={variants.header}
         >
-          <div className="inline-flex items-center justify-center p-3 mb-8 bg-gradient-to-r from-primary/20 to-accent/20 rounded-full backdrop-blur-sm border border-primary/30">
-            <Images className="w-6 h-6 text-primary mr-3" />
-            <span className="text-sm font-semibold text-primary uppercase tracking-wider">
-              Gallery
+          <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Camera className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            </div>
+            <span className="text-base sm:text-lg font-semibold text-yellow-600 tracking-wide uppercase">
+              Our Gallery
             </span>
           </div>
 
-          <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-foreground mb-8 leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
             Academy{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary animate-pulse">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-amber-600 to-orange-600">
               Moments
             </span>
           </h2>
 
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed font-medium">
-            Discover the energy, dedication, and community spirit that defines
-            our academy through these captured moments of training, events, and
-            achievements.
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-6 sm:mb-8 px-2">
+            A glimpse into our training sessions, tournaments, and the vibrant
+            community at Ghatak Sports Academy.
           </p>
+
+          {/* Divider */}
+          <div className="flex items-center justify-center gap-2 sm:gap-4">
+            <div className="h-px w-10 sm:w-16 bg-gradient-to-r from-transparent to-yellow-400" />
+            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full animate-pulse" />
+            <div className="h-px w-20 sm:w-32 bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400" />
+            <div
+              className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-orange-400 rounded-full animate-pulse"
+              style={{ animationDelay: '0.5s' }}
+            />
+            <div className="h-px w-10 sm:w-16 bg-gradient-to-r from-orange-400 to-transparent" />
+          </div>
         </motion.div>
+
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex justify-center py-12 sm:py-16">
+            <div className="flex flex-col items-center gap-4">
+              <Spinner />
+              <span className="text-gray-500 font-medium text-sm sm:text-base">
+                Loading gallery...
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Error State */}
         {error && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-8 p-4 bg-destructive/5 border border-destructive/20 rounded-xl max-w-2xl mx-auto"
+            className="text-center py-12 sm:py-16"
           >
-            <div className="flex items-center gap-3 text-destructive">
-              <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <div className="flex-1">
-                <p className="font-medium">Failed to load gallery images</p>
-                <p className="text-sm text-destructive/80 mt-1">
-                  {formatErrorForDisplay(error)}
-                </p>
-              </div>
-              <button
-                onClick={() => refresh()}
-                className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
-                title="Retry loading gallery"
-              >
-                <RefreshCw className="w-4 h-4" />
-              </button>
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+              <ImageIcon className="w-8 h-8 sm:w-10 sm:h-10 text-red-500" />
             </div>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">
+              Unable to Load Gallery
+            </h3>
+            <p className="text-gray-600 mb-4 sm:mb-6 max-w-md mx-auto text-sm sm:text-base">
+              {error.message}
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="btn-primary justify-center gap-2"
+            >
+              Try Again
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </motion.div>
         )}
 
-        {/* Gallery Content */}
-        {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="relative">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 border-2 sm:border-3 lg:border-4 border-muted rounded-full animate-spin border-t-primary"></div>
-              <div className="absolute inset-0 w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 border-2 sm:border-3 lg:border-4 border-transparent rounded-full animate-ping border-t-accent"></div>
-            </div>
-          </div>
-        ) : images.length === 0 ? (
+        {/* Empty State */}
+        {!error && !isLoading && galleryImages.length === 0 && (
           <motion.div
-            className="text-center py-20 px-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-12 sm:py-16"
           >
-            <Images className="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32 text-muted-foreground/40 mx-auto mb-4 sm:mb-6 lg:mb-8" />
-            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-muted-foreground mb-2 sm:mb-3 lg:mb-4">
-              No Images Yet
+            <div className="w-20 h-20 sm:w-24 sm:h-24 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+              <Camera className="w-10 h-10 sm:w-12 sm:h-12 text-yellow-500" />
+            </div>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">
+              Gallery Empty
             </h3>
-            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground/80 max-w-md mx-auto">
-              Check back soon for amazing moments from our academy!
+            <p className="text-gray-600 max-w-md mx-auto mb-4 sm:mb-6 text-sm sm:text-base">
+              We're capturing new moments. Check back soon!
             </p>
           </motion.div>
-        ) : (
-          <>
-            <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-16"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              {images.map((img, index) => (
-                <motion.div
-                  key={img.id}
-                  variants={itemVariants}
-                  className="group relative overflow-hidden rounded-3xl bg-card shadow-soft hover:shadow-large transition-all duration-700 cursor-pointer"
-                  onClick={() => openLightbox(img, index)}
-                  whileHover={{ y: -8, scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                    <img
-                      src={img.image_url}
-                      alt={img.caption || `Academy gallery image ${index + 1}`}
-                      loading="lazy"
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform group-hover:scale-110">
-                      <div className="bg-gradient-to-r from-primary/30 to-accent/30 backdrop-blur-lg rounded-full p-4 border border-primary/50 shadow-lg">
-                        <Images className="w-8 h-8 text-primary-foreground" />
-                      </div>
-                    </div>
-                  </div>
-                  {img.caption && (
-                    <div className="p-6">
-                      <p className="text-card-foreground font-semibold text-base md:text-lg leading-relaxed line-clamp-2">
-                        {img.caption}
-                      </p>
-                    </div>
-                  )}
-                  {img.tag && (
-                    <div className="absolute top-4 left-4">
-                      <span className="inline-block px-4 py-2 bg-primary text-primary-foreground text-sm font-bold rounded-full shadow-lg backdrop-blur-sm">
-                        {img.tag}
-                      </span>
-                    </div>
-                  )}
-                </motion.div>
-              ))}
-            </motion.div>
-
-            {/* View All Gallery Button */}
-            {allImages.length > 6 && (
-              <motion.div
-                className="flex justify-center"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
-              >
-                <Link to="/gallery" className="btn-primary gap-2">
-                  View All Gallery
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
-              </motion.div>
-            )}
-          </>
         )}
 
-        {/* Lightbox Modal */}
-        <AnimatePresence>
-          {selectedImage && (
-            <motion.div
-              className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={closeLightbox}
-            >
-              <button
-                onClick={closeLightbox}
-                className="absolute top-8 right-8 z-60 p-3 bg-background/90 hover:bg-background rounded-full transition-colors duration-200 backdrop-blur-sm border border-border"
-                aria-label="Close gallery"
-              >
-                <X className="w-8 h-8 text-foreground" />
-              </button>
-
-              {images.length > 1 && (
-                <>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigateImage('prev');
-                    }}
-                    className="absolute left-8 top-1/2 -translate-y-1/2 z-60 p-4 bg-background/90 hover:bg-background rounded-full transition-colors duration-200 backdrop-blur-sm border border-border"
-                    aria-label="Previous image"
-                  >
-                    <ChevronLeft className="w-8 h-8 text-foreground" />
-                  </button>
-
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigateImage('next');
-                    }}
-                    className="absolute right-8 top-1/2 -translate-y-1/2 z-60 p-4 bg-background/90 hover:bg-background rounded-full transition-colors duration-200 backdrop-blur-sm border border-border"
-                    aria-label="Next image"
-                  >
-                    <ChevronRight className="w-8 h-8 text-foreground" />
-                  </button>
-                </>
-              )}
-
+        {/* Gallery Grid */}
+        {galleryImages.length > 0 && (
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"
+            variants={variants.container}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+          >
+            {galleryImages.slice(0, 8).map((image, idx) => (
               <motion.div
-                className="relative max-w-6xl max-h-[85vh] mx-auto"
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                onClick={(e) => e.stopPropagation()}
+                key={image.id}
+                className={`group relative overflow-hidden rounded-2xl shadow-md cursor-pointer ${
+                  idx === 0 || idx === 7 ? 'md:col-span-2 md:row-span-2' : ''
+                }`}
+                variants={variants.item}
+                onClick={() => handleImageClick(idx)}
+                whileHover={{ y: -5 }}
               >
-                <img
-                  src={selectedImage.image_url}
-                  alt={selectedImage.caption || 'Gallery image'}
-                  className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
-                />
-                {selectedImage.caption && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-8 rounded-b-2xl backdrop-blur-sm">
-                    <p className="text-white text-xl font-semibold leading-relaxed">
-                      {selectedImage.caption}
+                <div
+                  className={`relative w-full h-full ${
+                    idx === 0 || idx === 7 ? 'aspect-[4/3]' : 'aspect-square'
+                  }`}
+                >
+                  <img
+                    src={image.image_url}
+                    alt={image.caption || 'Gallery Image'}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 sm:p-6">
+                    <p className="text-white font-medium text-sm sm:text-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                      {image.caption || 'Ghatak Sports Academy'}
                     </p>
+                    <div className="w-8 sm:w-12 h-1 bg-yellow-500 mt-2 sm:mt-3 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
                   </div>
-                )}
+                  <div className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-white/20 backdrop-blur-md p-1.5 sm:p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white/40">
+                    <Maximize2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                  </div>
+                </div>
               </motion.div>
+            ))}
+          </motion.div>
+        )}
 
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-background/90 backdrop-blur-md rounded-full border border-border">
-                <span className="text-foreground text-lg font-semibold">
-                  {currentIndex + 1} / {images.length}
-                </span>
+        {/* View All Button */}
+        {galleryImages.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            className="text-center mt-12 md:mt-16"
+          >
+            <button
+              onClick={() => navigate('/gallery')}
+              className="btn-primary px-8 py-3 text-base sm:text-lg shadow-lg shadow-yellow-500/20"
+            >
+              View Full Gallery
+            </button>
+          </motion.div>
+        )}
+      </div>
+
+      {/* Lightbox */}
+      <AnimatePresence>
+        {selectedImageIndex !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex items-center justify-center p-4"
+            onClick={handleCloseLightbox}
+          >
+            <button
+              className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white/70 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors z-50"
+              onClick={handleCloseLightbox}
+            >
+              <X className="w-6 h-6 sm:w-8 sm:h-8" />
+            </button>
+
+            <button
+              className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white p-2 sm:p-3 rounded-full hover:bg-white/10 transition-colors z-50"
+              onClick={handlePrevImage}
+            >
+              <ChevronLeft className="w-8 h-8 sm:w-10 sm:h-10" />
+            </button>
+
+            <button
+              className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white p-2 sm:p-3 rounded-full hover:bg-white/10 transition-colors z-50"
+              onClick={handleNextImage}
+            >
+              <ChevronRight className="w-8 h-8 sm:w-10 sm:h-10" />
+            </button>
+
+            <motion.div
+              key={selectedImageIndex}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="relative max-w-5xl max-h-[85vh] w-full flex flex-col items-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={galleryImages[selectedImageIndex].image_url}
+                alt={galleryImages[selectedImageIndex].caption}
+                className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+              />
+              {galleryImages[selectedImageIndex].caption && (
+                <div className="mt-4 text-white text-center text-base sm:text-lg font-medium bg-black/50 px-4 py-2 rounded-full backdrop-blur-sm">
+                  {galleryImages[selectedImageIndex].caption}
+                </div>
+              )}
+              <div className="mt-2 text-white/50 text-sm">
+                {selectedImageIndex + 1} / {galleryImages.length}
               </div>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
