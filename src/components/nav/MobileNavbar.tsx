@@ -87,15 +87,15 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
         mobileOpen &&
         createPortal(
           <>
-            {/* MOBILE LAYOUT (< md) - Modern Bottom Sheet */}
+            {/* MENU OVERLAY - Modern Bottom Sheet (Mobile & Tablet) */}
             <div
-              className="md:hidden fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-sm"
+              className="fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-sm"
               id="mobile-menu"
               role="dialog"
               aria-modal="true"
               aria-labelledby="mobile-menu-title"
             >
-              <div className="absolute inset-x-0 bottom-0 h-[85vh] bg-white rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col animate-in slide-in-from-bottom-full duration-300 ease-out">
+              <div className="absolute inset-x-0 bottom-0 h-[85vh] bg-white rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col animate-in slide-in-from-bottom-full duration-300 ease-out md:max-w-lg md:mx-auto md:rounded-[2rem] md:bottom-6 md:inset-x-6 md:h-auto md:max-h-[85vh]">
                 {/* Handle Bar */}
                 <div className="w-full flex justify-center pt-3 pb-1" onClick={() => setMobileOpen(false)}>
                   <div className="w-12 h-1.5 bg-slate-200 rounded-full" />
@@ -195,52 +195,6 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                     </div>
                   </nav>
                 </div>
-              </div>
-            </div>
-
-            {/* TABLET LAYOUT (>= md) - Modern Glass Popover */}
-            <div
-              className="hidden md:block fixed inset-0 z-[100]"
-              onClick={() => setMobileOpen(false)}
-            >
-              {/* Backdrop */}
-              <div className="absolute inset-0 bg-slate-950/20 backdrop-blur-sm animate-in fade-in duration-300" />
-
-              {/* Modern Menu Card */}
-              <div
-                className="absolute top-[5.5rem] left-1/2 -translate-x-1/2 w-[380px] bg-white/90 backdrop-blur-xl rounded-3xl shadow-[0_20px_60px_-10px_rgba(0,0,0,0.15)] border border-white/40 p-3 animate-in slide-in-from-top-4 fade-in duration-300"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <nav className="flex flex-col gap-1.5">
-                  {navLinks.map((link) => {
-                     const IconComponent = iconMap[link.name] || Home;
-                     return (
-                    <NavLinkItem
-                      key={link.name}
-                      name={link.name}
-                      href={link.href}
-                      onClick={() => setMobileOpen(false)}
-                      className="group px-4 py-3 hover:bg-white rounded-2xl text-base font-semibold text-slate-600 hover:text-slate-900 transition-all duration-200 flex items-center gap-4 hover:shadow-sm border border-transparent hover:border-slate-100"
-                    >
-                      <div className="p-1.5 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                        <IconComponent className="w-4 h-4" />
-                      </div>
-                      {link.name}
-                      <span className="ml-auto opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-slate-400 transition-all duration-300">
-                        →
-                      </span>
-                    </NavLinkItem>
-                  )})}
-                  <div className="h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent my-2" />
-                  <Link
-                    to="/admin/login"
-                    onClick={() => setMobileOpen(false)}
-                    className="mx-1 px-4 py-3 text-base font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-2xl flex items-center justify-center gap-3 transition-all shadow-lg shadow-slate-900/20 hover:shadow-slate-900/30 hover:-translate-y-0.5"
-                  >
-                    <LogIn className="w-5 h-5" />
-                    Admin Login
-                  </Link>
-                </nav>
               </div>
             </div>
           </>,
