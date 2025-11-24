@@ -24,8 +24,13 @@ const HARD_RELOAD_TYPES: PerformanceNavigationTiming['type'][] = [
   'back_forward',
 ];
 
-const getNavigationType = (): PerformanceNavigationTiming['type'] | undefined => {
-  if (typeof window === 'undefined' || typeof window.performance === 'undefined') {
+const getNavigationType = ():
+  | PerformanceNavigationTiming['type']
+  | undefined => {
+  if (
+    typeof window === 'undefined' ||
+    typeof window.performance === 'undefined'
+  ) {
     return undefined;
   }
   const [entry] = window.performance.getEntriesByType(
@@ -38,7 +43,9 @@ const clearPersistedSupabaseSession = () => {
   if (typeof window === 'undefined') return;
   try {
     window.sessionStorage.removeItem(ADMIN_SESSION_STORAGE_KEY);
-    const projectRef = (import.meta.env.VITE_SUPABASE_PROJECT_ID ?? '').toString();
+    const projectRef = (
+      import.meta.env.VITE_SUPABASE_PROJECT_ID ?? ''
+    ).toString();
     const prefix = projectRef ? `sb-${projectRef}` : 'sb-';
     Object.keys(window.localStorage).forEach((key) => {
       if (key.startsWith(prefix) || key.includes('supabase.auth')) {
@@ -83,9 +90,9 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
   );
   const navigate = useNavigate();
   const location = useLocation();
-  const navigationTypeRef = useRef<PerformanceNavigationTiming['type'] | undefined>(
-    getNavigationType()
-  );
+  const navigationTypeRef = useRef<
+    PerformanceNavigationTiming['type'] | undefined
+  >(getNavigationType());
 
   useEffect(() => {
     if (
