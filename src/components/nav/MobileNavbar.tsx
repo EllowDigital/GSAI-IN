@@ -107,11 +107,11 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                     <div>
                       <h2
                         id="mobile-menu-title"
-                        className="text-xl font-bold text-slate-900 tracking-tight"
+                        className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight"
                       >
                         Menu
                       </h2>
-                      <p className="text-xs text-slate-500 font-medium">
+                      <p className="text-xs sm:text-sm text-slate-500 font-medium">
                         Explore GSAI
                       </p>
                     </div>
@@ -138,15 +138,15 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                           name={link.name}
                           href={link.href}
                           onClick={() => setMobileOpen(false)}
-                          className="group flex items-center p-2.5 rounded-2xl bg-slate-50 border border-slate-100 active:scale-[0.98] transition-all duration-200"
+                          className="group flex items-center p-2.5 sm:p-3 rounded-2xl bg-slate-50 border border-slate-100 active:scale-[0.98] transition-all duration-200"
                           style={{ animationDelay: `${idx * 30}ms` }}
                           tabIndex={0}
                           role="menuitem"
                         >
                           <div className="p-2 rounded-xl bg-white shadow-sm text-slate-600 group-hover:text-orange-500 transition-colors">
-                            <IconComponent className="w-4 h-4" />
+                            <IconComponent className="w-4 h-4 sm:w-5 sm:h-5" />
                           </div>
-                          <span className="ml-3 text-sm font-semibold text-slate-700 group-hover:text-slate-900">
+                          <span className="ml-3 text-sm sm:text-base font-semibold text-slate-700 group-hover:text-slate-900">
                             {link.name}
                           </span>
                           <span className="ml-auto w-7 h-7 flex items-center justify-center rounded-full bg-white text-slate-400 shadow-sm group-hover:text-orange-500 transition-all">
@@ -162,16 +162,16 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                     <Link
                       to="/admin/login"
                       onClick={() => setMobileOpen(false)}
-                      className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-slate-900 text-white text-sm font-semibold shadow-lg shadow-slate-900/20 active:scale-[0.98] transition-transform"
+                      className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-slate-900 text-white text-sm sm:text-base font-semibold shadow-lg shadow-slate-900/20 active:scale-[0.98] transition-transform"
                       role="menuitem"
                     >
-                      <LogIn className="w-4 h-4" />
+                      <LogIn className="w-4 h-4 sm:w-5 sm:h-5" />
                       <span>Admin Login</span>
                     </Link>
 
                     {/* Contact Info */}
                     <div className="mt-3 p-4 rounded-2xl bg-[#FFFBF0] border border-orange-100/50">
-                      <h4 className="font-bold text-slate-900 text-sm mb-2">Get in Touch</h4>
+                      <h4 className="font-bold text-slate-900 text-sm sm:text-base mb-2">Get in Touch</h4>
                       <div className="space-y-2">
                         <a
                           href="tel:+916394135988"
@@ -180,7 +180,7 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                           <div className="w-7 h-7 flex items-center justify-center rounded-full bg-white text-orange-500 shadow-sm">
                             <span className="text-xs">📞</span>
                           </div>
-                          <span className="text-xs font-medium">+91 63941 35988</span>
+                          <span className="text-xs sm:text-sm font-medium">+91 63941 35988</span>
                         </a>
                         <a
                           href="mailto:ghatakgsai@gmail.com"
@@ -189,7 +189,7 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                           <div className="w-7 h-7 flex items-center justify-center rounded-full bg-white text-orange-500 shadow-sm">
                             <span className="text-xs">📧</span>
                           </div>
-                          <span className="text-xs font-medium">ghatakgsai@gmail.com</span>
+                          <span className="text-xs sm:text-sm font-medium">ghatakgsai@gmail.com</span>
                         </a>
                       </div>
                     </div>

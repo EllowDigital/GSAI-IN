@@ -7,7 +7,7 @@ export function DesktopNavbar() {
   return (
     <>
       {/* Desktop Navigation - xl and above */}
-      <div className="hidden xl:flex items-center px-6 py-2 gap-12 min-h-[60px]">
+      <div className="hidden xl:flex items-center px-6 py-2 gap-8 2xl:gap-12 min-h-[60px]">
         {/* Logo Section */}
         <Link
           to="/"
@@ -22,10 +22,10 @@ export function DesktopNavbar() {
             decoding="async"
           />
           <div className="flex flex-col">
-            <span className="text-base font-bold text-slate-900 leading-none group-hover:text-primary transition-colors duration-300">
+            <span className="text-base lg:text-lg font-bold text-slate-900 leading-none group-hover:text-primary transition-colors duration-300">
               GSAI
             </span>
-            <span className="text-[10px] font-medium text-slate-500 leading-none mt-0.5">
+            <span className="text-[10px] lg:text-xs font-medium text-slate-500 leading-none mt-0.5">
               Ghatak Sports Academy India
             </span>
           </div>
@@ -42,7 +42,7 @@ export function DesktopNavbar() {
               key={link.name}
               href={link.href}
               name={link.name}
-              className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors duration-200"
+              className="text-sm lg:text-base font-semibold text-slate-600 hover:text-slate-900 transition-colors duration-200"
               role="menuitem"
               tabIndex={0}
             >
