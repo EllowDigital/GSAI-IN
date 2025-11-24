@@ -213,9 +213,12 @@ export default function AchievementSection() {
                   <div
                     className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 ${achievement.iconBg} rounded-xl flex items-center justify-center text-white shadow-lg transform group-hover:scale-110 transition-transform duration-300`}
                   >
-                    {React.cloneElement(achievement.icon as React.ReactElement, {
-                      className: 'w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9',
-                    })}
+                    {React.cloneElement(
+                      achievement.icon as React.ReactElement,
+                      {
+                        className: 'w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9',
+                      }
+                    )}
                   </div>
                   <div className="text-right">
                     <span className="inline-block px-2.5 py-1 bg-white/10 text-gray-300 text-[10px] sm:text-xs font-bold uppercase tracking-wider rounded-full mb-1 border border-white/5">

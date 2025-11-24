@@ -130,8 +130,8 @@ export default function EventDetail() {
           <h1 className="text-3xl font-bold text-white mb-4">
             Event not found
           </h1>
-          <Button 
-            onClick={() => navigate('/')} 
+          <Button
+            onClick={() => navigate('/')}
             variant="outline"
             className="border-white/20 text-white hover:bg-white/10 hover:text-yellow-500"
           >
@@ -164,7 +164,7 @@ export default function EventDetail() {
         </div>
 
         <div className="container mx-auto px-4 py-20 relative z-10">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -189,7 +189,10 @@ export default function EventDetail() {
                   {event.title}
                 </h1>
                 {event.tag && (
-                  <Badge variant="secondary" className="text-sm bg-yellow-500/10 text-yellow-500 border-yellow-500/20 hover:bg-yellow-500/20">
+                  <Badge
+                    variant="secondary"
+                    className="text-sm bg-yellow-500/10 text-yellow-500 border-yellow-500/20 hover:bg-yellow-500/20"
+                  >
                     {event.tag}
                   </Badge>
                 )}
@@ -291,9 +294,7 @@ export default function EventDetail() {
                       </p>
                     </div>
                     <div className="p-5 bg-white/5 rounded-xl border border-white/10 hover:border-yellow-500/30 transition-colors">
-                      <h3 className="font-bold text-white mb-2">
-                        Certificate
-                      </h3>
+                      <h3 className="font-bold text-white mb-2">Certificate</h3>
                       <p className="text-sm text-gray-400">
                         Receive completion certificate
                       </p>
@@ -336,16 +337,22 @@ export default function EventDetail() {
                   </h3>
                   <div className="space-y-3 text-sm">
                     <p className="text-gray-300 flex flex-col gap-1">
-                      <strong className="text-white">Phone:</strong> 
-                      <span className="text-gray-400 hover:text-yellow-500 transition-colors">+91 6394135988</span>
+                      <strong className="text-white">Phone:</strong>
+                      <span className="text-gray-400 hover:text-yellow-500 transition-colors">
+                        +91 6394135988
+                      </span>
                     </p>
                     <p className="text-gray-300 flex flex-col gap-1">
-                      <strong className="text-white">Email:</strong> 
-                      <span className="text-gray-400 hover:text-yellow-500 transition-colors">ghatakgsai@gmail.com</span>
+                      <strong className="text-white">Email:</strong>
+                      <span className="text-gray-400 hover:text-yellow-500 transition-colors">
+                        ghatakgsai@gmail.com
+                      </span>
                     </p>
                     <p className="text-gray-300 flex flex-col gap-1">
-                      <strong className="text-white">Address:</strong> 
-                      <span className="text-gray-400">Badshah kheda, Takrohi Rd, Indira Nagar, Lucknow</span>
+                      <strong className="text-white">Address:</strong>
+                      <span className="text-gray-400">
+                        Badshah kheda, Takrohi Rd, Indira Nagar, Lucknow
+                      </span>
                     </p>
                   </div>
                 </div>
@@ -355,7 +362,7 @@ export default function EventDetail() {
             {/* Call to Action */}
             <div className="p-8 bg-gradient-to-r from-yellow-500/10 to-red-600/10 rounded-3xl border border-white/10 backdrop-blur-md relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-              
+
               <div className="relative z-10">
                 <h3 className="text-2xl font-bold text-white mb-2">
                   Interested in This Event?

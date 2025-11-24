@@ -253,7 +253,9 @@ export default function BlogNewsSection() {
                       <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/10 flex items-center justify-center">
                         <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-300" />
                       </div>
-                      <span className="text-xs sm:text-sm font-medium text-gray-400">GSAI Team</span>
+                      <span className="text-xs sm:text-sm font-medium text-gray-400">
+                        GSAI Team
+                      </span>
                     </div>
 
                     <button
@@ -288,7 +290,9 @@ export default function BlogNewsSection() {
 
               <div className="inline-flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 bg-white/5 rounded-full border border-white/10">
                 <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
-                <span className="text-gray-300 font-medium text-sm sm:text-base">Coming Soon</span>
+                <span className="text-gray-300 font-medium text-sm sm:text-base">
+                  Coming Soon
+                </span>
               </div>
             </motion.div>
           )}

@@ -28,7 +28,10 @@ export default function Navbar() {
         >
           <div className="flex flex-col rounded-full">
             <DesktopNavbar />
-            <MobileNavbar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
+            <MobileNavbar
+              mobileOpen={mobileOpen}
+              setMobileOpen={setMobileOpen}
+            />
           </div>
         </div>
       </div>

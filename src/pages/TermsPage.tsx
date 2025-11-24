@@ -26,8 +26,9 @@ const sections = [
     content: (
       <>
         Fees must be paid in full as per the selected program or membership
-        plan. <strong className="text-white">All fees are non-refundable</strong> under any
-        circumstances, including withdrawal, relocation, illness, or
+        plan.{' '}
+        <strong className="text-white">All fees are non-refundable</strong>{' '}
+        under any circumstances, including withdrawal, relocation, illness, or
         disciplinary removal.
       </>
     ),
@@ -86,7 +87,7 @@ const TermsPage: React.FC = () => (
         </Button>
       </motion.div>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-8 md:p-12 shadow-2xl"
@@ -95,9 +96,7 @@ const TermsPage: React.FC = () => (
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-yellow-500 to-red-600 bg-clip-text text-transparent mb-4">
             Terms &amp; Conditions
           </h1>
-          <p className="text-gray-400">
-            Last updated: 12 February 2025
-          </p>
+          <p className="text-gray-400">Last updated: 12 February 2025</p>
         </header>
 
         <div className="space-y-8">
@@ -113,7 +112,7 @@ const TermsPage: React.FC = () => (
           ))}
         </div>
       </motion.div>
-      
+
       <div className="mt-12 text-center text-gray-500 text-sm">
         &copy; 2025 Ghatak Sports Academy India. All rights reserved.
       </div>

@@ -77,7 +77,11 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
           aria-expanded={mobileOpen}
           aria-controls="mobile-menu"
         >
-          {mobileOpen ? <X size={20} className="sm:w-6 sm:h-6" /> : <Menu size={22} className="sm:w-6 sm:h-6" />}
+          {mobileOpen ? (
+            <X size={20} className="sm:w-6 sm:h-6" />
+          ) : (
+            <Menu size={22} className="sm:w-6 sm:h-6" />
+          )}
         </button>
       </div>
 
@@ -100,7 +104,10 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Handle Bar */}
-                <div className="w-full flex justify-center pt-4 pb-2" onClick={() => setMobileOpen(false)}>
+                <div
+                  className="w-full flex justify-center pt-4 pb-2"
+                  onClick={() => setMobileOpen(false)}
+                >
                   <div className="w-12 h-1.5 bg-white/20 rounded-full hover:bg-white/40 transition-colors cursor-pointer" />
                 </div>
 
@@ -186,7 +193,9 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                           <div className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-yellow-500 group-hover:bg-yellow-500/20 transition-colors">
                             <Phone className="w-4 h-4" />
                           </div>
-                          <span className="text-sm font-medium">+91 63941 35988</span>
+                          <span className="text-sm font-medium">
+                            +91 63941 35988
+                          </span>
                         </a>
                         <a
                           href="mailto:ghatakgsai@gmail.com"
@@ -195,7 +204,9 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                           <div className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-yellow-500 group-hover:bg-yellow-500/20 transition-colors">
                             <Mail className="w-4 h-4" />
                           </div>
-                          <span className="text-sm font-medium">ghatakgsai@gmail.com</span>
+                          <span className="text-sm font-medium">
+                            ghatakgsai@gmail.com
+                          </span>
                         </a>
                       </div>
                     </div>
