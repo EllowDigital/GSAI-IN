@@ -42,12 +42,12 @@ export default function FounderSection() {
   return (
     <section
       id="founder"
-      className="section-shell relative bg-gradient-to-br from-white via-orange-50/30 to-yellow-50/20 overflow-hidden py-12 md:py-20 lg:py-24"
+      className="section-shell relative bg-[#0a0a0a] overflow-hidden py-12 md:py-20 lg:py-24"
       aria-labelledby="founder-heading"
     >
       {/* Modern Background Elements */}
-      <div className="absolute top-20 right-10 w-64 h-64 md:w-96 md:h-96 bg-gradient-to-br from-yellow-500/10 to-red-500/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 left-16 w-48 h-48 md:w-72 md:h-72 bg-gradient-to-br from-orange-500/10 to-yellow-500/10 rounded-full blur-3xl" />
+      <div className="absolute top-20 right-10 w-64 h-64 md:w-96 md:h-96 bg-gradient-to-br from-yellow-500/10 to-red-600/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 left-16 w-48 h-48 md:w-72 md:h-72 bg-gradient-to-br from-red-600/10 to-yellow-500/10 rounded-full blur-3xl" />
 
       {/* Floating Elements */}
       <div className="absolute top-10 right-6 sm:right-8 opacity-20 animate-pulse">
@@ -57,7 +57,7 @@ export default function FounderSection() {
         className="absolute bottom-16 left-6 sm:left-8 opacity-15 animate-bounce"
         style={{ animationDelay: '1s' }}
       >
-        <Medal className="w-8 h-8 sm:w-10 sm:h-10 text-orange-500" />
+        <Medal className="w-8 h-8 sm:w-10 sm:h-10 text-red-500" />
       </div>
 
       <div className="section-stack relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
@@ -69,16 +69,16 @@ export default function FounderSection() {
           viewport={{ once: true, amount: 0.3 }}
           variants={itemVariants}
         >
-          <div className="inline-flex items-center justify-center p-2 sm:p-3 mb-6 bg-gradient-to-r from-yellow-500/10 to-red-500/10 rounded-full backdrop-blur-sm border border-yellow-200/30">
-            <User className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-600 mr-2 sm:mr-3" />
-            <span className="text-xs sm:text-sm font-semibold text-yellow-600 uppercase tracking-wider">
+          <div className="inline-flex items-center justify-center p-2 sm:p-3 mb-6 bg-yellow-500/10 rounded-full backdrop-blur-sm border border-yellow-500/20">
+            <User className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500 mr-2 sm:mr-3" />
+            <span className="text-xs sm:text-sm font-semibold text-yellow-500 uppercase tracking-wider">
               Leadership
             </span>
           </div>
 
           <h2
             id="founder-heading"
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 mb-6 leading-tight"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight"
           >
             Meet Our{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500">
@@ -86,7 +86,7 @@ export default function FounderSection() {
             </span>
           </h2>
 
-          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-medium px-4">
+          <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed font-medium px-4">
             Guiding champions with decades of martial arts mastery and
             unwavering dedication to excellence.
           </p>
@@ -104,12 +104,12 @@ export default function FounderSection() {
           >
             <div className="relative group">
               {/* Background Glow */}
-              <div className="absolute -inset-4 sm:-inset-6 bg-gradient-to-r from-yellow-400/20 via-orange-400/20 to-red-400/20 rounded-[2rem] blur-2xl group-hover:blur-3xl transition-all duration-500" />
+              <div className="absolute -inset-4 sm:-inset-6 bg-gradient-to-r from-yellow-500/20 via-orange-500/20 to-red-600/20 rounded-[2rem] blur-2xl group-hover:blur-3xl transition-all duration-500" />
 
               {/* Achievement Badge */}
               <div className="absolute -top-3 -left-3 sm:-top-4 sm:-left-4 z-20">
                 <motion.div
-                  className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center shadow-xl border-2 border-white"
+                  className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-yellow-500 to-red-600 rounded-full flex items-center justify-center shadow-xl border-2 border-black"
                   animate={{ rotate: 360 }}
                   transition={{
                     duration: 20,
@@ -122,15 +122,15 @@ export default function FounderSection() {
               </div>
 
               {/* Main Image Container */}
-              <div className="relative bg-white/80 backdrop-blur-sm rounded-[2rem] p-3 sm:p-4 shadow-xl border border-white/50 group-hover:scale-[1.02] transition-all duration-500">
-                <div className="relative w-full aspect-[4/5] sm:aspect-square rounded-2xl overflow-hidden bg-gray-100">
+              <div className="relative bg-white/5 backdrop-blur-sm rounded-[2rem] p-3 sm:p-4 shadow-xl border border-white/10 group-hover:scale-[1.02] transition-all duration-500">
+                <div className="relative w-full aspect-[4/5] sm:aspect-square rounded-2xl overflow-hidden bg-black/50">
                   <img
                     src={founderImg}
                     alt="Mr. Nitesh Yadav - Founder & Director"
                     className="w-full h-full object-cover object-top"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
               </div>
 
@@ -143,7 +143,7 @@ export default function FounderSection() {
                     repeat: Infinity,
                     ease: 'easeInOut',
                   }}
-                  className="bg-white p-2 rounded-full shadow-lg"
+                  className="bg-black/80 backdrop-blur-md p-2 rounded-full shadow-lg border border-white/10"
                 >
                   <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500" />
                 </motion.div>
@@ -161,25 +161,25 @@ export default function FounderSection() {
           >
             {/* Title & Badge */}
             <div className="space-y-4 sm:space-y-6 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 sm:gap-3 px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-yellow-500/10 to-red-500/10 rounded-full backdrop-blur-sm border border-yellow-200/30">
+              <div className="inline-flex items-center gap-2 sm:gap-3 px-3 py-1.5 sm:px-4 sm:py-2 bg-yellow-500/10 rounded-full backdrop-blur-sm border border-yellow-500/20">
                 <span className="w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-pulse" />
-                <span className="text-xs sm:text-sm font-semibold text-yellow-600 uppercase tracking-wider">
+                <span className="text-xs sm:text-sm font-semibold text-yellow-500 uppercase tracking-wider">
                   Founder & Director
                 </span>
               </div>
 
-              <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight">
                 Mr. Nitesh Yadav{' '}
                 <span className="inline-block ml-2 text-xl sm:text-2xl md:text-3xl align-middle">🥇</span>
               </h3>
             </div>
 
             {/* Description */}
-            <div className="space-y-4 sm:space-y-6 text-base sm:text-lg text-gray-700 leading-relaxed text-center lg:text-left">
+            <div className="space-y-4 sm:space-y-6 text-base sm:text-lg text-gray-400 leading-relaxed text-center lg:text-left">
               <p>
                 With a lifetime devoted to martial arts excellence, Mr. Nitesh
                 Yadav{' '}
-                <strong className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-red-600 font-bold">
+                <strong className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-red-500 font-bold">
                   inspires champions
                 </strong>{' '}
                 and empowers individuals to unlock their hidden potential
@@ -188,7 +188,7 @@ export default function FounderSection() {
 
               <p>
                 His unwavering dedication as a mentor instills{' '}
-                <strong className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600 font-bold">
+                <strong className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600 font-bold">
                   discipline, confidence, and resilience
                 </strong>{' '}
                 in every student who steps into the academy.
@@ -197,15 +197,15 @@ export default function FounderSection() {
 
             {/* Quote Section */}
             <motion.div
-              className="relative p-5 sm:p-6 bg-white/60 backdrop-blur-md rounded-2xl border border-white/40 shadow-lg hover:shadow-xl transition-all duration-300"
+              className="relative p-5 sm:p-6 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg hover:shadow-yellow-500/10 transition-all duration-300"
               whileHover={{ y: -5, scale: 1.01 }}
             >
               <Quote className="absolute top-4 left-4 w-5 h-5 sm:w-6 sm:h-6 text-yellow-500 opacity-50" />
-              <blockquote className="text-base sm:text-lg font-medium text-gray-800 italic pl-8 sm:pl-10 leading-relaxed">
+              <blockquote className="text-base sm:text-lg font-medium text-gray-300 italic pl-8 sm:pl-10 leading-relaxed">
                 "With decades of experience, I remain dedicated to the art of
                 martial mastery and mentoring the champions of tomorrow."
               </blockquote>
-              <cite className="block mt-3 sm:mt-4 text-sm sm:text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-red-600 not-italic pl-8 sm:pl-10">
+              <cite className="block mt-3 sm:mt-4 text-sm sm:text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-red-600 not-italic pl-8 sm:pl-10">
                 — Mr. Nitesh Yadav
               </cite>
             </motion.div>
@@ -221,12 +221,12 @@ export default function FounderSection() {
                 {
                   number: '500+',
                   label: 'Students Trained',
-                  gradient: 'from-orange-500 to-red-500',
+                  gradient: 'from-orange-500 to-red-600',
                 },
               ].map((stat, index) => (
                 <motion.div
                   key={stat.label}
-                  className="text-center p-4 sm:p-6 bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/40 hover:border-orange-200/50 transition-colors"
+                  className="text-center p-4 sm:p-6 bg-black/40 backdrop-blur-sm rounded-2xl shadow-lg border border-white/10 hover:border-yellow-500/30 transition-colors"
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
@@ -238,7 +238,7 @@ export default function FounderSection() {
                   >
                     {stat.number}
                   </div>
-                  <div className="text-xs sm:text-sm md:text-base font-semibold text-gray-600">
+                  <div className="text-xs sm:text-sm md:text-base font-semibold text-gray-400">
                     {stat.label}
                   </div>
                 </motion.div>
@@ -247,14 +247,14 @@ export default function FounderSection() {
 
             {/* Call to Action */}
             <motion.div
-              className="p-5 sm:p-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl shadow-xl border border-slate-700/50"
+              className="p-5 sm:p-6 bg-gradient-to-r from-yellow-900/20 via-red-900/20 to-black rounded-2xl shadow-xl border border-white/10"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.8 }}
               viewport={{ once: true }}
             >
-              <p className="text-sm sm:text-base md:text-lg text-gray-300 leading-relaxed text-center lg:text-left">
-                <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">
+              <p className="text-sm sm:text-base md:text-lg text-gray-400 leading-relaxed text-center lg:text-left">
+                <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-orange-500">
                   Champion values, lifelong growth:
                 </span>{' '}
                 Your journey to strength, honor, and self-mastery begins at{' '}
