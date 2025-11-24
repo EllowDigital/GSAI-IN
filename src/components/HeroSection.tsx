@@ -175,7 +175,7 @@ export default function App() {
     <section
       id="hero"
       onClick={handleUserInteraction}
-      className="relative isolate flex min-h-[calc(100vh-4.5rem)] lg:min-h-screen items-center justify-center overflow-hidden bg-slate-950 text-white cursor-default"
+      className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 text-white cursor-default"
     >
       {/* Background Media Container */}
       <div className="absolute inset-0 z-0 overflow-hidden">
@@ -300,11 +300,11 @@ export default function App() {
       </div>
 
       {/* Bottom Controls: Scroll Indicator and Slider Navigation */}
-      <div className="absolute left-1/2 -translate-x-1/2 bottom-6 sm:bottom-8 flex flex-col items-center gap-4 z-20 w-full px-4">
+      <div className="absolute left-1/2 -translate-x-1/2 bottom-4 sm:bottom-8 flex flex-col items-center gap-3 z-20 w-full px-4">
         <AnimatePresence>
           {!isVideoActive && (
             <motion.div
-              className="flex gap-2.5"
+              className="flex items-center justify-center gap-2 w-full max-w-[min(360px,calc(100%-3rem))] px-3.5 sm:px-6 py-2.5 sm:py-3 rounded-full border border-white/20 bg-white/12 backdrop-blur-xl shadow-[0_10px_26px_rgba(15,23,42,0.32)]"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
@@ -314,7 +314,7 @@ export default function App() {
                 <button
                   key={idx}
                   onClick={() => goToImage(idx)}
-                  className={`group relative inline-flex items-center justify-center p-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white ${
+                  className={`group relative inline-flex items-center justify-center p-2.5 sm:p-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white ${
                     imgIndex === idx ? 'scale-105' : ''
                   }`}
                   aria-label={`Go to slide ${idx + 1}`}
