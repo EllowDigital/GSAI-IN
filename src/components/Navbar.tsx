@@ -7,8 +7,8 @@ export default function Navbar() {
   const { mobileOpen, setMobileOpen, scrolled } = useNavbar();
 
   const containerClasses = scrolled
-    ? 'bg-white shadow-[0_8px_20px_rgba(15,23,42,0.08)] border-black/5'
-    : 'bg-white/95 shadow-[0_2px_16px_rgba(15,23,42,0.04)] border-transparent';
+    ? 'bg-black/80 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.5)] border-white/10'
+    : 'bg-black/40 backdrop-blur-sm shadow-none border-white/5';
 
   const navSafePadding = {
     paddingLeft: 'max(0.75rem, env(safe-area-inset-left, 0px))',
@@ -17,16 +17,16 @@ export default function Navbar() {
 
   return (
     <nav
-      className="fixed inset-x-0 top-0 z-[70] pt-2 sm:pt-3 pb-2 pointer-events-none"
+      className="fixed inset-x-0 top-0 z-[70] pt-2 sm:pt-4 pb-2 pointer-events-none"
       role="navigation"
       aria-label="Main navigation"
       style={navSafePadding}
     >
       <div className="nav-shell w-full flex justify-center">
         <div
-          className={`pointer-events-auto rounded-[2rem] border transition-all duration-300 ease-out ${containerClasses} w-[94%] md:w-auto md:min-w-[450px]`}
+          className={`pointer-events-auto rounded-full border transition-all duration-500 ease-out ${containerClasses} w-[94%] md:w-auto md:min-w-[500px]`}
         >
-          <div className="flex flex-col rounded-[2rem]">
+          <div className="flex flex-col rounded-full">
             <DesktopNavbar />
             <MobileNavbar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
           </div>
