@@ -12,7 +12,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className="fixed inset-x-0 top-0 z-[70] px-4 sm:px-6 lg:px-8 pt-3 pb-2 pointer-events-none"
+      className="fixed inset-x-0 top-0 z-[70] px-3 sm:px-5 lg:px-8 pt-2 sm:pt-3 lg:pt-3 pb-2 pointer-events-none"
       role="navigation"
       aria-label="Main navigation"
     >
