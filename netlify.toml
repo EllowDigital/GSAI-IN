@@ -7,6 +7,7 @@ environment = { NODE_VERSION = "20.17.0" }
 [dev]
 command = "npm run dev"
 port = 8888
+targetPort = 5173
 framework = "vite"
 
 # Allow sitemap + clients to know the canonical URL during production builds.
