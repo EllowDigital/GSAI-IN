@@ -97,7 +97,7 @@ export default function Index() {
       <Navbar />
 
       {/* Main Content with improved semantic structure */}
-      <main className="pt-28 lg:pt-32 flex-1 flex flex-col gap-0" role="main">
+      <main className="flex-1 flex flex-col gap-0" role="main">
         <HeroSection />
         <AboutSection />
         <FounderSection />
