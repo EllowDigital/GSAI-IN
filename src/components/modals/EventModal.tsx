@@ -72,7 +72,7 @@ export function EventModal({
   const content = (
     <div className="space-y-6">
       {event.image_url && (
-        <div className="aspect-video w-full overflow-hidden rounded-lg">
+        <div className="aspect-video w-full overflow-hidden rounded-lg border border-white/10">
           <img
             src={event.image_url}
             alt={event.title}
@@ -84,18 +84,18 @@ export function EventModal({
       <div className="space-y-4">
         <div>
           <div className="flex items-start justify-between gap-4 mb-3">
-            <h2 className="text-2xl font-bold text-foreground">
+            <h2 className="text-2xl font-bold text-white">
               {event.title}
             </h2>
             {event.tag && (
-              <Badge variant="secondary" className="shrink-0">
+              <Badge variant="secondary" className="shrink-0 bg-yellow-500/10 text-yellow-500 border-yellow-500/20">
                 {event.tag}
               </Badge>
             )}
           </div>
 
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Calendar className="h-4 w-4" />
+          <div className="flex items-center gap-2 text-gray-400">
+            <Calendar className="h-4 w-4 text-yellow-500" />
             <span className="text-sm">
               {formatDateRange(event.from_date, event.end_date, event.date)}
             </span>
@@ -104,30 +104,29 @@ export function EventModal({
 
         {event.description && (
           <div className="space-y-3">
-            <h3 className="font-semibold text-foreground">Event Details</h3>
-            <div className="prose prose-sm max-w-none">
-              <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+            <h3 className="font-semibold text-white">Event Details</h3>
+            <div className="prose prose-sm max-w-none prose-invert">
+              <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
                 {event.description}
               </p>
             </div>
           </div>
         )}
 
-        <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
+        <div className="p-4 bg-white/5 rounded-lg border border-white/10">
           <div className="flex items-center gap-2 mb-2">
-            <MapPin className="h-4 w-4 text-primary" />
-            <span className="font-medium text-foreground">Location</span>
+            <MapPin className="h-4 w-4 text-yellow-500" />
+            <span className="font-medium text-white">Location</span>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-gray-400">
             Ghatak Sports Academy India, Lucknow, UP
           </p>
         </div>
 
-        <div className="pt-4 border-t">
+        <div className="pt-4 border-t border-white/10">
           <Button
             onClick={() => onViewFullPage(event.id)}
-            className="w-full sm:w-auto"
-            variant="default"
+            className="w-full sm:w-auto bg-gradient-to-r from-yellow-500 to-red-600 text-white border-0 hover:from-yellow-600 hover:to-red-700"
           >
             View Full Event Details
           </Button>
@@ -139,9 +138,9 @@ export function EventModal({
   if (isMobile) {
     return (
       <Drawer open={isOpen} onOpenChange={onClose}>
-        <DrawerContent className="max-h-[90vh]">
+        <DrawerContent className="max-h-[90vh] bg-[#0a0a0a] border-white/10 text-white">
           <DrawerHeader className="text-left">
-            <DrawerClose className="absolute right-4 top-4">
+            <DrawerClose className="absolute right-4 top-4 text-gray-400 hover:text-white">
               <X className="h-4 w-4" />
             </DrawerClose>
           </DrawerHeader>
@@ -153,7 +152,7 @@ export function EventModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-[#0a0a0a] border-white/10 text-white">
         <DialogHeader className="sr-only">
           <DialogTitle>{event.title}</DialogTitle>
           <DialogDescription>
@@ -164,7 +163,7 @@ export function EventModal({
         </DialogHeader>
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-gray-400 hover:text-white"
         >
           <X className="h-4 w-4" />
         </button>
