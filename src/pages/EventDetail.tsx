@@ -375,7 +375,7 @@ export default function EventDetail() {
                   <Button
                     onClick={() => navigate('/#programs')}
                     variant="outline"
-                    className="flex-1 sm:flex-none border-white/20 text-white hover:bg-white/10 hover:text-yellow-500"
+                    className="bg-transparent flex-1 sm:flex-none border-white/20 text-white hover:bg-white/10 hover:text-yellow-500"
                     size="lg"
                   >
                     View All Programs

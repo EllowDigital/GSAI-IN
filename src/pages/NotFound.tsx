@@ -50,7 +50,7 @@ const NotFound = () => {
               <Button 
                 variant="outline" 
                 onClick={() => window.history.back()}
-                className="border-white/10 text-white hover:bg-white/5 hover:text-yellow-500 h-12 px-8 rounded-full w-full sm:w-auto"
+                className="bg-transparent border-white/10 text-white hover:bg-white/5 hover:text-yellow-500 h-12 px-8 rounded-full w-full sm:w-auto"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Go Back

@@ -263,7 +263,7 @@ export default function NewsDetail() {
                   onClick={() => navigate('/#programs')}
                   variant="outline"
                   size="sm"
-                  className="border-white/20 text-white hover:bg-white/10 hover:text-yellow-500"
+                  className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-yellow-500"
                 >
                   View Programs
                 </Button>
@@ -291,7 +291,7 @@ export default function NewsDetail() {
                   onClick={() => navigate('/#contact')}
                   variant="outline"
                   size="sm"
-                  className="border-white/20 text-white hover:bg-white/10 hover:text-yellow-500"
+                  className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-yellow-500"
                 >
                   Contact Us
                 </Button>
@@ -321,7 +321,7 @@ export default function NewsDetail() {
                   <Button 
                     onClick={() => navigate('/#about')} 
                     variant="outline"
-                    className="border-white/20 text-white hover:bg-white/10 hover:text-yellow-500"
+                    className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-yellow-500"
                     size="lg"
                   >
                     Learn More About Us
