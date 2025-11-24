@@ -260,7 +260,7 @@ export default function App() {
             Unleash Your Strength
             <br className="hidden sm:block" /> with{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
-              Ghatak Sports
+              GSAI
             </span>
           </motion.h1>
 
