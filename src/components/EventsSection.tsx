@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Spinner from '@/components/ui/spinner';
+import Spinner from './ui/spinner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEventsQuery } from '@/hooks/useEventsQuery';
 import { Calendar, Clock, MapPin, ArrowRight, Sparkles } from 'lucide-react';
