@@ -24,7 +24,7 @@ export default function Navbar() {
     >
       <div className="nav-shell w-full flex justify-center">
         <div
-          className={`pointer-events-auto rounded-full border transition-all duration-300 ease-out ${containerClasses} w-full xl:w-auto`}
+          className={`pointer-events-auto rounded-full border transition-all duration-300 ease-out ${containerClasses} w-[94%] md:w-auto md:min-w-[450px]`}
         >
           <div className="flex flex-col rounded-full">
             <DesktopNavbar />
