@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 interface NavLinkItemProps
   extends React.PropsWithChildren<{
@@ -23,6 +23,8 @@ export function NavLinkItem({
   style,
 }: NavLinkItemProps) {
   const content = children || name;
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // Handle internal routes (starting with /)
   if (href.startsWith('/')) {
@@ -45,14 +47,21 @@ export function NavLinkItem({
   const handleClick = (e: React.MouseEvent) => {
     if (href.startsWith('#')) {
       e.preventDefault();
-      const element = document.querySelector(href);
-      if (element) {
-        const offsetTop =
-          element.getBoundingClientRect().top + window.pageYOffset - 80;
-        window.scrollTo({
-          top: offsetTop,
-          behavior: 'smooth',
-        });
+      
+      if (location.pathname === '/') {
+        // If on homepage, scroll to element
+        const element = document.querySelector(href);
+        if (element) {
+          const offsetTop =
+            element.getBoundingClientRect().top + window.pageYOffset - 80;
+          window.scrollTo({
+            top: offsetTop,
+            behavior: 'smooth',
+          });
+        }
+      } else {
+        // If not on homepage, navigate to homepage with hash
+        navigate(`/${href}`);
       }
     }
     onClick?.();
