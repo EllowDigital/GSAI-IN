@@ -8,6 +8,7 @@ import {
   Send,
   MessageCircle,
   Sparkles,
+  ArrowRight,
 } from 'lucide-react';
 
 const containerVariants = {
@@ -72,6 +73,7 @@ const contactInfo = [
     details: ['+91 63941 35988'],
     action: 'tel:+916394135988',
     color: 'from-green-500 to-emerald-600',
+    btnText: 'Call Now',
   },
   {
     icon: Mail,
@@ -79,6 +81,7 @@ const contactInfo = [
     details: ['ghatakgsai@gmail.com'],
     action: 'mailto:ghatakgsai@gmail.com',
     color: 'from-blue-500 to-cyan-600',
+    btnText: 'Send Email',
   },
   {
     icon: MapPin,
@@ -88,6 +91,7 @@ const contactInfo = [
     ],
     action: '#location',
     color: 'from-red-500 to-pink-600',
+    btnText: 'Get Directions',
   },
   {
     icon: Clock,
@@ -95,6 +99,7 @@ const contactInfo = [
     details: ['Mon-Sat: 6:00 AM - 9:00 PM', 'Sunday: Closed'],
     action: null,
     color: 'from-purple-500 to-indigo-600',
+    btnText: null,
   },
 ];
 
@@ -116,42 +121,42 @@ export default function ContactSection() {
   return (
     <section
       id="contact"
-      className="section-shell relative bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden"
+      className="section-shell relative bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden py-12 md:py-20 lg:py-24"
       aria-labelledby="contact-heading"
     >
       {/* Background Effects */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 right-10 w-96 h-96 bg-gradient-to-r from-yellow-200/40 to-red-200/40 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 left-10 w-80 h-80 bg-gradient-to-r from-red-200/30 to-yellow-200/30 rounded-full blur-3xl" />
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
+        <div className="absolute top-20 right-10 w-96 h-96 bg-gradient-to-r from-yellow-200/40 to-orange-200/40 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 left-10 w-80 h-80 bg-gradient-to-r from-orange-200/30 to-yellow-200/30 rounded-full blur-3xl" />
       </div>
 
-      <div className="section-stack relative z-10">
+      <div className="section-stack relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-12 md:mb-16 lg:mb-20"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
           variants={itemVariants}
         >
-          <div className="inline-flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
-              <MessageCircle className="w-6 h-6 text-white" />
+          <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+              <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
-            <span className="text-lg font-semibold text-yellow-600 tracking-wide">
+            <span className="text-base sm:text-lg font-semibold text-yellow-600 tracking-wide uppercase">
               Get In Touch
             </span>
           </div>
           <h2
             id="contact-heading"
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight"
           >
-            Contact
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-red-600 to-yellow-700">
+            Contact{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-orange-600 to-red-600">
               Us Today
             </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-6 sm:mb-8 px-2">
             Ready to start your martial arts journey? Get in touch with us for
             enrollment, trial classes, or any questions about our programs.
           </p>
@@ -159,7 +164,7 @@ export default function ContactSection() {
 
         {/* Info Cards */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 md:mb-16"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
@@ -168,39 +173,36 @@ export default function ContactSection() {
           {contactInfo.map((info, index) => (
             <motion.div
               key={index}
-              className="group relative bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-white/50 hover:border-yellow-200/50"
+              className="group relative bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-yellow-200 flex flex-col h-full"
               variants={quickContactVariants}
-              whileHover={{ y: -8, scale: 1.02 }}
+              whileHover={{ y: -8 }}
             >
               <div
-                className={`w-16 h-16 bg-gradient-to-r ${info.color} rounded-2xl flex items-center justify-center mb-4 shadow-lg group-hover:shadow-xl`}
+                className={`w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r ${info.color} rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}
               >
-                <info.icon className="w-8 h-8 text-white" />
+                <info.icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-yellow-600">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 group-hover:text-yellow-700 transition-colors">
                 {info.title}
               </h3>
-              <div className="space-y-1">
+              <div className="space-y-1 mb-4 flex-grow">
                 {info.details.map((detail, idx) => (
-                  <p key={idx} className="text-gray-600 text-sm">
+                  <p
+                    key={idx}
+                    className="text-gray-600 text-sm leading-relaxed"
+                  >
                     {detail}
                   </p>
                 ))}
               </div>
               {info.action && (
-                <div className="mt-4">
+                <div className="mt-auto pt-4 border-t border-gray-100">
                   <a
                     href={info.action}
-                    className="inline-flex items-center gap-2 text-yellow-600 font-medium hover:text-yellow-700"
+                    className="inline-flex items-center gap-2 text-yellow-600 font-semibold hover:text-orange-600 transition-colors text-sm"
                   >
-                    <span className="text-sm">
-                      {info.title === 'Call Us'
-                        ? 'Call Now'
-                        : info.title === 'Email Us'
-                          ? 'Send Email'
-                          : 'Get Directions'}
-                    </span>
-                    <div className="w-4 h-4 rounded-full bg-gradient-to-r from-yellow-400 to-red-500"></div>
+                    <span>{info.btnText}</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </a>
                 </div>
               )}
@@ -208,224 +210,227 @@ export default function ContactSection() {
           ))}
         </motion.div>
 
-        {/* Contact Form */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        {/* Contact Form & CTA Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+          {/* Form */}
           <motion.div
-            className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/50"
+            className="bg-white rounded-3xl p-6 sm:p-8 lg:p-10 shadow-xl border border-gray-100 relative overflow-hidden"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
             variants={formVariants}
           >
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-red-500 rounded-xl flex items-center justify-center">
-                <Send className="w-5 h-5 text-white" />
-              </div>
-              <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
-                Send us a Message
-              </h3>
-            </div>
-
-            <form
-              action="https://formsubmit.co/ghatakgsai@gmail.com"
-              method="POST"
-              className="space-y-6"
-              onSubmit={(e) => {
-                // Add basic validation before submission
-                const formData = new FormData(e.currentTarget);
-                const name = formData.get('name') as string;
-                const email = formData.get('email') as string;
-                const message = formData.get('message') as string;
-
-                if (!name?.trim() || !email?.trim() || !message?.trim()) {
-                  e.preventDefault();
-                  alert(
-                    'Please fill in all required fields before submitting.'
-                  );
-                  return;
-                }
-              }}
-            >
-              {/* Redirect after submission */}
-              <input
-                type="hidden"
-                name="_next"
-                value={`${window.location.origin}/pages/success.html`}
-              />
-              <input type="hidden" name="_captcha" value="false" />
-              <input type="hidden" name="_template" value="table" />
-              <input
-                type="hidden"
-                name="_subject"
-                value="New Contact Form Submission - Ghatak Sports Academy"
-              />
-              {/* CC: Add other recipients here */}
-              <input
-                type="hidden"
-                name="_cc"
-                value="sarwanyadav6174@gmail.com,ellowdigitalindia@gmail.com"
-              />
-
-              {/* Name & Email */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-semibold text-gray-700 mb-2"
-                  >
-                    Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl"
-                    placeholder="Enter your full name"
-                  />
+            <div className="absolute top-0 right-0 w-40 h-40 bg-yellow-100/50 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+            
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center shadow-md">
+                  <Send className="w-5 h-5 text-white" />
                 </div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-semibold text-gray-700 mb-2"
-                  >
-                    Email Address *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl"
-                    placeholder="Enter your email"
-                  />
-                </div>
+                <h3 className="text-2xl font-bold text-gray-900">
+                  Send us a Message
+                </h3>
               </div>
 
-              {/* Phone */}
-              <div>
-                <label
-                  htmlFor="phone"
-                  className="block text-sm font-semibold text-gray-700 mb-2"
-                >
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl"
-                  placeholder="Enter your phone number"
-                />
-              </div>
+              <form
+                action="https://formsubmit.co/ghatakgsai@gmail.com"
+                method="POST"
+                className="space-y-5"
+                onSubmit={(e) => {
+                  const formData = new FormData(e.currentTarget);
+                  const name = formData.get('name') as string;
+                  const email = formData.get('email') as string;
+                  const message = formData.get('message') as string;
 
-              {/* Message */}
-              <div>
-                <label
-                  htmlFor="message"
-                  className="block text-sm font-semibold text-gray-700 mb-2"
-                >
-                  Message *
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleInputChange}
-                  required
-                  rows={5}
-                  className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl resize-none"
-                  placeholder="Tell us about your interest in our programs..."
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="btn-primary w-full justify-center gap-3"
+                  if (!name?.trim() || !email?.trim() || !message?.trim()) {
+                    e.preventDefault();
+                    alert(
+                      'Please fill in all required fields before submitting.'
+                    );
+                    return;
+                  }
+                }}
               >
-                <Send className="w-5 h-5" />
-                Send Message
-              </button>
-            </form>
+                <input
+                  type="hidden"
+                  name="_next"
+                  value={`${window.location.origin}/pages/success.html`}
+                />
+                <input type="hidden" name="_captcha" value="false" />
+                <input type="hidden" name="_template" value="table" />
+                <input
+                  type="hidden"
+                  name="_subject"
+                  value="New Contact Form Submission - Ghatak Sports Academy"
+                />
+                <input
+                  type="hidden"
+                  name="_cc"
+                  value="sarwanyadav6174@gmail.com,ellowdigitalindia@gmail.com"
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="name"
+                      className="text-sm font-semibold text-gray-700 ml-1"
+                    >
+                      Full Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all outline-none"
+                      placeholder="John Doe"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="email"
+                      className="text-sm font-semibold text-gray-700 ml-1"
+                    >
+                      Email Address <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all outline-none"
+                      placeholder="john@example.com"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label
+                    htmlFor="phone"
+                    className="text-sm font-semibold text-gray-700 ml-1"
+                  >
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all outline-none"
+                    placeholder="+91 98765 43210"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label
+                    htmlFor="message"
+                    className="text-sm font-semibold text-gray-700 ml-1"
+                  >
+                    Message <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    required
+                    rows={5}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all outline-none"
+                    placeholder="Tell us about your interest in our programs..."
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="btn-primary w-full justify-center gap-2 py-3.5 text-base shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/30"
+                >
+                  <Send className="w-5 h-5" />
+                  Send Message
+                </button>
+              </form>
+            </div>
           </motion.div>
 
           {/* CTA Section */}
           <motion.div
-            className="space-y-8"
+            className="space-y-6 sm:space-y-8 flex flex-col justify-center"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
             variants={ctaVariants}
           >
             {/* Trial Class CTA */}
-            <div className="bg-gradient-to-r from-yellow-50 to-red-50 rounded-3xl p-8 border border-yellow-100/50 shadow-lg">
-              <div className="flex items-center gap-3 mb-6">
-                <Sparkles className="w-8 h-8 text-yellow-500" />
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
-                  Book a Free Trial
-                </h3>
-              </div>
-              <p className="text-gray-700 text-lg mb-6 leading-relaxed">
-                Experience our world-class training firsthand. Book your free
-                trial class today and discover the perfect martial arts program
-                for you.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <a
-                  href="tel:+916394135988"
-                  className="btn-primary w-full sm:w-auto justify-center gap-3"
-                >
-                  <Phone className="w-5 h-5" />
-                  <span>Call Now</span>
-                </a>
-                <a
-                  href="#programs"
-                  className="btn-secondary w-full sm:w-auto justify-center gap-3"
-                >
-                  <span>View Programs</span>
-                </a>
+            <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-3xl p-8 border border-yellow-100 shadow-lg relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-200/30 rounded-full blur-2xl -mr-10 -mt-10 transition-transform duration-700 group-hover:scale-150" />
+              
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-4">
+                  <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-600" />
+                  <h3 className="text-2xl font-bold text-gray-900">
+                    Book a Free Trial
+                  </h3>
+                </div>
+                <p className="text-gray-700 text-base sm:text-lg mb-6 leading-relaxed">
+                  Experience our world-class training firsthand. Book your free
+                  trial class today and discover the perfect martial arts program
+                  for you.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <a
+                    href="tel:+916394135988"
+                    className="btn-primary justify-center gap-2"
+                  >
+                    <Phone className="w-4 h-4" />
+                    <span>Call Now</span>
+                  </a>
+                  <a
+                    href="#programs"
+                    className="btn-secondary justify-center gap-2 bg-white"
+                  >
+                    <span>View Programs</span>
+                  </a>
+                </div>
               </div>
             </div>
 
             {/* FAQ CTA */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-white/50">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:border-yellow-200 transition-colors duration-300">
+              <h3 className="text-xl font-bold text-gray-900 mb-3">
                 Have Questions?
               </h3>
-              <p className="text-gray-600 mb-6 leading-relaxed">
+              <p className="text-gray-600 mb-4 leading-relaxed text-sm sm:text-base">
                 Check out our comprehensive FAQ section for answers to common
                 questions about programs, fees, facilities, and more.
               </p>
               <a
                 href="#faq"
-                className="inline-flex items-center gap-2 text-yellow-600 font-semibold hover:text-yellow-700 transition-colors duration-300"
+                className="inline-flex items-center gap-2 text-yellow-600 font-bold hover:text-orange-600 transition-colors"
               >
                 <span>View FAQ</span>
-                <div className="w-2 h-2 bg-gradient-to-r from-yellow-400 to-red-500 rounded-full"></div>
+                <ArrowRight className="w-4 h-4" />
               </a>
             </div>
 
             {/* Location CTA */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-white/50">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:border-yellow-200 transition-colors duration-300">
+              <h3 className="text-xl font-bold text-gray-900 mb-3">
                 Find Our Locations
               </h3>
-              <p className="text-gray-600 mb-6 leading-relaxed">
+              <p className="text-gray-600 mb-4 leading-relaxed text-sm sm:text-base">
                 We have two convenient locations in Lucknow. Find the one
                 nearest to you and get directions.
               </p>
               <a
                 href="#location"
-                className="inline-flex items-center gap-2 text-yellow-600 font-semibold hover:text-yellow-700 transition-colors duration-300"
+                className="inline-flex items-center gap-2 text-yellow-600 font-bold hover:text-orange-600 transition-colors"
               >
                 <span>View Locations</span>
-                <div className="w-2 h-2 bg-gradient-to-r from-yellow-400 to-red-500 rounded-full"></div>
+                <ArrowRight className="w-4 h-4" />
               </a>
             </div>
           </motion.div>
