@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, CSSProperties } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ArrowDownCircle, Volume2, VolumeX } from 'lucide-react';
 
@@ -74,6 +74,10 @@ export default function App() {
   const imageTimerRef = useRef<NodeJS.Timeout | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const isVideoActive = mediaMode === 'video';
+  const muteButtonSafeArea: CSSProperties = {
+    top: 'calc(max(0.75rem, env(safe-area-inset-top, 0px)) + clamp(0rem, 1vw, 0.75rem))',
+    right: 'calc(max(0.75rem, env(safe-area-inset-right, 0px)) + clamp(0rem, 1vw, 1.5rem))',
+  };
 
   // Preload hero images once to prevent flashes during the slideshow
   useEffect(() => {
@@ -219,11 +223,12 @@ export default function App() {
           {isVideoActive && (
             <motion.button
               onClick={toggleMute}
-              className="pointer-events-auto absolute top-4 right-4 sm:top-5 sm:right-6 lg:top-8 lg:right-8 z-30 p-2.5 rounded-full border border-white/40 bg-slate-950/40 text-white hover:bg-slate-900/60 transition-colors"
+              className="pointer-events-auto absolute z-30 p-2.5 rounded-full border border-white/40 bg-slate-950/40 text-white hover:bg-slate-900/60 transition-colors"
               aria-label={isMuted ? 'Unmute video' : 'Mute video'}
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.6, duration: 0.4 }}
+              style={muteButtonSafeArea}
             >
               {isMuted ? (
                 <VolumeX className="w-5 h-5" />
@@ -236,7 +241,7 @@ export default function App() {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 w-full max-w-6xl px-4 sm:px-6 lg:px-8 text-center">
+      <div className="relative z-10 hero-shell text-center">
         <motion.div
           variants={staggerContainer}
           initial="initial"
@@ -300,11 +305,11 @@ export default function App() {
       </div>
 
       {/* Bottom Controls: Scroll Indicator and Slider Navigation */}
-      <div className="absolute left-1/2 -translate-x-1/2 bottom-4 sm:bottom-8 flex flex-col items-center gap-3 z-20 w-full px-4">
+      <div className="absolute left-0 right-0 bottom-4 sm:bottom-8 flex flex-col items-center gap-3 z-20 px-4 pointer-events-none">
         <AnimatePresence>
-          {!isVideoActive && (
+          {(!isVideoActive || true) && (
             <motion.div
-              className="flex items-center justify-center gap-2 w-full max-w-[min(360px,calc(100%-3rem))] px-3.5 sm:px-6 py-2.5 sm:py-3 rounded-full border border-white/20 bg-white/12 backdrop-blur-xl shadow-[0_10px_26px_rgba(15,23,42,0.32)]"
+              className="pointer-events-auto flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 w-auto max-w-[95vw] sm:max-w-lg mx-auto px-3 py-2 sm:px-6 sm:py-3 rounded-full border border-white/20 bg-white/10 backdrop-blur-md shadow-lg"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
@@ -314,16 +319,17 @@ export default function App() {
                 <button
                   key={idx}
                   onClick={() => goToImage(idx)}
-                  className={`group relative inline-flex items-center justify-center p-2.5 sm:p-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white ${
-                    imgIndex === idx ? 'scale-105' : ''
+                  type="button"
+                  className={`group relative inline-flex items-center justify-center p-1.5 sm:p-2 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white ${
+                    imgIndex === idx ? 'scale-110' : ''
                   }`}
                   aria-label={`Go to slide ${idx + 1}`}
                 >
                   <span
-                    className={`h-2.5 w-2.5 rounded-full border ${
+                    className={`h-1.5 w-1.5 sm:h-2.5 sm:w-2.5 rounded-full border transition-colors duration-300 ${
                       imgIndex === idx
-                        ? 'bg-yellow-400 border-yellow-400 shadow-[0_0_12px_rgba(250,204,21,0.8)]'
-                        : 'bg-white/10 border-white/40 group-hover:border-white'
+                        ? 'bg-yellow-400 border-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.6)]'
+                        : 'bg-white/20 border-white/40 group-hover:border-white group-hover:bg-white/40'
                     }`}
                   ></span>
                 </button>
@@ -331,7 +337,7 @@ export default function App() {
             </motion.div>
           )}
         </AnimatePresence>
-        <a href="#about" aria-label="Scroll down">
+        <a href="#about" aria-label="Scroll down" className="pointer-events-auto">
           <motion.div
             className="flex flex-col items-center gap-1 text-white/70 hover:text-white transition-colors"
             variants={scrollIndicatorVariants}
