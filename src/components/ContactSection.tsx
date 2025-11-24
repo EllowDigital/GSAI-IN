@@ -121,13 +121,13 @@ export default function ContactSection() {
   return (
     <section
       id="contact"
-      className="section-shell relative bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden py-12 md:py-20 lg:py-24"
+      className="section-shell relative bg-[#0a0a0a] overflow-hidden py-12 md:py-20 lg:py-24"
       aria-labelledby="contact-heading"
     >
       {/* Background Effects */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
-        <div className="absolute top-20 right-10 w-96 h-96 bg-gradient-to-r from-yellow-200/40 to-orange-200/40 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 left-10 w-80 h-80 bg-gradient-to-r from-orange-200/30 to-yellow-200/30 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-10 w-96 h-96 bg-yellow-500/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 left-10 w-80 h-80 bg-red-600/20 rounded-full blur-3xl" />
       </div>
 
       <div className="section-stack relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
@@ -140,23 +140,23 @@ export default function ContactSection() {
           variants={itemVariants}
         >
           <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-yellow-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/20">
               <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
-            <span className="text-base sm:text-lg font-semibold text-yellow-600 tracking-wide uppercase">
+            <span className="text-base sm:text-lg font-semibold text-yellow-500 tracking-wide uppercase">
               Get In Touch
             </span>
           </div>
           <h2
             id="contact-heading"
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight"
           >
             Contact{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-orange-600 to-red-600">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500">
               Us Today
             </span>
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-6 sm:mb-8 px-2">
+          <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed mb-6 sm:mb-8 px-2">
             Ready to start your martial arts journey? Get in touch with us for
             enrollment, trial classes, or any questions about our programs.
           </p>
@@ -173,7 +173,7 @@ export default function ContactSection() {
           {contactInfo.map((info, index) => (
             <motion.div
               key={index}
-              className="group relative bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-yellow-200 flex flex-col h-full"
+              className="group relative bg-white/5 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl hover:shadow-yellow-500/10 transition-all duration-300 border border-white/10 hover:border-yellow-500/30 flex flex-col h-full"
               variants={quickContactVariants}
               whileHover={{ y: -8 }}
             >
@@ -182,24 +182,24 @@ export default function ContactSection() {
               >
                 <info.icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 group-hover:text-yellow-700 transition-colors">
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-2 group-hover:text-yellow-500 transition-colors">
                 {info.title}
               </h3>
               <div className="space-y-1 mb-4 flex-grow">
                 {info.details.map((detail, idx) => (
                   <p
                     key={idx}
-                    className="text-gray-600 text-sm leading-relaxed"
+                    className="text-gray-400 text-sm leading-relaxed"
                   >
                     {detail}
                   </p>
                 ))}
               </div>
               {info.action && (
-                <div className="mt-auto pt-4 border-t border-gray-100">
+                <div className="mt-auto pt-4 border-t border-white/10">
                   <a
                     href={info.action}
-                    className="inline-flex items-center gap-2 text-yellow-600 font-semibold hover:text-orange-600 transition-colors text-sm"
+                    className="inline-flex items-center gap-2 text-yellow-500 font-semibold hover:text-red-500 transition-colors text-sm"
                   >
                     <span>{info.btnText}</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -214,20 +214,20 @@ export default function ContactSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Form */}
           <motion.div
-            className="bg-white rounded-3xl p-6 sm:p-8 lg:p-10 shadow-xl border border-gray-100 relative overflow-hidden"
+            className="bg-white/5 backdrop-blur-sm rounded-3xl p-6 sm:p-8 lg:p-10 shadow-xl border border-white/10 relative overflow-hidden"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
             variants={formVariants}
           >
-            <div className="absolute top-0 right-0 w-40 h-40 bg-yellow-100/50 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
             
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center shadow-md">
+                <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-red-600 rounded-xl flex items-center justify-center shadow-md shadow-yellow-500/20">
                   <Send className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900">
+                <h3 className="text-2xl font-bold text-white">
                   Send us a Message
                 </h3>
               </div>
@@ -273,7 +273,7 @@ export default function ContactSection() {
                   <div className="space-y-2">
                     <label
                       htmlFor="name"
-                      className="text-sm font-semibold text-gray-700 ml-1"
+                      className="text-sm font-semibold text-gray-300 ml-1"
                     >
                       Full Name <span className="text-red-500">*</span>
                     </label>
@@ -284,14 +284,14 @@ export default function ContactSection() {
                       value={formData.name}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all outline-none"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all outline-none text-white placeholder-gray-500"
                       placeholder="John Doe"
                     />
                   </div>
                   <div className="space-y-2">
                     <label
                       htmlFor="email"
-                      className="text-sm font-semibold text-gray-700 ml-1"
+                      className="text-sm font-semibold text-gray-300 ml-1"
                     >
                       Email Address <span className="text-red-500">*</span>
                     </label>
@@ -302,7 +302,7 @@ export default function ContactSection() {
                       value={formData.email}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all outline-none"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all outline-none text-white placeholder-gray-500"
                       placeholder="john@example.com"
                     />
                   </div>
@@ -311,7 +311,7 @@ export default function ContactSection() {
                 <div className="space-y-2">
                   <label
                     htmlFor="phone"
-                    className="text-sm font-semibold text-gray-700 ml-1"
+                    className="text-sm font-semibold text-gray-300 ml-1"
                   >
                     Phone Number
                   </label>
@@ -321,7 +321,7 @@ export default function ContactSection() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all outline-none"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all outline-none text-white placeholder-gray-500"
                     placeholder="+91 98765 43210"
                   />
                 </div>
@@ -329,7 +329,7 @@ export default function ContactSection() {
                 <div className="space-y-2">
                   <label
                     htmlFor="message"
-                    className="text-sm font-semibold text-gray-700 ml-1"
+                    className="text-sm font-semibold text-gray-300 ml-1"
                   >
                     Message <span className="text-red-500">*</span>
                   </label>
@@ -340,14 +340,14 @@ export default function ContactSection() {
                     onChange={handleInputChange}
                     required
                     rows={5}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all outline-none"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl resize-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all outline-none text-white placeholder-gray-500"
                     placeholder="Tell us about your interest in our programs..."
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="btn-primary w-full justify-center gap-2 py-3.5 text-base shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/30"
+                  className="btn-primary w-full justify-center gap-2 py-3.5 text-base shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/30 bg-gradient-to-r from-yellow-500 to-red-600 border-0 text-white"
                 >
                   <Send className="w-5 h-5" />
                   Send Message
@@ -365,17 +365,17 @@ export default function ContactSection() {
             variants={ctaVariants}
           >
             {/* Trial Class CTA */}
-            <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-3xl p-8 border border-yellow-100 shadow-lg relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-200/30 rounded-full blur-2xl -mr-10 -mt-10 transition-transform duration-700 group-hover:scale-150" />
+            <div className="bg-gradient-to-br from-yellow-900/20 to-red-900/20 rounded-3xl p-8 border border-white/10 shadow-lg relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform duration-700 group-hover:scale-150" />
               
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-4">
-                  <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-600" />
-                  <h3 className="text-2xl font-bold text-gray-900">
+                  <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500" />
+                  <h3 className="text-2xl font-bold text-white">
                     Book a Free Trial
                   </h3>
                 </div>
-                <p className="text-gray-700 text-base sm:text-lg mb-6 leading-relaxed">
+                <p className="text-gray-400 text-base sm:text-lg mb-6 leading-relaxed">
                   Experience our world-class training firsthand. Book your free
                   trial class today and discover the perfect martial arts program
                   for you.
@@ -383,14 +383,14 @@ export default function ContactSection() {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <a
                     href="tel:+916394135988"
-                    className="btn-primary justify-center gap-2"
+                    className="btn-primary justify-center gap-2 bg-gradient-to-r from-yellow-500 to-red-600 border-0 text-white"
                   >
                     <Phone className="w-4 h-4" />
                     <span>Call Now</span>
                   </a>
                   <a
                     href="#programs"
-                    className="btn-secondary justify-center gap-2 bg-white"
+                    className="btn-secondary justify-center gap-2 bg-transparent border-white/10 text-white hover:bg-white/5 hover:text-yellow-500"
                   >
                     <span>View Programs</span>
                   </a>
@@ -399,17 +399,17 @@ export default function ContactSection() {
             </div>
 
             {/* FAQ CTA */}
-            <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:border-yellow-200 transition-colors duration-300">
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
+            <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-white/10 hover:border-yellow-500/30 transition-colors duration-300">
+              <h3 className="text-xl font-bold text-white mb-3">
                 Have Questions?
               </h3>
-              <p className="text-gray-600 mb-4 leading-relaxed text-sm sm:text-base">
+              <p className="text-gray-400 mb-4 leading-relaxed text-sm sm:text-base">
                 Check out our comprehensive FAQ section for answers to common
                 questions about programs, fees, facilities, and more.
               </p>
               <a
                 href="#faq"
-                className="inline-flex items-center gap-2 text-yellow-600 font-bold hover:text-orange-600 transition-colors"
+                className="inline-flex items-center gap-2 text-yellow-500 font-bold hover:text-red-500 transition-colors"
               >
                 <span>View FAQ</span>
                 <ArrowRight className="w-4 h-4" />
@@ -417,17 +417,17 @@ export default function ContactSection() {
             </div>
 
             {/* Location CTA */}
-            <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:border-yellow-200 transition-colors duration-300">
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
+            <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-white/10 hover:border-yellow-500/30 transition-colors duration-300">
+              <h3 className="text-xl font-bold text-white mb-3">
                 Find Our Locations
               </h3>
-              <p className="text-gray-600 mb-4 leading-relaxed text-sm sm:text-base">
+              <p className="text-gray-400 mb-4 leading-relaxed text-sm sm:text-base">
                 We have two convenient locations in Lucknow. Find the one
                 nearest to you and get directions.
               </p>
               <a
                 href="#location"
-                className="inline-flex items-center gap-2 text-yellow-600 font-bold hover:text-orange-600 transition-colors"
+                className="inline-flex items-center gap-2 text-yellow-500 font-bold hover:text-red-500 transition-colors"
               >
                 <span>View Locations</span>
                 <ArrowRight className="w-4 h-4" />
