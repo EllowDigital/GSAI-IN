@@ -106,7 +106,7 @@ export default function ProgramsSection() {
   return (
     <section
       id="programs"
-      className="relative py-20 lg:py-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-900 via-slate-900 to-black overflow-hidden"
+      className="section-shell relative bg-gradient-to-br from-gray-900 via-slate-900 to-black overflow-hidden"
     >
       {/* Background Gradients */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
@@ -126,7 +126,7 @@ export default function ProgramsSection() {
         style={{ animationDelay: '4s' }}
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto">
+      <div className="section-stack relative z-10">
         {/* Section Header */}
         <motion.div
           className="text-center mb-16 lg:mb-20"
@@ -172,7 +172,7 @@ export default function ProgramsSection() {
 
         {/* Program Cards */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+          className="grid-responsive lg:gap-8"
           initial="offscreen"
           whileInView="onscreen"
           viewport={{ once: true, amount: 0.2 }}
@@ -214,9 +214,9 @@ export default function ProgramsSection() {
                 <div className="pt-4 border-t border-gray-100 group-hover:border-yellow-200 transition-colors">
                   <a
                     href="#contact"
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-gray-800 to-gray-900 text-white font-semibold rounded-xl hover:from-yellow-500 hover:to-orange-600 transition-all transform group-hover:scale-105 shadow-lg hover:shadow-xl"
+                    className="btn-primary w-full justify-center gap-2"
                   >
-                    <span>Learn More</span>
+                    <span>Learn more</span>
                     <svg
                       className="w-4 h-4 transform group-hover:translate-x-1 transition-transform"
                       fill="none"
@@ -246,10 +246,7 @@ export default function ProgramsSection() {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <div className="inline-flex flex-col sm:flex-row items-center gap-4">
-            <a
-              href="#contact"
-              className="px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold text-lg rounded-xl hover:from-yellow-600 hover:to-orange-700 transition-all transform hover:scale-105 shadow-xl hover:shadow-2xl"
-            >
+            <a href="#contact" className="btn-primary w-full sm:w-auto justify-center">
               Start Your Journey Today
             </a>
             <span className="text-gray-300 text-sm">
