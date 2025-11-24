@@ -7,7 +7,7 @@ export function DesktopNavbar() {
   return (
     <>
       {/* Desktop Navigation - lg and above */}
-      <div className="hidden lg:flex items-center justify-between px-8 py-5 gap-8">
+      <div className="hidden lg:flex items-center justify-between px-6 py-4 gap-6">
         {/* Logo Section */}
         <Link
           to="/"
@@ -33,7 +33,7 @@ export function DesktopNavbar() {
 
         {/* Navigation Links */}
         <nav
-          className="flex items-center gap-2 rounded-full border border-white/40 bg-white/20 px-2 py-1 shadow-inner shadow-white/30 backdrop-blur"
+          className="flex items-center gap-1.5 rounded-full border border-white/35 bg-white/15 px-2 py-0.5 shadow-inner shadow-white/30 backdrop-blur"
           role="menubar"
           aria-label="Primary navigation"
         >
@@ -55,15 +55,15 @@ export function DesktopNavbar() {
         {/* CTA Button */}
         <Link
           to="/admin/login"
-          className="group relative flex items-center gap-3 rounded-full border border-white/50 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 px-6 py-3 text-white font-semibold shadow-[0_15px_35px_rgba(249,115,22,0.45)] transition-all duration-300 hover:shadow-[0_20px_45px_rgba(249,115,22,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+          className="group relative flex items-center gap-2.5 rounded-full border border-white/40 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 px-5 py-2.5 text-white font-semibold shadow-[0_12px_30px_rgba(249,115,22,0.45)] transition-all duration-300 hover:shadow-[0_16px_38px_rgba(249,115,22,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
           aria-label="Access admin panel"
         >
           <span className="text-sm">Admin</span>
-          <div className="relative h-10 w-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center">
+          <div className="relative h-9 w-9 rounded-full bg-white/25 backdrop-blur flex items-center justify-center">
             <img
               src="/assets/img/logo.webp"
               alt="GSAI Admin"
-              className="h-6 w-auto object-contain"
+              className="h-5 w-auto object-contain"
               loading="lazy"
               decoding="async"
             />
