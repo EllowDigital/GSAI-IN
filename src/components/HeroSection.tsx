@@ -74,10 +74,6 @@ export default function App() {
   const imageTimerRef = useRef<NodeJS.Timeout | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const isVideoActive = mediaMode === 'video';
-  const muteButtonSafeArea: CSSProperties = {
-    top: 'calc(max(0.75rem, env(safe-area-inset-top, 0px)) + clamp(0rem, 1vw, 0.75rem))',
-    right: 'calc(max(0.75rem, env(safe-area-inset-right, 0px)) + clamp(0rem, 1vw, 1.5rem))',
-  };
 
   // Preload hero images once to prevent flashes during the slideshow
   useEffect(() => {
@@ -223,12 +219,11 @@ export default function App() {
           {isVideoActive && (
             <motion.button
               onClick={toggleMute}
-              className="pointer-events-auto absolute z-30 p-2.5 rounded-full border border-white/40 bg-slate-950/40 text-white hover:bg-slate-900/60 transition-colors"
+              className="pointer-events-auto absolute z-30 p-2.5 rounded-full border border-white/40 bg-slate-950/40 text-white hover:bg-slate-900/60 transition-colors top-28 right-4 md:top-8 md:right-8"
               aria-label={isMuted ? 'Unmute video' : 'Mute video'}
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.6, duration: 0.4 }}
-              style={muteButtonSafeArea}
             >
               {isMuted ? (
                 <VolumeX className="w-5 h-5" />
