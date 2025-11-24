@@ -16,16 +16,16 @@ const privacySections = [
         <p>We may collect the following types of information:</p>
         <ul className="list-disc pl-4 mt-2 space-y-1 text-gray-300">
           <li>
-            <strong className="text-white">Personal Data:</strong> Name, email address, phone number
-            (submitted voluntarily).
+            <strong className="text-white">Personal Data:</strong> Name, email
+            address, phone number (submitted voluntarily).
           </li>
           <li>
-            <strong className="text-white">Usage Data:</strong> IP address, browser type, device info,
-            pages visited.
+            <strong className="text-white">Usage Data:</strong> IP address,
+            browser type, device info, pages visited.
           </li>
           <li>
-            <strong className="text-white">Cookies:</strong> Small files stored in your browser to
-            enhance your experience.
+            <strong className="text-white">Cookies:</strong> Small files stored
+            in your browser to enhance your experience.
           </li>
         </ul>
       </>
@@ -52,12 +52,12 @@ const privacySections = [
         <p>We may share your data with:</p>
         <ul className="list-disc pl-4 mt-2 space-y-1 text-gray-300">
           <li>
-            <strong className="text-white">Service Providers:</strong> To facilitate services and
-            enhance user experience.
+            <strong className="text-white">Service Providers:</strong> To
+            facilitate services and enhance user experience.
           </li>
           <li>
-            <strong className="text-white">Legal Obligations:</strong> When required by law or to
-            protect our legal rights.
+            <strong className="text-white">Legal Obligations:</strong> When
+            required by law or to protect our legal rights.
           </li>
         </ul>
       </>
@@ -142,7 +142,7 @@ const PrivacyPage: React.FC = () => (
         </Button>
       </motion.div>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-8 md:p-12 shadow-2xl"
@@ -151,25 +151,21 @@ const PrivacyPage: React.FC = () => (
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-yellow-500 to-red-600 bg-clip-text text-transparent mb-4">
             Privacy Policy
           </h1>
-          <p className="text-gray-400">
-            Last updated: 12 February 2025
-          </p>
+          <p className="text-gray-400">Last updated: 12 February 2025</p>
         </header>
-        
+
         <div className="space-y-8">
           {privacySections.map((s) => (
             <section key={s.title} className="group">
               <h2 className="text-xl md:text-2xl font-semibold text-yellow-500 mb-4 group-hover:text-yellow-400 transition-colors">
                 {s.title}
               </h2>
-              <div className="text-gray-300 leading-relaxed">
-                {s.content}
-              </div>
+              <div className="text-gray-300 leading-relaxed">{s.content}</div>
             </section>
           ))}
         </div>
       </motion.div>
-      
+
       <div className="mt-12 text-center text-gray-500 text-sm">
         &copy; 2025 Ghatak Sports Academy India. All rights reserved.
       </div>

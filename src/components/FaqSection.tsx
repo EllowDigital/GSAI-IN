@@ -148,7 +148,11 @@ export default function FaqSection() {
           viewport={{ once: true, amount: 0.2 }}
           variants={containerVariants}
         >
-          <Accordion type="single" collapsible className="space-y-4 sm:space-y-6">
+          <Accordion
+            type="single"
+            collapsible
+            className="space-y-4 sm:space-y-6"
+          >
             {faqs.map((item, idx) => (
               <motion.div
                 key={`${item.category}-${idx}`}
@@ -205,21 +209,24 @@ export default function FaqSection() {
           <div className="bg-gradient-to-br from-yellow-900/20 via-black to-red-900/20 rounded-3xl p-8 md:p-12 border border-white/10 shadow-xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl -mr-16 -mt-16" />
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-red-600/10 rounded-full blur-2xl -ml-16 -mb-16" />
-            
+
             <div className="relative z-10">
               <div className="flex items-center justify-center gap-3 mb-6">
                 <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 animate-pulse" />
                 <h3 className="text-2xl md:text-3xl font-bold text-white">
                   Still Have Questions?
                 </h3>
-                <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-red-500 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                <Sparkles
+                  className="w-6 h-6 sm:w-8 sm:h-8 text-red-500 animate-pulse"
+                  style={{ animationDelay: '0.5s' }}
+                />
               </div>
-              
+
               <p className="text-gray-400 text-base sm:text-lg mb-8 max-w-2xl mx-auto">
                 Can't find what you're looking for? Our friendly team is here to
                 help you get started on your martial arts journey.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <a
                   href="#contact"

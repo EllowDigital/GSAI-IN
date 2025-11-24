@@ -71,7 +71,7 @@ interface AppSidebarProps {
 export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
   const { signOut } = useAdminAuth();
   const navigate = useNavigate();
-  const APP_VERSION = '4.1.0'; // Increment this version whenever the entire project code is updated
+  const APP_VERSION = '5.0.0'; // Increment this version whenever the entire project code is updated
 
   const NavSection = ({
     title,

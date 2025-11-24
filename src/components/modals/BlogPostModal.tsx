@@ -65,9 +65,7 @@ export function BlogPostModal({
 
       <div className="space-y-4">
         <div>
-          <h2 className="text-2xl font-bold text-white mb-2">
-            {post.title}
-          </h2>
+          <h2 className="text-2xl font-bold text-white mb-2">{post.title}</h2>
           {post.published_at && (
             <p className="text-sm text-gray-400">
               Published on {formatDate(post.published_at)}
@@ -77,9 +75,7 @@ export function BlogPostModal({
 
         {post.description && (
           <div className="p-4 bg-white/5 rounded-lg border-l-4 border-yellow-500">
-            <p className="text-gray-300 font-medium">
-              {post.description}
-            </p>
+            <p className="text-gray-300 font-medium">{post.description}</p>
           </div>
         )}
 

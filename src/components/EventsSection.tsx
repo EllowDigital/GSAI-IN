@@ -252,7 +252,9 @@ export default function EventsSection() {
                       <div className="flex items-center justify-between text-xs sm:text-sm border-t border-white/10 pt-4 text-gray-500 group-hover:text-yellow-500/80 transition-colors mt-auto">
                         <div className="flex items-center font-medium">
                           <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
-                          <span className="truncate max-w-[120px] sm:max-w-none">Ghatak Sports Academy</span>
+                          <span className="truncate max-w-[120px] sm:max-w-none">
+                            Ghatak Sports Academy
+                          </span>
                         </div>
                         <button
                           onClick={() => handleReadMore(event)}
@@ -302,5 +304,4 @@ export default function EventsSection() {
       />
     </section>
   );
-};
-
+}

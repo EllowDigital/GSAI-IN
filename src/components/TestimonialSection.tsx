@@ -198,8 +198,12 @@ export default function TestimonialSection() {
               transition={{ duration: 0.2 }}
             >
               <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 mx-auto mb-2" />
-              <div className="text-xl sm:text-2xl font-bold text-white mb-1">{value}</div>
-              <div className="text-xs sm:text-sm text-gray-400 font-medium">{label}</div>
+              <div className="text-xl sm:text-2xl font-bold text-white mb-1">
+                {value}
+              </div>
+              <div className="text-xs sm:text-sm text-gray-400 font-medium">
+                {label}
+              </div>
             </motion.div>
           ))}
         </motion.div>

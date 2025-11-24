@@ -201,7 +201,7 @@ export default function LocationSection() {
               referrerPolicy="no-referrer-when-downgrade"
               className="absolute inset-0 w-full h-full grayscale-[20%] group-hover:grayscale-0 transition-all duration-500"
             />
-            
+
             {/* Overlay for better interaction hint */}
             <div className="absolute inset-0 bg-black/5 pointer-events-none group-hover:bg-transparent transition-colors duration-300" />
           </div>

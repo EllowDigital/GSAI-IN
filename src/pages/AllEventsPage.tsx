@@ -285,7 +285,9 @@ const AllEventsPage: React.FC = () => {
                         <div className="flex items-center justify-between pt-4 border-t border-white/10">
                           <div className="flex items-center text-gray-400 text-sm">
                             <MapPin className="w-4 h-4 mr-2 text-gray-500" />
-                            <span className="truncate max-w-[140px]">Ghatak Sports Academy</span>
+                            <span className="truncate max-w-[140px]">
+                              Ghatak Sports Academy
+                            </span>
                           </div>
                           <button
                             onClick={() => handleReadMore(event)}
