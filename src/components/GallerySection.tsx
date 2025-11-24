@@ -12,7 +12,6 @@ import {
 import { Link } from 'react-router-dom';
 import { useGalleryQuery } from '@/hooks/useEnhancedQuery';
 import { formatErrorForDisplay } from '@/utils/errorHandling';
-import { Button } from '@/components/ui/button';
 
 type GalleryImage = {
   id: string;
@@ -91,13 +90,13 @@ export default function GallerySection() {
   return (
     <section
       id="gallery"
-      className="py-20 md:py-32 px-4 md:px-6 lg:px-8 bg-gradient-to-br from-background via-background to-muted/30 relative overflow-hidden"
+      className="section-shell bg-gradient-to-br from-background via-background to-muted/30 relative overflow-hidden"
     >
       {/* Background blobs */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full blur-3xl" />
       <div className="absolute bottom-20 right-16 w-96 h-96 bg-gradient-to-br from-accent/10 to-primary/10 rounded-full blur-3xl" />
 
-      <div className="max-w-7xl mx-auto relative">
+      <div className="section-stack relative">
         {/* Header */}
         <motion.div
           className="text-center mb-20"
@@ -231,16 +230,10 @@ export default function GallerySection() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8 }}
               >
-                <Button
-                  asChild
-                  size="lg"
-                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                >
-                  <Link to="/gallery">
-                    View All Gallery
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Link>
-                </Button>
+                <Link to="/gallery" className="btn-primary gap-2">
+                  View All Gallery
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
               </motion.div>
             )}
           </>

@@ -7,7 +7,7 @@ export function DesktopNavbar() {
   return (
     <>
       {/* Desktop Navigation - lg and above */}
-      <div className="hidden lg:flex items-center justify-between px-6 py-4 gap-6">
+      <div className="hidden lg:flex items-center justify-between px-6 py-3 gap-8 min-h-[72px]">
         {/* Logo Section */}
         <Link
           to="/"
@@ -17,15 +17,15 @@ export function DesktopNavbar() {
           <img
             src="/assets/img/logo.webp"
             alt="Ghatak Sports Academy India"
-            className="h-12 w-auto max-w-[160px] object-contain drop-shadow-[0_10px_18px_rgba(0,0,0,0.18)] transition-transform duration-300 group-hover:scale-105"
+            className="h-12 w-auto max-w-[160px] object-contain transition-transform duration-300 group-hover:scale-105"
             loading="lazy"
             decoding="async"
           />
           <div className="flex flex-col">
-            <span className="text-lg font-bold text-gray-900 tracking-tight group-hover:text-primary transition-colors duration-300">
+            <span className="text-lg font-bold text-slate-900 tracking-tight group-hover:text-primary transition-colors duration-300">
               GSAI
             </span>
-            <span className="text-sm font-medium text-gray-600 leading-none">
+            <span className="text-sm font-medium text-slate-500 leading-none">
               Ghatak Sports Academy India
             </span>
           </div>
@@ -33,7 +33,7 @@ export function DesktopNavbar() {
 
         {/* Navigation Links */}
         <nav
-          className="flex items-center gap-1.5 rounded-full border border-white/35 bg-white/15 px-2 py-0.5 shadow-inner shadow-white/30 backdrop-blur"
+          className="flex items-center gap-1 rounded-full border border-black/5 bg-white px-2 py-1 shadow-sm"
           role="menubar"
           aria-label="Primary navigation"
         >
@@ -42,12 +42,12 @@ export function DesktopNavbar() {
               key={link.name}
               href={link.href}
               name={link.name}
-              className="relative inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-foreground/80 rounded-full transition-all duration-300 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+              className="group relative inline-flex items-center justify-center px-4 py-1.5 text-sm font-semibold text-slate-600 rounded-full transition-colors duration-200 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/30"
               role="menuitem"
               tabIndex={0}
             >
               <span className="relative z-10">{link.name}</span>
-              <span className="absolute inset-0 rounded-full bg-white/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></span>
+              <span className="absolute inset-0 rounded-full bg-orange-100/70 opacity-0 transition-opacity duration-200 group-hover:opacity-100"></span>
             </NavLinkItem>
           ))}
         </nav>
@@ -55,11 +55,11 @@ export function DesktopNavbar() {
         {/* CTA Button */}
         <Link
           to="/admin/login"
-          className="group relative flex items-center gap-2.5 rounded-full border border-white/40 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 px-5 py-2.5 text-white font-semibold shadow-[0_12px_30px_rgba(249,115,22,0.45)] transition-all duration-300 hover:shadow-[0_16px_38px_rgba(249,115,22,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+          className="btn-primary gap-2.5"
           aria-label="Access admin panel"
         >
-          <span className="text-sm">Admin</span>
-          <div className="relative h-9 w-9 rounded-full bg-white/25 backdrop-blur flex items-center justify-center">
+          <span className="text-sm font-semibold">Admin</span>
+          <div className="relative h-9 w-9 rounded-full bg-white/25 flex items-center justify-center">
             <img
               src="/assets/img/logo.webp"
               alt="GSAI Admin"

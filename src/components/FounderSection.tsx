@@ -42,7 +42,7 @@ export default function FounderSection() {
   return (
     <section
       id="founder"
-      className="relative px-4 md:px-6 lg:px-8 py-20 md:py-32 bg-gradient-to-br from-white via-gray-50/30 to-yellow-50/20 overflow-hidden"
+      className="section-shell relative bg-gradient-to-br from-white via-gray-50/30 to-yellow-50/20 overflow-hidden"
       aria-labelledby="founder-heading"
     >
       {/* Modern Background Elements */}
@@ -60,7 +60,7 @@ export default function FounderSection() {
         <Medal className="w-8 h-8 sm:w-10 sm:h-10 text-orange-500" />
       </div>
 
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="section-stack relative z-10">
         {/* Header Section */}
         <motion.div
           className="text-center mb-20"

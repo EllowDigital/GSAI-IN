@@ -135,7 +135,7 @@ export default function TestimonialSection() {
   return (
     <section
       id="testimonials"
-      className="relative py-20 md:py-28 px-4 md:px-6 bg-gradient-to-br from-slate-50 via-white to-yellow-50/40 overflow-hidden"
+      className="section-shell relative bg-gradient-to-br from-slate-50 via-white to-yellow-50/40 overflow-hidden"
       aria-labelledby="testimonial-heading"
     >
       {/* Decorative Background */}
@@ -144,7 +144,7 @@ export default function TestimonialSection() {
         <div className="absolute bottom-24 right-12 w-80 h-80 bg-gradient-to-r from-red-200/30 to-yellow-200/30 rounded-full blur-3xl" />
       </div>
 
-      <div className="max-w-7xl mx-auto">
+      <div className="section-stack">
         {/* Header */}
         <motion.div
           className="text-center mb-16"
@@ -313,23 +313,19 @@ export default function TestimonialSection() {
               development.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <a href="/#contact">
-                <button className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-red-500 text-white rounded-xl font-semibold shadow-lg hover:scale-105 transition">
-                  <span className="flex items-center gap-2">
-                    Join Our Community <Award className="w-5 h-5" />
-                  </span>
-                </button>
+              <a
+                href="/#contact"
+                className="btn-primary w-full sm:w-auto justify-center gap-2"
+              >
+                Join Our Community <Award className="w-5 h-5" />
               </a>
               <a
                 href="https://www.instagram.com/ghatakgsai/"
                 target="_blank"
                 rel="noopener noreferrer"
+                className="btn-secondary w-full sm:w-auto justify-center gap-2"
               >
-                <button className="px-6 py-3 bg-white text-gray-700 rounded-xl font-semibold border border-yellow-200 shadow hover:scale-105 transition">
-                  <span className="flex items-center gap-2">
-                    Read More Stories <Quote className="w-5 h-5" />
-                  </span>
-                </button>
+                Read More Stories <Quote className="w-5 h-5" />
               </a>
             </div>
           </div>

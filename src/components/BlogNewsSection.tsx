@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { BookOpenText, Calendar, ArrowRight, Clock, User } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
 import { BlogPostModal } from '@/components/modals/BlogPostModal';
-import { Button } from '@/components/ui/button';
 
 function formatDate(dt: string) {
   return new Date(dt).toLocaleDateString(undefined, {
@@ -118,14 +117,14 @@ export default function BlogNewsSection() {
   return (
     <section
       id="blog"
-      className="relative py-16 md:py-24 px-4 md:px-6 bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden"
+      className="section-shell relative bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden"
     >
       <div className="absolute inset-0 opacity-30">
         <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-yellow-200/40 to-orange-200/40 rounded-full blur-3xl" />
         <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-amber-200/30 to-orange-300/30 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto">
+      <div className="section-stack relative z-10">
         <motion.div
           className="text-center mb-16"
           initial="hidden"
@@ -291,7 +290,7 @@ export default function BlogNewsSection() {
           >
             <button
               onClick={() => navigate('/blogs')}
-              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              className="btn-primary gap-3"
             >
               <span>View All Articles</span>
               <ArrowRight className="w-5 h-5" />
