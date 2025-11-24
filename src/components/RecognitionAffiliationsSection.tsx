@@ -110,7 +110,7 @@ export default function RecognitionAffiliationsSection() {
   return (
     <section
       id="recognitions"
-      className="relative py-16 md:py-24 px-4 md:px-6 bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden"
+      className="section-shell relative bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden"
       aria-labelledby="recognitions-heading"
     >
       {/* Background Elements */}
@@ -119,7 +119,7 @@ export default function RecognitionAffiliationsSection() {
         <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-red-200/30 to-yellow-200/30 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto">
+      <div className="section-stack relative z-10 max-w-6xl">
         {/* Section Header */}
         <motion.div
           className="text-center mb-16"
@@ -261,12 +261,12 @@ export default function RecognitionAffiliationsSection() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold rounded-xl shadow-lg">
+              <div className="btn-primary pointer-events-none gap-2">
                 <Trophy className="w-4 h-4" />
                 <span>Excellence Recognized</span>
               </div>
 
-              <div className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-700 font-semibold rounded-xl shadow-lg border border-gray-200">
+              <div className="btn-secondary pointer-events-none gap-2">
                 <Shield className="w-4 h-4" />
                 <span>Quality Assured</span>
               </div>

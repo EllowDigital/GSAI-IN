@@ -118,7 +118,7 @@ export default function AchievementSection() {
   return (
     <section
       id="achievements"
-      className="relative py-20 lg:py-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 overflow-hidden"
+      className="section-shell relative bg-gradient-to-br from-slate-50 via-white to-blue-50/30 overflow-hidden"
       aria-labelledby="achievements-heading"
     >
       {/* Background decorative elements */}
@@ -139,7 +139,7 @@ export default function AchievementSection() {
         <Trophy className="w-10 h-10 text-amber-500" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto">
+      <div className="section-stack relative z-10">
         {/* Section Header */}
         <motion.div
           className="text-center mb-16 lg:mb-20"
@@ -312,10 +312,7 @@ export default function AchievementSection() {
           transition={{ duration: 0.6, delay: 0.6 }}
         >
           <div className="inline-flex flex-col sm:flex-row items-center gap-4">
-            <a
-              href="#contact"
-              className="px-8 py-4 bg-gradient-to-r from-yellow-500 to-amber-600 text-white font-bold text-lg rounded-xl hover:from-yellow-600 hover:to-amber-700 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
-            >
+            <a href="#contact" className="btn-primary w-full sm:w-auto justify-center">
               Join Our Champions
             </a>
             <span className="text-gray-600 text-sm">

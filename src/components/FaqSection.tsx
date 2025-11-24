@@ -85,7 +85,7 @@ export default function FaqSection() {
   return (
     <section
       id="faq"
-      className="relative py-16 md:py-24 px-4 md:px-6 bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden"
+      className="section-shell relative bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden"
       aria-labelledby="faq-heading"
     >
       {/* Background Elements */}
@@ -94,7 +94,7 @@ export default function FaqSection() {
         <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-red-200/30 to-yellow-200/30 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto">
+      <div className="section-stack relative z-10 max-w-6xl">
         {/* Section Header */}
         <motion.div
           className="text-center mb-16"

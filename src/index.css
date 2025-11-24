@@ -40,6 +40,15 @@
 
     --radius: 0.75rem;
 
+    --brand-orange: 18 93% 55%;
+    --brand-yellow: 42 96% 55%;
+    --brand-slate: 222 47% 11%;
+    --brand-slate-soft: 215 22% 17%;
+
+    --section-padding-y: clamp(4rem, 7vw, 6.5rem);
+    --section-padding-x: clamp(1.5rem, 5vw, 4rem);
+    --nav-height: 4.5rem;
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -109,6 +118,12 @@
     font-variant-numeric: oldstyle-nums;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    color-scheme: light;
+    min-height: 100vh;
+  }
+
+  main {
+    min-height: calc(100vh - var(--nav-height));
   }
 
   /* Performance Optimizations */
@@ -135,6 +150,10 @@
 
   .text-gradient {
     @apply text-transparent bg-clip-text bg-gradient-to-r;
+  }
+
+  .text-balance {
+    text-wrap: balance;
   }
 
   .shadow-soft {
@@ -201,11 +220,47 @@
 
   /* Modern Button Styles */
   .btn-primary {
-    @apply inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+    @apply inline-flex items-center rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-base font-semibold text-white shadow-[0_12px_30px_rgba(249,115,22,0.35)] transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-orange-400;
+    min-height: 3.25rem;
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 18px 38px rgba(249, 115, 22, 0.45);
+    transform: translateY(-1px);
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center px-6 py-3 bg-white/80 backdrop-blur-sm text-gray-900 font-semibold rounded-xl shadow-lg hover:shadow-xl border border-gray-200/50 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+    @apply inline-flex items-center rounded-full border border-slate-200 bg-white/90 px-6 py-3 text-base font-semibold text-slate-800 shadow-sm transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-300;
+    min-height: 3.25rem;
+  }
+
+  .btn-secondary:hover {
+    @apply bg-white text-slate-900 shadow-md;
+  }
+
+  .btn-tertiary {
+    @apply inline-flex items-center rounded-full px-5 py-2 text-sm font-semibold text-slate-600 transition-colors duration-200 hover:text-slate-900;
+  }
+
+  .section-shell {
+    padding-block: var(--section-padding-y);
+    padding-inline: var(--section-padding-x);
+  }
+
+  .section-stack {
+    @apply mx-auto w-full max-w-7xl;
+  }
+
+  .card-surface {
+    @apply rounded-2xl border border-slate-100 bg-white shadow-[0_6px_24px_rgba(15,23,42,0.06)];
+  }
+
+  .media-frame {
+    @apply overflow-hidden rounded-3xl border border-black/5 shadow-[0_20px_40px_rgba(15,23,42,0.25)];
+  }
+
+  .grid-responsive {
+    @apply grid gap-6 sm:grid-cols-2 lg:grid-cols-3;
   }
 }
 

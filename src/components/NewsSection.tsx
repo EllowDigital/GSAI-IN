@@ -98,7 +98,7 @@ export default function NewsSection() {
   return (
     <section
       id="news"
-      className="relative py-20 lg:py-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden"
+      className="section-shell relative bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden"
     >
       {/* Decorative Blurs */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
@@ -106,7 +106,7 @@ export default function NewsSection() {
         <div className="absolute bottom-20 right-10 w-80 h-80 bg-amber-200/30 to-orange-300/30 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto">
+      <div className="section-stack relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -272,7 +272,7 @@ export default function NewsSection() {
           >
             <button
               onClick={() => navigate('/news')}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-full font-semibold hover:from-yellow-600 hover:to-orange-700 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="btn-primary gap-2"
             >
               <span>View All News</span>
               <ArrowRight className="w-4 h-4" />

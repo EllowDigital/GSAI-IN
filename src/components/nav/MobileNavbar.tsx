@@ -37,7 +37,7 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
   return (
     <div className="lg:hidden">
       {/* Mobile Header with glass background */}
-      <div className="flex items-center justify-between px-4 py-3 border border-white/30 bg-white/20 backdrop-blur-xl rounded-2xl shadow-[0_10px_30px_rgba(15,23,42,0.18)]">
+      <div className="flex items-center justify-between px-4 py-3 rounded-xl border border-black/5 bg-white shadow-sm">
         {/* Logo & Brand */}
         <Link
           to="/"
@@ -48,15 +48,15 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
           <img
             src="/assets/img/logo.webp"
             alt="Ghatak Sports Academy India Logo"
-            className="h-10 w-auto max-w-[140px] object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.15)] transition-transform duration-300 group-hover:scale-105"
+            className="h-10 w-auto max-w-[140px] object-contain transition-transform duration-300 group-hover:scale-105"
             loading="lazy"
             decoding="async"
           />
           <div className="flex flex-col">
-            <span className="text-base font-bold text-gray-900 tracking-tight group-hover:text-red-600 transition-colors duration-300">
+            <span className="text-base font-bold text-slate-900 tracking-tight group-hover:text-primary transition-colors duration-300">
               GSAI
             </span>
-            <span className="text-xs font-medium text-gray-600 leading-none">
+            <span className="text-xs font-medium text-slate-500 leading-none">
               Ghatak Sports Academy India
             </span>
           </div>
@@ -65,10 +65,10 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
         {/* Menu Toggle Button */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className={`relative p-3 rounded-full border transition-all duration-300 transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
+          className={`relative p-3 rounded-full border transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/30 ${
             mobileOpen
-              ? 'bg-gradient-to-r from-yellow-400 to-red-500 text-white border-white/40 shadow-lg scale-105'
-              : 'bg-white/30 text-foreground/80 border-white/40 hover:bg-white/50 hover:shadow-lg'
+              ? 'bg-gradient-to-r from-orange-500 to-yellow-400 text-white border-transparent shadow-lg'
+              : 'bg-slate-50 text-slate-700 border-black/5 hover:bg-white hover:shadow-md'
           }`}
           aria-label={mobileOpen ? 'Close mobile menu' : 'Open mobile menu'}
           aria-expanded={mobileOpen}
@@ -87,39 +87,39 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
         mobileOpen &&
         createPortal(
           <div
-            className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-2xl"
+            className="fixed inset-0 z-[100] bg-slate-950/70"
             id="mobile-menu"
             role="dialog"
             aria-modal="true"
             aria-labelledby="mobile-menu-title"
           >
             <div className="h-full overflow-y-auto px-4 py-6">
-              <div className="mx-auto max-w-md rounded-[32px] border border-white/25 bg-white/15 backdrop-blur-2xl shadow-[0_25px_80px_rgba(15,23,42,0.4)]">
+              <div className="mx-auto max-w-md rounded-3xl border border-black/5 bg-white shadow-[0_25px_80px_rgba(15,23,42,0.2)]">
                 {/* Menu Header */}
-                <div className="flex items-center justify-between px-6 py-5 border-b border-white/20">
+                <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
                   <div className="flex items-center space-x-3">
                     <img
                       src="/assets/img/logo.webp"
                       alt="Ghatak Sports Academy India Logo"
-                      className="h-12 w-auto max-w-[160px] object-contain drop-shadow-[0_12px_18px_rgba(0,0,0,0.18)]"
+                      className="h-12 w-auto max-w-[160px] object-contain"
                       loading="lazy"
                       decoding="async"
                     />
                     <div>
                       <h2
                         id="mobile-menu-title"
-                        className="text-lg font-bold text-white tracking-tight"
+                        className="text-lg font-bold text-slate-900 tracking-tight"
                       >
                         GSAI
                       </h2>
-                      <p className="text-sm text-white/80 font-medium">
+                      <p className="text-sm text-slate-500 font-medium">
                         Ghatak Sports Academy India
                       </p>
                     </div>
                   </div>
                   <button
                     onClick={() => setMobileOpen(false)}
-                    className="p-2 rounded-full border border-white/30 text-white hover:bg-white/20 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                    className="p-2 rounded-full border border-black/5 text-slate-500 hover:bg-slate-50 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                     aria-label="Close menu"
                   >
                     <X size={18} />
@@ -140,18 +140,18 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                         name={link.name}
                         href={link.href}
                         onClick={() => setMobileOpen(false)}
-                        className="flex items-center space-x-4 w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-4 text-white/90 transition-all duration-300 hover:bg-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                          className="flex items-center space-x-4 w-full rounded-2xl border border-slate-100 bg-slate-50/80 px-4 py-4 text-slate-700 transition-all duration-200 hover:bg-white hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                         tabIndex={0}
                         role="menuitem"
                       >
-                        <div className="p-2 rounded-xl bg-white/10 text-white">
+                          <div className="p-2 rounded-xl bg-primary/10 text-primary">
                           <IconComponent className="w-5 h-5" />
                         </div>
                         <div className="flex flex-col">
                           <span className="text-base font-semibold">{link.name}</span>
-                          <span className="text-xs text-white/70">Tap to explore</span>
+                            <span className="text-xs text-slate-500">Tap to explore</span>
                         </div>
-                        <span className="ml-auto h-9 w-9 rounded-full border border-white/20 bg-white/10 text-white flex items-center justify-center text-xs">
+                          <span className="ml-auto h-9 w-9 rounded-full border border-slate-200 bg-white text-slate-500 flex items-center justify-center text-xs">
                           ↗
                         </span>
                       </NavLinkItem>
@@ -162,7 +162,7 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                   <Link
                     to="/admin/login"
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center justify-center gap-3 w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white font-semibold shadow-[0_15px_40px_rgba(249,115,22,0.45)] transition-all duration-300 hover:shadow-[0_18px_50px_rgba(249,115,22,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                    className="btn-primary w-full justify-center gap-3"
                     role="menuitem"
                   >
                     <LogIn className="w-5 h-5" />
@@ -170,19 +170,19 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                   </Link>
 
                   {/* Contact Info */}
-                  <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-4 text-white/80">
-                    <h4 className="font-semibold text-white mb-2">Contact Us</h4>
+                  <div className="mt-6 rounded-2xl border border-slate-100 bg-slate-50 p-4 text-slate-600">
+                    <h4 className="font-semibold text-slate-900 mb-2">Contact Us</h4>
                     <div className="space-y-2 text-sm">
                       <a
                         href="tel:+916394135988"
-                        className="flex items-center gap-2 hover:text-white transition-colors"
+                        className="flex items-center gap-2 hover:text-slate-900 transition-colors"
                         aria-label="Call us at +91 63941 35988"
                       >
                         📞 +91 63941 35988
                       </a>
                       <a
                         href="mailto:ghatakgsai@gmail.com"
-                        className="flex items-center gap-2 hover:text-white transition-colors"
+                        className="flex items-center gap-2 hover:text-slate-900 transition-colors"
                         aria-label="Email us at ghatakgsai@gmail.com"
                       >
                         📧 ghatakgsai@gmail.com

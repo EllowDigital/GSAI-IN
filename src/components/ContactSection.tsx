@@ -116,7 +116,7 @@ export default function ContactSection() {
   return (
     <section
       id="contact"
-      className="relative py-16 md:py-24 px-4 md:px-6 bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden"
+      className="section-shell relative bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden"
       aria-labelledby="contact-heading"
     >
       {/* Background Effects */}
@@ -125,7 +125,7 @@ export default function ContactSection() {
         <div className="absolute bottom-20 left-10 w-80 h-80 bg-gradient-to-r from-red-200/30 to-yellow-200/30 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto">
+      <div className="section-stack relative z-10">
         {/* Header */}
         <motion.div
           className="text-center mb-16"
@@ -347,12 +347,10 @@ export default function ContactSection() {
 
               <button
                 type="submit"
-                className="w-full px-8 py-4 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-2xl transition-transform hover:scale-105"
+                className="btn-primary w-full justify-center gap-3"
               >
-                <span className="flex items-center justify-center gap-3">
-                  <Send className="w-5 h-5" />
-                  Send Message
-                </span>
+                <Send className="w-5 h-5" />
+                Send Message
               </button>
             </form>
           </motion.div>
@@ -381,14 +379,14 @@ export default function ContactSection() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <a
                   href="tel:+916394135988"
-                  className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  className="btn-primary w-full sm:w-auto justify-center gap-3"
                 >
                   <Phone className="w-5 h-5" />
                   <span>Call Now</span>
                 </a>
                 <a
                   href="#programs"
-                  className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-white/80 backdrop-blur-sm text-gray-700 font-semibold rounded-xl shadow-lg hover:shadow-xl border border-yellow-200/50 transition-all duration-300 transform hover:scale-105"
+                  className="btn-secondary w-full sm:w-auto justify-center gap-3"
                 >
                   <span>View Programs</span>
                 </a>

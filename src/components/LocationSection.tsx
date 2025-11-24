@@ -53,7 +53,7 @@ export default function LocationSection() {
   return (
     <section
       id="location"
-      className="relative py-16 md:py-24 px-4 md:px-6 bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden"
+      className="section-shell relative bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden"
       aria-labelledby="location-heading"
     >
       {/* Background Elements */}
@@ -62,7 +62,7 @@ export default function LocationSection() {
         <div className="absolute bottom-20 left-10 w-80 h-80 bg-gradient-to-r from-red-200/30 to-yellow-200/30 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto">
+      <div className="section-stack relative z-10 max-w-6xl">
         {/* Section Header */}
         <motion.div
           className="text-center mb-16"
@@ -161,7 +161,7 @@ export default function LocationSection() {
                     }
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                    className="btn-primary w-full justify-center gap-2"
                   >
                     <Navigation className="w-4 h-4" />
                     <span>Get Directions</span>
@@ -205,13 +205,13 @@ export default function LocationSection() {
                 const target = e.target as HTMLElement;
                 if (target.parentElement) {
                   target.parentElement.innerHTML = `
-                    <div class="flex items-center justify-center h-full bg-gradient-to-br from-gray-100 to-gray-200 text-gray-600">
+                    <div className="flex items-center justify-center h-full bg-gradient-to-br from-gray-100 to-gray-200 text-gray-600">
                       <div class="text-center p-8">
                         <div class="text-4xl mb-4">📍</div>
                         <h3 class="text-lg font-semibold mb-2">Map Unavailable</h3>
                         <p class="text-sm">Click the button below to view our location on Google Maps</p>
                         <a href="https://maps.app.goo.gl/JQRsU9jEfZZY4TVL8" target="_blank" rel="noopener noreferrer" 
-                           class="inline-flex items-center gap-2 px-4 py-2 mt-4 bg-gradient-to-r from-yellow-500 to-red-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                           class="btn-primary inline-flex items-center gap-2 justify-center mt-4">
                           View on Google Maps
                         </a>
                       </div>
@@ -234,7 +234,7 @@ export default function LocationSection() {
                 href="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3558.2680388177782!2d81.035803!3d26.8949872!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39995928e5d2c639%3A0x89ece9941b196434!2sFITNESS%20%26%20FUN%20ARENA%20(TCC)!5e0!3m2!1sen!2sin!4v1755108716350!5m2!1sen!2sin"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                className="btn-primary w-full sm:w-auto justify-center gap-2"
               >
                 <MapPin className="w-4 h-4" />
                 <span>View on Google Maps</span>
@@ -242,7 +242,7 @@ export default function LocationSection() {
 
               <a
                 href="#contact"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-700 font-semibold rounded-xl shadow-lg hover:shadow-xl border border-gray-200 transition-all duration-300 transform hover:scale-105"
+                className="btn-secondary w-full sm:w-auto justify-center gap-2"
               >
                 <Sparkles className="w-4 h-4" />
                 <span>Contact Us</span>
