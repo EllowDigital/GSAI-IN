@@ -11,6 +11,9 @@ import {
   Newspaper,
   HelpCircle,
   MapPin,
+  Phone,
+  Mail,
+  ChevronRight,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { NavLinkItem } from './NavLinkItem';
@@ -37,26 +40,26 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
   return (
     <div className="xl:hidden w-full">
       {/* Mobile Header - Scaled down version of desktop */}
-      <div className="flex items-center justify-between px-3 sm:px-6 py-2.5 sm:py-3 w-full md:gap-12">
+      <div className="flex items-center justify-between px-4 sm:px-6 py-3 w-full md:gap-12">
         {/* Logo & Brand */}
         <Link
           to="/"
-          className="flex items-center gap-2 sm:gap-3 min-w-0 group"
+          className="flex items-center gap-3 min-w-0 group"
           aria-label="Go to homepage"
           onClick={() => setMobileOpen(false)}
         >
           <img
             src="/assets/img/logo.webp"
             alt="Ghatak Sports Academy India Logo"
-            className="h-9 w-9 sm:h-10 sm:w-10 object-contain transition-transform duration-300 group-hover:scale-105"
+            className="h-9 w-9 sm:h-10 sm:w-10 object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-[0_0_8px_rgba(234,179,8,0.3)]"
             loading="lazy"
             decoding="async"
           />
           <div className="flex flex-col leading-none justify-center">
-            <span className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-primary transition-colors duration-300">
+            <span className="text-sm sm:text-base font-bold text-white group-hover:text-yellow-400 transition-colors duration-300 tracking-tight">
               GSAI
             </span>
-            <span className="text-[10px] sm:text-xs font-medium text-slate-500 mt-0.5">
+            <span className="text-[10px] sm:text-xs font-medium text-gray-400 mt-0.5 group-hover:text-gray-300">
               Ghatak Sports Academy India
             </span>
           </div>
@@ -65,20 +68,16 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
         {/* Menu Toggle Button */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className={`relative flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/30 ${
+          className={`relative flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-yellow-500/50 ${
             mobileOpen
-              ? 'bg-gradient-to-r from-orange-500 to-yellow-400 text-white shadow-md'
-              : 'text-slate-700 hover:bg-slate-100'
+              ? 'bg-gradient-to-r from-yellow-500 to-red-600 text-white shadow-lg shadow-orange-500/30 rotate-90'
+              : 'text-gray-300 hover:bg-white/10 hover:text-white'
           }`}
           aria-label={mobileOpen ? 'Close mobile menu' : 'Open mobile menu'}
           aria-expanded={mobileOpen}
           aria-controls="mobile-menu"
         >
-          <div
-            className={`transition-transform duration-300 ${mobileOpen ? 'rotate-180' : ''}`}
-          >
-            {mobileOpen ? <X size={20} className="sm:w-6 sm:h-6" /> : <Menu size={22} className="sm:w-6 sm:h-6" />}
-          </div>
+          {mobileOpen ? <X size={20} className="sm:w-6 sm:h-6" /> : <Menu size={22} className="sm:w-6 sm:h-6" />}
         </button>
       </div>
 
