@@ -292,7 +292,7 @@ export default function FooterSection() {
               ))}
             </div>
           </div>
-          
+
           {/* Credits */}
           <div className="text-center mt-6 pt-6 border-t border-gray-800/50">
             <div className="inline-flex items-center gap-1.5 text-gray-500 text-xs">

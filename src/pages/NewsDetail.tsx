@@ -111,8 +111,8 @@ export default function NewsDetail() {
           <h1 className="text-3xl font-bold text-white mb-4">
             News article not found
           </h1>
-          <Button 
-            onClick={() => navigate('/')} 
+          <Button
+            onClick={() => navigate('/')}
             variant="outline"
             className="border-white/20 text-white hover:bg-white/10 hover:text-yellow-500"
           >
@@ -143,7 +143,7 @@ export default function NewsDetail() {
         </div>
 
         <div className="container mx-auto px-4 py-20 relative z-10">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -182,13 +182,17 @@ export default function NewsDetail() {
               <div className="flex flex-wrap items-center gap-6 text-gray-400 mb-8 border-b border-white/10 pb-8">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-yellow-500" />
-                  <span className="text-sm font-medium text-white">{formatDate(news.date)}</span>
+                  <span className="text-sm font-medium text-white">
+                    {formatDate(news.date)}
+                  </span>
                 </div>
 
                 {news.created_by && (
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4 text-yellow-500" />
-                    <span className="text-sm font-medium text-white">by {news.created_by}</span>
+                    <span className="text-sm font-medium text-white">
+                      by {news.created_by}
+                    </span>
                   </div>
                 )}
 
@@ -275,16 +279,22 @@ export default function NewsDetail() {
                 </h3>
                 <div className="space-y-3 text-sm text-gray-400 mb-4">
                   <p className="flex flex-col gap-1">
-                    <strong className="text-white">Phone:</strong> 
-                    <span className="hover:text-yellow-500 transition-colors">+91 6394135988</span>
+                    <strong className="text-white">Phone:</strong>
+                    <span className="hover:text-yellow-500 transition-colors">
+                      +91 6394135988
+                    </span>
                   </p>
                   <p className="flex flex-col gap-1">
-                    <strong className="text-white">Email:</strong> 
-                    <span className="hover:text-yellow-500 transition-colors">ghatakgsai@gmail.com</span>
+                    <strong className="text-white">Email:</strong>
+                    <span className="hover:text-yellow-500 transition-colors">
+                      ghatakgsai@gmail.com
+                    </span>
                   </p>
                   <p className="flex flex-col gap-1">
-                    <strong className="text-white">Location:</strong> 
-                    <span>Badshah kheda, Takrohi Rd, Indira Nagar, Lucknow</span>
+                    <strong className="text-white">Location:</strong>
+                    <span>
+                      Badshah kheda, Takrohi Rd, Indira Nagar, Lucknow
+                    </span>
                   </p>
                 </div>
                 <Button
@@ -301,25 +311,25 @@ export default function NewsDetail() {
             {/* Call to Action */}
             <div className="p-8 bg-gradient-to-r from-yellow-500/10 to-red-600/10 rounded-3xl border border-white/10 backdrop-blur-md relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-              
+
               <div className="relative z-10">
                 <h3 className="text-2xl font-bold text-white mb-2">
                   Join Our Martial Arts Community
                 </h3>
                 <p className="text-gray-400 mb-6 max-w-2xl">
-                  Be part of Ghatak Sports Academy India and start your journey in
-                  martial arts with professional guidance.
+                  Be part of Ghatak Sports Academy India and start your journey
+                  in martial arts with professional guidance.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Button 
+                  <Button
                     onClick={() => navigate('/#contact')}
                     className="bg-gradient-to-r from-yellow-500 to-red-600 text-white border-0 hover:from-yellow-600 hover:to-red-700 shadow-lg shadow-orange-500/20"
                     size="lg"
                   >
                     Start Your Journey
                   </Button>
-                  <Button 
-                    onClick={() => navigate('/#about')} 
+                  <Button
+                    onClick={() => navigate('/#about')}
                     variant="outline"
                     className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-yellow-500"
                     size="lg"

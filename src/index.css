@@ -16,11 +16,11 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-     /* Brand primary color (updated for accessible contrast on light backgrounds)
+    /* Brand primary color (updated for accessible contrast on light backgrounds)
        Darker blue provides better contrast when `text-primary` is used on
        light backgrounds while still working for primary backgrounds. */
-     --primary: 222.2 85% 42%;
-     --primary-foreground: 0 0% 100%;
+    --primary: 222.2 85% 42%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 94%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -261,7 +261,6 @@
     }
   }
 
-
   .section-stack {
     @apply mx-auto w-full max-w-7xl;
   }
@@ -309,7 +308,11 @@
     padding: 0.4rem 0.85rem;
     border-radius: 2.25rem;
     border: 1px solid rgba(255, 255, 255, 0.55);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(243, 247, 255, 0.9));
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.98),
+      rgba(243, 247, 255, 0.9)
+    );
     box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14);
     backdrop-filter: blur(18px);
     min-height: var(--nav-height);
@@ -336,12 +339,18 @@
     height: 2.6rem;
     border-radius: 999px;
     border: 1px solid rgba(15, 23, 42, 0.08);
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(236, 241, 255, 0.9));
+    background: linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.95),
+      rgba(236, 241, 255, 0.9)
+    );
     box-shadow: 0 10px 22px rgba(15, 23, 42, 0.15);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
   }
 
   .mobile-nav-trigger:active {

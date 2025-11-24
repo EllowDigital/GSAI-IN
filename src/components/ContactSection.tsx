@@ -221,7 +221,7 @@ export default function ContactSection() {
             variants={formVariants}
           >
             <div className="absolute top-0 right-0 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-            
+
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-red-600 rounded-xl flex items-center justify-center shadow-md shadow-yellow-500/20">
@@ -367,7 +367,7 @@ export default function ContactSection() {
             {/* Trial Class CTA */}
             <div className="bg-gradient-to-br from-yellow-900/20 to-red-900/20 rounded-3xl p-8 border border-white/10 shadow-lg relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform duration-700 group-hover:scale-150" />
-              
+
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-4">
                   <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500" />
@@ -377,8 +377,8 @@ export default function ContactSection() {
                 </div>
                 <p className="text-gray-400 text-base sm:text-lg mb-6 leading-relaxed">
                   Experience our world-class training firsthand. Book your free
-                  trial class today and discover the perfect martial arts program
-                  for you.
+                  trial class today and discover the perfect martial arts
+                  program for you.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <a

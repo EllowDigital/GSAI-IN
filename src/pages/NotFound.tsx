@@ -31,15 +31,16 @@ const NotFound = () => {
           <h1 className="text-[120px] sm:text-[150px] md:text-[200px] font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-500/20 to-red-600/20 leading-none select-none">
             404
           </h1>
-          
+
           <div className="-mt-8 sm:-mt-12 md:-mt-20 relative">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Page Not Found
             </h2>
             <p className="text-gray-400 text-lg mb-8 max-w-md mx-auto">
-              The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+              The page you are looking for might have been removed, had its name
+              changed, or is temporarily unavailable.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/">
                 <Button className="bg-gradient-to-r from-yellow-500 to-red-600 text-white border-0 hover:from-yellow-600 hover:to-red-700 shadow-lg shadow-orange-500/20 h-12 px-8 rounded-full w-full sm:w-auto">
@@ -47,8 +48,8 @@ const NotFound = () => {
                   Back to Home
                 </Button>
               </Link>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => window.history.back()}
                 className="bg-transparent border-white/10 text-white hover:bg-white/5 hover:text-yellow-500 h-12 px-8 rounded-full w-full sm:w-auto"
               >

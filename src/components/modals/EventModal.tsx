@@ -84,11 +84,12 @@ export function EventModal({
       <div className="space-y-4">
         <div>
           <div className="flex items-start justify-between gap-4 mb-3">
-            <h2 className="text-2xl font-bold text-white">
-              {event.title}
-            </h2>
+            <h2 className="text-2xl font-bold text-white">{event.title}</h2>
             {event.tag && (
-              <Badge variant="secondary" className="shrink-0 bg-yellow-500/10 text-yellow-500 border-yellow-500/20">
+              <Badge
+                variant="secondary"
+                className="shrink-0 bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
+              >
                 {event.tag}
               </Badge>
             )}
