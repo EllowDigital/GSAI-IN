@@ -304,4 +304,3 @@ export default function EventsSection() {
   );
 };
 
-export default EventsSection;
