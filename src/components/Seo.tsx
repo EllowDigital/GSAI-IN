@@ -212,8 +212,8 @@ export function Seo({
       <meta name="twitter:creator" content={twitterHandle} />
 
       {/* Performance & Technical Meta Tags */}
-      <meta name="theme-color" content="#eab308" />
-      <meta name="msapplication-TileColor" content="#eab308" />
+      <meta name="theme-color" content="#000000" />
+      <meta name="msapplication-TileColor" content="#000000" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       <meta name="format-detection" content="telephone=no" />
