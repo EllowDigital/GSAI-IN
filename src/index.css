@@ -245,6 +245,7 @@
   .section-shell {
     padding-block: var(--section-padding-y);
     padding-inline: var(--section-padding-x);
+    scroll-margin-top: calc(var(--nav-height) + 1.5rem);
   }
 
   .section-stack {

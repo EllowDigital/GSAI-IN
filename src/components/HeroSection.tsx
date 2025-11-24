@@ -175,7 +175,7 @@ export default function App() {
     <section
       id="hero"
       onClick={handleUserInteraction}
-      className="relative isolate flex min-h-[calc(100vh-6rem)] items-center justify-center overflow-hidden bg-slate-950 text-white cursor-default"
+      className="relative isolate flex min-h-[calc(100vh-4.5rem)] lg:min-h-screen items-center justify-center overflow-hidden bg-slate-950 text-white cursor-default"
     >
       {/* Background Media Container */}
       <div className="absolute inset-0 z-0 overflow-hidden">
