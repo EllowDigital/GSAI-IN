@@ -35,28 +35,28 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
   const portalTarget = typeof document !== 'undefined' ? document.body : null;
 
   return (
-    <div className="lg:hidden">
-      {/* Mobile Header with glass background */}
-      <div className="mobile-nav-shell">
+    <div className="xl:hidden w-full">
+      {/* Mobile Header - Scaled down version of desktop */}
+      <div className="flex items-center justify-between px-3 sm:px-6 py-1 w-full">
         {/* Logo & Brand */}
         <Link
           to="/"
-          className="flex items-center gap-2.5 min-w-0 group"
+          className="flex items-center gap-2 sm:gap-3 min-w-0 group"
           aria-label="Go to homepage"
           onClick={() => setMobileOpen(false)}
         >
           <img
             src="/assets/img/logo.webp"
             alt="Ghatak Sports Academy India Logo"
-            className="h-10 w-10 sm:h-11 sm:w-11 rounded-2xl object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-md"
+            className="h-9 w-9 sm:h-10 sm:w-10 object-contain transition-transform duration-300 group-hover:scale-105"
             loading="lazy"
             decoding="async"
           />
-          <div className="flex flex-col leading-tight text-slate-900">
-            <span className="text-[0.95rem] sm:text-base font-bold tracking-tight group-hover:text-primary transition-colors duration-300">
+          <div className="flex flex-col leading-none justify-center">
+            <span className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-primary transition-colors duration-300">
               GSAI
             </span>
-            <span className="text-[0.62rem] sm:text-xs font-medium text-slate-500 truncate">
+            <span className="text-[10px] sm:text-xs font-medium text-slate-500 mt-0.5">
               Ghatak Sports Academy India
             </span>
           </div>
@@ -65,10 +65,10 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
         {/* Menu Toggle Button */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className={`mobile-nav-trigger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/30 ${
+          className={`relative flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/30 ${
             mobileOpen
-              ? 'bg-gradient-to-r from-orange-500 to-yellow-400 text-white shadow-[0_12px_26px_rgba(249,115,22,0.38)]'
-              : 'text-slate-700'
+              ? 'bg-gradient-to-r from-orange-500 to-yellow-400 text-white shadow-md'
+              : 'text-slate-700 hover:bg-slate-100'
           }`}
           aria-label={mobileOpen ? 'Close mobile menu' : 'Open mobile menu'}
           aria-expanded={mobileOpen}
@@ -77,7 +77,7 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
           <div
             className={`transition-transform duration-300 ${mobileOpen ? 'rotate-180' : ''}`}
           >
-            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+            {mobileOpen ? <X size={20} className="sm:w-6 sm:h-6" /> : <Menu size={22} className="sm:w-6 sm:h-6" />}
           </div>
         </button>
       </div>
