@@ -7,7 +7,7 @@ User-agent: *
 # Disallow admin and API endpoints from general crawlers
 Disallow: /admin/
 Disallow: /api/
-Disallow: /manifest.webmanifest
+Disallow: /api/
 
 # Block indexing of certain file types that are not useful in search results
 Disallow: /*.json$

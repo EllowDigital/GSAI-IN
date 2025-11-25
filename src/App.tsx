@@ -73,12 +73,8 @@ const App = () => {
   const [showInstallCTA, setShowInstallCTA] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const interceptInstallPromptRef = useRef(false);
+  const interceptInstallPromptRef = useRef(true);
   const installPromptRef = useRef<BeforeInstallPromptEvent | null>(null);
-
-  useEffect(() => {
-    interceptInstallPromptRef.current = location.pathname.startsWith('/admin');
-  }, [location.pathname]);
 
   useEffect(() => {
     initializeSupabaseOptimization();
@@ -158,7 +154,6 @@ const App = () => {
     if (location.pathname !== '/') return;
     navigate('/admin/dashboard', { replace: true });
   }, [loading, isPWAInstalled, location.pathname, navigate]);
-
   return (
     <EnhancedErrorBoundary>
       <HelmetProvider>

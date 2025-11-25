@@ -22,7 +22,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="application-name" content="Ghatak Sports Academy™" />
   <meta name="msapplication-TileColor" content="#000000" />
-  <link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials" />
+  <link rel="manifest" href="/manifest.webmanifest" />
 
   <!-- ============================== -->
   <!-- 🌐 SEO & Metadata -->
@@ -180,6 +180,38 @@
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
+  <!-- Auto-mark external links: adds rel="noopener noreferrer nofollow" and target="_blank" for external anchors -->
+  <script>
+    (function markExternalLinks() {
+      try {
+        const origin = location.origin;
+        const anchors = Array.from(document.getElementsByTagName('a'));
+        anchors.forEach((a) => {
+          try {
+            const href = a.getAttribute('href');
+            if (!href) return;
+            // ignore anchors, mailto, tel, javascript and same-origin links
+            if (href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) return;
+            // Resolve relative URLs
+            const url = new URL(href, origin);
+            if (url.origin !== origin) {
+              // add safe attributes for external links
+              const rel = (a.getAttribute('rel') || '').split(/\s+/).filter(Boolean);
+              ['noopener', 'noreferrer', 'nofollow'].forEach((r) => {
+                if (!rel.includes(r)) rel.push(r);
+              });
+              a.setAttribute('rel', rel.join(' '));
+              if (!a.getAttribute('target')) a.setAttribute('target', '_blank');
+            }
+          } catch (e) {
+            // ignore malformed href
+          }
+        });
+      } catch (e) {
+        // silent
+      }
+    })();
+  </script>
 </body>
 
 </html>
