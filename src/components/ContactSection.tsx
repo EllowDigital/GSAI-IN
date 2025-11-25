@@ -254,7 +254,7 @@ export default function ContactSection() {
                 <input
                   type="hidden"
                   name="_next"
-                  value={`${window.location.origin}/pages/success.html`}
+                  value={`${window.location.origin}/?success=1`}
                 />
                 <input type="hidden" name="_captcha" value="false" />
                 <input type="hidden" name="_template" value="table" />

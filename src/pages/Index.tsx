@@ -5,6 +5,7 @@ import HeroSection from '../components/HeroSection';
 import AboutSection from '../components/AboutSection';
 import FounderSection from '../components/FounderSection';
 import ProgramsSection from '../components/ProgramsSection';
+import CorporateSection from '../components/CorporateSection';
 import AchievementSection from '../components/AchievementSection';
 import TestimonialSection from '../components/TestimonialSection';
 
@@ -30,7 +31,7 @@ const orgStructuredData = {
   url: 'https://ghatakgsai.netlify.app/',
   logo: 'https://ghatakgsai.netlify.app/assets/img/logo.webp',
   description:
-    'A multi-sport, martial arts, fitness and self-development academy in India. Programs for all ages.',
+    'A multi-sport, martial arts, fitness and self-development academy in Lucknow, India. Structured programs for all ages.',
   contactPoint: [
     {
       '@type': 'ContactPoint',
@@ -41,7 +42,17 @@ const orgStructuredData = {
   ],
   address: {
     '@type': 'PostalAddress',
+    streetAddress:
+      'Badshah kheda, Takrohi Rd, nearby Balaji Chauraha, Indira Nagar',
+    addressLocality: 'Lucknow',
+    addressRegion: 'Uttar Pradesh',
+    postalCode: '226028',
     addressCountry: 'IN',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: 26.8467,
+    longitude: 80.9462,
   },
   sameAs: [
     'https://instagram.com/ghatakgsai',
@@ -62,18 +73,44 @@ const faqStructuredData = {
   })),
 };
 
+const corporateServiceStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: 'Ghatak Sports Academy India - Corporate Training',
+  serviceType: [
+    'Corporate Self-Defense',
+    'Team Building',
+    'Executive Coaching',
+  ],
+  areaServed: 'Lucknow, Uttar Pradesh, India',
+  provider: {
+    '@type': 'Organization',
+    name: 'Ghatak Sports Academy India',
+    url: 'https://ghatakgsai.netlify.app',
+  },
+  description:
+    'Tailored corporate training and workplace safety programs for businesses, MNCs and organisations in Lucknow and surrounding regions.',
+};
+
 export default function Index() {
   return (
     <div className="bg-background w-full min-h-screen flex flex-col font-sans antialiased">
       {/* Advanced SEO with comprehensive optimization */}
       <Seo
-        title="Ghatak Sports Academy India™ | Modern Martial Arts, Fitness & Excellence"
-        description="Experience world-class martial arts training at Ghatak Sports Academy India™. Modern facilities, expert coaching, and comprehensive programs for all ages and skill levels in Karate, MMA, Boxing, and more."
+        title="Ghatak Sports Academy (GSAI) — Martial Arts & Fitness"
+        description="Ghatak Sports Academy (GSAI) — world-class martial arts & fitness training in Lucknow (Indira Nagar, Takrohi), Uttar Pradesh, India. Expert coaches and structured programs in karate, MMA, boxing and self‑defense."
         canonical="https://ghatakgsai.netlify.app/"
         image="https://ghatakgsai.netlify.app/assets/img/logo.webp"
         imageAlt="Ghatak Sports Academy India Logo - Modern Martial Arts Academy"
         type="website"
         keywords={[
+          'GSAI',
+          'Ghatak',
+          'Ghatak Sports Academy',
+          'Lucknow',
+          'Indira Nagar',
+          'Takrohi',
+          'Uttar Pradesh',
           'martial arts academy',
           'karate classes',
           'MMA training',
@@ -81,12 +118,19 @@ export default function Index() {
           'fitness training',
           'self defense',
           'sports academy India',
-          'martial arts coaching',
-          'combat sports training',
-          'youth sports programs',
+          'corporate training',
+          'MNC training',
+          'corporate self defense',
+          'team building',
+          'workplace safety',
+          'corporate wellness',
         ]}
         category="Sports & Fitness"
-        structuredData={[orgStructuredData, faqStructuredData]}
+        structuredData={[
+          orgStructuredData,
+          faqStructuredData,
+          corporateServiceStructuredData,
+        ]}
       >
         {/* Additional performance meta tags */}
         <link rel="preload" href="/assets/img/logo.webp" as="image" />
@@ -100,17 +144,18 @@ export default function Index() {
       <main className="flex-1 flex flex-col gap-0" role="main">
         <HeroSection />
         <AboutSection />
-        <FounderSection />
         <ProgramsSection />
+        {/* <CorporateSection /> */}
         <AchievementSection />
+        <FounderSection />
+        <GallerySection />
         <TestimonialSection />
         <EventsSection />
-        <GallerySection />
         <NewsSection />
         <BlogNewsSection />
         <FaqSection />
-        <ContactSection />
         <LocationSection />
+        <ContactSection />
         <RecognitionAffiliationsSection />
       </main>
 
