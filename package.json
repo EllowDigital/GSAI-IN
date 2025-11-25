@@ -10,39 +10,32 @@
     "type": "git",
     "url": "https://github.com/EllowDigital/GSAI-IN.git"
   },
-  "packageManager": "npm@10.8.1",
+  "packageManager": "npm@10.9.0",
   "engines": {
-    "node": ">=20.11.1",
-    "npm": ">=10.5.0"
+    "node": ">=22.12.0",
+    "npm": ">=10.9.0"
   },
   "overrides": {
     "glob": "11.1.0"
   },
   "scripts": {
     "sitemap": "node generate-sitemap.js",
-    
     "prebuild": "npm run clean && npm run typecheck",
     "build": "npm run sitemap && vite build",
     "build:fast": "vite build --mode production --emptyOutDir=false",
     "build:dev": "vite build --mode development",
-    
     "dev": "npm run sitemap && vite",
     "preview": "vite preview",
-    
     "clean": "rimraf dist",
     "typecheck": "tsc --noEmit",
-    
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
-    
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
-    
     "deploy": "git add . && git commit -m \"🚀 Auto-deploy: Updates pushed to dev\" && git push origin dev",
     "deploy:prod": "git checkout main && git merge dev && git push origin main && git checkout dev && echo '✅ Production Deployed & Switched back to Dev'",
-    
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -149,7 +142,7 @@
     "tailwindcss": "^3.4.18",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "^7.1.8",
+    "vite": "^7.2.4",
     "vitest": "^4.0.10"
   }
 }
