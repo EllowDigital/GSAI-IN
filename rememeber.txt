@@ -1,0 +1,20 @@
+# --- SETUP ---
+npm install            # Install new dependencies (Run this first!)
+
+# --- DEVELOPMENT ---
+npm run dev            # 1. Gen Sitemap -> 2. Start Local Server
+npm run sitemap        # Generate sitemap.xml only (no server)
+npm run typecheck      # Check for TypeScript errors manually
+npm run format         # Format all files using Prettier
+
+# --- DEPLOYMENT ---
+npm run deploy         # Auto-commit & Push to 'dev' branch
+npm run deploy:prod    # Merge 'dev' -> 'main' & Push (Production Release)
+
+# --- PRODUCTION BUILD ---
+npm run build          # Clean -> Typecheck -> Sitemap -> Build for Prod
+npm run preview        # Preview the 'dist' folder locally
+
+# --- MAINTENANCE ---
+npm run clean          # Delete the 'dist' folder
+npm run lint:fix       # Find and fix code style issues automatically
