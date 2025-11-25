@@ -3,6 +3,10 @@
   "version": "5.0.6",
   "private": true,
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EllowDigital/GSAI-IN.git"
+  },
   "packageManager": "npm@10.8.1",
   "engines": {
     "node": ">=20.11.1",
@@ -12,8 +16,10 @@
     "glob": "11.1.0"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "sitemap": "node generate-sitemap.js",
+    "deploy": "git add . && git commit -m \"🚀 Auto-deploy: Updates pushed to dev\" && git push origin dev",
+    "dev": "npm run sitemap && vite",
+    "build": "npm run sitemap && vite build",
     "build:fast": "vite build --mode production --emptyOutDir=false",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
