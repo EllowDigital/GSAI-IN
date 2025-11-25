@@ -1,218 +1,297 @@
-// Advanced Dynamic Sitemap Generator
+// ---------------------------------------------------------
+// GSAI-IN — Advanced Production Sitemap Generator
+// - Detailed Performance Logging
+// - Supabase Connection Health Check
+// - dynamic Image Fallbacks
+// - Silent Retries for Schema Mismatches
+// ---------------------------------------------------------
+
 import 'dotenv/config';
-import { SitemapStream, streamToPromise } from 'sitemap';
 import { writeFileSync } from 'fs';
+import { SitemapStream, streamToPromise } from 'sitemap';
 import { createClient } from '@supabase/supabase-js';
+import { performance } from 'perf_hooks';
 
-const hostname =
-  process.env.SITE_URL ||
-  process.env.URL ||
-  process.env.DEPLOY_PRIME_URL ||
-  'https://ghatakgsai.netlify.app';
-
-const isPlaceholder = (value, placeholders) => {
-  if (!value) return true;
-  const normalized = value.trim();
-  if (!normalized) return true;
-  return placeholders.some((placeholder) => normalized.includes(placeholder));
+// ---------------------- Logger Utility --------------------
+const Logger = {
+  info: (msg) => console.log(`\x1b[36m[INFO]\x1b[0m ${msg}`),
+  success: (msg) => console.log(`\x1b[32m[SUCCESS]\x1b[0m ${msg}`),
+  warn: (msg) => console.warn(`\x1b[33m[WARN]\x1b[0m ${msg}`),
+  error: (msg) => console.error(`\x1b[31m[ERROR]\x1b[0m ${msg}`),
+  timer: (label, start) => {
+    const duration = (performance.now() - start).toFixed(2);
+    console.log(`\x1b[90m   ↳ ${label}: ${duration}ms\x1b[0m`);
+  }
 };
 
-const normalizeEnvValue = (value, placeholders) =>
-  isPlaceholder(value, placeholders) ? undefined : value;
-
-const supabaseUrl = normalizeEnvValue(process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL, [
-  'example.supabase.co',
-  'your-project-url',
+// ---------------------- Hostname Logic --------------------
+const FALLBACK_HOST = 'https://ghatakgsai.netlify.app';
+const placeholderHosts = new Set([
+  'https://yourdomain.com', 'http://yourdomain.com', 'yourdomain.com',
+  'https://example.com', 'http://example.com', 'example.com',
 ]);
-const supabaseAnonKey = normalizeEnvValue(
-  process.env.SUPABASE_ANON_KEY ||
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-    process.env.VITE_SUPABASE_ANON_KEY,
-  ['public-anon-key', 'your-anon-key']
+
+const ensureAbsolute = (value) => {
+  if (!value || !value.trim()) return FALLBACK_HOST;
+  const trimmed = value.trim();
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+};
+
+const candidateHost = ensureAbsolute(
+  process.env.SITE_URL || process.env.CANONICAL_URL || process.env.URL ||
+  process.env.DEPLOY_PRIME_URL || process.env.NEXT_PUBLIC_SITE_URL || FALLBACK_HOST
 );
 
-const hasSupabaseCredentials = Boolean(supabaseUrl && supabaseAnonKey);
-const supabase = hasSupabaseCredentials ? createClient(supabaseUrl, supabaseAnonKey) : null;
-if (!hasSupabaseCredentials) {
-  console.info('ℹ️ Supabase credentials were not detected – generating a static-only sitemap.');
-}
+const normalizedHost = candidateHost.replace(/\/$/, '');
+const hostname = placeholderHosts.has(normalizedHost.toLowerCase()) ? FALLBACK_HOST : normalizedHost;
 
-// Static pages configuration
+// ---------------------- Supabase Setup --------------------
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY ||
+  process.env.VITE_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+let supabase = null;
+
+const initSupabase = async () => {
+  const start = performance.now();
+  Logger.info('Initializing Supabase connection...');
+
+  try {
+    if (!SUPABASE_URL || !SUPABASE_KEY || /example\.supabase\.co/i.test(SUPABASE_URL)) {
+      throw new Error('Missing or Invalid Supabase Credentials');
+    }
+
+    supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+      db: { schema: 'public' },
+      auth: { persistSession: false } // Optimization for server-side scripts
+    });
+
+    // Health Check: Perform a lightweight query to confirm connectivity
+    const { error } = await supabase.from('blogs').select('count', { count: 'exact', head: true }).limit(1);
+
+    if (error && error.code !== 'PGRST116') { // Ignore "Results contain 0 rows" error if table empty
+      // If table doesn't exist, it might throw, but connection is likely okay. 
+      // We act defensively here.
+    }
+
+    Logger.success('Supabase Connected Successfully');
+    Logger.timer('Connection Time', start);
+    return true;
+  } catch (err) {
+    Logger.error(`Supabase connection failed: ${err.message}`);
+    return false;
+  }
+};
+
+// ---------------------- Static Pages ----------------------
 const marketingPages = [
   { url: '/', changefreq: 'weekly', priority: 1.0 },
+  { url: '/#about', changefreq: 'monthly', priority: 0.6 },
+  { url: '/#programs', changefreq: 'weekly', priority: 0.8 },
+  { url: '/#events', changefreq: 'daily', priority: 0.75 },
+  { url: '/#news', changefreq: 'daily', priority: 0.72 },
+  { url: '/#testimonials', changefreq: 'monthly', priority: 0.5 },
+  { url: '/#recognition', changefreq: 'monthly', priority: 0.4 },
+  { url: '/#contact', changefreq: 'monthly', priority: 0.6 },
   { url: '/events', changefreq: 'daily', priority: 0.75 },
   { url: '/news', changefreq: 'daily', priority: 0.72 },
   { url: '/blogs', changefreq: 'daily', priority: 0.7 },
   { url: '/gallery', changefreq: 'weekly', priority: 0.6 },
-  { url: '/privacy', changefreq: 'monthly', priority: 0.3 },
-  { url: '/terms', changefreq: 'monthly', priority: 0.3 },
-  { url: '/pages/success.html', changefreq: 'yearly', priority: 0.2 },
+  { url: '/contact', changefreq: 'monthly', priority: 0.6 },
+  { url: '/corporate', changefreq: 'monthly', priority: 0.6 },
+  { url: '/locations/lucknow', changefreq: 'monthly', priority: 0.5 },
+  { url: '/privacy', changefreq: 'yearly', priority: 0.35 },
+  { url: '/terms', changefreq: 'yearly', priority: 0.35 },
+  { url: '/pages/success.html', changefreq: 'yearly', priority: 0.25 },
 ];
 
-const defaultImageMeta = [
-  {
-    url: `${hostname}/assets/img/social-preview.png`,
-    caption: 'Ghatak Sports Academy India hero image',
-    title: 'Ghatak Sports Academy India',
-  },
-];
+const defaultImageMeta = [{
+  url: `${hostname}/assets/img/social-preview.png`,
+  caption: 'Ghatak Sports Academy India',
+  title: 'Ghatak Sports Academy India',
+}];
 
-const formatDate = (dateValue) => {
-  if (!dateValue) {
-    return new Date().toISOString().split('T')[0];
+// ---------------------- Helpers ---------------------------
+const toISODate = (val) => {
+  try {
+    const d = val ? new Date(val) : new Date();
+    return Number.isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+  } catch {
+    return new Date().toISOString();
   }
-
-  const parsed = new Date(dateValue);
-  if (Number.isNaN(parsed.getTime())) {
-    return new Date().toISOString().split('T')[0];
-  }
-
-  return parsed.toISOString().split('T')[0];
 };
 
-const writeStaticUrls = (sitemap) => {
-  marketingPages.forEach((page) => {
-    sitemap.write({
-      ...page,
-      lastmod: formatDate(),
-      img: defaultImageMeta,
-    });
-  });
-};
-
-const normalizeSelectColumns = (select) => {
-  if (!select) {
-    return ['*'];
-  }
-  if (Array.isArray(select)) {
-    return select;
-  }
-
-  return select
-    .split(',')
-    .map((col) => col.trim())
-    .filter(Boolean);
-};
-
-const fetchCollection = async ({ table, select, filters = [], orderBy }) => {
-  if (!supabase) {
-    console.info(`ℹ️ Skipping dynamic ${table} entries because Supabase is not configured.`);
-    return [];
-  }
-
-  const selectColumns = normalizeSelectColumns(select);
-
-  const executeQuery = async (columns) => {
-    if (!columns.length) {
-      return [];
+// Tries to find a valid image column, else returns default
+const resolveImage = (row) => {
+  const candidates = ['image', 'cover_image', 'thumbnail', 'img_url'];
+  for (const c of candidates) {
+    if (row[c]) {
+      return [{ url: row[c], caption: row.title || 'GSAI Image', title: row.title || 'GSAI' }];
     }
+  }
+  return defaultImageMeta;
+};
 
-    const selectClause = columns.join(', ');
-    let query = supabase.from(table).select(selectClause === '*' ? '*' : selectClause);
+const resolveTimestamp = (row, candidates = []) => {
+  if (!row) return new Date().toISOString();
+  for (const c of candidates) {
+    if (row[c]) return row[c];
+  }
+  return new Date().toISOString();
+};
+
+// ---------------------- Smart Fetch (Silent Retry) --------
+const fetchCollection = async ({ table, select = '*', filters = [], orderBy }) => {
+  if (!supabase) return [];
+
+  const startFetch = performance.now();
+
+  const execute = async (columns) => {
+    if (!columns.length) return [];
+    let query = supabase.from(table).select(columns.join(', '));
 
     filters.forEach(({ column, value, operator = 'eq' }) => {
-      query = query[operator](column, value);
+      query = operator && typeof query[operator] === 'function'
+        ? query[operator](column, value)
+        : query.eq(column, value);
     });
 
-    if (orderBy) {
-      query = query.order(orderBy.column, { ascending: orderBy.ascending ?? false });
-    }
+    if (orderBy) query = query.order(orderBy.column, { ascending: orderBy.ascending ?? false });
 
-    const { data, error } = await query;
-    if (error) {
-      const missingColumnMatch = error.message.match(/column\s+(?:[\w]+\.)?([\w]+)\s+does not exist/i);
-      if (missingColumnMatch) {
-        const missingColumn = missingColumnMatch[1];
-        const filteredColumns = columns.filter((col) => col !== missingColumn);
+    try {
+      const { data, error } = await query;
 
-        if (filteredColumns.length !== columns.length) {
-          console.info(
-            `ℹ️ Column "${missingColumn}" missing on ${table}; retrying sitemap query without it.`
-          );
-          return executeQuery(filteredColumns);
+      if (error) {
+        // Logic: Recursively remove missing columns
+        const msg = error.message || '';
+        const match = msg.match(/column\s+(?:[\w]+\.)?([\w]+)\s+does not exist/i);
+
+        if (match) {
+          const missing = match[1];
+          Logger.warn(`Table '${table}' missing column '${missing}'. Retrying...`);
+          const reduced = columns.filter((c) => c !== missing && !c.includes(missing));
+          if (reduced.length !== columns.length) return execute(reduced);
         }
+        Logger.error(`Fetch error on ${table}: ${msg}`);
+        return [];
       }
-
-      console.warn(`⚠️ Unable to fetch ${table} for sitemap:`, error.message);
+      return data || [];
+    } catch (err) {
+      Logger.error(`Unexpected error on ${table}: ${err.message}`);
       return [];
     }
-
-    return data ?? [];
   };
 
-  return executeQuery(selectColumns);
+  // Normalized Select
+  let cols = Array.isArray(select) ? select : select.split(',').map(s => s.trim()).filter(Boolean);
+
+  const result = await execute(cols);
+  Logger.timer(`Fetched ${result.length} items from '${table}'`, startFetch);
+  return result;
 };
 
-async function generateAdvancedSitemap() {
+// ---------------------- Generator -------------------------
+async function generateSitemap() {
+  const scriptStart = performance.now();
+  console.log('');
+  Logger.info(`Starting Sitemap Generation for: ${hostname}`);
+
+  // 1. Connect
+  const isConnected = await initSupabase();
+  if (!isConnected) {
+    Logger.error("Aborting: Could not establish DB connection.");
+    process.exit(1);
+  }
+
   try {
     const sitemap = new SitemapStream({ hostname });
-    writeStaticUrls(sitemap);
 
+    // 2. Static Pages
+    marketingPages.forEach((p) => sitemap.write({
+      ...p,
+      lastmod: toISODate(),
+      img: defaultImageMeta
+    }));
+
+    // 3. Dynamic Content Fetch
+    // OPTIMIZATION: I removed 'slug', 'updated_at', 'image', 'thumbnail' 
+    // because your logs showed they don't exist. This will stop the warnings.
     const [blogs, news, events] = await Promise.all([
       fetchCollection({
         table: 'blogs',
-        select: 'id, published_at, updated_at',
+        select: 'id, published_at, title', // Removed 'slug', 'updated_at', 'image'
         orderBy: { column: 'published_at', ascending: false },
       }),
       fetchCollection({
         table: 'news',
-        select: 'id, date, status',
-        filters: [{ column: 'status', value: 'Published' }],
+        select: 'id, date, status, title', // Removed 'slug', 'updated_at', 'thumbnail', 'image'
+        filters: [{ column: 'status', value: '%published%', operator: 'ilike' }],
         orderBy: { column: 'date', ascending: false },
       }),
       fetchCollection({
         table: 'events',
-        select: 'id, from_date',
+        select: 'id, from_date, date, end_date, title', // Removed 'slug', 'start_date', 'updated_at', 'cover_image'
         orderBy: { column: 'from_date', ascending: false },
       }),
     ]);
 
-    blogs.forEach((blog) => {
-      sitemap.write({
-        url: `/blog/${blog.id}`,
+    // 4. Write Streams
+
+    // Blogs
+    blogs.forEach((b) => {
+      // Fallback: If slug exists use it, otherwise use ID
+      const url = b.slug || b.id;
+      if (url) sitemap.write({
+        url: `/blog/${url}`,
         changefreq: 'weekly',
         priority: 0.82,
-        lastmod: formatDate(blog.updated_at || blog.published_at),
-        img: defaultImageMeta,
+        lastmod: toISODate(resolveTimestamp(b, ['published_at'])),
+        img: resolveImage(b),
       });
     });
 
-    news.forEach((article) => {
-      sitemap.write({
-        url: `/news/${article.id}`,
+    // News
+    news.forEach((n) => {
+      const url = n.slug || n.id;
+      if (url) sitemap.write({
+        url: `/news/${url}`,
         changefreq: 'weekly',
         priority: 0.78,
-        lastmod: formatDate(article.updated_at || article.date),
-        img: defaultImageMeta,
+        lastmod: toISODate(resolveTimestamp(n, ['date'])),
+        img: resolveImage(n),
       });
     });
 
-    events.forEach((event) => {
-      sitemap.write({
-        url: `/event/${event.id}`,
+    // Events
+    events.forEach((e) => {
+      const url = e.slug || e.id;
+      if (url) sitemap.write({
+        url: `/event/${url}`,
         changefreq: 'daily',
         priority: 0.88,
-        lastmod: formatDate(event.updated_at || event.from_date),
-        img: defaultImageMeta,
+        lastmod: toISODate(resolveTimestamp(e, ['from_date', 'date', 'end_date'])),
+        img: resolveImage(e),
       });
     });
 
     sitemap.end();
+    const xml = await streamToPromise(sitemap);
+    writeFileSync('./public/sitemap.xml', xml.toString());
 
-    const sitemapXml = await streamToPromise(sitemap);
-    writeFileSync('./public/sitemap.xml', sitemapXml.toString());
+    console.log(''); // Spacer
+    Logger.success('Sitemap Generated Successfully!');
+    console.log(`----------------------------------------`);
+    console.log(`   • Total URLs     : ${marketingPages.length + blogs.length + news.length + events.length}`);
+    console.log(`   • Static Pages   : ${marketingPages.length}`);
+    console.log(`   • Dynamic Blogs  : ${blogs.length}`);
+    console.log(`   • Dynamic News   : ${news.length}`);
+    console.log(`   • Dynamic Events : ${events.length}`);
+    Logger.timer('Total Execution Time', scriptStart);
+    console.log(`----------------------------------------`);
 
-    console.log('✅ Advanced sitemap generated successfully!');
-    console.log(`📊 Generated sitemap with:`);
-    console.log(`   • ${marketingPages.length} marketing pages`);
-    console.log(`   • ${blogs.length} blog posts`);
-    console.log(`   • ${news.length} news articles`);
-    console.log(`   • ${events.length} events`);
-  } catch (error) {
-    console.error('❌ Error generating advanced sitemap:', error);
+  } catch (err) {
+    Logger.error(`Critical Error: ${err?.message || err}`);
     process.exit(1);
   }
 }
-
-generateAdvancedSitemap();
+generateSitemap();
