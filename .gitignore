@@ -1,4 +1,4 @@
-# Logs
+# Logs & diagnostics
 logs
 *.log
 npm-debug.log*
@@ -6,10 +6,35 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+.pnpm-debug.log*
+.pnpm-store/
 
-node_modules
-dist
-dist-ssr
+# Dependency directories
+node_modules/
+.pnp
+.pnp.*
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+out/
+.next/
+storybook-static/
+.parcel-cache/
+tmp/
+temp/
+
+# Tool caches
+coverage/
+.nyc_output/
+.turbo/
+.eslintcache
+.stylelintcache
+.cache/
+.vite/
+
+# Environment & secrets
 *.local
 .env
 .env.local
@@ -18,17 +43,37 @@ dist-ssr
 .env.production.local
 .env.*
 !.env.example
+!.env.sample
+.envrc
 
-# Editor directories and files
+# TypeScript
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# OS & editor cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*.swp
+*.tmp
 
-# Local Netlify folder
+# Package artifacts
+*.tgz
+*.zip
+*.bak
+*.orig
+
+# Local services
 .netlify
+.vercel
+supabase/.branches/
+supabase/.temp/
+
