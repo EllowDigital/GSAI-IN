@@ -186,6 +186,10 @@ export default function HeroSection() {
       onClick={handleUserInteraction}
       className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-black text-white cursor-default"
     >
+      {/* Visually-hidden H1 with keywords for SEO (keeps design intact) */}
+      <h1 className="sr-only">
+        Martial Arts Training in Lucknow — Ghatak Sports Academy India
+      </h1>
       {/* Background Media Container */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="relative h-full w-full">
@@ -272,11 +276,11 @@ export default function HeroSection() {
           {/* Heading */}
           <motion.h1
             variants={textVariants}
-            className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white leading-tight mb-6 tracking-tight"
+            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight mb-4 tracking-tight"
           >
-            Unleash Your <br className="hidden sm:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 animate-gradient-x">
-              Inner Fire
+            Ghatak Sports Academy India —{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600">
+              Unleash Your Inner Fire
             </span>
           </motion.h1>
 

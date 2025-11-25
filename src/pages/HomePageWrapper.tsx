@@ -107,6 +107,25 @@ const HomePageWrapper: React.FC = () => {
     };
   }, [navigate]);
 
+  // Show in-app success banner when redirected from contact form
+  const [showSuccessBanner, setShowSuccessBanner] = useState(false);
+
+  useEffect(() => {
+    try {
+      const search = new URLSearchParams(window.location.search);
+      if (search.get('success') === '1') {
+        setShowSuccessBanner(true);
+        // remove query param without reloading
+        search.delete('success');
+        const newSearch = search.toString();
+        const newUrl = `${window.location.pathname}${newSearch ? `?${newSearch}` : ''}${window.location.hash}`;
+        window.history.replaceState({}, document.title, newUrl);
+      }
+    } catch (err) {
+      // ignore
+    }
+  }, []);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center relative overflow-hidden">
@@ -146,6 +165,40 @@ const HomePageWrapper: React.FC = () => {
 
   return (
     <div className="dark bg-black min-h-screen">
+      {showSuccessBanner && (
+        <div className="fixed top-4 left-0 right-0 z-[9999] px-4">
+          <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 rounded-xl border border-yellow-500/20 bg-[#0a0a0a]/95 p-4 shadow-lg shadow-yellow-500/10 backdrop-blur-md">
+            <div className="flex items-center gap-3 text-sm sm:text-base text-white">
+              <div className="p-2 bg-yellow-500/10 rounded-full">
+                <svg
+                  className="w-5 h-5 text-yellow-500"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+              </div>
+              <div className="flex flex-col">
+                <span className="font-bold text-white">Message sent</span>
+                <span className="text-gray-400 text-xs sm:text-sm">
+                  Thanks — we'll get back to you soon.
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowSuccessBanner(false)}
+                className="rounded-full p-2 text-gray-400 hover:bg-white/10 hover:text-white transition-colors"
+                aria-label="Dismiss success banner"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <Index />
     </div>
   );

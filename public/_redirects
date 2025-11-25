@@ -1,2 +1,9 @@
 
+## Netlify redirect rules to canonicalize host and scheme
+# Redirect www to non-www (HTTPS canonical)
+https://www.ghatakgsai.netlify.app/* https://ghatakgsai.netlify.app/:splat 301!
+http://www.ghatakgsai.netlify.app/* https://ghatakgsai.netlify.app/:splat 301!
+# Ensure non-HTTPS requests are redirected to HTTPS
+http://ghatakgsai.netlify.app/* https://ghatakgsai.netlify.app/:splat 301!
+
 /*    /index.html   200

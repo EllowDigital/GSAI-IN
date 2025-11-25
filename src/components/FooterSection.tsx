@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Youtube,
   Mail,
@@ -62,6 +62,35 @@ const scrollToTop = () => {
 };
 
 export default function FooterSection() {
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    fetch('/last-updated.json', { cache: 'no-cache' })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!mounted) return;
+        if (data?.lastUpdated) {
+          try {
+            const d = new Date(data.lastUpdated);
+            const formatted = new Intl.DateTimeFormat('en-GB', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            }).format(d);
+            setLastUpdated(formatted);
+          } catch (e) {
+            setLastUpdated(null);
+          }
+        }
+      })
+      .catch(() => {
+        /* ignore */
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
   return (
     <footer className="relative bg-[#0a0a0a] text-white overflow-hidden">
       {/* Background Elements */}
@@ -274,6 +303,27 @@ export default function FooterSection() {
                 All rights reserved.
               </p>
             </div>
+
+            {/* Last updated badge */}
+            {lastUpdated && (
+              <div className="order-3 md:order-2 ml-0 md:ml-4">
+                <span className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-orange-600 text-[#0a0a0a] px-3 py-1 rounded-full text-xs font-semibold shadow-md">
+                  <svg
+                    className="w-3 h-3"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M12 8v5l3 3" />
+                  </svg>
+                  <span>Last updated</span>
+                  <span className="ml-1 text-[11px] text-[#071018] opacity-90">
+                    {lastUpdated}
+                  </span>
+                </span>
+              </div>
+            )}
 
             {/* Legal Links */}
             <div className="flex items-center gap-6 order-1 md:order-2">

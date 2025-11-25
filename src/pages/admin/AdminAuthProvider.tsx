@@ -216,7 +216,13 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
 
         setIsLoading(false);
 
-        if (!isAdminUser && !pendingLogoutRef.current) {
+        if (isAdminUser) {
+          // If an admin session exists and we're on the login route, forward to the intended/admin dashboard.
+          const destination = consumeRedirectRoute();
+          if (location.pathname.startsWith('/admin/login')) {
+            navigate(destination, { replace: true });
+          }
+        } else if (!isAdminUser && !pendingLogoutRef.current) {
           rememberIntendedRoute();
           clearState();
           navigate('/admin/login', { replace: true });
@@ -237,7 +243,12 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
           const isAdminUser = await updateAuthState(newSession);
           setIsLoading(false);
 
-          if (!isAdminUser && !pendingLogoutRef.current) {
+          if (isAdminUser) {
+            const destination = consumeRedirectRoute();
+            if (location.pathname.startsWith('/admin/login')) {
+              navigate(destination, { replace: true });
+            }
+          } else if (!isAdminUser && !pendingLogoutRef.current) {
             rememberIntendedRoute();
             clearState();
             navigate('/admin/login', { replace: true });
