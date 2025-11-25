@@ -77,7 +77,11 @@ const corporateServiceStructuredData = {
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
   name: 'Ghatak Sports Academy India - Corporate Training',
-  serviceType: ['Corporate Self-Defense', 'Team Building', 'Executive Coaching'],
+  serviceType: [
+    'Corporate Self-Defense',
+    'Team Building',
+    'Executive Coaching',
+  ],
   areaServed: 'Lucknow, Uttar Pradesh, India',
   provider: {
     '@type': 'Organization',
@@ -122,7 +126,11 @@ export default function Index() {
           'corporate wellness',
         ]}
         category="Sports & Fitness"
-        structuredData={[orgStructuredData, faqStructuredData, corporateServiceStructuredData]}
+        structuredData={[
+          orgStructuredData,
+          faqStructuredData,
+          corporateServiceStructuredData,
+        ]}
       >
         {/* Additional performance meta tags */}
         <link rel="preload" href="/assets/img/logo.webp" as="image" />
