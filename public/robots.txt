@@ -1,27 +1,30 @@
-# robots.txt
-# Simplified / validated robots file. Place at the site root so crawlers can
-# retrieve it at https://<your-domain>/robots.txt. Update the Sitemap URL to
-# your final production domain if it differs from the example below.
+# ------------------------------------------------------------
+# robots.txt — Optimized for Full Crawl & SEO Performance
+# Place this file at: https://<your-domain>/robots.txt
+# ------------------------------------------------------------
 
 User-agent: *
-# Disallow admin and API endpoints from general crawlers
+# Allow all crawlers full access to public pages
+Allow: /
+
+# Restrict access to non-public backend areas (best practice)
 Disallow: /admin/
 Disallow: /api/
-Disallow: /manifest.webmanifest
 
-# Block indexing of certain file types that are not useful in search results
+# Block indexing of machine-readable or sensitive file types
 Disallow: /*.json$
-Disallow: /*.xml$
-Disallow: /*.pdf$
 Disallow: /*.zip$
 
-# Optional polite crawl delay for low-capacity hosts (some crawlers ignore)
+# Recommended crawl delay for resource protection (optional)
 Crawl-delay: 1
 
-# If you host your sitemap at a canonical URL, list it here (replace domain)
+# Sitemap location (update if domain changes)
 Sitemap: https://ghatakgsai.netlify.app/sitemap.xml
 
-# Specific allowed crawlers (optional). Keep these directives grouped under
-# the corresponding User-agent block if you need them. Most sites don't need
-# these explicit allow rules; the above `User-agent: *` with Disallow is
-# sufficient for common use cases.
+# ------------------------------------------------------------
+# Notes:
+# - Public assets (images, JS, CSS, manifest files) remain accessible.
+# - Do NOT block `.xml` files to ensure sitemap discovery.
+# - Netlify automatically serves static content; this file ensures
+#   modern crawler compatibility (Google, Bing, Yandex, DuckDuckBot, etc.)
+# ------------------------------------------------------------
