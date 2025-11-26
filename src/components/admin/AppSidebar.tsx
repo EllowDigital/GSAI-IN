@@ -68,18 +68,22 @@ interface AppSidebarProps {
   setOpen?: (open: boolean) => void;
 }
 
-export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
-  const { signOut } = useAdminAuth();
-  const navigate = useNavigate();
-  const APP_VERSION = '5.0.0'; // Increment this version whenever the entire project code is updated
-
-  const NavSection = ({
-    title,
-    items,
-  }: {
-    title: string;
-    items: typeof navItems;
-  }) => (
+// Sidebar section component declared outside of AppSidebar to avoid creating
+// components during render (satisfies eslint react-hooks/static-components)
+function SidebarNavSection({
+  title,
+  items,
+  setOpen,
+  signOut,
+  navigate,
+}: {
+  title: string;
+  items: typeof navItems;
+  setOpen?: (open: boolean) => void;
+  signOut?: () => Promise<void> | (() => void);
+  navigate?: (to: string) => void;
+}) {
+  return (
     <div className="space-y-1">
       <h3 className="px-3 sm:px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
         {title}
@@ -87,14 +91,14 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
       <ul className="space-y-1">
         {items.map(({ title, url, icon: Icon, signOutFirst }) => (
           <li key={title}>
-            {title === 'Homepage' ? (
+            {title === 'Homepage' && signOut ? (
               <button
                 onClick={async () => {
                   try {
+                    // sign out then navigate home
                     await signOut();
                   } catch (err) {
-                    // fallback: ensure we navigate home if signOut fails
-                    navigate('/');
+                    navigate?.('/');
                   }
                 }}
                 className="group flex w-full items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl mx-2 transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 dark:hover:from-blue-900/30 dark:hover:to-blue-800/30 hover:shadow-sm text-left text-slate-700 dark:text-slate-300 hover:text-blue-800 dark:hover:text-blue-200"
@@ -152,12 +156,18 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
       </ul>
     </div>
   );
+}
+
+export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
+  const { signOut } = useAdminAuth();
+  const navigate = useNavigate();
+  const APP_VERSION = '5.0.0'; // Increment this version whenever the entire project code is updated
 
   return (
     <nav
       className={`fixed left-0 top-0 z-50 h-full bg-white dark:bg-slate-900 shadow-2xl border-r border-slate-200/60 dark:border-slate-700/60 transform transition-all duration-300 ease-out ${
         open ? 'translate-x-0' : '-translate-x-full'
-      } w-[280px] xs:w-[300px] sm:w-[320px] md:w-[280px] lg:w-64 xl:w-72 lg:translate-x-0 lg:max-w-none lg:static lg:block flex flex-col max-w-[85vw] xs:max-w-[80vw] sm:max-w-[75vw] lg:max-w-none min-h-screen`}
+      } w-[280px] xs:w-[300px] sm:w-[320px] md:w-[280px] lg:w-64 xl:w-72 lg:translate-x-0 lg:max-w-none lg:static lg:block flex flex-col max-w-[85vw] xs:max-w-[80vw] sm:max-w-[75vw] min-h-screen`}
       aria-label="Sidebar"
     >
       {setOpen && (
@@ -192,21 +202,27 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
 
       {/* Navigation */}
       <div className="flex-1 py-3 sm:py-4 px-1 sm:px-2 overflow-y-auto space-y-3 sm:space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
-        <NavSection
+        <SidebarNavSection
           title="Overview"
           items={navItems.filter((i) => i.category === 'main')}
+          setOpen={setOpen}
+          signOut={signOut}
+          navigate={navigate}
         />
-        <NavSection
+        <SidebarNavSection
           title="Management"
           items={navItems.filter((i) => i.category === 'management')}
+          setOpen={setOpen}
         />
-        <NavSection
+        <SidebarNavSection
           title="Content"
           items={navItems.filter((i) => i.category === 'content')}
+          setOpen={setOpen}
         />
-        <NavSection
+        <SidebarNavSection
           title="External"
           items={navItems.filter((i) => i.category === 'external')}
+          setOpen={setOpen}
         />
       </div>
 

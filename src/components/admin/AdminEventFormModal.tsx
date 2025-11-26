@@ -41,6 +41,56 @@ const EMPTY: Partial<EventRow> = {
   tag: '',
 };
 
+// Helper component for date buttons — declared outside modal to avoid creating
+// components during render (eslint react-hooks/static-components)
+function DatePickerField({
+  label,
+  value,
+  onChange,
+  placeholder = 'Pick a date',
+  minDate,
+  maxDate,
+}: {
+  label: string;
+  value: string | null | undefined;
+  onChange: (d: Date | undefined) => void;
+  placeholder?: string;
+  minDate?: Date;
+  maxDate?: Date;
+}) {
+  const parsedVal = value ? new Date(value) : undefined;
+  return (
+    <div className="flex flex-col">
+      <span className="font-medium mb-1 text-sm">{label}</span>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant={'outline'}
+            className={cn(
+              'w-full sm:w-[200px] justify-start text-left font-normal',
+              !parsedVal && 'text-muted-foreground'
+            )}
+            type="button"
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {parsedVal ? format(parsedVal, 'PPP') : <span>{placeholder}</span>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={parsedVal}
+            onSelect={onChange}
+            initialFocus
+            className={cn('p-3 pointer-events-auto')}
+            disabled={undefined}
+          />
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}
+
 const AdminEventFormModal: React.FC<ModalProps> = ({
   open,
   onOpenChange,
@@ -52,14 +102,19 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
-    if (editingEvent) {
-      setForm(editingEvent);
-      setImagePreview(editingEvent.image_url ?? null);
-    } else {
-      setForm(EMPTY);
-      setImagePreview(null);
-    }
-    setImageFile(null);
+    // Defer state initialization to avoid synchronous setState in effect
+    const t = setTimeout(() => {
+      if (editingEvent) {
+        setForm(editingEvent);
+        setImagePreview(editingEvent.image_url ?? null);
+      } else {
+        setForm(EMPTY);
+        setImagePreview(null);
+      }
+      setImageFile(null);
+    }, 0);
+
+    return () => clearTimeout(t);
   }, [editingEvent, open]);
 
   const handleChange = (key: keyof EventRow, value: any) => {
@@ -161,59 +216,6 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
     }
     setLoading(false);
   };
-
-  // Helper for date buttons
-  function DatePickerField({
-    label,
-    value,
-    onChange,
-    placeholder = 'Pick a date',
-    minDate,
-    maxDate,
-  }: {
-    label: string;
-    value: string | null | undefined;
-    onChange: (d: Date | undefined) => void;
-    placeholder?: string;
-    minDate?: Date;
-    maxDate?: Date;
-  }) {
-    const parsedVal = value ? new Date(value) : undefined;
-    return (
-      <div className="flex flex-col">
-        <span className="font-medium mb-1 text-sm">{label}</span>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant={'outline'}
-              className={cn(
-                'w-full sm:w-[200px] justify-start text-left font-normal',
-                !parsedVal && 'text-muted-foreground'
-              )}
-              type="button"
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {parsedVal ? (
-                format(parsedVal, 'PPP')
-              ) : (
-                <span>{placeholder}</span>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={parsedVal}
-              onSelect={onChange}
-              initialFocus
-              className={cn('p-3 pointer-events-auto')}
-              disabled={undefined}
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
-    );
-  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

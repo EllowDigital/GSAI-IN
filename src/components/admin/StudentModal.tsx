@@ -23,7 +23,7 @@ import {
   SelectItem,
   SelectValue,
 } from '@/components/ui/select';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
@@ -247,7 +247,11 @@ export default function StudentModal({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <StudentAvatarUploader
-              url={form.watch('profile_image_url')}
+              url={useWatch({
+                control: form.control,
+                name: 'profile_image_url',
+                defaultValue: form.getValues('profile_image_url'),
+              })}
               onUploaded={handleAvatarUpload}
             />
             <FormField

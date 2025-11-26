@@ -5,11 +5,11 @@ import { supabase } from '@/integrations/supabase/client';
 export function useAdminRLS() {
   const [adminEmail, setAdminEmail] = useState<string | null>(null);
   const [isAdminInTable, setIsAdminInTable] = useState<boolean | null>(null);
-  const [checkingAdminEntry, setCheckingAdminEntry] = useState<boolean>(false);
+  // Start as true since we immediately check on mount
+  const [checkingAdminEntry, setCheckingAdminEntry] = useState<boolean>(true);
   const [rlsError, setRlsError] = useState<string | null>(null);
 
   useEffect(() => {
-    setCheckingAdminEntry(true);
     (async () => {
       const { data: sessionData } = await supabase.auth.getSession();
       const user = sessionData?.session?.user;

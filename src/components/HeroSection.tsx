@@ -84,6 +84,7 @@ export default function HeroSection() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const imageTimerRef = useRef<NodeJS.Timeout | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const heroImgRef = useRef<HTMLImageElement | null>(null);
   const isVideoActive = mediaMode === 'video';
 
   // Preload hero images
@@ -94,6 +95,17 @@ export default function HeroSection() {
     });
   }, []);
 
+  // Set fetchpriority attribute via DOM to avoid React/TS unknown prop warnings
+  useEffect(() => {
+    if (heroImgRef.current && 'setAttribute' in heroImgRef.current) {
+      try {
+        heroImgRef.current.setAttribute('fetchpriority', 'high');
+      } catch (e) {
+        /* ignore */
+      }
+    }
+  }, []);
+
   // --- Effect for Image Slider Logic ---
   useEffect(() => {
     if (mediaMode !== 'images') {
@@ -101,8 +113,9 @@ export default function HeroSection() {
         clearTimeout(imageTimerRef.current);
         imageTimerRef.current = null;
       }
+      // Defer resetting the index to avoid synchronous setState inside an effect
       if (imgIndex !== 0) {
-        setImgIndex(0);
+        setTimeout(() => setImgIndex(0), 0);
       }
       return;
     }
@@ -193,6 +206,17 @@ export default function HeroSection() {
       {/* Background Media Container */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="relative h-full w-full">
+          {/* Ensure a high-priority background image is present for LCP.
+                This <img> renders immediately (eager + fetchpriority) so
+                Lighthouse can pick it up as the Largest Contentful Paint. */}
+          <img
+            ref={heroImgRef}
+            src={bgImages[0]}
+            alt=""
+            aria-hidden="true"
+            loading="eager"
+            className="absolute inset-0 w-full h-full object-cover scale-105"
+          />
           <AnimatePresence mode="wait">
             {isVideoActive ? (
               <motion.div
@@ -208,6 +232,7 @@ export default function HeroSection() {
                   muted={isMuted}
                   playsInline
                   autoPlay
+                  poster={bgImages[0]}
                   preload="metadata"
                   onEnded={handleVideoEnd}
                   className="h-full w-full object-cover scale-105"
@@ -328,10 +353,10 @@ export default function HeroSection() {
       </div>
 
       {/* Bottom Controls: Scroll Indicator and Slider Navigation */}
-      <div className="absolute left-0 right-0 bottom-8 flex flex-col items-center gap-6 z-20 px-4 pointer-events-none">
+      <div className="absolute left-0 right-0 bottom-6 xl:bottom-12 flex flex-col items-center gap-6 z-20 px-4 pointer-events-none">
         <AnimatePresence>
           <motion.div
-            className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 w-auto max-w-[90vw] mx-auto px-4 py-2.5 rounded-full border border-white/10 bg-black/40 backdrop-blur-md shadow-xl"
+            className="pointer-events-auto hidden xl:flex flex-wrap items-center justify-center gap-2 w-auto max-w-[90vw] mx-auto px-4 py-2.5 rounded-full border border-white/10 bg-black/40 backdrop-blur-md shadow-xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
@@ -342,13 +367,13 @@ export default function HeroSection() {
                 key={idx}
                 onClick={() => goToImage(idx)}
                 type="button"
-                className={`group relative flex items-center justify-center w-3 h-3 rounded-full transition-all duration-300 focus:outline-none ${
-                  imgIndex === idx ? 'scale-125' : 'hover:scale-110'
+                className={`group relative inline-flex items-center justify-center p-2 rounded-full transition-all duration-300 focus:outline-none ${
+                  imgIndex === idx ? 'scale-105' : 'hover:scale-105'
                 }`}
                 aria-label={`Go to slide ${idx + 1}`}
               >
                 <span
-                  className={`absolute inset-0 rounded-full transition-all duration-300 ${
+                  className={`inline-block rounded-full transition-all duration-300 w-3 h-3 ${
                     imgIndex === idx
                       ? 'bg-gradient-to-r from-yellow-400 to-red-500 opacity-100'
                       : 'bg-white/30 group-hover:bg-white/60'

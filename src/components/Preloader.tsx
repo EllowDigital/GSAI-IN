@@ -50,6 +50,8 @@ export default function Preloader() {
               <img
                 src="/assets/img/logo.webp"
                 alt="GSAI Logo"
+                width={96}
+                height={96}
                 className="w-full h-full object-contain drop-shadow-xl"
               />
             </div>
