@@ -374,9 +374,10 @@ export default function AllGalleryPage() {
                       Search: "{searchTerm}"
                       <button
                         onClick={() => setSearchTerm('')}
-                        className="ml-2 hover:text-yellow-400 transition-colors"
+                        className="ml-2 inline-flex items-center justify-center p-2 rounded focus:outline-none hover:text-yellow-400 transition-colors"
+                        aria-label="Clear search"
                       >
-                        <X className="w-3 h-3" />
+                        <X className="w-4 h-4" />
                       </button>
                     </Badge>
                   )}
@@ -388,9 +389,10 @@ export default function AllGalleryPage() {
                       Tag: {selectedTag}
                       <button
                         onClick={() => setSelectedTag('all')}
-                        className="ml-2 hover:text-orange-400 transition-colors"
+                        className="ml-2 inline-flex items-center justify-center p-2 rounded focus:outline-none hover:text-orange-400 transition-colors"
+                        aria-label="Clear tag filter"
                       >
-                        <X className="w-3 h-3" />
+                        <X className="w-4 h-4" />
                       </button>
                     </Badge>
                   )}
