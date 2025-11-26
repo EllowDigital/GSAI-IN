@@ -84,6 +84,7 @@ export default function HeroSection() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const imageTimerRef = useRef<NodeJS.Timeout | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const heroImgRef = useRef<HTMLImageElement | null>(null);
   const isVideoActive = mediaMode === 'video';
 
   // Preload hero images
@@ -92,6 +93,17 @@ export default function HeroSection() {
       const img = new Image();
       img.src = src;
     });
+  }, []);
+
+  // Set fetchpriority attribute via DOM to avoid React/TS unknown prop warnings
+  useEffect(() => {
+    if (heroImgRef.current && 'setAttribute' in heroImgRef.current) {
+      try {
+        heroImgRef.current.setAttribute('fetchpriority', 'high');
+      } catch (e) {
+        /* ignore */
+      }
+    }
   }, []);
 
   // --- Effect for Image Slider Logic ---
@@ -194,6 +206,17 @@ export default function HeroSection() {
       {/* Background Media Container */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="relative h-full w-full">
+          {/* Ensure a high-priority background image is present for LCP.
+                This <img> renders immediately (eager + fetchpriority) so
+                Lighthouse can pick it up as the Largest Contentful Paint. */}
+          <img
+            ref={heroImgRef}
+            src={bgImages[0]}
+            alt=""
+            aria-hidden="true"
+            loading="eager"
+            className="absolute inset-0 w-full h-full object-cover scale-105"
+          />
           <AnimatePresence mode="wait">
             {isVideoActive ? (
               <motion.div
@@ -330,10 +353,10 @@ export default function HeroSection() {
       </div>
 
       {/* Bottom Controls: Scroll Indicator and Slider Navigation */}
-      <div className="absolute left-0 right-0 bottom-8 flex flex-col items-center gap-6 z-20 px-4 pointer-events-none">
+      <div className="absolute left-0 right-0 bottom-6 xl:bottom-12 flex flex-col items-center gap-6 z-20 px-4 pointer-events-none">
         <AnimatePresence>
           <motion.div
-            className="pointer-events-auto hidden lg:flex flex-wrap items-center justify-center gap-2 w-auto max-w-[90vw] mx-auto px-4 py-2.5 rounded-full border border-white/10 bg-black/40 backdrop-blur-md shadow-xl"
+            className="pointer-events-auto hidden xl:flex flex-wrap items-center justify-center gap-2 w-auto max-w-[90vw] mx-auto px-4 py-2.5 rounded-full border border-white/10 bg-black/40 backdrop-blur-md shadow-xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
