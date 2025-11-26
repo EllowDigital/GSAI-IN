@@ -17,6 +17,8 @@ export function DesktopNavbar() {
           <img
             src="/assets/img/logo.webp"
             alt="Ghatak Sports Academy India"
+            width={40}
+            height={40}
             className="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-[0_0_8px_rgba(234,179,8,0.3)]"
             loading="lazy"
             decoding="async"
@@ -64,6 +66,8 @@ export function DesktopNavbar() {
             <img
               src="/assets/img/logo.webp"
               alt="GSAI Admin"
+              width={12}
+              height={12}
               className="h-3 w-auto object-contain"
               loading="lazy"
               decoding="async"
