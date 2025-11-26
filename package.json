@@ -18,6 +18,7 @@
   "overrides": {
     "glob": "11.1.0"
   },
+  
   "scripts": {
     "sitemap": "node generate-sitemap.js",
     "prebuild": "npm run clean && npm run typecheck",
@@ -35,7 +36,8 @@
     "test:watch": "vitest",
     "deploy": "git add . && git commit -m \"🚀 Auto-deploy: Updates pushed to dev\" && git push origin dev",
     "deploy:prod": "git checkout main && git merge dev && git push origin main && git checkout dev && echo '✅ Production Deployed & Switched back to Dev'",
-    "prepare": "husky"
+    "prepare": "husky",
+    "update": "rimraf node_modules dist && npm i && node -e \"console.log('Update complete — node_modules reinstalled and dist removed')\""
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
