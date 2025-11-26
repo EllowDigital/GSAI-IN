@@ -219,13 +219,7 @@ export function Seo({
       <meta name="format-detection" content="telephone=no" />
       <meta httpEquiv="x-dns-prefetch-control" content="on" />
 
-      {/* DNS Prefetch for Performance */}
-      <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-      <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-      <link rel="dns-prefetch" href="//REDACTED" />
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-      <link rel="preconnect" href="https://REDACTED" />
+      {/* Performance hints: preconnects and dns-prefetch are handled in `index.html` to avoid duplicates. */}
 
       {/* Canonical and Language Tags */}
       <link rel="canonical" href={fullCanonicalUrl} />
