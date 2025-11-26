@@ -101,8 +101,9 @@ export default function HeroSection() {
         clearTimeout(imageTimerRef.current);
         imageTimerRef.current = null;
       }
+      // Defer resetting the index to avoid synchronous setState inside an effect
       if (imgIndex !== 0) {
-        setImgIndex(0);
+        setTimeout(() => setImgIndex(0), 0);
       }
       return;
     }
