@@ -216,7 +216,7 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
     }
     setLoading(false);
   };
-  
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-hidden p-0 sm:p-6">
