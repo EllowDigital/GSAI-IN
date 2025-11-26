@@ -2,7 +2,7 @@ import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { FeeReceiptUploader } from './FeeReceiptUploader';
@@ -63,8 +63,20 @@ export function FeeForm({
     });
   }, [fee, student]);
 
-  const monthly_fee = Number(form.watch('monthly_fee') || 0);
-  const paid_amount = Number(form.watch('paid_amount') || 0);
+  // Use `useWatch` to subscribe to form values safely (avoids incompatible-library warnings)
+  const monthlyFeeWatched = useWatch({
+    control: form.control,
+    name: 'monthly_fee',
+    defaultValue: form.getValues('monthly_fee'),
+  });
+  const paidAmountWatched = useWatch({
+    control: form.control,
+    name: 'paid_amount',
+    defaultValue: form.getValues('paid_amount'),
+  });
+
+  const monthly_fee = Number(monthlyFeeWatched || 0);
+  const paid_amount = Number(paidAmountWatched || 0);
 
   const calcBalance = () => {
     let bal = monthly_fee + (carryForward || 0) - paid_amount;
@@ -227,7 +239,11 @@ export function FeeForm({
         <label className="text-xs font-semibold">Receipt File</label>
         <FeeReceiptUploader
           feeId={fee?.id || 'temp'}
-          initialUrl={form.watch('receipt_url')}
+          initialUrl={useWatch({
+            control: form.control,
+            name: 'receipt_url',
+            defaultValue: form.getValues('receipt_url'),
+          })}
           onUploaded={handleReceiptUploaded}
         />
       </div>

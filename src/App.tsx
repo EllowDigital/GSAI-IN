@@ -141,12 +141,13 @@ const App = () => {
   );
 
   const isAdminRoute = location.pathname.startsWith('/admin');
+  // Avoid accessing ref.current during render (ESLint rule). rely on state here.
   const shouldShowInstallToast =
     showInstallCTA &&
     !isPWAInstalled() &&
     isAdminRoute &&
     !dismissedInstallToast &&
-    !!(installPromptRef.current ?? installPrompt);
+    !!installPrompt;
 
   useEffect(() => {
     if (loading) return;
