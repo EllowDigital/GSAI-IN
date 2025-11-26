@@ -18,7 +18,6 @@
   "overrides": {
     "glob": "11.1.0"
   },
-  
   "scripts": {
     "sitemap": "node generate-sitemap.js",
     "prebuild": "npm run clean && npm run typecheck",
