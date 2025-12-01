@@ -11,6 +11,7 @@ import Gallery from './dashboard/Gallery';
 import Students from './dashboard/Students';
 import FeesManager from './dashboard/FeesManager';
 import Events from './dashboard/Events';
+import Progression from './dashboard/Progression';
 
 const AdminArea = () => {
   return (
@@ -25,6 +26,7 @@ const AdminArea = () => {
           <Route path="gallery" element={<Gallery />} />
           <Route path="students" element={<Students />} />
           <Route path="events" element={<Events />} />
+          <Route path="progression" element={<Progression />} />
           <Route path="*" element={<NotFoundAdmin />} />
         </Route>
         <Route path="*" element={<NotFoundAdmin />} />
