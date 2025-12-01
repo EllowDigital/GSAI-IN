@@ -23,11 +23,19 @@ import { useStudents } from '@/hooks/useStudents';
 import AssignStudentBeltDialog from './AssignStudentBeltDialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 const STATUS_CONFIG: Record<
   ProgressStatus,
-  { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }
+  {
+    label: string;
+    variant: 'default' | 'secondary' | 'destructive' | 'outline';
+  }
 > = {
   needs_work: { label: 'Needs Work', variant: 'destructive' },
   ready: { label: 'Ready', variant: 'secondary' },
@@ -61,7 +69,10 @@ function StudentCard({
           <div className="flex items-center gap-3 mb-3">
             <Avatar className="h-12 w-12">
               {student?.profile_image_url ? (
-                <AvatarImage src={student.profile_image_url} alt={student?.name} />
+                <AvatarImage
+                  src={student.profile_image_url}
+                  alt={student?.name}
+                />
               ) : (
                 <AvatarFallback>
                   {student?.name?.slice(0, 2).toUpperCase() ?? 'ST'}
@@ -87,7 +98,9 @@ function StudentCard({
             {record.assessment_date && (
               <div className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
-                <span>{format(new Date(record.assessment_date), 'MMM dd, yyyy')}</span>
+                <span>
+                  {format(new Date(record.assessment_date), 'MMM dd, yyyy')}
+                </span>
               </div>
             )}
           </div>
@@ -99,19 +112,19 @@ function StudentCard({
           )}
 
           <div className="flex gap-2 mb-3">
-            {(['needs_work', 'ready', 'passed', 'deferred'] as ProgressStatus[]).map(
-              (status) => (
-                <Button
-                  key={status}
-                  size="sm"
-                  variant={status === record.status ? 'default' : 'outline'}
-                  onClick={() => onStatusChange(status)}
-                  className="flex-1 text-xs"
-                >
-                  {STATUS_CONFIG[status].label.split(' ')[0]}
-                </Button>
-              )
-            )}
+            {(
+              ['needs_work', 'ready', 'passed', 'deferred'] as ProgressStatus[]
+            ).map((status) => (
+              <Button
+                key={status}
+                size="sm"
+                variant={status === record.status ? 'default' : 'outline'}
+                onClick={() => onStatusChange(status)}
+                className="flex-1 text-xs"
+              >
+                {STATUS_CONFIG[status].label.split(' ')[0]}
+              </Button>
+            ))}
           </div>
 
           <Button
@@ -139,7 +152,10 @@ function StudentCard({
               rows={6}
             />
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setNotesDialogOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setNotesDialogOpen(false)}
+              >
                 Cancel
               </Button>
               <Button onClick={handleSaveNotes}>Save Notes</Button>
@@ -194,10 +210,12 @@ export default function ProgressionBoard() {
   const handleNotesUpdate = (id: string, notes: string) => {
     updateProgress({
       id,
-      status: grouped.needs_work?.find((r) => r.id === id)?.status ??
+      status:
+        grouped.needs_work?.find((r) => r.id === id)?.status ??
         grouped.ready?.find((r) => r.id === id)?.status ??
         grouped.passed?.find((r) => r.id === id)?.status ??
-        grouped.deferred?.find((r) => r.id === id)?.status ?? 'needs_work',
+        grouped.deferred?.find((r) => r.id === id)?.status ??
+        'needs_work',
       coach_notes: notes,
     });
   };
@@ -235,7 +253,10 @@ export default function ProgressionBoard() {
                 className="pl-9"
               />
             </div>
-            <Select value={program ?? 'all'} onValueChange={(v) => setProgram(v === 'all' ? undefined : v)}>
+            <Select
+              value={program ?? 'all'}
+              onValueChange={(v) => setProgram(v === 'all' ? undefined : v)}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="All Programs" />
               </SelectTrigger>
@@ -248,7 +269,10 @@ export default function ProgressionBoard() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={beltLevelId ?? 'all'} onValueChange={(v) => setBeltLevelId(v === 'all' ? undefined : v)}>
+            <Select
+              value={beltLevelId ?? 'all'}
+              onValueChange={(v) => setBeltLevelId(v === 'all' ? undefined : v)}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="All Belts" />
               </SelectTrigger>
@@ -301,32 +325,32 @@ export default function ProgressionBoard() {
               </TabsTrigger>
             </TabsList>
 
-            {(['needs_work', 'ready', 'passed', 'deferred'] as ProgressStatus[]).map(
-              (status) => (
-                <TabsContent key={status} value={status} className="mt-4">
-                  {grouped[status] && grouped[status].length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {grouped[status].map((record) => (
-                        <StudentCard
-                          key={record.id}
-                          record={record}
-                          onStatusChange={(newStatus) =>
-                            handleStatusChange(record.id, newStatus)
-                          }
-                          onNotesUpdate={(notes) =>
-                            handleNotesUpdate(record.id, notes)
-                          }
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 text-muted-foreground">
-                      <p>No students in this category</p>
-                    </div>
-                  )}
-                </TabsContent>
-              )
-            )}
+            {(
+              ['needs_work', 'ready', 'passed', 'deferred'] as ProgressStatus[]
+            ).map((status) => (
+              <TabsContent key={status} value={status} className="mt-4">
+                {grouped[status] && grouped[status].length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {grouped[status].map((record) => (
+                      <StudentCard
+                        key={record.id}
+                        record={record}
+                        onStatusChange={(newStatus) =>
+                          handleStatusChange(record.id, newStatus)
+                        }
+                        onNotesUpdate={(notes) =>
+                          handleNotesUpdate(record.id, notes)
+                        }
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <p>No students in this category</p>
+                  </div>
+                )}
+              </TabsContent>
+            ))}
           </Tabs>
 
           {totalCount === 0 && (

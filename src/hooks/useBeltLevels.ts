@@ -52,9 +52,10 @@ export function useBeltLevels() {
       label: `${belt.color} Belt - Rank ${belt.rank}`,
       value: belt.id,
       color: belt.color,
-      description: belt.requirements.length > 0 
-        ? `${belt.requirements.length} requirements` 
-        : 'Beginner level',
+      description:
+        belt.requirements.length > 0
+          ? `${belt.requirements.length} requirements`
+          : 'Beginner level',
     }));
   }, [query.data]);
 

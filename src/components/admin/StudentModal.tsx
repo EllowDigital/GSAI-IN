@@ -89,7 +89,7 @@ export default function StudentModal({
   student,
 }: StudentModalProps) {
   const { getWhiteBeltId } = useBeltLevels();
-  
+
   const form = useForm<StudentFormValues>({
     resolver: zodResolver(StudentSchema),
     defaultValues: {
@@ -224,7 +224,7 @@ export default function StudentModal({
           .single();
 
         if (error) throw error;
-        
+
         // Assign white belt to new student
         if (data && getWhiteBeltId) {
           await supabase.from('student_progress').insert({
@@ -233,7 +233,7 @@ export default function StudentModal({
             status: 'needs_work',
           });
         }
-        
+
         return data;
       }
     }, 'Student Form Submission');

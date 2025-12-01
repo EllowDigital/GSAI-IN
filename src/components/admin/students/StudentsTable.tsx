@@ -89,40 +89,49 @@ export default function StudentsTable({
   sortConfig,
   requestSort,
 }: Props) {
-  const [studentsWithBelts, setStudentsWithBelts] = useState<StudentWithBelt[]>([]);
+  const [studentsWithBelts, setStudentsWithBelts] = useState<StudentWithBelt[]>(
+    []
+  );
 
   useEffect(() => {
     const fetchBelts = async () => {
       if (students.length === 0) return;
-      
+
       const { data, error } = await supabase
         .from('student_progress')
-        .select(`
+        .select(
+          `
           student_id,
           belt_levels:belt_levels(color, rank)
-        `)
-        .in('student_id', students.map(s => s.id));
+        `
+        )
+        .in(
+          'student_id',
+          students.map((s) => s.id)
+        );
 
       if (!error && data) {
         const beltMap = new Map(
-          data.map(item => [
+          data.map((item) => [
             item.student_id,
             {
               color: item.belt_levels?.color,
-              rank: item.belt_levels?.rank
-            }
+              rank: item.belt_levels?.rank,
+            },
           ])
         );
 
         setStudentsWithBelts(
-          students.map(student => ({
+          students.map((student) => ({
             ...student,
             belt_color: beltMap.get(student.id)?.color || 'White',
             belt_rank: beltMap.get(student.id)?.rank || 1,
           }))
         );
       } else {
-        setStudentsWithBelts(students.map(s => ({ ...s, belt_color: 'White', belt_rank: 1 })));
+        setStudentsWithBelts(
+          students.map((s) => ({ ...s, belt_color: 'White', belt_rank: 1 }))
+        );
       }
     };
 
