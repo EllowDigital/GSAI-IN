@@ -14,6 +14,66 @@ export type Database = {
   };
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          created_at: string | null;
+          email: string;
+          id: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          email: string;
+          id?: string;
+        };
+        Update: {
+          created_at?: string | null;
+          email?: string;
+          id?: string;
+        };
+        Relationships: [];
+      };
+      audit_logs: {
+        Row: {
+          created_at: string | null;
+          id: string;
+          ip_address: unknown;
+          new_values: Json | null;
+          old_values: Json | null;
+          operation: string;
+          record_id: string | null;
+          table_name: string;
+          user_agent: string | null;
+          user_email: string | null;
+          user_id: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string;
+          ip_address?: unknown;
+          new_values?: Json | null;
+          old_values?: Json | null;
+          operation: string;
+          record_id?: string | null;
+          table_name: string;
+          user_agent?: string | null;
+          user_email?: string | null;
+          user_id?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string;
+          ip_address?: unknown;
+          new_values?: Json | null;
+          old_values?: Json | null;
+          operation?: string;
+          record_id?: string | null;
+          table_name?: string;
+          user_agent?: string | null;
+          user_email?: string | null;
+          user_id?: string | null;
+        };
+        Relationships: [];
+      };
       belt_levels: {
         Row: {
           color: string;
@@ -57,90 +117,6 @@ export type Database = {
             referencedColumns: ['id'];
           },
         ];
-      };
-      admin_users: {
-        Row: {
-          created_at: string | null;
-          email: string;
-          id: string;
-        };
-        Insert: {
-          created_at?: string | null;
-          email: string;
-          id?: string;
-        };
-        Update: {
-          created_at?: string | null;
-          email?: string;
-          id?: string;
-        };
-        Relationships: [];
-      };
-      user_roles: {
-        Row: {
-          created_at: string | null;
-          created_by: string | null;
-          id: string;
-          role: Database['public']['Enums']['app_role'];
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string | null;
-          created_by?: string | null;
-          id?: string;
-          role: Database['public']['Enums']['app_role'];
-          user_id: string;
-        };
-        Update: {
-          created_at?: string | null;
-          created_by?: string | null;
-          id?: string;
-          role?: Database['public']['Enums']['app_role'];
-          user_id?: string;
-        };
-        Relationships: [];
-      };
-      audit_logs: {
-        Row: {
-          created_at: string | null;
-          id: string;
-          ip_address: unknown | null;
-          new_values: Json | null;
-          old_values: Json | null;
-          operation: string;
-          record_id: string | null;
-          table_name: string;
-          user_agent: string | null;
-          user_email: string | null;
-          user_id: string | null;
-        };
-        Insert: {
-          created_at?: string | null;
-          id?: string;
-          ip_address?: unknown | null;
-          new_values?: Json | null;
-          old_values?: Json | null;
-          operation: string;
-          record_id?: string | null;
-          table_name: string;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Update: {
-          created_at?: string | null;
-          id?: string;
-          ip_address?: unknown | null;
-          new_values?: Json | null;
-          old_values?: Json | null;
-          operation?: string;
-          record_id?: string | null;
-          table_name?: string;
-          user_agent?: string | null;
-          user_email?: string | null;
-          user_id?: string | null;
-        };
-        Relationships: [];
       };
       blogs: {
         Row: {
@@ -262,6 +238,13 @@ export type Database = {
             referencedRelation: 'students';
             referencedColumns: ['id'];
           },
+          {
+            foreignKeyName: 'fees_student_id_fkey';
+            columns: ['student_id'];
+            isOneToOne: false;
+            referencedRelation: 'students_masked';
+            referencedColumns: ['id'];
+          },
         ];
       };
       gallery_images: {
@@ -324,48 +307,39 @@ export type Database = {
         };
         Relationships: [];
       };
-      students: {
+      sensitive_data_audit: {
         Row: {
-          aadhar_number: string;
-          created_at: string | null;
-          created_by: string | null;
-          default_monthly_fee: number;
-          fee_status: string | null;
+          accessed_at: string | null;
+          action: string;
+          details: Json | null;
           id: string;
-          join_date: string;
-          name: string;
-          parent_contact: string;
-          parent_name: string;
-          profile_image_url: string | null;
-          program: string;
+          ip_address: string | null;
+          record_id: string | null;
+          table_name: string;
+          user_email: string | null;
+          user_id: string | null;
         };
         Insert: {
-          aadhar_number: string;
-          created_at?: string | null;
-          created_by?: string | null;
-          default_monthly_fee?: number;
-          fee_status?: string | null;
+          accessed_at?: string | null;
+          action: string;
+          details?: Json | null;
           id?: string;
-          join_date: string;
-          name: string;
-          parent_contact: string;
-          parent_name: string;
-          profile_image_url?: string | null;
-          program: string;
+          ip_address?: string | null;
+          record_id?: string | null;
+          table_name: string;
+          user_email?: string | null;
+          user_id?: string | null;
         };
         Update: {
-          aadhar_number?: string;
-          created_at?: string | null;
-          created_by?: string | null;
-          default_monthly_fee?: number;
-          fee_status?: string | null;
+          accessed_at?: string | null;
+          action?: string;
+          details?: Json | null;
           id?: string;
-          join_date?: string;
-          name?: string;
-          parent_contact?: string;
-          parent_name?: string;
-          profile_image_url?: string | null;
-          program?: string;
+          ip_address?: string | null;
+          record_id?: string | null;
+          table_name?: string;
+          user_email?: string | null;
+          user_id?: string | null;
         };
         Relationships: [];
       };
@@ -421,28 +395,178 @@ export type Database = {
             referencedRelation: 'students';
             referencedColumns: ['id'];
           },
+          {
+            foreignKeyName: 'student_progress_student_id_fkey';
+            columns: ['student_id'];
+            isOneToOne: false;
+            referencedRelation: 'students_masked';
+            referencedColumns: ['id'];
+          },
         ];
+      };
+      students: {
+        Row: {
+          aadhar_number: string;
+          created_at: string | null;
+          created_by: string | null;
+          default_monthly_fee: number;
+          encrypted_aadhar_number: string | null;
+          fee_status: string | null;
+          id: string;
+          join_date: string;
+          name: string;
+          parent_contact: string;
+          parent_name: string;
+          profile_image_url: string | null;
+          program: string;
+        };
+        Insert: {
+          aadhar_number: string;
+          created_at?: string | null;
+          created_by?: string | null;
+          default_monthly_fee?: number;
+          encrypted_aadhar_number?: string | null;
+          fee_status?: string | null;
+          id?: string;
+          join_date: string;
+          name: string;
+          parent_contact: string;
+          parent_name: string;
+          profile_image_url?: string | null;
+          program: string;
+        };
+        Update: {
+          aadhar_number?: string;
+          created_at?: string | null;
+          created_by?: string | null;
+          default_monthly_fee?: number;
+          encrypted_aadhar_number?: string | null;
+          fee_status?: string | null;
+          id?: string;
+          join_date?: string;
+          name?: string;
+          parent_contact?: string;
+          parent_name?: string;
+          profile_image_url?: string | null;
+          program?: string;
+        };
+        Relationships: [];
+      };
+      user_roles: {
+        Row: {
+          created_at: string | null;
+          id: string;
+          role: Database['public']['Enums']['app_role'];
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string;
+          role: Database['public']['Enums']['app_role'];
+          user_id: string;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string;
+          role?: Database['public']['Enums']['app_role'];
+          user_id?: string;
+        };
+        Relationships: [];
       };
     };
     Views: {
-      [_ in never]: never;
+      students_masked: {
+        Row: {
+          aadhar_number_full: string | null;
+          aadhar_number_masked: string | null;
+          created_at: string | null;
+          created_by: string | null;
+          default_monthly_fee: number | null;
+          encrypted_aadhar_number: string | null;
+          fee_status: string | null;
+          id: string | null;
+          join_date: string | null;
+          name: string | null;
+          parent_contact_full: string | null;
+          parent_contact_masked: string | null;
+          parent_name: string | null;
+          profile_image_url: string | null;
+          program: string | null;
+        };
+        Insert: {
+          aadhar_number_full?: string | null;
+          aadhar_number_masked?: never;
+          created_at?: string | null;
+          created_by?: string | null;
+          default_monthly_fee?: number | null;
+          encrypted_aadhar_number?: string | null;
+          fee_status?: string | null;
+          id?: string | null;
+          join_date?: string | null;
+          name?: string | null;
+          parent_contact_full?: string | null;
+          parent_contact_masked?: never;
+          parent_name?: string | null;
+          profile_image_url?: string | null;
+          program?: string | null;
+        };
+        Update: {
+          aadhar_number_full?: string | null;
+          aadhar_number_masked?: never;
+          created_at?: string | null;
+          created_by?: string | null;
+          default_monthly_fee?: number | null;
+          encrypted_aadhar_number?: string | null;
+          fee_status?: string | null;
+          id?: string | null;
+          join_date?: string | null;
+          name?: string | null;
+          parent_contact_full?: string | null;
+          parent_contact_masked?: never;
+          parent_name?: string | null;
+          profile_image_url?: string | null;
+          program?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
-      mask_aadhar: {
-        Args: { aadhar_number: string };
+      decrypt_sensitive_data: {
+        Args: { encrypted_data: string };
         Returns: string;
       };
-      mask_phone: {
-        Args: { phone_number: string };
-        Returns: string;
-      };
-      has_role: {
-        Args: { required_role: string };
+      encrypt_sensitive_data: { Args: { data_text: string }; Returns: string };
+      has_role:
+        | { Args: { required_role: string }; Returns: boolean }
+        | {
+            Args: {
+              _role: Database['public']['Enums']['app_role'];
+              _user_id: string;
+            };
+            Returns: boolean;
+          };
+      is_progress_status_unchanged: {
+        Args: { new_status: string; row_id: string };
         Returns: boolean;
       };
+      log_sensitive_data_access: {
+        Args: { p_action?: string; p_record_id: string; p_table_name: string };
+        Returns: undefined;
+      };
+      mask_aadhar: { Args: { aadhar_number: string }; Returns: string };
+      mask_phone: { Args: { phone_number: string }; Returns: string };
+      validate_aadhar: { Args: { aadhar_text: string }; Returns: boolean };
+      validate_phone: { Args: { phone_text: string }; Returns: boolean };
     };
     Enums: {
-      app_role: 'admin' | 'instructor' | 'staff' | 'student';
+      app_role:
+        | 'super_admin'
+        | 'finance_admin'
+        | 'content_admin'
+        | 'instructor'
+        | 'student'
+        | 'admin'
+        | 'staff';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -572,6 +696,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: [
+        'super_admin',
+        'finance_admin',
+        'content_admin',
+        'instructor',
+        'student',
+        'admin',
+        'staff',
+      ],
+    },
   },
 } as const;

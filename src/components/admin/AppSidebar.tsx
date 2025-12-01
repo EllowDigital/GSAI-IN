@@ -13,6 +13,7 @@ import {
   GitBranch,
   ChevronRight,
   X,
+  Trophy,
 } from 'lucide-react';
 import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 
@@ -35,6 +36,12 @@ const navItems = [
     title: 'Students',
     url: '/admin/dashboard/students',
     icon: Users,
+    category: 'management',
+  },
+  {
+    title: 'Progression',
+    url: '/admin/dashboard/progression',
+    icon: Trophy,
     category: 'management',
   },
   {

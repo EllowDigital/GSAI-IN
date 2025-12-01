@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Table,
   TableHeader,
@@ -17,9 +17,12 @@ import {
   Calendar,
   GraduationCap,
   CreditCard,
+  Award,
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import clsx from 'clsx';
+import { supabase } from '@/integrations/supabase/client';
 
 type StudentRow = {
   id: string;
@@ -31,6 +34,11 @@ type StudentRow = {
   parent_contact: string;
   profile_image_url: string | null;
   created_at: string | null;
+};
+
+type StudentWithBelt = StudentRow & {
+  belt_color?: string;
+  belt_rank?: number;
 };
 
 type Props = {
@@ -81,6 +89,55 @@ export default function StudentsTable({
   sortConfig,
   requestSort,
 }: Props) {
+  const [studentsWithBelts, setStudentsWithBelts] = useState<StudentWithBelt[]>(
+    []
+  );
+
+  useEffect(() => {
+    const fetchBelts = async () => {
+      if (students.length === 0) return;
+
+      const { data, error } = await supabase
+        .from('student_progress')
+        .select(
+          `
+          student_id,
+          belt_levels:belt_levels(color, rank)
+        `
+        )
+        .in(
+          'student_id',
+          students.map((s) => s.id)
+        );
+
+      if (!error && data) {
+        const beltMap = new Map(
+          data.map((item) => [
+            item.student_id,
+            {
+              color: item.belt_levels?.color,
+              rank: item.belt_levels?.rank,
+            },
+          ])
+        );
+
+        setStudentsWithBelts(
+          students.map((student) => ({
+            ...student,
+            belt_color: beltMap.get(student.id)?.color || 'White',
+            belt_rank: beltMap.get(student.id)?.rank || 1,
+          }))
+        );
+      } else {
+        setStudentsWithBelts(
+          students.map((s) => ({ ...s, belt_color: 'White', belt_rank: 1 }))
+        );
+      }
+    };
+
+    fetchBelts();
+  }, [students]);
+
   if (loading) {
     return (
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200/50 overflow-hidden">
@@ -95,7 +152,7 @@ export default function StudentsTable({
     );
   }
 
-  if (students.length === 0) {
+  if (studentsWithBelts.length === 0 && !loading) {
     return (
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200/50 overflow-hidden">
         <div className="py-16 text-center">
@@ -146,6 +203,12 @@ export default function StudentsTable({
               <GraduationCap className="w-4 h-4 text-slate-500" />
               Program
             </SortableHeader>
+            <TableHead className="min-w-[100px]">
+              <div className="flex items-center gap-2">
+                <Award className="w-4 h-4 text-slate-500" />
+                Belt
+              </div>
+            </TableHead>
             <SortableHeader
               active={sortConfig.key === 'join_date'}
               direction={sortConfig.direction}
@@ -170,7 +233,7 @@ export default function StudentsTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {students.map((stu, index) => (
+          {studentsWithBelts.map((stu, index) => (
             <TableRow
               key={stu.id}
               className={clsx(
@@ -217,6 +280,12 @@ export default function StudentsTable({
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 border border-blue-200">
                   {stu.program}
                 </span>
+              </TableCell>
+              <TableCell>
+                <Badge variant="secondary" className="gap-1">
+                  <Award className="h-3 w-3" />
+                  {stu.belt_color}
+                </Badge>
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
