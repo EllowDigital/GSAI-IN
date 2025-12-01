@@ -39,6 +39,7 @@ import {
   validateAadharNumber,
   validatePhoneNumber,
 } from '@/utils/inputValidation';
+import { useBeltLevels } from '@/hooks/useBeltLevels';
 
 // List of valid programs
 const programOptions = [
@@ -87,6 +88,8 @@ export default function StudentModal({
   onOpenChange,
   student,
 }: StudentModalProps) {
+  const { getWhiteBeltId } = useBeltLevels();
+
   const form = useForm<StudentFormValues>({
     resolver: zodResolver(StudentSchema),
     defaultValues: {
@@ -221,6 +224,16 @@ export default function StudentModal({
           .single();
 
         if (error) throw error;
+
+        // Assign white belt to new student
+        if (data && getWhiteBeltId) {
+          await supabase.from('student_progress').insert({
+            student_id: data.id,
+            belt_level_id: getWhiteBeltId,
+            status: 'needs_work',
+          });
+        }
+
         return data;
       }
     }, 'Student Form Submission');
