@@ -7,6 +7,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Award } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -138,7 +139,10 @@ export default function AssignStudentBeltDialog({
               <SelectContent>
                 {belts.map((belt) => (
                   <SelectItem key={belt.value} value={belt.value}>
-                    {belt.label}
+                    <div className="flex items-center gap-2">
+                      <Award className="h-4 w-4" />
+                      {belt.label}
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>

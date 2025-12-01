@@ -49,11 +49,21 @@ export function useBeltLevels() {
 
   const beltOptions = useMemo(() => {
     return (query.data ?? []).map((belt) => ({
-      label: `${belt.color} (Rank ${belt.rank})`,
+      label: `${belt.color} Belt - Rank ${belt.rank}`,
       value: belt.id,
       color: belt.color,
+      description: belt.requirements.length > 0 
+        ? `${belt.requirements.length} requirements` 
+        : 'Beginner level',
     }));
   }, [query.data]);
 
-  return { ...query, beltMap, beltOptions };
+  const getWhiteBeltId = useMemo(() => {
+    const whiteBelt = (query.data ?? []).find(
+      (belt) => belt.color.toLowerCase() === 'white' || belt.rank === 1
+    );
+    return whiteBelt?.id;
+  }, [query.data]);
+
+  return { ...query, beltMap, beltOptions, getWhiteBeltId };
 }
