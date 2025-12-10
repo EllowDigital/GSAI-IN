@@ -20,9 +20,22 @@ import {
   Award,
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import clsx from 'clsx';
 import { supabase } from '@/integrations/supabase/client';
+
+const BELT_COLORS: Record<string, string> = {
+  white: 'bg-slate-100 text-slate-800 border-slate-300',
+  yellow: 'bg-yellow-100 text-yellow-800 border-yellow-400',
+  orange: 'bg-orange-100 text-orange-800 border-orange-400',
+  green: 'bg-green-100 text-green-800 border-green-400',
+  blue: 'bg-blue-100 text-blue-800 border-blue-400',
+  brown: 'bg-amber-700 text-white border-amber-800',
+  black: 'bg-slate-900 text-white border-slate-700',
+};
+
+function getBeltColorClass(color: string): string {
+  return BELT_COLORS[color.toLowerCase()] || 'bg-muted text-muted-foreground';
+}
 
 type StudentRow = {
   id: string;
@@ -282,10 +295,12 @@ export default function StudentsTable({
                 </span>
               </TableCell>
               <TableCell>
-                <Badge variant="secondary" className="gap-1">
+                <div
+                  className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${getBeltColorClass(stu.belt_color ?? 'white')}`}
+                >
                   <Award className="h-3 w-3" />
                   {stu.belt_color}
-                </Badge>
+                </div>
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">

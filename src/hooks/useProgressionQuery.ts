@@ -256,16 +256,40 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
       beltLevelId: string;
       status?: ProgressStatus;
     }) => {
-      const { error } = await supabase.from('student_progress').upsert(
-        {
+      // Check if student already has a progress record for any belt
+      const { data: existingProgress, error: checkError } = await supabase
+        .from('student_progress')
+        .select('id, belt_level_id')
+        .eq('student_id', studentId)
+        .maybeSingle();
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        throw checkError;
+      }
+
+      if (existingProgress) {
+        // Update existing record to new belt
+        const { error } = await supabase
+          .from('student_progress')
+          .update({
+            belt_level_id: beltLevelId,
+            status,
+            assessment_date: null,
+            coach_notes: null,
+          })
+          .eq('id', existingProgress.id);
+
+        if (error) throw error;
+      } else {
+        // Insert new record
+        const { error } = await supabase.from('student_progress').insert({
           student_id: studentId,
           belt_level_id: beltLevelId,
           status,
-        },
-        { onConflict: 'student_id,belt_level_id' }
-      );
+        });
 
-      if (error) throw error;
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       toast.success('Student assigned to belt');
