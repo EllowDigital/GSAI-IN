@@ -307,6 +307,68 @@ export type Database = {
         };
         Relationships: [];
       };
+      promotion_history: {
+        Row: {
+          created_at: string;
+          from_belt_id: string | null;
+          id: string;
+          notes: string | null;
+          promoted_at: string;
+          promoted_by: string | null;
+          student_id: string;
+          to_belt_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          from_belt_id?: string | null;
+          id?: string;
+          notes?: string | null;
+          promoted_at?: string;
+          promoted_by?: string | null;
+          student_id: string;
+          to_belt_id: string;
+        };
+        Update: {
+          created_at?: string;
+          from_belt_id?: string | null;
+          id?: string;
+          notes?: string | null;
+          promoted_at?: string;
+          promoted_by?: string | null;
+          student_id?: string;
+          to_belt_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'promotion_history_from_belt_id_fkey';
+            columns: ['from_belt_id'];
+            isOneToOne: false;
+            referencedRelation: 'belt_levels';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'promotion_history_student_id_fkey';
+            columns: ['student_id'];
+            isOneToOne: false;
+            referencedRelation: 'students';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'promotion_history_student_id_fkey';
+            columns: ['student_id'];
+            isOneToOne: false;
+            referencedRelation: 'students_masked';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'promotion_history_to_belt_id_fkey';
+            columns: ['to_belt_id'];
+            isOneToOne: false;
+            referencedRelation: 'belt_levels';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       sensitive_data_audit: {
         Row: {
           accessed_at: string | null;
