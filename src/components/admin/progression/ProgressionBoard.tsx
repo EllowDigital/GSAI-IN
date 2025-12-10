@@ -169,7 +169,9 @@ function StudentCard({
             >
               <Award className="h-3 w-3 sm:h-4 sm:w-4" />
               <span>{belt?.color ?? 'No Belt'}</span>
-              <span className="text-[10px] sm:text-xs opacity-70">R{belt?.rank ?? 0}</span>
+              <span className="text-[10px] sm:text-xs opacity-70">
+                R{belt?.rank ?? 0}
+              </span>
             </div>
           </div>
 
@@ -243,7 +245,9 @@ function StudentCard({
       <Dialog open={notesDialogOpen} onOpenChange={setNotesDialogOpen}>
         <DialogContent className="max-w-[95vw] sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-base sm:text-lg">Coach Notes - {student?.name}</DialogTitle>
+            <DialogTitle className="text-base sm:text-lg">
+              Coach Notes - {student?.name}
+            </DialogTitle>
             <DialogDescription className="text-xs sm:text-sm">
               Add assessment notes, feedback, or areas for improvement.
             </DialogDescription>
@@ -264,7 +268,9 @@ function StudentCard({
               >
                 Cancel
               </Button>
-              <Button size="sm" onClick={handleSaveNotes}>Save</Button>
+              <Button size="sm" onClick={handleSaveNotes}>
+                Save
+              </Button>
             </div>
           </div>
         </DialogContent>
@@ -306,7 +312,11 @@ export default function ProgressionBoard() {
 
   const { beltOptions, beltMap } = useBeltLevels();
   const { students } = useStudents();
-  const { history, addPromotion, isLoading: historyLoading } = usePromotionHistory();
+  const {
+    history,
+    addPromotion,
+    isLoading: historyLoading,
+  } = usePromotionHistory();
 
   const studentOptions = useMemo(
     () =>
@@ -518,34 +528,58 @@ export default function ProgressionBoard() {
           ) : (
             <Tabs defaultValue="needs_work" className="w-full">
               <TabsList className="grid w-full grid-cols-4 mb-3 sm:mb-4 h-auto p-1">
-                <TabsTrigger value="needs_work" className="text-[10px] sm:text-xs px-1 sm:px-2 py-1.5 sm:py-2">
+                <TabsTrigger
+                  value="needs_work"
+                  className="text-[10px] sm:text-xs px-1 sm:px-2 py-1.5 sm:py-2"
+                >
                   <span className="truncate">Needs</span>
                   {(grouped.needs_work?.length ?? 0) > 0 && (
-                    <Badge variant="secondary" className="ml-1 text-[10px] h-4 px-1">
+                    <Badge
+                      variant="secondary"
+                      className="ml-1 text-[10px] h-4 px-1"
+                    >
                       {grouped.needs_work?.length}
                     </Badge>
                   )}
                 </TabsTrigger>
-                <TabsTrigger value="ready" className="text-[10px] sm:text-xs px-1 sm:px-2 py-1.5 sm:py-2">
+                <TabsTrigger
+                  value="ready"
+                  className="text-[10px] sm:text-xs px-1 sm:px-2 py-1.5 sm:py-2"
+                >
                   <span className="truncate">Ready</span>
                   {(grouped.ready?.length ?? 0) > 0 && (
-                    <Badge variant="secondary" className="ml-1 text-[10px] h-4 px-1">
+                    <Badge
+                      variant="secondary"
+                      className="ml-1 text-[10px] h-4 px-1"
+                    >
                       {grouped.ready?.length}
                     </Badge>
                   )}
                 </TabsTrigger>
-                <TabsTrigger value="passed" className="text-[10px] sm:text-xs px-1 sm:px-2 py-1.5 sm:py-2">
+                <TabsTrigger
+                  value="passed"
+                  className="text-[10px] sm:text-xs px-1 sm:px-2 py-1.5 sm:py-2"
+                >
                   <span className="truncate">Passed</span>
                   {(grouped.passed?.length ?? 0) > 0 && (
-                    <Badge variant="secondary" className="ml-1 text-[10px] h-4 px-1">
+                    <Badge
+                      variant="secondary"
+                      className="ml-1 text-[10px] h-4 px-1"
+                    >
                       {grouped.passed?.length}
                     </Badge>
                   )}
                 </TabsTrigger>
-                <TabsTrigger value="deferred" className="text-[10px] sm:text-xs px-1 sm:px-2 py-1.5 sm:py-2">
+                <TabsTrigger
+                  value="deferred"
+                  className="text-[10px] sm:text-xs px-1 sm:px-2 py-1.5 sm:py-2"
+                >
                   <span className="truncate">Defer</span>
                   {(grouped.deferred?.length ?? 0) > 0 && (
-                    <Badge variant="secondary" className="ml-1 text-[10px] h-4 px-1">
+                    <Badge
+                      variant="secondary"
+                      className="ml-1 text-[10px] h-4 px-1"
+                    >
                       {grouped.deferred?.length}
                     </Badge>
                   )}
@@ -553,7 +587,12 @@ export default function ProgressionBoard() {
               </TabsList>
 
               {(
-                ['needs_work', 'ready', 'passed', 'deferred'] as ProgressStatus[]
+                [
+                  'needs_work',
+                  'ready',
+                  'passed',
+                  'deferred',
+                ] as ProgressStatus[]
               ).map((status) => (
                 <TabsContent key={status} value={status} className="mt-0">
                   {grouped[status] && grouped[status].length > 0 ? (
@@ -582,7 +621,9 @@ export default function ProgressionBoard() {
                   ) : (
                     <div className="text-center py-8 sm:py-12 text-muted-foreground border-2 border-dashed rounded-lg">
                       <Users className="h-8 w-8 sm:h-12 sm:w-12 mx-auto mb-2 sm:mb-3 opacity-40" />
-                      <p className="font-medium text-sm sm:text-base">No students here</p>
+                      <p className="font-medium text-sm sm:text-base">
+                        No students here
+                      </p>
                       <p className="text-xs sm:text-sm mt-1">
                         Students appear as you update their status
                       </p>
@@ -596,7 +637,9 @@ export default function ProgressionBoard() {
           {!isLoading && totalCount === 0 && (
             <div className="text-center py-8 sm:py-12 text-muted-foreground">
               <Award className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-3 sm:mb-4 opacity-30" />
-              <p className="text-base sm:text-lg font-medium">No progression records</p>
+              <p className="text-base sm:text-lg font-medium">
+                No progression records
+              </p>
               <p className="text-xs sm:text-sm mt-1 mb-3 sm:mb-4">
                 Add students to begin tracking
               </p>
@@ -622,9 +665,7 @@ export default function ProgressionBoard() {
               <History className="h-5 w-5" />
               Promotion History
             </DialogTitle>
-            <DialogDescription>
-              Recent belt promotions
-            </DialogDescription>
+            <DialogDescription>Recent belt promotions</DialogDescription>
           </DialogHeader>
           <ScrollArea className="max-h-[60vh]">
             {historyLoading ? (
@@ -648,7 +689,8 @@ export default function ProgressionBoard() {
                         <AvatarImage src={item.students.profile_image_url} />
                       ) : (
                         <AvatarFallback className="text-xs">
-                          {item.students?.name?.slice(0, 2).toUpperCase() ?? 'ST'}
+                          {item.students?.name?.slice(0, 2).toUpperCase() ??
+                            'ST'}
                         </AvatarFallback>
                       )}
                     </Avatar>
@@ -670,7 +712,10 @@ export default function ProgressionBoard() {
                         </span>
                       </div>
                       <p className="text-[10px] text-muted-foreground mt-1">
-                        {format(new Date(item.promoted_at), 'MMM dd, yyyy h:mm a')}
+                        {format(
+                          new Date(item.promoted_at),
+                          'MMM dd, yyyy h:mm a'
+                        )}
                       </p>
                     </div>
                   </div>

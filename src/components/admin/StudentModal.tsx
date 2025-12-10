@@ -237,7 +237,10 @@ export default function StudentModal({
 
           // Log error but don't fail the student creation
           if (progressError) {
-            console.warn('Could not auto-assign white belt:', progressError.message);
+            console.warn(
+              'Could not auto-assign white belt:',
+              progressError.message
+            );
           }
         }
 

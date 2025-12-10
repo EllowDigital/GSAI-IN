@@ -1,16 +1,15 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-interface NavLinkItemProps
-  extends React.PropsWithChildren<{
-    href: string;
-    name: string;
-    className: string;
-    onClick?: () => void;
-    role?: string;
-    tabIndex?: number;
-    style?: React.CSSProperties;
-  }> {}
+interface NavLinkItemProps extends React.PropsWithChildren<{
+  href: string;
+  name: string;
+  className: string;
+  onClick?: () => void;
+  role?: string;
+  tabIndex?: number;
+  style?: React.CSSProperties;
+}> {}
 
 export function NavLinkItem({
   href,
