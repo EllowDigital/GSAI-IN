@@ -36,7 +36,7 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
   const config: UserConfig = {
     server: {
       host: '::',
-      port: 5173,
+      port: 8080,
       strictPort: true,
     },
 
