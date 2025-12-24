@@ -397,90 +397,95 @@ export default function ProgressionBoard() {
   }, [records, statusFilter]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground flex items-center gap-2">
-            <Trophy className="h-7 w-7 text-yellow-500" />
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground flex items-center gap-2">
+            <Trophy className="h-6 w-6 sm:h-7 sm:w-7 text-yellow-500" />
             Belt Progression
           </h1>
-          <p className="text-muted-foreground mt-1">Track and manage student belt assessments</p>
+          <p className="text-sm text-muted-foreground mt-1">Track and manage student belt assessments</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => setHistoryDialogOpen(true)}>
-            <History className="h-4 w-4 mr-2" />
-            History
+          <Button variant="outline" size="sm" onClick={() => setHistoryDialogOpen(true)} className="h-9">
+            <History className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">History</span>
           </Button>
-          <Button size="sm" onClick={() => setAssignDialogOpen(true)}>
-            <UserPlus className="h-4 w-4 mr-2" />
-            Assign Student
+          <Button size="sm" onClick={() => setAssignDialogOpen(true)} className="h-9">
+            <UserPlus className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Assign Student</span>
           </Button>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard label="Needs Work" value={grouped.needs_work?.length ?? 0} icon={AlertCircle} color="border-red-200 dark:border-red-900" />
-        <StatCard label="Ready" value={grouped.ready?.length ?? 0} icon={Clock} color="border-amber-200 dark:border-amber-900" />
-        <StatCard label="Passed" value={grouped.passed?.length ?? 0} icon={CheckCircle} color="border-green-200 dark:border-green-900" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+        <StatCard label="Needs Work" value={grouped.needs_work?.length ?? 0} icon={AlertCircle} color="border-red-200 dark:border-red-900/50" />
+        <StatCard label="Ready" value={grouped.ready?.length ?? 0} icon={Clock} color="border-amber-200 dark:border-amber-900/50" />
+        <StatCard label="Passed" value={grouped.passed?.length ?? 0} icon={CheckCircle} color="border-green-200 dark:border-green-900/50" />
         <StatCard label="Total" value={totalCount} icon={TrendingUp} color="border-primary/20" />
       </div>
 
       {/* Filters */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-3">
+      <Card className="border-border/50">
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search students..." className="pl-9" />
+              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search students..." className="pl-9 h-9" />
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-[160px]">
-                <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="needs_work">Needs Work</SelectItem>
-                <SelectItem value="ready">Ready</SelectItem>
-                <SelectItem value="passed">Passed</SelectItem>
-                <SelectItem value="deferred">Deferred</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={program ?? 'all'} onValueChange={(v) => setProgram(v === 'all' ? undefined : v)}>
-              <SelectTrigger className="w-full sm:w-[160px]">
-                <SelectValue placeholder="Program" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Programs</SelectItem>
-                {programOptions.map((p) => (
-                  <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={beltLevelId ?? 'all'} onValueChange={(v) => setBeltLevelId(v === 'all' ? undefined : v)}>
-              <SelectTrigger className="w-full sm:w-[160px]">
-                <SelectValue placeholder="Belt" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Belts</SelectItem>
-                {beltOptions.map((b) => (
-                  <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="grid grid-cols-3 gap-2 sm:flex sm:gap-2">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full sm:w-[130px] h-9">
+                  <Filter className="h-4 w-4 mr-1 sm:mr-2 flex-shrink-0" />
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="needs_work">Needs Work</SelectItem>
+                  <SelectItem value="ready">Ready</SelectItem>
+                  <SelectItem value="passed">Passed</SelectItem>
+                  <SelectItem value="deferred">Deferred</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={program ?? 'all'} onValueChange={(v) => setProgram(v === 'all' ? undefined : v)}>
+                <SelectTrigger className="w-full sm:w-[130px] h-9">
+                  <SelectValue placeholder="Program" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Programs</SelectItem>
+                  {programOptions.map((p) => (
+                    <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={beltLevelId ?? 'all'} onValueChange={(v) => setBeltLevelId(v === 'all' ? undefined : v)}>
+                <SelectTrigger className="w-full sm:w-[130px] h-9">
+                  <SelectValue placeholder="Belt" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Belts</SelectItem>
+                  {beltOptions.map((b) => (
+                    <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Student Cards Grid */}
       {isLoading ? (
-        <div className="flex items-center justify-center py-16">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="flex items-center justify-center py-12 sm:py-16">
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">Loading students...</p>
+          </div>
         </div>
       ) : filteredRecords.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
           {filteredRecords.map((record) => {
             const nextBelt = getNextBelt(record.belt_levels?.id);
             return (
@@ -498,11 +503,13 @@ export default function ProgressionBoard() {
           })}
         </div>
       ) : (
-        <Card className="p-12">
+        <Card className="p-8 sm:p-12 border-border/50">
           <div className="text-center">
-            <Award className="h-16 w-16 mx-auto mb-4 text-muted-foreground/30" />
-            <h3 className="text-lg font-semibold mb-2">No Students Found</h3>
-            <p className="text-muted-foreground mb-4">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-muted rounded-full flex items-center justify-center mb-4">
+              <Award className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2 text-foreground">No Students Found</h3>
+            <p className="text-sm text-muted-foreground mb-4">
               {totalCount === 0 ? 'Assign students to start tracking their progression.' : 'No students match your current filters.'}
             </p>
             {totalCount === 0 && (
@@ -517,7 +524,7 @@ export default function ProgressionBoard() {
 
       {/* Promotion History Dialog */}
       <Dialog open={historyDialogOpen} onOpenChange={setHistoryDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[80vh]">
+        <DialogContent className="max-w-lg max-h-[85vh] mx-4 sm:mx-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <History className="h-5 w-5" />

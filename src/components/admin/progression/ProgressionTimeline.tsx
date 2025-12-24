@@ -19,15 +19,15 @@ interface ProgressionTimelineProps {
 }
 
 const BELT_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  white: { bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-300' },
-  yellow: { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-400' },
-  orange: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-400' },
-  green: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-400' },
-  blue: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-400' },
-  purple: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-400' },
-  red: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-400' },
-  brown: { bg: 'bg-amber-100', text: 'text-amber-800', border: 'border-amber-600' },
-  black: { bg: 'bg-slate-800', text: 'text-white', border: 'border-slate-600' },
+  white: { bg: 'bg-slate-50 dark:bg-slate-800', text: 'text-slate-700 dark:text-slate-200', border: 'border-slate-300 dark:border-slate-600' },
+  yellow: { bg: 'bg-yellow-50 dark:bg-yellow-900/30', text: 'text-yellow-700 dark:text-yellow-300', border: 'border-yellow-400 dark:border-yellow-600' },
+  orange: { bg: 'bg-orange-50 dark:bg-orange-900/30', text: 'text-orange-700 dark:text-orange-300', border: 'border-orange-400 dark:border-orange-600' },
+  green: { bg: 'bg-green-50 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-300', border: 'border-green-400 dark:border-green-600' },
+  blue: { bg: 'bg-blue-50 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-300', border: 'border-blue-400 dark:border-blue-600' },
+  purple: { bg: 'bg-purple-50 dark:bg-purple-900/30', text: 'text-purple-700 dark:text-purple-300', border: 'border-purple-400 dark:border-purple-600' },
+  red: { bg: 'bg-red-50 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-300', border: 'border-red-400 dark:border-red-600' },
+  brown: { bg: 'bg-amber-100 dark:bg-amber-900/40', text: 'text-amber-800 dark:text-amber-200', border: 'border-amber-600 dark:border-amber-500' },
+  black: { bg: 'bg-slate-800 dark:bg-slate-950', text: 'text-white', border: 'border-slate-600 dark:border-slate-700' },
 };
 
 function getBeltStyle(color: string) {
