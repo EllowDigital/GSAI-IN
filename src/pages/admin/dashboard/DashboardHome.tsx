@@ -52,6 +52,7 @@ import {
   CalendarPlus,
 } from 'lucide-react';
 import { useRealtime } from '@/hooks/useRealtime';
+import DashboardNotifications from '@/components/admin/DashboardNotifications';
 
 const COLORS = [
   'hsl(var(--primary))',
@@ -341,6 +342,9 @@ export default function DashboardHome() {
           </div>
         </div>
       </div>
+
+      {/* Dashboard Notifications */}
+      <DashboardNotifications />
 
       {/* Quick Actions Grid */}
       <div className="space-y-3 sm:space-y-4">
