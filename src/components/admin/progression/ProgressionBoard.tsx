@@ -28,6 +28,7 @@ import {
   Trophy,
   TrendingUp,
   Filter,
+  Layers,
 } from 'lucide-react';
 import {
   ProgressionRecord,
@@ -48,6 +49,7 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from '@/components/ui/sonner';
+import { isBeltDiscipline, isLevelDiscipline, getDisciplineConfig, hasStripeSupport } from '@/config/disciplineConfig';
 
 const STATUS_CONFIG: Record<
   ProgressStatus,
@@ -95,12 +97,26 @@ const BELT_COLORS: Record<string, { bg: string; text: string; border: string }> 
   orange: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-400' },
   green: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-400' },
   blue: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-400' },
+  purple: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-400' },
+  red: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-400' },
   brown: { bg: 'bg-amber-100', text: 'text-amber-800', border: 'border-amber-600' },
   black: { bg: 'bg-slate-800', text: 'text-white', border: 'border-slate-600' },
 };
 
+const LEVEL_COLORS: Record<number, { bg: string; text: string; border: string }> = {
+  1: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-400' },
+  2: { bg: 'bg-sky-50', text: 'text-sky-700', border: 'border-sky-400' },
+  3: { bg: 'bg-violet-50', text: 'text-violet-700', border: 'border-violet-400' },
+  4: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-400' },
+  5: { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-400' },
+};
+
 function getBeltStyle(color: string) {
   return BELT_COLORS[color.toLowerCase()] || BELT_COLORS.white;
+}
+
+function getLevelStyle(order: number) {
+  return LEVEL_COLORS[order] || LEVEL_COLORS[1];
 }
 
 function StudentCard({
@@ -122,6 +138,9 @@ function StudentCard({
   const [notes, setNotes] = useState(record.coach_notes ?? '');
   const student = record.students;
   const belt = record.belt_levels;
+  const program = student?.program ?? '';
+  const isBeltBased = isBeltDiscipline(program);
+  const showStripes = hasStripeSupport(program);
   const beltStyle = getBeltStyle(belt?.color ?? 'white');
 
   const handleSaveNotes = () => {
@@ -131,11 +150,40 @@ function StudentCard({
 
   const StatusIcon = STATUS_CONFIG[record.status].icon;
 
+  // Get progression display based on discipline type
+  const getProgressionDisplay = () => {
+    if (isBeltBased) {
+      const stripeCount = (record as any).stripe_count;
+      return (
+        <div className="flex items-center gap-2 mt-1.5">
+          <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${beltStyle.bg} ${beltStyle.text} ${beltStyle.border} border`}>
+            <Award className="h-3 w-3" />
+            {belt?.color ?? 'White'} Belt
+            {showStripes && stripeCount > 0 && (
+              <span className="ml-1">({stripeCount} stripes)</span>
+            )}
+          </div>
+        </div>
+      );
+    } else {
+      // Level-based discipline
+      const config = getDisciplineConfig(program);
+      return (
+        <div className="flex items-center gap-2 mt-1.5">
+          <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-primary/10 to-primary/5 text-primary border border-primary/20`}>
+            <Layers className="h-3 w-3" />
+            {config?.type === 'level' ? 'Level-based' : 'Training'}
+          </div>
+        </div>
+      );
+    }
+  };
+
   return (
     <>
       <Card className="group hover:shadow-md transition-all duration-300 overflow-hidden">
-        {/* Belt color indicator */}
-        <div className={`h-1.5 ${beltStyle.bg} ${beltStyle.border} border-b`} />
+        {/* Belt/Level color indicator */}
+        <div className={`h-1.5 ${isBeltBased ? beltStyle.bg : 'bg-gradient-to-r from-primary/30 to-primary/10'} ${isBeltBased ? beltStyle.border : ''} border-b`} />
         
         <CardContent className="p-4">
           {/* Header */}
@@ -151,13 +199,8 @@ function StudentCard({
             </Avatar>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-foreground truncate">{student?.name ?? 'Unassigned'}</h3>
-              <p className="text-sm text-muted-foreground truncate">{student?.program ?? 'N/A'}</p>
-              <div className="flex items-center gap-2 mt-1.5">
-                <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${beltStyle.bg} ${beltStyle.text} ${beltStyle.border} border`}>
-                  <Award className="h-3 w-3" />
-                  {belt?.color ?? 'White'} Belt
-                </div>
-              </div>
+              <p className="text-sm text-muted-foreground truncate">{program || 'N/A'}</p>
+              {getProgressionDisplay()}
             </div>
           </div>
 
