@@ -69,12 +69,35 @@ const App = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [installPrompt, setInstallPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
-  const [dismissedInstallToast, setDismissedInstallToast] = useState(false);
+  const [dismissedInstallToast, setDismissedInstallToast] = useState(() => {
+    // Check if user previously dismissed the prompt
+    try {
+      const dismissed = localStorage.getItem('pwa-install-dismissed');
+      if (dismissed) {
+        const { timestamp } = JSON.parse(dismissed);
+        // Reset after 7 days
+        if (Date.now() - timestamp < 7 * 24 * 60 * 60 * 1000) {
+          return true;
+        }
+      }
+    } catch {
+      // Ignore localStorage errors
+    }
+    return false;
+  });
   const [showInstallCTA, setShowInstallCTA] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const interceptInstallPromptRef = useRef(true);
   const installPromptRef = useRef<BeforeInstallPromptEvent | null>(null);
+
+  // Check if already installed as PWA
+  const isPWAInstalled = useCallback(
+    () =>
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true,
+    []
+  );
 
   useEffect(() => {
     initializeSupabaseOptimization();
@@ -83,72 +106,83 @@ const App = () => {
 
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
+    
     const handleBeforeInstallPrompt = (event: Event) => {
-      if (!interceptInstallPromptRef.current) {
+      // Only intercept if we haven't dismissed and not already installed
+      if (!interceptInstallPromptRef.current || dismissedInstallToast || isPWAInstalled()) {
         return;
       }
       event.preventDefault();
-      setDismissedInstallToast(false);
       const promptEvent = event as BeforeInstallPromptEvent;
       installPromptRef.current = promptEvent;
       setInstallPrompt(promptEvent);
       setShowInstallCTA(true);
     };
 
+    // Handle app installed event
+    const handleAppInstalled = () => {
+      setShowInstallCTA(false);
+      setInstallPrompt(null);
+      installPromptRef.current = null;
+    };
+
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
       clearTimeout(timeout);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
-      window.removeEventListener(
-        'beforeinstallprompt',
-        handleBeforeInstallPrompt
-      );
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
       performanceMonitor.disconnect();
     };
-  }, []);
+  }, [dismissedInstallToast, isPWAInstalled]);
 
   const dismissInstallToast = useCallback(() => {
     setShowInstallCTA(false);
     setDismissedInstallToast(true);
     installPromptRef.current = null;
     setInstallPrompt(null);
+    
+    // Persist dismissal for 7 days
+    try {
+      localStorage.setItem('pwa-install-dismissed', JSON.stringify({ timestamp: Date.now() }));
+    } catch {
+      // Ignore localStorage errors
+    }
   }, []);
 
-  const handleInstallClick = useCallback(() => {
+  const handleInstallClick = useCallback(async () => {
     const promptEvent = installPromptRef.current ?? installPrompt;
     if (!promptEvent) return;
 
-    promptEvent
-      .prompt()
-      .then(() => promptEvent.userChoice)
-      .catch((error) => {
-        console.warn('PWA install prompt failed:', error);
-      })
-      .finally(() => {
-        dismissInstallToast();
-      });
-  }, [dismissInstallToast, installPrompt]);
+    try {
+      await promptEvent.prompt();
+      const { outcome } = await promptEvent.userChoice;
+      
+      if (outcome === 'accepted') {
+        setShowInstallCTA(false);
+      }
+    } catch (error) {
+      console.warn('PWA install prompt failed:', error);
+    } finally {
+      installPromptRef.current = null;
+      setInstallPrompt(null);
+    }
+  }, [installPrompt]);
 
-  const isPWAInstalled = useCallback(
-    () =>
-      window.matchMedia('(display-mode: standalone)').matches ||
-      (window.navigator as any).standalone,
-    []
-  );
-
-  const isAdminRoute = location.pathname.startsWith('/admin');
-  // Avoid accessing ref.current during render (ESLint rule). rely on state here.
+  // Only show install toast on admin routes for logged-in users
   const shouldShowInstallToast =
     showInstallCTA &&
     !isPWAInstalled() &&
-    isAdminRoute &&
+    location.pathname.startsWith('/admin') &&
     !dismissedInstallToast &&
     !!installPrompt;
 
+  // Redirect to admin if opened as PWA
   useEffect(() => {
     if (loading) return;
     if (!isPWAInstalled()) return;

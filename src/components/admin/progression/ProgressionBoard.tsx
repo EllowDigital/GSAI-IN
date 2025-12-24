@@ -39,6 +39,8 @@ import { useBeltLevels } from '@/hooks/useBeltLevels';
 import { useStudents } from '@/hooks/useStudents';
 import { usePromotionHistory } from '@/hooks/usePromotionHistory';
 import AssignStudentBeltDialog from './AssignStudentBeltDialog';
+import ProgressionTimeline from './ProgressionTimeline';
+import StripeTracker from './StripeTracker';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog,
@@ -124,6 +126,7 @@ function StudentCard({
   onStatusChange,
   onNotesUpdate,
   onPromote,
+  onStripeUpdate,
   nextBelt,
   promoting,
 }: {
@@ -131,6 +134,7 @@ function StudentCard({
   onStatusChange: (status: ProgressStatus) => void;
   onNotesUpdate: (notes: string) => void;
   onPromote: () => void;
+  onStripeUpdate: (newCount: number) => void;
   nextBelt: { id: string; color: string; rank: number } | null;
   promoting: boolean;
 }) {
@@ -153,14 +157,14 @@ function StudentCard({
   // Get progression display based on discipline type
   const getProgressionDisplay = () => {
     if (isBeltBased) {
-      const stripeCount = (record as any).stripe_count;
+      const stripeCount = record.stripe_count ?? 0;
       return (
         <div className="flex items-center gap-2 mt-1.5">
           <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${beltStyle.bg} ${beltStyle.text} ${beltStyle.border} border`}>
             <Award className="h-3 w-3" />
             {belt?.color ?? 'White'} Belt
             {showStripes && stripeCount > 0 && (
-              <span className="ml-1">({stripeCount} stripes)</span>
+              <span className="ml-1">• {stripeCount} stripes</span>
             )}
           </div>
         </div>
@@ -243,6 +247,17 @@ function StudentCard({
               );
             })}
           </div>
+
+          {/* Stripe Tracker for BJJ/Grappling */}
+          {showStripes && isBeltBased && (
+            <div className="mb-3">
+              <p className="text-xs font-medium text-muted-foreground mb-1.5">Stripes</p>
+              <StripeTracker
+                stripeCount={record.stripe_count ?? 0}
+                onUpdate={onStripeUpdate}
+              />
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex gap-2">
@@ -340,7 +355,7 @@ export default function ProgressionBoard() {
     return Array.from(new Set(students.map((s) => s.program))).map((p) => ({ label: p, value: p }));
   }, [students]);
 
-  const { grouped, updateProgress, assignStudent, assigningStudent, promoteStudent, promotingStudent, isLoading, records } = useProgressionQuery({
+  const { grouped, updateProgress, assignStudent, assigningStudent, promoteStudent, promotingStudent, isLoading, records, updateStripeCount } = useProgressionQuery({
     search,
     program,
     beltLevelId,
@@ -475,6 +490,7 @@ export default function ProgressionBoard() {
                 onStatusChange={(newStatus) => handleStatusChange(record.id, newStatus)}
                 onNotesUpdate={(notes) => handleNotesUpdate(record.id, notes)}
                 onPromote={() => nextBelt && handlePromote(record, nextBelt)}
+                onStripeUpdate={(newCount) => updateStripeCount({ id: record.id, stripeCount: newCount })}
                 nextBelt={nextBelt}
                 promoting={promotingStudent}
               />
@@ -509,49 +525,7 @@ export default function ProgressionBoard() {
             </DialogTitle>
             <DialogDescription>Recent belt promotions</DialogDescription>
           </DialogHeader>
-          <ScrollArea className="max-h-[60vh]">
-            {historyLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin" />
-              </div>
-            ) : history.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <History className="h-10 w-10 mx-auto mb-2 opacity-40" />
-                <p className="text-sm">No promotion history yet</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {history.map((item) => {
-                  const fromStyle = getBeltStyle(item.from_belt?.color ?? 'white');
-                  const toStyle = getBeltStyle(item.to_belt?.color ?? 'white');
-                  return (
-                    <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg border bg-card">
-                      <Avatar className="h-10 w-10 flex-shrink-0">
-                        {item.students?.profile_image_url ? (
-                          <AvatarImage src={item.students.profile_image_url} />
-                        ) : (
-                          <AvatarFallback className="text-xs">{item.students?.name?.slice(0, 2).toUpperCase() ?? 'ST'}</AvatarFallback>
-                        )}
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">{item.students?.name ?? 'Unknown'}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className={`px-2 py-0.5 rounded text-xs font-medium border ${fromStyle.bg} ${fromStyle.text} ${fromStyle.border}`}>
-                            {item.from_belt?.color ?? 'None'}
-                          </span>
-                          <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                          <span className={`px-2 py-0.5 rounded text-xs font-medium border ${toStyle.bg} ${toStyle.text} ${toStyle.border}`}>
-                            {item.to_belt?.color ?? 'Unknown'}
-                          </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-1">{format(new Date(item.promoted_at), 'MMM dd, yyyy h:mm a')}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </ScrollArea>
+          <ProgressionTimeline history={history} isLoading={historyLoading} />
         </DialogContent>
       </Dialog>
 
