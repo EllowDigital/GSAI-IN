@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, X } from 'lucide-react';
+import { Download, X, Smartphone } from 'lucide-react';
 
 interface PWAInstallToastProps {
   onInstall: () => void;
@@ -12,35 +12,49 @@ const PWAInstallToast: React.FC<PWAInstallToastProps> = ({
   onDismiss,
 }) => {
   return (
-    <div className="fixed top-4 left-0 right-0 z-[9998] px-4">
-      <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 rounded-xl border border-yellow-500/20 bg-[#0a0a0a]/95 p-4 shadow-lg shadow-yellow-500/10 backdrop-blur-md">
-        <div className="flex items-center gap-3 text-sm sm:text-base text-white">
-          <div className="p-2 bg-yellow-500/10 rounded-full">
-            <Download className="text-yellow-500" size={20} />
+    <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-sm z-[9998] animate-in slide-in-from-bottom-4 duration-300">
+      <div className="flex flex-col gap-3 rounded-xl border border-primary/20 bg-background/95 p-4 shadow-lg shadow-primary/10 backdrop-blur-md">
+        {/* Header */}
+        <div className="flex items-start gap-3">
+          <div className="p-2.5 bg-primary/10 rounded-xl flex-shrink-0">
+            <Smartphone className="h-5 w-5 text-primary" />
           </div>
-          <div className="flex flex-col">
-            <span className="font-bold text-white">Install the GSAI App</span>
-            <span className="text-gray-400 text-xs sm:text-sm">
-              Add to home screen for faster access and offline mode.
-            </span>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-foreground text-sm">
+              Install GSAI App
+            </h3>
+            <p className="text-muted-foreground text-xs mt-0.5 leading-relaxed">
+              Get quick access from your home screen with offline support
+            </p>
           </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button
-            size="sm"
-            onClick={onInstall}
-            className="bg-gradient-to-r from-yellow-500 to-red-600 hover:from-yellow-600 hover:to-red-700 text-white border-0 shadow-md shadow-orange-500/20"
-          >
-            Install App
-          </Button>
           <button
             type="button"
             onClick={onDismiss}
             aria-label="Dismiss install reminder"
-            className="rounded-full p-2 text-gray-400 hover:bg-white/10 hover:text-white transition-colors"
+            className="rounded-full p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors -mt-1 -mr-1"
           >
-            <X size={18} />
+            <X className="h-4 w-4" />
           </button>
+        </div>
+        
+        {/* Actions */}
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onDismiss}
+            className="flex-1 h-9 text-xs"
+          >
+            Not now
+          </Button>
+          <Button
+            size="sm"
+            onClick={onInstall}
+            className="flex-1 h-9 text-xs bg-primary hover:bg-primary/90"
+          >
+            <Download className="h-3.5 w-3.5 mr-1.5" />
+            Install
+          </Button>
         </div>
       </div>
     </div>
