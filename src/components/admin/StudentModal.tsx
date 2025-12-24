@@ -225,13 +225,14 @@ export default function StudentModal({
 
         if (error) throw error;
 
-        // Assign white belt to new student (ignore errors if already exists)
-        if (data && getWhiteBeltId) {
+        // Assign white belt to new student for their discipline (ignore errors if already exists)
+        const whiteBeltId = getWhiteBeltId(data.program);
+        if (data && whiteBeltId) {
           const { error: progressError } = await supabase
             .from('student_progress')
             .insert({
               student_id: data.id,
-              belt_level_id: getWhiteBeltId,
+              belt_level_id: whiteBeltId,
               status: 'needs_work',
             });
 
