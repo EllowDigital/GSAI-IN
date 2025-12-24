@@ -6,6 +6,7 @@ import { Edit, Plus, History, IndianRupee } from 'lucide-react';
 import clsx from 'clsx';
 import { getFeeStatus, getStatusTextAndColor } from '@/utils/feeStatusUtils';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import FeeReminderButton from './FeeReminderButton';
 
 interface FeesCardsProps {
   rows: { student: any; fee: any | null }[];
@@ -14,6 +15,8 @@ interface FeesCardsProps {
   bulkMode?: boolean;
   selectedIds?: Set<string>;
   onToggleSelect?: (studentId: string) => void;
+  filterMonth: number;
+  filterYear: number;
 }
 
 export default function FeesCards({
@@ -23,6 +26,8 @@ export default function FeesCards({
   bulkMode = false,
   selectedIds = new Set(),
   onToggleSelect,
+  filterMonth,
+  filterYear,
 }: FeesCardsProps) {
   if (!Array.isArray(rows) || rows.length === 0) {
     return (
@@ -139,6 +144,16 @@ export default function FeesCards({
                     <History className="w-3.5 h-3.5 mr-1.5" />
                     History
                   </Button>
+                  {status !== 'paid' && (
+                    <FeeReminderButton
+                      studentName={student.name}
+                      parentName={student.parent_name || 'Parent'}
+                      parentContact={student.parent_contact || ''}
+                      amount={fee ? fee.balance_due : student.default_monthly_fee}
+                      month={fee ? fee.month : filterMonth}
+                      year={fee ? fee.year : filterYear}
+                    />
+                  )}
                   <Button
                     variant={fee ? 'secondary' : 'default'}
                     size="sm"

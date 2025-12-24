@@ -228,6 +228,8 @@ export default function FeesManagerPanel() {
         bulkMode={bulkMode}
         selectedIds={selectedStudentIds}
         onToggleSelect={toggleSelection}
+        filterMonth={filterMonth}
+        filterYear={filterYear}
       />
     );
   };
