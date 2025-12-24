@@ -78,6 +78,7 @@ export type Database = {
         Row: {
           color: string
           created_at: string
+          discipline: string | null
           id: string
           min_age: number | null
           min_sessions: number | null
@@ -89,6 +90,7 @@ export type Database = {
         Insert: {
           color: string
           created_at?: string
+          discipline?: string | null
           id?: string
           min_age?: number | null
           min_sessions?: number | null
@@ -100,6 +102,7 @@ export type Database = {
         Update: {
           color?: string
           created_at?: string
+          discipline?: string | null
           id?: string
           min_age?: number | null
           min_sessions?: number | null
@@ -151,6 +154,39 @@ export type Database = {
           published_at?: string | null
           title?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      discipline_levels: {
+        Row: {
+          created_at: string
+          description: string | null
+          discipline: string
+          id: string
+          level_name: string
+          level_order: number
+          requirements: Json | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          discipline: string
+          id?: string
+          level_name: string
+          level_order?: number
+          requirements?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          discipline?: string
+          id?: string
+          level_name?: string
+          level_order?: number
+          requirements?: Json | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -405,6 +441,67 @@ export type Database = {
         }
         Relationships: []
       }
+      student_discipline_progress: {
+        Row: {
+          coach_notes: string | null
+          completed_at: string | null
+          created_at: string
+          discipline_level_id: string
+          id: string
+          milestones: Json | null
+          started_at: string
+          status: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          coach_notes?: string | null
+          completed_at?: string | null
+          created_at?: string
+          discipline_level_id: string
+          id?: string
+          milestones?: Json | null
+          started_at?: string
+          status?: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          coach_notes?: string | null
+          completed_at?: string | null
+          created_at?: string
+          discipline_level_id?: string
+          id?: string
+          milestones?: Json | null
+          started_at?: string
+          status?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_discipline_progress_discipline_level_id_fkey"
+            columns: ["discipline_level_id"]
+            isOneToOne: false
+            referencedRelation: "discipline_levels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_discipline_progress_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_discipline_progress_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students_masked"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       student_progress: {
         Row: {
           assessed_by: string | null
@@ -415,6 +512,7 @@ export type Database = {
           evidence_media_urls: string[]
           id: string
           status: string
+          stripe_count: number | null
           student_id: string
           updated_at: string
         }
@@ -427,6 +525,7 @@ export type Database = {
           evidence_media_urls?: string[]
           id?: string
           status?: string
+          stripe_count?: number | null
           student_id: string
           updated_at?: string
         }
@@ -439,6 +538,7 @@ export type Database = {
           evidence_media_urls?: string[]
           id?: string
           status?: string
+          stripe_count?: number | null
           student_id?: string
           updated_at?: string
         }
