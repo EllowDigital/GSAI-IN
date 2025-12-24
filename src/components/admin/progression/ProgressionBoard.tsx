@@ -29,7 +29,9 @@ import {
   TrendingUp,
   Filter,
   Layers,
+  Download,
 } from 'lucide-react';
+import { exportProgressionToCsv, exportPromotionHistoryToCsv } from '@/utils/exportToCsv';
 import {
   ProgressionRecord,
   ProgressStatus,
@@ -407,7 +409,29 @@ export default function ProgressionBoard() {
           </h1>
           <p className="text-sm text-muted-foreground mt-1">Track and manage student belt assessments</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const exportData = records.map((r) => ({
+                studentName: r.students?.name,
+                program: r.students?.program,
+                beltColor: r.belt_levels?.color,
+                beltRank: r.belt_levels?.rank,
+                status: r.status,
+                stripeCount: r.stripe_count ?? 0,
+                assessmentDate: r.assessment_date,
+                coachNotes: r.coach_notes,
+              }));
+              exportProgressionToCsv(exportData);
+            }}
+            disabled={records.length === 0}
+            className="h-9"
+          >
+            <Download className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Export</span>
+          </Button>
           <Button variant="outline" size="sm" onClick={() => setHistoryDialogOpen(true)} className="h-9">
             <History className="h-4 w-4 sm:mr-2" />
             <span className="hidden sm:inline">History</span>
