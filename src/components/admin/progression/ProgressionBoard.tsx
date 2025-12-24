@@ -328,7 +328,11 @@ export default function ProgressionBoard() {
   const { history, addPromotion, isLoading: historyLoading } = usePromotionHistory();
 
   const studentOptions = useMemo(
-    () => students.map((student) => ({ label: `${student.name} • ${student.program}`, value: student.id })),
+    () => students.map((student) => ({ 
+      label: `${student.name} • ${student.program}`, 
+      value: student.id,
+      program: student.program,
+    })),
     [students]
   );
 
