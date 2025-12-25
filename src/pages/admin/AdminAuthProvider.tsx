@@ -16,6 +16,7 @@ import type { Enums } from '@/integrations/supabase/types';
 import {
   ADMIN_SESSION_STORAGE_KEY,
   POST_LOGIN_REDIRECT_KEY,
+  SUPABASE_PROJECT_ID,
 } from '@/integrations/supabase/constants';
 
 const ADMIN_ROLE: Enums<'app_role'> = 'admin';
@@ -43,10 +44,8 @@ const clearPersistedSupabaseSession = () => {
   if (typeof window === 'undefined') return;
   try {
     window.sessionStorage.removeItem(ADMIN_SESSION_STORAGE_KEY);
-    const projectRef = (
-      import.meta.env.VITE_SUPABASE_PROJECT_ID ?? ''
-    ).toString();
-    const prefix = projectRef ? `sb-${projectRef}` : 'sb-';
+
+    const prefix = SUPABASE_PROJECT_ID ? `sb-${SUPABASE_PROJECT_ID}` : 'sb-';
     Object.keys(window.localStorage).forEach((key) => {
       if (key.startsWith(prefix) || key.includes('supabase.auth')) {
         window.localStorage.removeItem(key);

@@ -21,10 +21,12 @@ export interface ProgressionRecord {
   evidence_media_urls: string[];
   assessed_by: string | null;
   updated_at: string;
+  stripe_count: number;
   belt_levels?: {
     id: string;
     color: string;
     rank: number;
+    discipline: string | null;
     requirements: Record<string, unknown>[] | null;
   } | null;
   students?: {
@@ -39,8 +41,8 @@ async function fetchProgression(): Promise<ProgressionRecord[]> {
   const { data, error } = await supabase
     .from('student_progress')
     .select(
-      `id, status, assessment_date, coach_notes, evidence_media_urls, assessed_by, updated_at,
-       belt_levels:belt_levels (id, color, rank, requirements),
+      `id, status, assessment_date, coach_notes, evidence_media_urls, assessed_by, updated_at, stripe_count,
+       belt_levels:belt_levels (id, color, rank, discipline, requirements),
        students:students (id, name, program, profile_image_url)`
     )
     .order('updated_at', { ascending: false });
@@ -374,6 +376,50 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
     },
   });
 
+  // Stripe count mutation for BJJ/Grappling
+  const stripeMutation = useMutation({
+    mutationFn: async ({ id, stripeCount }: { id: string; stripeCount: number }) => {
+      const clampedCount = Math.max(0, Math.min(4, stripeCount));
+      const { error } = await supabase
+        .from('student_progress')
+        .update({ stripe_count: clampedCount })
+        .eq('id', id);
+
+      if (error) throw error;
+      return { id, stripe_count: clampedCount };
+    },
+    onMutate: async ({ id, stripeCount }) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData<ProgressionRecord[]>(queryKey);
+
+      if (previous) {
+        queryClient.setQueryData<ProgressionRecord[]>(
+          queryKey,
+          (old) =>
+            old?.map((record) =>
+              record.id === id
+                ? { ...record, stripe_count: Math.max(0, Math.min(4, stripeCount)) }
+                : record
+            ) ?? []
+        );
+      }
+
+      return { previous };
+    },
+    onError: (error, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(queryKey, context.previous);
+      }
+      toast.error(error instanceof Error ? error.message : 'Stripe update failed');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onSuccess: () => {
+      toast.success('Stripe count updated');
+    },
+  });
+
   const filteredRecords = useMemo(
     () => filterRecords(query.data, filters),
     [query.data, filters]
@@ -407,5 +453,7 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
     assigningStudent: assignMutation.isPending,
     promoteStudent: promoteMutation.mutateAsync,
     promotingStudent: promoteMutation.isPending,
+    updateStripeCount: stripeMutation.mutate,
+    updatingStripeCount: stripeMutation.isPending,
   };
 }

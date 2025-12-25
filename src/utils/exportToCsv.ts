@@ -216,3 +216,92 @@ export function exportGalleryToCsv(images: GalleryItem[]) {
   const csvContent = [headers.join(','), ...rows].join('\n');
   triggerCsvDownload(csvContent, `gallery.csv`);
 }
+
+/**
+ * Types for progression export
+ */
+type ProgressionItem = {
+  studentName?: string;
+  program?: string;
+  beltColor?: string;
+  beltRank?: number;
+  status?: string;
+  stripeCount?: number;
+  assessmentDate?: string;
+  coachNotes?: string;
+};
+
+type PromotionItem = {
+  studentName?: string;
+  program?: string;
+  fromBelt?: string;
+  toBelt?: string;
+  promotedAt?: string;
+  notes?: string;
+};
+
+/**
+ * Exports student progression records to CSV
+ */
+export function exportProgressionToCsv(items: ProgressionItem[]) {
+  if (!Array.isArray(items) || items.length === 0) return;
+
+  const headers = [
+    'Student Name',
+    'Program',
+    'Current Belt',
+    'Belt Rank',
+    'Status',
+    'Stripes',
+    'Assessment Date',
+    'Coach Notes',
+  ];
+
+  const rows = items.map((item) =>
+    [
+      escapeCSV(item.studentName),
+      escapeCSV(item.program),
+      escapeCSV(item.beltColor),
+      escapeCSV(item.beltRank),
+      escapeCSV(item.status),
+      escapeCSV(item.stripeCount ?? 0),
+      escapeCSV(item.assessmentDate),
+      escapeCSV(item.coachNotes),
+    ].join(',')
+  );
+
+  const csvContent = [headers.join(','), ...rows].join('\n');
+  const date = new Date().toISOString().split('T')[0];
+  triggerCsvDownload(csvContent, `progression_report_${date}.csv`);
+}
+
+/**
+ * Exports promotion history to CSV
+ */
+export function exportPromotionHistoryToCsv(items: PromotionItem[]) {
+  if (!Array.isArray(items) || items.length === 0) return;
+
+  const headers = [
+    'Student Name',
+    'Program',
+    'From Belt',
+    'To Belt',
+    'Promotion Date',
+    'Notes',
+  ];
+
+  const rows = items.map((item) =>
+    [
+      escapeCSV(item.studentName),
+      escapeCSV(item.program),
+      escapeCSV(item.fromBelt),
+      escapeCSV(item.toBelt),
+      escapeCSV(item.promotedAt),
+      escapeCSV(item.notes),
+    ].join(',')
+  );
+
+  const csvContent = [headers.join(','), ...rows].join('\n');
+  const date = new Date().toISOString().split('T')[0];
+  triggerCsvDownload(csvContent, `promotion_history_${date}.csv`);
+}
