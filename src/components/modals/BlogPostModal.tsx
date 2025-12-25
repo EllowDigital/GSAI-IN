@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { X } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import {
@@ -59,13 +59,7 @@ export function BlogPostModal({
     });
   };
 
-  // Sanitize blog content to prevent XSS attacks
-  const sanitizedContent = useMemo(() => {
-    return DOMPurify.sanitize(post.content, {
-      ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'img', 'blockquote', 'pre', 'code', 'span', 'div'],
-      ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'target', 'rel', 'class'],
-    });
-  }, [post.content]);
+  
 
   const content = (
     <div className="space-y-6">
