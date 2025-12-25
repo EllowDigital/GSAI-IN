@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -96,10 +96,7 @@ export default function AssignStudentBeltDialog({
     return belts.filter((belt) => belt.discipline === 'general' || !belt.discipline);
   }, [belts, studentId, studentProgram, isBeltBased]);
 
-  // Reset belt selection when student changes
-  useEffect(() => {
-    setBeltId('');
-  }, [studentId]);
+  // Note: belt selection is reset when the student is changed in the handler below.
 
   const studentPlaceholder = useMemo(() => {
     if (students.length === 0) {
@@ -160,7 +157,7 @@ export default function AssignStudentBeltDialog({
             <label className="text-sm font-medium text-foreground">
               Student
             </label>
-            <Select value={studentId} onValueChange={setStudentId}>
+            <Select value={studentId} onValueChange={(v) => { setStudentId(v); setBeltId(''); }}>
               <SelectTrigger disabled={students.length === 0}>
                 <SelectValue placeholder={studentPlaceholder} />
               </SelectTrigger>
