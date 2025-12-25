@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import FeeSummaryCard from './FeeSummaryCard';
 import FeesTable from './FeesTable';
@@ -12,7 +12,9 @@ import FeesCards from './FeesCards';
 import RefreshButton from './RefreshButton';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Grid, List, DollarSign } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Grid, List, DollarSign, CheckSquare, X } from 'lucide-react';
 
 export default function FeesManagerPanel() {
   const now = new Date();
@@ -27,16 +29,16 @@ export default function FeesManagerPanel() {
   const [historyStudent, setHistoryStudent] = useState<any | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [selectedStudentIds, setSelectedStudentIds] = useState<Set<string>>(new Set());
+  const [bulkMode, setBulkMode] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
 
   useEffect(() => {
     const channel = supabase
       .channel('public:fees:fees-manager')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'fees' },
-        () => queryClient.invalidateQueries({ queryKey: ['fees'] })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'fees' }, () =>
+        queryClient.invalidateQueries({ queryKey: ['fees'] })
       )
       .subscribe();
 
@@ -61,11 +63,7 @@ export default function FeesManagerPanel() {
   const { data: fees, isLoading: loadingFees } = useQuery({
     queryKey: ['fees', filterMonth, filterYear],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('fees')
-        .select('*')
-        .eq('month', filterMonth)
-        .eq('year', filterYear);
+      const { data, error } = await supabase.from('fees').select('*').eq('month', filterMonth).eq('year', filterYear);
       if (error) throw error;
       return data || [];
     },
@@ -82,6 +80,49 @@ export default function FeesManagerPanel() {
     enabled: historyDrawerOpen,
   });
 
+  // Bulk mark as paid mutation
+  const bulkMarkPaidMutation = useMutation({
+    mutationFn: async (studentIds: string[]) => {
+      const updates = studentIds.map(async (studentId) => {
+        const student = students?.find((s) => s.id === studentId);
+        const existingFee = fees?.find((f) => f.student_id === studentId);
+        const monthlyFee = existingFee?.monthly_fee || student?.default_monthly_fee || 2000;
+
+        if (existingFee) {
+          // Update existing fee
+          const { error } = await supabase
+            .from('fees')
+            .update({ status: 'paid', paid_amount: monthlyFee, balance_due: 0 })
+            .eq('id', existingFee.id);
+          if (error) throw error;
+        } else {
+          // Create new fee record
+          const { error } = await supabase.from('fees').insert({
+            student_id: studentId,
+            month: filterMonth,
+            year: filterYear,
+            monthly_fee: monthlyFee,
+            paid_amount: monthlyFee,
+            balance_due: 0,
+            status: 'paid',
+          });
+          if (error) throw error;
+        }
+      });
+
+      await Promise.all(updates);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fees'] });
+      setSelectedStudentIds(new Set());
+      setBulkMode(false);
+      toast({ title: 'Success', description: 'Selected students marked as paid' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message, variant: 'error' });
+    },
+  });
+
   // Compose filtered rows
   const rows = Array.isArray(students)
     ? students
@@ -90,15 +131,9 @@ export default function FeesManagerPanel() {
           return { student, fee };
         })
         .filter((row) => {
-          if (
-            filterName &&
-            !row.student.name.toLowerCase().includes(filterName.toLowerCase())
-          )
-            return false;
+          if (filterName && !row.student.name.toLowerCase().includes(filterName.toLowerCase())) return false;
           if (filterStatus) {
-            const status = row.fee
-              ? (row.fee.status || 'unpaid').toLowerCase()
-              : 'unpaid';
+            const status = row.fee ? (row.fee.status || 'unpaid').toLowerCase() : 'unpaid';
             return status === filterStatus.toLowerCase();
           }
           return true;
@@ -106,6 +141,34 @@ export default function FeesManagerPanel() {
     : [];
 
   const isLoading = loadingStudents || loadingFees || isRefreshing;
+
+  // Selection handlers
+  const toggleSelection = (studentId: string) => {
+    setSelectedStudentIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(studentId)) {
+        next.delete(studentId);
+      } else {
+        next.add(studentId);
+      }
+      return next;
+    });
+  };
+
+  const selectAllUnpaid = () => {
+    const unpaidIds = rows.filter((r) => !r.fee || r.fee.status !== 'paid').map((r) => r.student.id);
+    setSelectedStudentIds(new Set(unpaidIds));
+  };
+
+  const clearSelection = () => {
+    setSelectedStudentIds(new Set());
+    setBulkMode(false);
+  };
+
+  const handleBulkMarkPaid = () => {
+    if (selectedStudentIds.size === 0) return;
+    bulkMarkPaidMutation.mutate(Array.from(selectedStudentIds));
+  };
 
   // Handlers
   const handleEditFee = ({ student, fee }: { student: any; fee?: any }) => {
@@ -121,7 +184,6 @@ export default function FeesManagerPanel() {
 
   const handleModalClose = () => {
     setModalOpen(false);
-    // Auto-refresh after modal close
     setTimeout(() => {
       queryClient.invalidateQueries({ queryKey: ['fees'] });
     }, 100);
@@ -134,16 +196,9 @@ export default function FeesManagerPanel() {
       await queryClient.invalidateQueries({ queryKey: ['students'] });
       await queryClient.refetchQueries({ queryKey: ['fees'] });
       await queryClient.refetchQueries({ queryKey: ['students'] });
-      toast({
-        title: 'Success',
-        description: 'Fees refreshed successfully',
-      });
+      toast({ title: 'Success', description: 'Fees refreshed successfully' });
     } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: 'Failed to refresh fees',
-        variant: 'error',
-      });
+      toast({ title: 'Error', description: 'Failed to refresh fees', variant: 'error' });
     } finally {
       setIsRefreshing(false);
     }
@@ -158,16 +213,10 @@ export default function FeesManagerPanel() {
       );
     }
 
-    // Use view mode state instead of window width check
     if (viewMode === 'table') {
       return (
-        <div className="rounded-2xl shadow-lg overflow-x-auto bg-white animate-fade-in">
-          <FeesTable
-            rows={rows}
-            isLoading={false}
-            onEditFee={handleEditFee}
-            onShowHistory={handleShowHistory}
-          />
+        <div className="rounded-2xl shadow-lg overflow-x-auto bg-card animate-fade-in">
+          <FeesTable rows={rows} isLoading={false} onEditFee={handleEditFee} onShowHistory={handleShowHistory} />
         </div>
       );
     }
@@ -176,38 +225,37 @@ export default function FeesManagerPanel() {
         rows={rows}
         onEditFee={handleEditFee}
         onShowHistory={handleShowHistory}
+        bulkMode={bulkMode}
+        selectedIds={selectedStudentIds}
+        onToggleSelect={toggleSelection}
+        filterMonth={filterMonth}
+        filterYear={filterYear}
       />
     );
   };
 
   return (
-    <div className="w-full p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1400px] mx-auto space-y-6">
+    <div className="w-full p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1600px] mx-auto space-y-4 sm:space-y-6">
       {/* Header Card */}
-      <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 shadow-sm rounded-none sm:rounded-2xl">
-        <div className="border-b border-slate-200/60 dark:border-slate-700/60 p-4 sm:p-6">
+      <div className="bg-card border border-border/50 shadow-sm rounded-xl sm:rounded-2xl">
+        <div className="border-b border-border/50 p-4 sm:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800 dark:text-white">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-foreground">
                 <DollarSign className="w-5 h-5 text-primary" />
                 <span>Fees Management</span>
               </h2>
-
               <p className="mt-1 text-sm sm:text-base text-muted-foreground">
-                Manage student fees, track payments, and monitor financial
-                records across all programs.
+                Manage student fees, track payments, and monitor financial records.
               </p>
             </div>
             <div className="flex gap-2 mt-2 sm:mt-0">
-              <RefreshButton
-                onRefresh={handleRefresh}
-                isLoading={isLoading}
-                className="flex-shrink-0"
-              />
+              <RefreshButton onRefresh={handleRefresh} isLoading={isLoading} className="flex-shrink-0" />
             </div>
           </div>
         </div>
 
-        <div className="p-4 sm:p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Summary Card */}
           <FeeSummaryCard fees={fees || []} loading={loadingFees} />
 
@@ -228,25 +276,37 @@ export default function FeesManagerPanel() {
 
             {/* View Controls */}
             <div className="flex flex-wrap gap-2 sm:gap-3">
+              {/* Bulk Mode Toggle */}
+              <Button
+                variant={bulkMode ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => {
+                  setBulkMode(!bulkMode);
+                  if (bulkMode) clearSelection();
+                }}
+                className="h-9"
+              >
+                <CheckSquare className="w-4 h-4 sm:mr-1.5" />
+                <span className="hidden sm:inline">Bulk Select</span>
+              </Button>
+
               {/* View Mode Toggle */}
-              <div className="flex gap-1 border rounded-full p-1 bg-muted/50 flex-1 sm:flex-initial">
+              <div className="flex gap-1 border rounded-full p-1 bg-muted/50">
                 <Button
                   variant={viewMode === 'cards' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('cards')}
-                  className="rounded-full px-3 flex-1 sm:flex-initial"
+                  className="rounded-full px-3 h-7"
                 >
                   <Grid className="w-4 h-4" />
-                  <span className="hidden sm:inline ml-1">Cards</span>
                 </Button>
                 <Button
                   variant={viewMode === 'table' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('table')}
-                  className="rounded-full px-3 flex-1 sm:flex-initial"
+                  className="rounded-full px-3 h-7"
                 >
                   <List className="w-4 h-4" />
-                  <span className="hidden sm:inline ml-1">Table</span>
                 </Button>
               </div>
 
@@ -255,33 +315,56 @@ export default function FeesManagerPanel() {
                 disabled={!Array.isArray(rows) || rows.length === 0}
                 variant="outline"
                 size="sm"
-                className="flex-1 sm:flex-initial min-w-[100px]"
+                className="h-9"
               >
                 Export CSV
               </Button>
             </div>
           </div>
 
+          {/* Bulk Actions Bar */}
+          {bulkMode && (
+            <Card className="p-3 sm:p-4 bg-primary/5 border-primary/20">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span className="text-sm font-medium text-foreground">
+                    {selectedStudentIds.size} selected
+                  </span>
+                  <Button variant="outline" size="sm" onClick={selectAllUnpaid} className="h-8 text-xs">
+                    Select All Unpaid
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={clearSelection} className="h-8 text-xs">
+                    <X className="w-3 h-3 mr-1" />
+                    Clear
+                  </Button>
+                </div>
+                <Button
+                  onClick={handleBulkMarkPaid}
+                  disabled={selectedStudentIds.size === 0 || bulkMarkPaidMutation.isPending}
+                  size="sm"
+                  className="bg-green-600 hover:bg-green-700 h-9"
+                >
+                  {bulkMarkPaidMutation.isPending ? 'Processing...' : `Mark ${selectedStudentIds.size} as Paid`}
+                </Button>
+              </div>
+            </Card>
+          )}
+
           {/* Content */}
           <div className="w-full space-y-4">
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-8 sm:py-12">
                 <div className="animate-spin h-8 w-8 sm:h-10 sm:w-10 border-4 border-primary border-t-transparent rounded-full" />
-                <p className="text-sm sm:text-base text-muted-foreground mt-4">
-                  Loading fees data...
-                </p>
+                <p className="text-sm sm:text-base text-muted-foreground mt-4">Loading fees data...</p>
               </div>
             ) : rows.length === 0 ? (
               <div className="text-center py-8 sm:py-12 space-y-4">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-muted rounded-full flex items-center justify-center">
                   <span className="text-2xl">💰</span>
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-foreground">
-                  No fee records found
-                </h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground">No fee records found</h3>
                 <p className="text-sm sm:text-base text-muted-foreground">
-                  Try adjusting your filters or add students to begin tracking
-                  fees.
+                  Try adjusting your filters or add students to begin tracking fees.
                 </p>
               </div>
             ) : (
