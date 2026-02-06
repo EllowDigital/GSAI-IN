@@ -328,7 +328,7 @@ export default function TestimonialSection() {
                 Join Our Community <Award className="w-4 h-4 sm:w-5 sm:h-5" />
               </a>
               <a
-                href="https://www.instagram.com/ghatakgsai/"
+                href="https://www.instagram.com/ghataksportsacademy/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-secondary w-full sm:w-auto justify-center gap-2 py-2.5 sm:py-3 text-sm sm:text-base bg-transparent border-white/10 text-white hover:bg-white/5 hover:text-yellow-500"

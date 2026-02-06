@@ -25,25 +25,32 @@ const Logger = {
 };
 
 // ---------------------- Hostname Logic --------------------
-const FALLBACK_HOST = 'https://ghatakgsai.netlify.app';
+const PRIMARY_HOST = 'https://ghataksportsacademy.com';
+const SECONDARY_HOST = 'https://ghatakgsai.netlify.app';
+const FALLBACK_HOSTS = [PRIMARY_HOST, SECONDARY_HOST];
 const placeholderHosts = new Set([
   'https://yourdomain.com', 'http://yourdomain.com', 'yourdomain.com',
   'https://example.com', 'http://example.com', 'example.com',
 ]);
 
 const ensureAbsolute = (value) => {
-  if (!value || !value.trim()) return FALLBACK_HOST;
+  if (!value || !value.trim()) return FALLBACK_HOSTS[0];
   const trimmed = value.trim();
   return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
 };
 
 const candidateHost = ensureAbsolute(
   process.env.SITE_URL || process.env.CANONICAL_URL || process.env.URL ||
-  process.env.DEPLOY_PRIME_URL || process.env.NEXT_PUBLIC_SITE_URL || FALLBACK_HOST
+  process.env.DEPLOY_PRIME_URL || process.env.NEXT_PUBLIC_SITE_URL || FALLBACK_HOSTS[0]
 );
 
 const normalizedHost = candidateHost.replace(/\/$/, '');
-const hostname = placeholderHosts.has(normalizedHost.toLowerCase()) ? FALLBACK_HOST : normalizedHost;
+const allowedHosts = new Set(FALLBACK_HOSTS.map((host) => host.toLowerCase()));
+const hostname =
+  placeholderHosts.has(normalizedHost.toLowerCase()) ||
+  !allowedHosts.has(normalizedHost.toLowerCase())
+    ? FALLBACK_HOSTS[0]
+    : normalizedHost;
 
 // ---------------------- Supabase Setup --------------------
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
@@ -107,8 +114,22 @@ const marketingPages = [
 
 const defaultImageMeta = [{
   url: `${hostname}/assets/img/social-preview.png`,
-  caption: 'Ghatak Sports Academy India',
-  title: 'Ghatak Sports Academy India',
+  caption: 'Ghatak Sports Academy India - Martial Arts Training',
+  title: 'Ghatak Sports Academy India - Premier Martial Arts Academy',
+  geoLocation: 'Lucknow, Uttar Pradesh, India',
+  license: `${hostname}/terms`,
+}];
+
+const defaultVideoMeta = [{
+  thumbnail_loc: `${hostname}/assets/img/logo.webp`,
+  title: 'Ghatak Sports Academy India - Training Introduction',
+  description: 'Watch our introductory video showcasing martial arts training, facilities, and student achievements at Ghatak Sports Academy India.',
+  content_loc: `${hostname}/assets/slider/intro.mp4`,
+  player_loc: `${hostname}/`,
+  duration: 120,
+  publication_date: '2025-03-01T00:00:00Z',
+  family_friendly: 'yes',
+  requires_subscription: 'no',
 }];
 
 // ---------------------- Helpers ---------------------------
@@ -210,7 +231,8 @@ async function generateSitemap() {
     marketingPages.forEach((p) => sitemap.write({
       ...p,
       lastmod: toISODate(),
-      img: defaultImageMeta
+      img: defaultImageMeta,
+      video: p.url === '/' ? defaultVideoMeta : undefined, // Add video to homepage
     }));
 
     // 3. Dynamic Content Fetch

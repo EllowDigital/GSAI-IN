@@ -12,14 +12,11 @@ Disallow: /admin/
 Disallow: /api/
 
 # Block indexing of machine-readable or sensitive file types
-Disallow: /*.json$
-Disallow: /*.zip$
-
-# Recommended crawl delay for resource protection (optional)
-Crawl-delay: 1
+Disallow: /*.json
+Disallow: /*.zip
 
 # Sitemap location (update if domain changes)
-Sitemap: https://ghatakgsai.netlify.app/sitemap.xml
+Sitemap: https://ghataksportsacademy.com/sitemap.xml
 
 # ------------------------------------------------------------
 # Notes:

@@ -4,6 +4,7 @@ import {
   Mail,
   MapPin,
   Instagram,
+  Twitter,
   Phone,
   Clock,
   Heart,
@@ -180,7 +181,9 @@ export default function FooterSection() {
                     </div>
                     <div>
                       <p className="text-gray-300 text-sm">
-                        Mon-Sat: 6:00 AM - 9:00 PM
+                        Mon-Sat: 4:00 PM - 8:00 PM
+                        <br />
+                        Sun: 7:00 AM - 11:00 AM
                       </p>
                     </div>
                   </div>
@@ -249,13 +252,22 @@ export default function FooterSection() {
                   <Youtube className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors duration-300" />
                 </a>
                 <a
-                  href="https://www.instagram.com/ghatakgsai"
+                  href="https://www.instagram.com/ghataksportsacademy"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram"
                   className="group w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center hover:bg-pink-600 transition-all duration-300 transform hover:-translate-y-1 shadow-lg"
                 >
                   <Instagram className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors duration-300" />
+                </a>
+                <a
+                  href="https://x.com/ghataksportsacademy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="X (Twitter)"
+                  className="group w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center hover:bg-slate-700 transition-all duration-300 transform hover:-translate-y-1 shadow-lg"
+                >
+                  <Twitter className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors duration-300" />
                 </a>
               </div>
 

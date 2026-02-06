@@ -26,18 +26,49 @@ type SeoProps = {
   noFollow?: boolean;
 };
 
-const defaultSiteUrl = 'https://ghatakgsai.netlify.app';
-const defaultImage = `${defaultSiteUrl}/assets/img/social-preview.png`;
+const primarySiteUrl = 'https://ghataksportsacademy.com';
+const siteDomains = [primarySiteUrl];
+const imageBaseUrl = primarySiteUrl;
+const defaultImage = `${imageBaseUrl}/assets/img/social-preview.png`;
 const defaultAuthor = 'Ghatak Sports Academy India';
 const siteName = 'Ghatak Sports Academy India™';
-const siteLogo = `${defaultSiteUrl}/assets/img/logo.webp`;
-const twitterHandle = '@ghatakgsai';
+const siteLogo = `${imageBaseUrl}/assets/img/logo.webp`;
+const twitterHandle = '@ghataksportsacademy';
 const socialProfiles = [
-  'https://www.facebook.com/ghatakgsai',
-  'https://www.instagram.com/ghatakgsai',
-  'https://twitter.com/ghatakgsai',
-  'https://www.linkedin.com/company/ghatakgsai',
+  'https://www.facebook.com/ghataksportsacademy',
+  'https://www.instagram.com/ghataksportsacademy',
+  'https://x.com/ghataksportsacademy',
+  'https://www.linkedin.com/company/ghataksportsacademy',
 ];
+
+function normalizeOrigin(value: string): string {
+  return value.replace(/\/$/, '');
+}
+
+function resolveUrl(value: string | undefined, baseUrl: string): string {
+  if (!value) return baseUrl;
+  if (/^https?:\/\//i.test(value)) return value;
+  if (value.startsWith('//')) return `https:${value}`;
+  if (value.startsWith('/')) return `${baseUrl}${value}`;
+  return `${baseUrl}/${value}`;
+}
+
+function getCanonicalBase(): string {
+  return primarySiteUrl;
+}
+
+function buildCanonicalPath(url: string, fallbackBase: string): string {
+  try {
+    const parsed = new URL(url);
+    const path = `${parsed.pathname}${parsed.search}${parsed.hash}`;
+    return path || '/';
+  } catch {
+    if (url.startsWith(fallbackBase)) {
+      return url.slice(fallbackBase.length) || '/';
+    }
+    return '/';
+  }
+}
 
 export function Seo({
   title,
@@ -60,16 +91,17 @@ export function Seo({
   noIndex = false,
   noFollow = false,
 }: SeoProps) {
+  const canonicalBase = normalizeOrigin(getCanonicalBase());
   const fullImageUrl = image
     ? image.startsWith('http')
       ? image
-      : `${defaultSiteUrl}${image}`
+      : `${imageBaseUrl}${image}`
     : defaultImage;
-  const fullCanonicalUrl = canonical ?? defaultSiteUrl;
+  const fullCanonicalUrl = resolveUrl(canonical, canonicalBase);
   const canonicalLower = fullCanonicalUrl.toLowerCase();
   const canonicalIsHome =
-    canonicalLower === defaultSiteUrl ||
-    canonicalLower === `${defaultSiteUrl}/`;
+    canonicalLower === primarySiteUrl ||
+    canonicalLower === `${primarySiteUrl}/`;
   const normalizedStructuredData = structuredData ?? [];
 
   const defaultStructuredDataEntries: object[] = [
@@ -77,7 +109,7 @@ export function Seo({
       '@context': 'https://schema.org',
       '@type': 'Organization',
       name: siteName,
-      url: defaultSiteUrl,
+      url: primarySiteUrl,
       logo: {
         '@type': 'ImageObject',
         url: siteLogo,
@@ -100,33 +132,46 @@ export function Seo({
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       name: siteName,
-      url: defaultSiteUrl,
+      url: primarySiteUrl,
       potentialAction: {
         '@type': 'SearchAction',
-        target: `${defaultSiteUrl}/?s={search_term_string}`,
+        target: `${primarySiteUrl}/?s={search_term_string}`,
         'query-input': 'required name=search_term_string',
       },
     },
   ];
 
   if (!canonicalIsHome) {
+    const pathSegments = canonicalPath
+      .split('/')
+      .filter((seg) => seg.length > 0);
+    const breadcrumbItems = [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: primarySiteUrl,
+      },
+    ];
+
+    let currentPath = primarySiteUrl;
+    pathSegments.forEach((segment, index) => {
+      currentPath += `/${segment}`;
+      breadcrumbItems.push({
+        '@type': 'ListItem',
+        position: index + 2,
+        name: segment
+          .split('-')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' '),
+        item: currentPath,
+      });
+    });
+
     defaultStructuredDataEntries.push({
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
-      itemListElement: [
-        {
-          '@type': 'ListItem',
-          position: 1,
-          name: 'Home',
-          item: defaultSiteUrl,
-        },
-        {
-          '@type': 'ListItem',
-          position: 2,
-          name: title,
-          item: fullCanonicalUrl,
-        },
-      ],
+      itemListElement: breadcrumbItems,
     });
   }
 
@@ -141,12 +186,21 @@ export function Seo({
   if (noFollow) robots.push('nofollow');
   const robotsContent = robots.length > 0 ? robots.join(', ') : 'index, follow';
 
+  const canonicalPath = buildCanonicalPath(fullCanonicalUrl, canonicalBase);
+  const alternateUrls = siteDomains.map((domain) => `${domain}${canonicalPath}`);
+
   return (
     <Helmet prioritizeSeoTags>
       {/* Basic Meta Tags */}
       <title>{title}</title>
       <meta name="description" content={description} />
       <meta name="robots" content={robotsContent} />
+      <link rel="canonical" href={fullCanonicalUrl} />
+      {alternateUrls
+        .filter((href) => href !== fullCanonicalUrl)
+        .map((href) => (
+          <link key={`alternate-${href}`} rel="alternate" href={href} />
+        ))}
       {keywords.length > 0 && (
         <meta name="keywords" content={keywords.join(', ')} />
       )}
@@ -225,6 +279,8 @@ export function Seo({
       <link rel="canonical" href={fullCanonicalUrl} />
       <link rel="alternate" hrefLang="x-default" href={fullCanonicalUrl} />
       <link rel="alternate" hrefLang="en" href={fullCanonicalUrl} />
+      <link rel="alternate" hrefLang="en-IN" href={fullCanonicalUrl} />
+      <link rel="alternate" hrefLang="hi-IN" href={fullCanonicalUrl} />
 
       {alternateLanguages.map(({ hreflang, href }) => (
         <link key={hreflang} rel="alternate" hrefLang={hreflang} href={href} />
