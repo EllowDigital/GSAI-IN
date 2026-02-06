@@ -15,7 +15,9 @@ export interface DisciplineLevel {
 async function fetchDisciplineLevels(): Promise<DisciplineLevel[]> {
   const { data, error } = await supabase
     .from('discipline_levels')
-    .select('id, discipline, level_name, level_order, description, requirements')
+    .select(
+      'id, discipline, level_name, level_order, description, requirements'
+    )
     .order('discipline, level_order', { ascending: true });
 
   if (error) {

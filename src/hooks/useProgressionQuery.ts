@@ -378,7 +378,13 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
 
   // Stripe count mutation for BJJ/Grappling
   const stripeMutation = useMutation({
-    mutationFn: async ({ id, stripeCount }: { id: string; stripeCount: number }) => {
+    mutationFn: async ({
+      id,
+      stripeCount,
+    }: {
+      id: string;
+      stripeCount: number;
+    }) => {
       const clampedCount = Math.max(0, Math.min(4, stripeCount));
       const { error } = await supabase
         .from('student_progress')
@@ -398,7 +404,10 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
           (old) =>
             old?.map((record) =>
               record.id === id
-                ? { ...record, stripe_count: Math.max(0, Math.min(4, stripeCount)) }
+                ? {
+                    ...record,
+                    stripe_count: Math.max(0, Math.min(4, stripeCount)),
+                  }
                 : record
             ) ?? []
         );
@@ -410,7 +419,9 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
       if (context?.previous) {
         queryClient.setQueryData(queryKey, context.previous);
       }
-      toast.error(error instanceof Error ? error.message : 'Stripe update failed');
+      toast.error(
+        error instanceof Error ? error.message : 'Stripe update failed'
+      );
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });

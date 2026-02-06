@@ -35,7 +35,9 @@ export default function FeesCards({
         <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center mb-4">
           <IndianRupee className="w-8 h-8 text-muted-foreground" />
         </div>
-        <p className="text-muted-foreground">No students found for the selected filters.</p>
+        <p className="text-muted-foreground">
+          No students found for the selected filters.
+        </p>
       </div>
     );
   }
@@ -46,7 +48,7 @@ export default function FeesCards({
         const status = fee ? getFeeStatus(fee) : 'unpaid';
         const [statusText, statusClass] = getStatusTextAndColor(status);
         const isSelected = selectedIds.has(student.id);
-        
+
         return (
           <Card
             key={student.id}
@@ -60,13 +62,15 @@ export default function FeesCards({
             onClick={() => bulkMode && onToggleSelect?.(student.id)}
           >
             {/* Status indicator bar */}
-            <div className={clsx(
-              'h-1',
-              status === 'paid' && 'bg-green-500',
-              status === 'partial' && 'bg-amber-500',
-              status === 'unpaid' && 'bg-red-500'
-            )} />
-            
+            <div
+              className={clsx(
+                'h-1',
+                status === 'paid' && 'bg-green-500',
+                status === 'partial' && 'bg-amber-500',
+                status === 'unpaid' && 'bg-red-500'
+              )}
+            />
+
             <CardContent className="p-3 sm:p-4 flex flex-col gap-3">
               {/* Header */}
               <div className="flex items-start gap-3">
@@ -80,7 +84,10 @@ export default function FeesCards({
                 )}
                 <Avatar className="h-10 w-10 sm:h-12 sm:w-12 ring-2 ring-offset-2 ring-primary/10 flex-shrink-0">
                   {student.profile_image_url ? (
-                    <AvatarImage src={student.profile_image_url} alt={student.name} />
+                    <AvatarImage
+                      src={student.profile_image_url}
+                      alt={student.name}
+                    />
                   ) : (
                     <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-bold text-sm">
                       {student.name?.slice(0, 2).toUpperCase()}
@@ -91,12 +98,16 @@ export default function FeesCards({
                   <h4 className="font-semibold text-sm sm:text-base text-foreground truncate">
                     {student.name}
                   </h4>
-                  <p className="text-xs text-muted-foreground truncate">{student.program}</p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {student.program}
+                  </p>
                 </div>
-                <span className={clsx(
-                  'shrink-0 rounded-full px-2 py-0.5 font-semibold text-[10px] sm:text-xs capitalize',
-                  statusClass
-                )}>
+                <span
+                  className={clsx(
+                    'shrink-0 rounded-full px-2 py-0.5 font-semibold text-[10px] sm:text-xs capitalize',
+                    statusClass
+                  )}
+                >
                   {statusText}
                 </span>
               </div>
@@ -104,29 +115,43 @@ export default function FeesCards({
               {/* Fee Details */}
               <div className="grid grid-cols-2 gap-2 p-2 sm:p-3 bg-muted/30 rounded-lg text-xs sm:text-sm">
                 <div className="flex flex-col">
-                  <span className="text-muted-foreground text-[10px] sm:text-xs">Month</span>
+                  <span className="text-muted-foreground text-[10px] sm:text-xs">
+                    Month
+                  </span>
                   <span className="font-medium text-foreground">
-                    {fee ? `${String(fee.month).padStart(2, '0')}/${fee.year}` : '-'}
+                    {fee
+                      ? `${String(fee.month).padStart(2, '0')}/${fee.year}`
+                      : '-'}
                   </span>
                 </div>
                 <div className="flex flex-col text-right">
-                  <span className="text-muted-foreground text-[10px] sm:text-xs">Fee</span>
+                  <span className="text-muted-foreground text-[10px] sm:text-xs">
+                    Fee
+                  </span>
                   <span className="font-medium text-foreground">
                     ₹{fee ? fee.monthly_fee : student.default_monthly_fee}
                   </span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-muted-foreground text-[10px] sm:text-xs">Paid</span>
+                  <span className="text-muted-foreground text-[10px] sm:text-xs">
+                    Paid
+                  </span>
                   <span className="font-medium text-green-600 dark:text-green-400">
                     {fee ? `₹${fee.paid_amount}` : '-'}
                   </span>
                 </div>
                 <div className="flex flex-col text-right">
-                  <span className="text-muted-foreground text-[10px] sm:text-xs">Balance</span>
-                  <span className={clsx(
-                    'font-medium',
-                    fee?.balance_due > 0 ? 'text-red-600 dark:text-red-400' : 'text-foreground'
-                  )}>
+                  <span className="text-muted-foreground text-[10px] sm:text-xs">
+                    Balance
+                  </span>
+                  <span
+                    className={clsx(
+                      'font-medium',
+                      fee?.balance_due > 0
+                        ? 'text-red-600 dark:text-red-400'
+                        : 'text-foreground'
+                    )}
+                  >
                     {fee ? `₹${fee.balance_due}` : '-'}
                   </span>
                 </div>
@@ -149,7 +174,9 @@ export default function FeesCards({
                       studentName={student.name}
                       parentName={student.parent_name || 'Parent'}
                       parentContact={student.parent_contact || ''}
-                      amount={fee ? fee.balance_due : student.default_monthly_fee}
+                      amount={
+                        fee ? fee.balance_due : student.default_monthly_fee
+                      }
                       month={fee ? fee.month : filterMonth}
                       year={fee ? fee.year : filterYear}
                     />

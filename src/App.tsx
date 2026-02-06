@@ -107,10 +107,14 @@ const App = () => {
 
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
-    
+
     const handleBeforeInstallPrompt = (event: Event) => {
       // Only intercept if we haven't dismissed and not already installed
-      if (!interceptInstallPromptRef.current || dismissedInstallToast || isPWAInstalled()) {
+      if (
+        !interceptInstallPromptRef.current ||
+        dismissedInstallToast ||
+        isPWAInstalled()
+      ) {
         return;
       }
       event.preventDefault();
@@ -136,7 +140,10 @@ const App = () => {
       clearTimeout(timeout);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener(
+        'beforeinstallprompt',
+        handleBeforeInstallPrompt
+      );
       window.removeEventListener('appinstalled', handleAppInstalled);
       performanceMonitor.disconnect();
     };
@@ -147,10 +154,13 @@ const App = () => {
     setDismissedInstallToast(true);
     installPromptRef.current = null;
     setInstallPrompt(null);
-    
+
     // Persist dismissal for 7 days
     try {
-      localStorage.setItem('pwa-install-dismissed', JSON.stringify({ timestamp: Date.now() }));
+      localStorage.setItem(
+        'pwa-install-dismissed',
+        JSON.stringify({ timestamp: Date.now() })
+      );
     } catch {
       // Ignore localStorage errors
     }
@@ -163,7 +173,7 @@ const App = () => {
     try {
       await promptEvent.prompt();
       const { outcome } = await promptEvent.userChoice;
-      
+
       if (outcome === 'accepted') {
         setShowInstallCTA(false);
       }

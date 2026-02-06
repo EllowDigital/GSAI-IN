@@ -43,7 +43,29 @@ export function BlogPostModal({
   // Sanitize blog content to prevent XSS attacks
   const sanitizedContent = post
     ? DOMPurify.sanitize(post.content, {
-        ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'img', 'blockquote', 'pre', 'code', 'span', 'div'],
+        ALLOWED_TAGS: [
+          'p',
+          'br',
+          'strong',
+          'em',
+          'u',
+          'h1',
+          'h2',
+          'h3',
+          'h4',
+          'h5',
+          'h6',
+          'ul',
+          'ol',
+          'li',
+          'a',
+          'img',
+          'blockquote',
+          'pre',
+          'code',
+          'span',
+          'div',
+        ],
         ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'target', 'rel', 'class'],
       })
     : '';
@@ -58,8 +80,6 @@ export function BlogPostModal({
       day: 'numeric',
     });
   };
-
-  
 
   const content = (
     <div className="space-y-6">

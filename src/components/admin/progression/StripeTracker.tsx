@@ -39,7 +39,7 @@ export default function StripeTracker({
       >
         <Minus className="h-3.5 w-3.5" />
       </Button>
-      
+
       <div className="flex items-center gap-1 px-2">
         {Array.from({ length: maxStripes }).map((_, index) => (
           <div
@@ -53,11 +53,11 @@ export default function StripeTracker({
           />
         ))}
       </div>
-      
+
       <span className="text-xs font-medium text-muted-foreground min-w-[3ch] text-center">
         {stripeCount}/{maxStripes}
       </span>
-      
+
       <Button
         size="icon"
         variant="ghost"

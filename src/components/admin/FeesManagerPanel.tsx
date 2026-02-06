@@ -29,7 +29,9 @@ export default function FeesManagerPanel() {
   const [historyStudent, setHistoryStudent] = useState<any | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
-  const [selectedStudentIds, setSelectedStudentIds] = useState<Set<string>>(new Set());
+  const [selectedStudentIds, setSelectedStudentIds] = useState<Set<string>>(
+    new Set()
+  );
   const [bulkMode, setBulkMode] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
@@ -37,8 +39,10 @@ export default function FeesManagerPanel() {
   useEffect(() => {
     const channel = supabase
       .channel('public:fees:fees-manager')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'fees' }, () =>
-        queryClient.invalidateQueries({ queryKey: ['fees'] })
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'fees' },
+        () => queryClient.invalidateQueries({ queryKey: ['fees'] })
       )
       .subscribe();
 
@@ -63,7 +67,11 @@ export default function FeesManagerPanel() {
   const { data: fees, isLoading: loadingFees } = useQuery({
     queryKey: ['fees', filterMonth, filterYear],
     queryFn: async () => {
-      const { data, error } = await supabase.from('fees').select('*').eq('month', filterMonth).eq('year', filterYear);
+      const { data, error } = await supabase
+        .from('fees')
+        .select('*')
+        .eq('month', filterMonth)
+        .eq('year', filterYear);
       if (error) throw error;
       return data || [];
     },
@@ -86,7 +94,8 @@ export default function FeesManagerPanel() {
       const updates = studentIds.map(async (studentId) => {
         const student = students?.find((s) => s.id === studentId);
         const existingFee = fees?.find((f) => f.student_id === studentId);
-        const monthlyFee = existingFee?.monthly_fee || student?.default_monthly_fee || 2000;
+        const monthlyFee =
+          existingFee?.monthly_fee || student?.default_monthly_fee || 2000;
 
         if (existingFee) {
           // Update existing fee
@@ -116,7 +125,10 @@ export default function FeesManagerPanel() {
       queryClient.invalidateQueries({ queryKey: ['fees'] });
       setSelectedStudentIds(new Set());
       setBulkMode(false);
-      toast({ title: 'Success', description: 'Selected students marked as paid' });
+      toast({
+        title: 'Success',
+        description: 'Selected students marked as paid',
+      });
     },
     onError: (error: any) => {
       toast({ title: 'Error', description: error.message, variant: 'error' });
@@ -131,9 +143,15 @@ export default function FeesManagerPanel() {
           return { student, fee };
         })
         .filter((row) => {
-          if (filterName && !row.student.name.toLowerCase().includes(filterName.toLowerCase())) return false;
+          if (
+            filterName &&
+            !row.student.name.toLowerCase().includes(filterName.toLowerCase())
+          )
+            return false;
           if (filterStatus) {
-            const status = row.fee ? (row.fee.status || 'unpaid').toLowerCase() : 'unpaid';
+            const status = row.fee
+              ? (row.fee.status || 'unpaid').toLowerCase()
+              : 'unpaid';
             return status === filterStatus.toLowerCase();
           }
           return true;
@@ -156,7 +174,9 @@ export default function FeesManagerPanel() {
   };
 
   const selectAllUnpaid = () => {
-    const unpaidIds = rows.filter((r) => !r.fee || r.fee.status !== 'paid').map((r) => r.student.id);
+    const unpaidIds = rows
+      .filter((r) => !r.fee || r.fee.status !== 'paid')
+      .map((r) => r.student.id);
     setSelectedStudentIds(new Set(unpaidIds));
   };
 
@@ -198,7 +218,11 @@ export default function FeesManagerPanel() {
       await queryClient.refetchQueries({ queryKey: ['students'] });
       toast({ title: 'Success', description: 'Fees refreshed successfully' });
     } catch (error: any) {
-      toast({ title: 'Error', description: 'Failed to refresh fees', variant: 'error' });
+      toast({
+        title: 'Error',
+        description: 'Failed to refresh fees',
+        variant: 'error',
+      });
     } finally {
       setIsRefreshing(false);
     }
@@ -216,7 +240,12 @@ export default function FeesManagerPanel() {
     if (viewMode === 'table') {
       return (
         <div className="rounded-2xl shadow-lg overflow-x-auto bg-card animate-fade-in">
-          <FeesTable rows={rows} isLoading={false} onEditFee={handleEditFee} onShowHistory={handleShowHistory} />
+          <FeesTable
+            rows={rows}
+            isLoading={false}
+            onEditFee={handleEditFee}
+            onShowHistory={handleShowHistory}
+          />
         </div>
       );
     }
@@ -246,11 +275,16 @@ export default function FeesManagerPanel() {
                 <span>Fees Management</span>
               </h2>
               <p className="mt-1 text-sm sm:text-base text-muted-foreground">
-                Manage student fees, track payments, and monitor financial records.
+                Manage student fees, track payments, and monitor financial
+                records.
               </p>
             </div>
             <div className="flex gap-2 mt-2 sm:mt-0">
-              <RefreshButton onRefresh={handleRefresh} isLoading={isLoading} className="flex-shrink-0" />
+              <RefreshButton
+                onRefresh={handleRefresh}
+                isLoading={isLoading}
+                className="flex-shrink-0"
+              />
             </div>
           </div>
         </div>
@@ -330,21 +364,36 @@ export default function FeesManagerPanel() {
                   <span className="text-sm font-medium text-foreground">
                     {selectedStudentIds.size} selected
                   </span>
-                  <Button variant="outline" size="sm" onClick={selectAllUnpaid} className="h-8 text-xs">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={selectAllUnpaid}
+                    className="h-8 text-xs"
+                  >
                     Select All Unpaid
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={clearSelection} className="h-8 text-xs">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearSelection}
+                    className="h-8 text-xs"
+                  >
                     <X className="w-3 h-3 mr-1" />
                     Clear
                   </Button>
                 </div>
                 <Button
                   onClick={handleBulkMarkPaid}
-                  disabled={selectedStudentIds.size === 0 || bulkMarkPaidMutation.isPending}
+                  disabled={
+                    selectedStudentIds.size === 0 ||
+                    bulkMarkPaidMutation.isPending
+                  }
                   size="sm"
                   className="bg-green-600 hover:bg-green-700 h-9"
                 >
-                  {bulkMarkPaidMutation.isPending ? 'Processing...' : `Mark ${selectedStudentIds.size} as Paid`}
+                  {bulkMarkPaidMutation.isPending
+                    ? 'Processing...'
+                    : `Mark ${selectedStudentIds.size} as Paid`}
                 </Button>
               </div>
             </Card>
@@ -355,16 +404,21 @@ export default function FeesManagerPanel() {
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-8 sm:py-12">
                 <div className="animate-spin h-8 w-8 sm:h-10 sm:w-10 border-4 border-primary border-t-transparent rounded-full" />
-                <p className="text-sm sm:text-base text-muted-foreground mt-4">Loading fees data...</p>
+                <p className="text-sm sm:text-base text-muted-foreground mt-4">
+                  Loading fees data...
+                </p>
               </div>
             ) : rows.length === 0 ? (
               <div className="text-center py-8 sm:py-12 space-y-4">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-muted rounded-full flex items-center justify-center">
                   <span className="text-2xl">💰</span>
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-foreground">No fee records found</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground">
+                  No fee records found
+                </h3>
                 <p className="text-sm sm:text-base text-muted-foreground">
-                  Try adjusting your filters or add students to begin tracking fees.
+                  Try adjusting your filters or add students to begin tracking
+                  fees.
                 </p>
               </div>
             ) : (

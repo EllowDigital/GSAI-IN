@@ -16,7 +16,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ProgressStatus } from '@/hooks/useProgressionQuery';
-import { isBeltDiscipline, isLevelDiscipline, getDisciplineConfig } from '@/config/disciplineConfig';
+import {
+  isBeltDiscipline,
+  isLevelDiscipline,
+  getDisciplineConfig,
+} from '@/config/disciplineConfig';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface StudentOption {
@@ -78,22 +82,26 @@ export default function AssignStudentBeltDialog({
   // Filter belts by student's discipline
   const filteredBelts = useMemo(() => {
     if (!studentId || !studentProgram) return belts;
-    
+
     // For belt-based disciplines, filter to matching discipline or general
     if (isBeltBased) {
       return belts.filter((belt) => {
         const beltDiscipline = belt.discipline?.toLowerCase();
         const program = studentProgram.toLowerCase();
         // Match exact discipline or use general fallback
-        return beltDiscipline === program || 
-               beltDiscipline === 'general' ||
-               (program === 'grappling' && beltDiscipline === 'bjj') ||
-               (program === 'bjj' && beltDiscipline === 'grappling');
+        return (
+          beltDiscipline === program ||
+          beltDiscipline === 'general' ||
+          (program === 'grappling' && beltDiscipline === 'bjj') ||
+          (program === 'bjj' && beltDiscipline === 'grappling')
+        );
       });
     }
-    
+
     // For level-based disciplines, show general belts as fallback
-    return belts.filter((belt) => belt.discipline === 'general' || !belt.discipline);
+    return belts.filter(
+      (belt) => belt.discipline === 'general' || !belt.discipline
+    );
   }, [belts, studentId, studentProgram, isBeltBased]);
 
   // Note: belt selection is reset when the student is changed in the handler below.
@@ -125,7 +133,9 @@ export default function AssignStudentBeltDialog({
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!studentId || !beltId) {
-      setError(`Choose both a student and a ${isBeltBased ? 'belt' : 'level'}.`);
+      setError(
+        `Choose both a student and a ${isBeltBased ? 'belt' : 'level'}.`
+      );
       return;
     }
 
@@ -157,7 +167,13 @@ export default function AssignStudentBeltDialog({
             <label className="text-sm font-medium text-foreground">
               Student
             </label>
-            <Select value={studentId} onValueChange={(v) => { setStudentId(v); setBeltId(''); }}>
+            <Select
+              value={studentId}
+              onValueChange={(v) => {
+                setStudentId(v);
+                setBeltId('');
+              }}
+            >
               <SelectTrigger disabled={students.length === 0}>
                 <SelectValue placeholder={studentPlaceholder} />
               </SelectTrigger>
@@ -197,7 +213,7 @@ export default function AssignStudentBeltDialog({
             <Alert className="bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900">
               <Layers className="h-4 w-4 text-amber-600" />
               <AlertDescription className="text-sm text-amber-700 dark:text-amber-400">
-                {studentProgram} uses level-based progression. 
+                {studentProgram} uses level-based progression.
                 {disciplineConfig?.levels && (
                   <span> Levels: {disciplineConfig.levels.join(' → ')}</span>
                 )}
@@ -209,8 +225,8 @@ export default function AssignStudentBeltDialog({
             <label className="text-sm font-medium text-foreground">
               {isBeltBased ? 'Belt Level' : 'Training Level'}
             </label>
-            <Select 
-              value={beltId} 
+            <Select
+              value={beltId}
               onValueChange={setBeltId}
               disabled={!studentId || filteredBelts.length === 0}
             >

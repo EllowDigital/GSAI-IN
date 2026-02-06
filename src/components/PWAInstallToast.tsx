@@ -36,7 +36,7 @@ const PWAInstallToast: React.FC<PWAInstallToastProps> = ({
             <X className="h-4 w-4" />
           </button>
         </div>
-        
+
         {/* Actions */}
         <div className="flex items-center gap-2">
           <Button

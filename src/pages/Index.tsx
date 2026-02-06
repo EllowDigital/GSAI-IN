@@ -124,7 +124,8 @@ const localBusinessStructuredData = {
   paymentAccepted: 'Cash, UPI, Card',
   foundingDate: '2025-03',
   slogan: 'Building Champions Through Martial Arts Excellence',
-  hasMap: 'https://www.google.com/maps/place/Ghatak+Sports+Academy+India/@26.9051619,81.0177244,17z/data=!3m1!4b1!4m6!3m5!1s0x3999596def6ea9c7:0x23d2ceb539bff92!8m2!3d26.9051619!4d81.0177244!16s%2Fg%2F11x2gs6twk?entry=ttu&g_ep=EgoyMDI2MDIwMy4wIKXMDSoASAFQAw%3D%3D8Fc6E6tovpfXWZw',
+  hasMap:
+    'https://www.google.com/maps/place/Ghatak+Sports+Academy+India/@26.9051619,81.0177244,17z/data=!3m1!4b1!4m6!3m5!1s0x3999596def6ea9c7:0x23d2ceb539bff92!8m2!3d26.9051619!4d81.0177244!16s%2Fg%2F11x2gs6twk?entry=ttu&g_ep=EgoyMDI2MDIwMy4wIKXMDSoASAFQAw%3D%3D8Fc6E6tovpfXWZw',
   aggregateRating: {
     '@type': 'AggregateRating',
     ratingValue: '5.0',

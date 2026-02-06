@@ -19,14 +19,18 @@ export function useStudents() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [programFilter, setProgramFilter] = useState<string>('all');
-  const [sortCol, setSortCol] = useState<'name' | 'program' | 'join_date'>('join_date');
+  const [sortCol, setSortCol] = useState<'name' | 'program' | 'join_date'>(
+    'join_date'
+  );
   const [sortAsc, setSortAsc] = useState(false);
 
   const fetchStudents = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from('students')
-      .select('id, name, aadhar_number, program, join_date, parent_name, parent_contact, profile_image_url, created_at')
+      .select(
+        'id, name, aadhar_number, program, join_date, parent_name, parent_contact, profile_image_url, created_at'
+      )
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -47,7 +51,11 @@ export function useStudents() {
 
     const channel = supabase
       .channel('gsai-students-admin-realtime-hook')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'students' }, fetchStudents)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'students' },
+        fetchStudents
+      )
       .subscribe();
 
     return () => {
@@ -58,26 +66,30 @@ export function useStudents() {
 
   // Get unique programs for filter dropdown
   const programOptions = useMemo(() => {
-    const programs = [...new Set(students.map((s) => s.program))].filter(Boolean).sort();
+    const programs = [...new Set(students.map((s) => s.program))]
+      .filter(Boolean)
+      .sort();
     return programs;
   }, [students]);
 
   const filteredStudents = useMemo(() => {
     let filtered = students;
-    
+
     // Filter by search term
     if (search.trim()) {
       const q = search.trim().toLowerCase();
       filtered = filtered.filter(
-        (s) => s.name.toLowerCase().includes(q) || s.parent_name?.toLowerCase().includes(q)
+        (s) =>
+          s.name.toLowerCase().includes(q) ||
+          s.parent_name?.toLowerCase().includes(q)
       );
     }
-    
+
     // Filter by program
     if (programFilter && programFilter !== 'all') {
       filtered = filtered.filter((s) => s.program === programFilter);
     }
-    
+
     // Sort
     filtered = [...filtered].sort((a, b) => {
       if (sortCol === 'join_date') {

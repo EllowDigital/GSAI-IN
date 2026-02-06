@@ -18,11 +18,11 @@ export default function Progression() {
             <span className="hidden sm:inline">Test Calendar</span>
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="progression">
           <ProgressionBoard />
         </TabsContent>
-        
+
         <TabsContent value="calendar">
           <BeltTestCalendar />
         </TabsContent>

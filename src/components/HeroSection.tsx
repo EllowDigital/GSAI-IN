@@ -1,10 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import {
-  Volume2,
-  VolumeX,
-  Instagram,
-} from 'lucide-react';
+import { Volume2, VolumeX, Instagram } from 'lucide-react';
 
 // Array of background images for the slider
 const bgImages = [
@@ -374,9 +370,19 @@ export default function HeroSection() {
               <span className="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-black"></span>
               <span className="relative flex items-center gap-2">
                 Explore Programs
-                <svg className="w-5 h-5 group-hover:translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-5 h-5 group-hover:translate-y-1 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <circle cx="12" cy="12" r="10" strokeWidth="2" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v8m0 0l-3-3m3 3l3-3" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 8v8m0 0l-3-3m3 3l3-3"
+                  />
                 </svg>
               </span>
             </a>
@@ -397,14 +403,17 @@ export default function HeroSection() {
           {/* Sanskrit Quote - Scroll Fade */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
-            animate={{ 
-              opacity: showSanskrit ? 1 : 0, 
-              y: showSanskrit ? 0 : 10 
+            animate={{
+              opacity: showSanskrit ? 1 : 0,
+              y: showSanskrit ? 0 : 10,
             }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
             className="mt-10 md:mt-14 text-center"
           >
-            <p className="text-xl sm:text-2xl md:text-3xl font-serif text-yellow-400/80 tracking-wide mb-2" style={{ fontFamily: 'serif' }}>
+            <p
+              className="text-xl sm:text-2xl md:text-3xl font-serif text-yellow-400/80 tracking-wide mb-2"
+              style={{ fontFamily: 'serif' }}
+            >
               शौर्यं बलं अनुशासनम्।
             </p>
             <p className="text-sm sm:text-base text-gray-400 italic tracking-wider">

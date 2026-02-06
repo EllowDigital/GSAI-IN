@@ -25,8 +25,18 @@ interface FeeReminderButtonProps {
 }
 
 const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
 export default function FeeReminderButton({
@@ -60,7 +70,7 @@ Ghatak Sports Academy`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email || !email.includes('@')) {
       toast({
         title: 'Invalid Email',
@@ -75,7 +85,10 @@ Ghatak Sports Academy`;
     try {
       // Use formsubmit.co - submit via hidden iframe to avoid redirect
       const formData = new FormData();
-      formData.append('_subject', `Fee Reminder: ${studentName} - ${MONTH_NAMES[month - 1]} ${year}`);
+      formData.append(
+        '_subject',
+        `Fee Reminder: ${studentName} - ${MONTH_NAMES[month - 1]} ${year}`
+      );
       formData.append('_template', 'box');
       formData.append('Student Name', studentName);
       formData.append('Parent Name', parentName);
@@ -89,7 +102,7 @@ Ghatak Sports Academy`;
       const response = await fetch(`https://formsubmit.co/ajax/${email}`, {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
         body: formData,
       });
@@ -134,7 +147,8 @@ Ghatak Sports Academy`;
               Send Fee Reminder
             </DialogTitle>
             <DialogDescription>
-              Send a payment reminder to {parentName} for {studentName}'s pending fees.
+              Send a payment reminder to {parentName} for {studentName}'s
+              pending fees.
             </DialogDescription>
           </DialogHeader>
 
@@ -163,13 +177,25 @@ Ghatak Sports Academy`;
             </div>
 
             <div className="bg-muted/50 rounded-lg p-3 text-sm space-y-1">
-              <p><span className="font-medium">Student:</span> {studentName}</p>
-              <p><span className="font-medium">Amount:</span> ₹{amount.toLocaleString()}</p>
-              <p><span className="font-medium">Period:</span> {MONTH_NAMES[month - 1]} {year}</p>
+              <p>
+                <span className="font-medium">Student:</span> {studentName}
+              </p>
+              <p>
+                <span className="font-medium">Amount:</span> ₹
+                {amount.toLocaleString()}
+              </p>
+              <p>
+                <span className="font-medium">Period:</span>{' '}
+                {MONTH_NAMES[month - 1]} {year}
+              </p>
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDialogOpen(false)}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={sending}>
