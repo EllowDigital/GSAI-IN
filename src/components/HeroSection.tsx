@@ -105,6 +105,7 @@ export default function HeroSection() {
       const scrollY = window.scrollY;
       setShowSanskrit(scrollY >= 20);
     };
+    handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -375,6 +376,8 @@ export default function HeroSection() {
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  focusable="false"
                 >
                   <circle cx="12" cy="12" r="10" strokeWidth="2" />
                   <path
@@ -411,8 +414,8 @@ export default function HeroSection() {
             className="mt-10 md:mt-14 text-center"
           >
             <p
+              lang="sa"
               className="text-xl sm:text-2xl md:text-3xl font-serif text-yellow-400/80 tracking-wide mb-2"
-              style={{ fontFamily: 'serif' }}
             >
               शौर्यं बलं अनुशासनम्।
             </p>
