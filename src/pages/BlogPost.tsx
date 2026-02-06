@@ -238,11 +238,41 @@ export default function BlogPost() {
             <article className="prose prose-lg max-w-none prose-invert prose-headings:text-white prose-p:text-gray-300 prose-strong:text-white prose-li:text-gray-300 prose-a:text-yellow-500 hover:prose-a:text-yellow-400">
               <div
                 className="leading-relaxed"
-                dangerouslySetInnerHTML={{ 
+                dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(post.content, {
-                    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'img', 'blockquote', 'pre', 'code', 'span', 'div'],
-                    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'target', 'rel', 'class'],
-                  })
+                    ALLOWED_TAGS: [
+                      'p',
+                      'br',
+                      'strong',
+                      'em',
+                      'u',
+                      'h1',
+                      'h2',
+                      'h3',
+                      'h4',
+                      'h5',
+                      'h6',
+                      'ul',
+                      'ol',
+                      'li',
+                      'a',
+                      'img',
+                      'blockquote',
+                      'pre',
+                      'code',
+                      'span',
+                      'div',
+                    ],
+                    ALLOWED_ATTR: [
+                      'href',
+                      'src',
+                      'alt',
+                      'title',
+                      'target',
+                      'rel',
+                      'class',
+                    ],
+                  }),
                 }}
               />
             </article>

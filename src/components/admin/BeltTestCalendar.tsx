@@ -25,7 +25,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { format, isSameDay, parseISO } from 'date-fns';
-import { CalendarDays, Plus, Users, Award, Clock, Trash2, Loader2 } from 'lucide-react';
+import {
+  CalendarDays,
+  Plus,
+  Users,
+  Award,
+  Clock,
+  Trash2,
+  Loader2,
+} from 'lucide-react';
 
 interface BeltTest {
   id: string;
@@ -36,7 +44,9 @@ interface BeltTest {
 }
 
 export default function BeltTestCalendar() {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    new Date()
+  );
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingTest, setEditingTest] = useState<BeltTest | null>(null);
   const [formData, setFormData] = useState({
@@ -66,12 +76,14 @@ export default function BeltTestCalendar() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('student_progress')
-        .select(`
+        .select(
+          `
           id,
           status,
           stripe_count,
           student:students(id, name, program)
-        `)
+        `
+        )
         .or('status.eq.ready,stripe_count.gte.4');
       if (error) throw error;
       return data || [];
@@ -80,7 +92,12 @@ export default function BeltTestCalendar() {
 
   // Create/Update mutation
   const saveMutation = useMutation({
-    mutationFn: async (data: { id?: string; title: string; date: string; description: string }) => {
+    mutationFn: async (data: {
+      id?: string;
+      title: string;
+      date: string;
+      description: string;
+    }) => {
       if (data.id) {
         const { error } = await supabase
           .from('events')
@@ -92,21 +109,22 @@ export default function BeltTestCalendar() {
           .eq('id', data.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase
-          .from('events')
-          .insert({
-            title: data.title,
-            date: data.date,
-            description: data.description,
-            tag: 'belt_test',
-          });
+        const { error } = await supabase.from('events').insert({
+          title: data.title,
+          date: data.date,
+          description: data.description,
+          tag: 'belt_test',
+        });
         if (error) throw error;
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['belt-tests'] });
       queryClient.invalidateQueries({ queryKey: ['events'] });
-      toast({ title: 'Success', description: editingTest ? 'Belt test updated' : 'Belt test scheduled' });
+      toast({
+        title: 'Success',
+        description: editingTest ? 'Belt test updated' : 'Belt test scheduled',
+      });
       handleCloseDialog();
     },
     onError: (error: any) => {
@@ -123,7 +141,10 @@ export default function BeltTestCalendar() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['belt-tests'] });
       queryClient.invalidateQueries({ queryKey: ['events'] });
-      toast({ title: 'Deleted', description: 'Belt test removed from calendar' });
+      toast({
+        title: 'Deleted',
+        description: 'Belt test removed from calendar',
+      });
     },
     onError: (error: any) => {
       toast({ title: 'Error', description: error.message, variant: 'error' });
@@ -180,7 +201,9 @@ export default function BeltTestCalendar() {
   const upcomingTests = beltTests.filter((test) => {
     const testDate = parseISO(test.date);
     const now = new Date();
-    const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const thirtyDaysFromNow = new Date(
+      now.getTime() + 30 * 24 * 60 * 60 * 1000
+    );
     return testDate >= now && testDate <= thirtyDaysFromNow;
   });
 
@@ -241,12 +264,18 @@ export default function BeltTestCalendar() {
                           <div>
                             <p className="font-medium text-sm">{test.title}</p>
                             {test.description && (
-                              <p className="text-xs text-muted-foreground">{test.description}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {test.description}
+                              </p>
                             )}
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          <Button variant="ghost" size="sm" onClick={() => handleOpenDialog(test)}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleOpenDialog(test)}
+                          >
                             Edit
                           </Button>
                           <Button
@@ -262,7 +291,9 @@ export default function BeltTestCalendar() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">No tests scheduled for this date</p>
+                  <p className="text-sm text-muted-foreground">
+                    No tests scheduled for this date
+                  </p>
                 )}
               </div>
             )}
@@ -286,7 +317,10 @@ export default function BeltTestCalendar() {
                 </div>
               ) : upcomingTests.length > 0 ? (
                 upcomingTests.map((test) => (
-                  <div key={test.id} className="p-2 rounded-lg bg-muted/30 text-sm">
+                  <div
+                    key={test.id}
+                    className="p-2 rounded-lg bg-muted/30 text-sm"
+                  >
                     <p className="font-medium">{test.title}</p>
                     <p className="text-xs text-muted-foreground">
                       {format(parseISO(test.date), 'MMM d, yyyy')}
@@ -317,12 +351,16 @@ export default function BeltTestCalendar() {
             <CardContent className="space-y-2 max-h-64 overflow-y-auto">
               {readyStudents.length > 0 ? (
                 readyStudents.map((progress: any) => (
-                  <div key={progress.id} className="p-2 rounded-lg bg-green-500/10 text-sm">
+                  <div
+                    key={progress.id}
+                    className="p-2 rounded-lg bg-green-500/10 text-sm"
+                  >
                     <p className="font-medium text-green-700 dark:text-green-400">
                       {progress.student?.name}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {progress.student?.program} • {progress.stripe_count || 0} stripes
+                      {progress.student?.program} • {progress.stripe_count || 0}{' '}
+                      stripes
                     </p>
                   </div>
                 ))
@@ -357,7 +395,9 @@ export default function BeltTestCalendar() {
               <Input
                 id="title"
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
                 placeholder="Belt Grading Test"
                 required
               />
@@ -369,7 +409,9 @@ export default function BeltTestCalendar() {
                 id="time"
                 type="time"
                 value={formData.time}
-                onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, time: e.target.value })
+                }
               />
             </div>
 
@@ -378,17 +420,26 @@ export default function BeltTestCalendar() {
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 placeholder="Additional details..."
                 rows={3}
               />
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleCloseDialog}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCloseDialog}
+              >
                 Cancel
               </Button>
-              <Button type="submit" disabled={saveMutation.isPending || !selectedDate}>
+              <Button
+                type="submit"
+                disabled={saveMutation.isPending || !selectedDate}
+              >
                 {saveMutation.isPending ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />

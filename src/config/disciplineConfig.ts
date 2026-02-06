@@ -12,55 +12,68 @@ export interface DisciplineConfig {
 }
 
 // Belt-based disciplines (Taekwondo, Karate, Kickboxing, BJJ/Grappling)
-export const BELT_DISCIPLINES = ['Taekwondo', 'Karate', 'Kickboxing', 'Grappling', 'BJJ'];
+export const BELT_DISCIPLINES = [
+  'Taekwondo',
+  'Karate',
+  'Kickboxing',
+  'Grappling',
+  'BJJ',
+];
 
 // Level-based disciplines (no belts)
-export const LEVEL_DISCIPLINES = ['Boxing', 'MMA', 'Self-Defense', 'Fitness', 'Fat Loss', 'Kalaripayattu'];
+export const LEVEL_DISCIPLINES = [
+  'Boxing',
+  'MMA',
+  'Self-Defense',
+  'Fitness',
+  'Fat Loss',
+  'Kalaripayattu',
+];
 
 export const DISCIPLINE_CONFIG: Record<string, DisciplineConfig> = {
-  'Taekwondo': {
+  Taekwondo: {
     name: 'Taekwondo',
     type: 'belt',
     hasStripes: false,
     description: 'Korean martial art with belt progression',
     belts: ['White', 'Yellow', 'Green', 'Blue', 'Red', 'Black'],
   },
-  'Karate': {
+  Karate: {
     name: 'Karate',
     type: 'belt',
     hasStripes: false,
     description: 'Japanese martial art with belt progression',
     belts: ['White', 'Yellow', 'Orange', 'Green', 'Blue', 'Brown', 'Black'],
   },
-  'Kickboxing': {
+  Kickboxing: {
     name: 'Kickboxing',
     type: 'belt',
     hasStripes: false,
     description: 'Combat sport with grade/belt progression',
     belts: ['White', 'Yellow', 'Green', 'Blue', 'Brown', 'Black'],
   },
-  'Grappling': {
+  Grappling: {
     name: 'Grappling (BJJ)',
     type: 'belt',
     hasStripes: true, // IBJJF standard - stripes 0-4 between belts
     description: 'Brazilian Jiu-Jitsu following IBJJF belt system',
     belts: ['White', 'Blue', 'Purple', 'Brown', 'Black'],
   },
-  'BJJ': {
+  BJJ: {
     name: 'Brazilian Jiu-Jitsu',
     type: 'belt',
     hasStripes: true,
     description: 'IBJJF standard belt system with stripes',
     belts: ['White', 'Blue', 'Purple', 'Brown', 'Black'],
   },
-  'Boxing': {
+  Boxing: {
     name: 'Boxing',
     type: 'level',
     hasStripes: false,
     description: 'No belts - performance-based progression',
     levels: ['Beginner', 'Intermediate', 'Advanced', 'Competition'],
   },
-  'MMA': {
+  MMA: {
     name: 'Mixed Martial Arts',
     type: 'level',
     hasStripes: false,
@@ -74,7 +87,7 @@ export const DISCIPLINE_CONFIG: Record<string, DisciplineConfig> = {
     description: 'Skill-based progression',
     levels: ['Awareness', 'Basic Defense', 'Advanced Defense', 'Instructor'],
   },
-  'Fitness': {
+  Fitness: {
     name: 'Fitness Training',
     type: 'level',
     hasStripes: false,
@@ -88,7 +101,7 @@ export const DISCIPLINE_CONFIG: Record<string, DisciplineConfig> = {
     description: 'Program phase progression',
     levels: ['Week 1-4', 'Week 5-8', 'Week 9-12', 'Maintenance'],
   },
-  'Kalaripayattu': {
+  Kalaripayattu: {
     name: 'Kalaripayattu',
     type: 'level',
     hasStripes: false,
@@ -102,12 +115,12 @@ export function getDisciplineConfig(program: string): DisciplineConfig | null {
   if (DISCIPLINE_CONFIG[program]) {
     return DISCIPLINE_CONFIG[program];
   }
-  
+
   // Try case-insensitive match
   const key = Object.keys(DISCIPLINE_CONFIG).find(
-    k => k.toLowerCase() === program.toLowerCase()
+    (k) => k.toLowerCase() === program.toLowerCase()
   );
-  
+
   return key ? DISCIPLINE_CONFIG[key] : null;
 }
 

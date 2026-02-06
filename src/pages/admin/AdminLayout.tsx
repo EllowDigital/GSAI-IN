@@ -82,7 +82,9 @@ const AdminLayout: React.FC = () => {
       {/* Mobile overlay with animation */}
       <div
         className={`fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity duration-300 ${
-          sidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          sidebarOpen
+            ? 'opacity-100 pointer-events-auto'
+            : 'opacity-0 pointer-events-none'
         }`}
         onClick={() => setSidebarOpen(false)}
         aria-label="Close sidebar"
@@ -105,7 +107,9 @@ const AdminLayout: React.FC = () => {
 
               <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                 <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 flex-shrink-0">
-                  <span className="text-sm sm:text-base font-bold text-primary-foreground">G</span>
+                  <span className="text-sm sm:text-base font-bold text-primary-foreground">
+                    G
+                  </span>
                 </div>
                 <div className="flex flex-col min-w-0">
                   <h1 className="text-base sm:text-lg lg:text-xl font-bold text-foreground truncate">
@@ -128,7 +132,9 @@ const AdminLayout: React.FC = () => {
                   className="p-2 rounded-xl bg-muted hover:bg-muted/80 text-foreground border border-border hover:border-border/80 transition-all duration-200 active:scale-95 disabled:opacity-50"
                   title="Refresh dashboard data"
                 >
-                  <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-500 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  <RefreshCw
+                    className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-500 ${isRefreshing ? 'animate-spin' : ''}`}
+                  />
                 </button>
               )}
 
@@ -144,9 +150,13 @@ const AdminLayout: React.FC = () => {
               {/* Profile Badge */}
               <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-muted/50 border border-border/50">
                 <div className="w-6 h-6 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-xs font-bold text-primary-foreground">A</span>
+                  <span className="text-xs font-bold text-primary-foreground">
+                    A
+                  </span>
                 </div>
-                <span className="text-sm font-medium text-foreground hidden md:block">Admin</span>
+                <span className="text-sm font-medium text-foreground hidden md:block">
+                  Admin
+                </span>
               </div>
             </div>
           </div>

@@ -103,10 +103,10 @@ export default function LocationLucknow() {
             Ghatak Sports Academy India - Lucknow
           </h1>
           <p className="mt-4 text-gray-300 leading-relaxed">
-            Train at our flagship Lucknow academy in Indira Nagar, Takrohi.
-            We offer structured martial arts and fitness programs led by
-            certified coaches. Students train in karate, taekwondo, MMA,
-            boxing, kickboxing, self-defense, grappling, and conditioning.
+            Train at our flagship Lucknow academy in Indira Nagar, Takrohi. We
+            offer structured martial arts and fitness programs led by certified
+            coaches. Students train in karate, taekwondo, MMA, boxing,
+            kickboxing, self-defense, grappling, and conditioning.
           </p>
           <p className="mt-4 text-gray-300 leading-relaxed">
             Our Lucknow center focuses on skill development, discipline, and

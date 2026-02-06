@@ -187,7 +187,9 @@ export function Seo({
   const robotsContent = robots.length > 0 ? robots.join(', ') : 'index, follow';
 
   const canonicalPath = buildCanonicalPath(fullCanonicalUrl, canonicalBase);
-  const alternateUrls = siteDomains.map((domain) => `${domain}${canonicalPath}`);
+  const alternateUrls = siteDomains.map(
+    (domain) => `${domain}${canonicalPath}`
+  );
 
   return (
     <Helmet prioritizeSeoTags>

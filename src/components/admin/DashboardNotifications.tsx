@@ -2,13 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { 
-  AlertTriangle, 
-  Bell, 
-  CreditCard, 
-  Award, 
+import {
+  AlertTriangle,
+  Bell,
+  CreditCard,
+  Award,
   ChevronRight,
-  X
+  X,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,7 +25,9 @@ interface Notification {
 }
 
 export default function DashboardNotifications() {
-  const [dismissedIds, setDismissedIds] = React.useState<Set<string>>(new Set());
+  const [dismissedIds, setDismissedIds] = React.useState<Set<string>>(
+    new Set()
+  );
 
   const { data: notifications = [], isLoading } = useQuery({
     queryKey: ['dashboard-notifications'],
@@ -35,7 +37,8 @@ export default function DashboardNotifications() {
       // Fetch unpaid fees with student names
       const { data: unpaidFees } = await supabase
         .from('fees')
-        .select(`
+        .select(
+          `
           id, 
           student_id,
           month,
@@ -43,7 +46,8 @@ export default function DashboardNotifications() {
           monthly_fee,
           paid_amount,
           students!inner(name)
-        `)
+        `
+        )
         .or('status.eq.unpaid,status.eq.partial')
         .order('year', { ascending: false })
         .order('month', { ascending: false })
@@ -51,18 +55,22 @@ export default function DashboardNotifications() {
 
       if (unpaidFees && unpaidFees.length > 0) {
         // Group by student
-        const studentUnpaid = unpaidFees.reduce((acc, fee) => {
-          const studentName = (fee.students as any)?.name || 'Unknown';
-          if (!acc[fee.student_id]) {
-            acc[fee.student_id] = { name: studentName, count: 0, total: 0 };
-          }
-          acc[fee.student_id].count += 1;
-          acc[fee.student_id].total += (fee.monthly_fee || 0) - (fee.paid_amount || 0);
-          return acc;
-        }, {} as Record<string, { name: string; count: number; total: number }>);
+        const studentUnpaid = unpaidFees.reduce(
+          (acc, fee) => {
+            const studentName = (fee.students as any)?.name || 'Unknown';
+            if (!acc[fee.student_id]) {
+              acc[fee.student_id] = { name: studentName, count: 0, total: 0 };
+            }
+            acc[fee.student_id].count += 1;
+            acc[fee.student_id].total +=
+              (fee.monthly_fee || 0) - (fee.paid_amount || 0);
+            return acc;
+          },
+          {} as Record<string, { name: string; count: number; total: number }>
+        );
 
         const studentsWithUnpaid = Object.entries(studentUnpaid);
-        
+
         if (studentsWithUnpaid.length > 3) {
           notifs.push({
             id: 'unpaid-fees-summary',
@@ -71,7 +79,7 @@ export default function DashboardNotifications() {
             description: `Total outstanding: ₹${studentsWithUnpaid.reduce((sum, [, s]) => sum + s.total, 0).toLocaleString()}`,
             link: '/admin/dashboard/fees',
             severity: 'warning',
-            count: studentsWithUnpaid.length
+            count: studentsWithUnpaid.length,
           });
         } else {
           studentsWithUnpaid.forEach(([studentId, data]) => {
@@ -81,7 +89,7 @@ export default function DashboardNotifications() {
               title: `${data.name} has ${data.count} unpaid fee${data.count > 1 ? 's' : ''}`,
               description: `Outstanding: ₹${data.total.toLocaleString()}`,
               link: '/admin/dashboard/fees',
-              severity: 'warning'
+              severity: 'warning',
             });
           });
         }
@@ -90,14 +98,16 @@ export default function DashboardNotifications() {
       // Fetch students ready for belt tests (status = 'ready')
       const { data: readyForTest } = await supabase
         .from('student_progress')
-        .select(`
+        .select(
+          `
           id,
           student_id,
           status,
           stripe_count,
           students!inner(name),
           belt_levels!inner(color, rank)
-        `)
+        `
+        )
         .eq('status', 'ready')
         .limit(20);
 
@@ -107,10 +117,11 @@ export default function DashboardNotifications() {
             id: 'belt-test-summary',
             type: 'belt_test',
             title: `${readyForTest.length} students ready for belt tests`,
-            description: 'Schedule assessments for students who have completed requirements',
+            description:
+              'Schedule assessments for students who have completed requirements',
             link: '/admin/dashboard/progression',
             severity: 'info',
-            count: readyForTest.length
+            count: readyForTest.length,
           });
         } else {
           readyForTest.forEach((progress) => {
@@ -122,7 +133,7 @@ export default function DashboardNotifications() {
               title: `${studentName} is ready for belt test`,
               description: `Current belt: ${beltColor} - Ready for promotion assessment`,
               link: '/admin/dashboard/progression',
-              severity: 'info'
+              severity: 'info',
             });
           });
         }
@@ -131,13 +142,15 @@ export default function DashboardNotifications() {
       // Check for students with 4 stripes (max before promotion)
       const { data: maxStripes } = await supabase
         .from('student_progress')
-        .select(`
+        .select(
+          `
           id,
           student_id,
           stripe_count,
           students!inner(name),
           belt_levels!inner(color)
-        `)
+        `
+        )
         .gte('stripe_count', 4)
         .neq('status', 'completed')
         .limit(10);
@@ -152,7 +165,7 @@ export default function DashboardNotifications() {
             title: `${studentName} has ${progress.stripe_count} stripes`,
             description: `${beltColor} belt - Consider scheduling promotion test`,
             link: '/admin/dashboard/progression',
-            severity: 'info'
+            severity: 'info',
           });
         });
       }
@@ -162,10 +175,12 @@ export default function DashboardNotifications() {
     refetchInterval: 60000, // Refresh every minute
   });
 
-  const visibleNotifications = notifications.filter(n => !dismissedIds.has(n.id));
+  const visibleNotifications = notifications.filter(
+    (n) => !dismissedIds.has(n.id)
+  );
 
   const handleDismiss = (id: string) => {
-    setDismissedIds(prev => new Set([...prev, id]));
+    setDismissedIds((prev) => new Set([...prev, id]));
   };
 
   if (isLoading || visibleNotifications.length === 0) {
@@ -187,7 +202,9 @@ export default function DashboardNotifications() {
             variant="ghost"
             size="sm"
             className="text-xs text-muted-foreground hover:text-foreground"
-            onClick={() => setDismissedIds(new Set(notifications.map(n => n.id)))}
+            onClick={() =>
+              setDismissedIds(new Set(notifications.map((n) => n.id)))
+            }
           >
             Dismiss all
           </Button>
@@ -230,7 +247,7 @@ export default function DashboardNotifications() {
                         {notification.description}
                       </p>
                     </div>
-                    
+
                     <div className="flex items-center gap-1 shrink-0">
                       <Link to={notification.link}>
                         <Button
@@ -262,7 +279,10 @@ export default function DashboardNotifications() {
                           : 'border-blue-300 text-blue-700 dark:border-blue-700 dark:text-blue-400'
                       }`}
                     >
-                      {notification.count} {notification.type === 'unpaid_fee' ? 'students' : 'ready'}
+                      {notification.count}{' '}
+                      {notification.type === 'unpaid_fee'
+                        ? 'students'
+                        : 'ready'}
                     </Badge>
                   )}
                 </div>

@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2, User, Award, Calendar, Phone, Users } from 'lucide-react';
+import {
+  Edit,
+  Trash2,
+  User,
+  Award,
+  Calendar,
+  Phone,
+  Users,
+} from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -30,29 +38,55 @@ type Props = {
 };
 
 const BELT_COLORS: Record<string, string> = {
-  white: 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-600',
-  yellow: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border-yellow-400 dark:border-yellow-600',
-  orange: 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 border-orange-400 dark:border-orange-600',
-  green: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-400 dark:border-green-600',
+  white:
+    'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-600',
+  yellow:
+    'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border-yellow-400 dark:border-yellow-600',
+  orange:
+    'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 border-orange-400 dark:border-orange-600',
+  green:
+    'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-400 dark:border-green-600',
   blue: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-400 dark:border-blue-600',
   brown: 'bg-amber-700 text-white border-amber-800',
   black: 'bg-slate-900 dark:bg-slate-950 text-white border-slate-700',
 };
 
 function getBeltColorClass(color: string): string {
-  return BELT_COLORS[color.toLowerCase()] || 'bg-muted text-muted-foreground border-border';
+  return (
+    BELT_COLORS[color.toLowerCase()] ||
+    'bg-muted text-muted-foreground border-border'
+  );
 }
 
-const InfoRow = ({ icon: Icon, label, value }: { icon?: React.ElementType; label: string; value: string | null }) => (
+const InfoRow = ({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon?: React.ElementType;
+  label: string;
+  value: string | null;
+}) => (
   <div className="flex items-center gap-2 text-xs sm:text-sm">
-    {Icon && <Icon className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />}
+    {Icon && (
+      <Icon className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+    )}
     <span className="text-muted-foreground">{label}:</span>
-    <span className="text-foreground truncate ml-auto font-medium">{value || '-'}</span>
+    <span className="text-foreground truncate ml-auto font-medium">
+      {value || '-'}
+    </span>
   </div>
 );
 
-export default function StudentsCards({ students, onEdit, onDelete, loading }: Props) {
-  const [studentsWithBelts, setStudentsWithBelts] = useState<StudentWithBelt[]>([]);
+export default function StudentsCards({
+  students,
+  onEdit,
+  onDelete,
+  loading,
+}: Props) {
+  const [studentsWithBelts, setStudentsWithBelts] = useState<StudentWithBelt[]>(
+    []
+  );
 
   useEffect(() => {
     const fetchBelts = async () => {
@@ -61,7 +95,10 @@ export default function StudentsCards({ students, onEdit, onDelete, loading }: P
       const { data, error } = await supabase
         .from('student_progress')
         .select(`student_id, belt_levels:belt_levels(color, rank)`)
-        .in('student_id', students.map((s) => s.id));
+        .in(
+          'student_id',
+          students.map((s) => s.id)
+        );
 
       if (!error && data) {
         const beltMap = new Map(
@@ -79,7 +116,9 @@ export default function StudentsCards({ students, onEdit, onDelete, loading }: P
           }))
         );
       } else {
-        setStudentsWithBelts(students.map((s) => ({ ...s, belt_color: 'White', belt_rank: 1 })));
+        setStudentsWithBelts(
+          students.map((s) => ({ ...s, belt_color: 'White', belt_rank: 1 }))
+        );
       }
     };
 
@@ -133,7 +172,11 @@ export default function StudentsCards({ students, onEdit, onDelete, loading }: P
             <div className="flex items-start gap-3">
               <Avatar className="h-11 w-11 sm:h-14 sm:w-14 ring-2 ring-offset-2 ring-primary/10 flex-shrink-0">
                 {stu.profile_image_url ? (
-                  <AvatarImage src={stu.profile_image_url} alt={stu.name} className="object-cover" />
+                  <AvatarImage
+                    src={stu.profile_image_url}
+                    alt={stu.name}
+                    className="object-cover"
+                  />
                 ) : (
                   <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-bold">
                     {stu.name?.slice(0, 2).toUpperCase()}
@@ -141,10 +184,16 @@ export default function StudentsCards({ students, onEdit, onDelete, loading }: P
                 )}
               </Avatar>
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-base sm:text-lg text-foreground truncate">{stu.name}</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground truncate">{stu.program}</p>
+                <h3 className="font-semibold text-base sm:text-lg text-foreground truncate">
+                  {stu.name}
+                </h3>
+                <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                  {stu.program}
+                </p>
                 <div className="flex items-center gap-2 mt-1.5">
-                  <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium border ${getBeltColorClass(stu.belt_color ?? 'white')}`}>
+                  <div
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium border ${getBeltColorClass(stu.belt_color ?? 'white')}`}
+                  >
                     <Award className="h-3 w-3" />
                     {stu.belt_color}
                   </div>
@@ -174,9 +223,21 @@ export default function StudentsCards({ students, onEdit, onDelete, loading }: P
 
             {/* Details */}
             <div className="p-2.5 sm:p-3 bg-muted/30 rounded-lg space-y-2 border border-border/30">
-              <InfoRow icon={Calendar} label="Joined" value={stu.join_date ? new Date(stu.join_date).toLocaleDateString() : null} />
+              <InfoRow
+                icon={Calendar}
+                label="Joined"
+                value={
+                  stu.join_date
+                    ? new Date(stu.join_date).toLocaleDateString()
+                    : null
+                }
+              />
               <InfoRow icon={User} label="Parent" value={stu.parent_name} />
-              <InfoRow icon={Phone} label="Contact" value={stu.parent_contact} />
+              <InfoRow
+                icon={Phone}
+                label="Contact"
+                value={stu.parent_contact}
+              />
             </div>
           </CardContent>
         </Card>

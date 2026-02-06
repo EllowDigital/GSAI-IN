@@ -5,7 +5,12 @@ import { Loader2, UploadCloud, Trash2 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 
 // Allowed file types and max size for security
-const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+const ALLOWED_FILE_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'application/pdf',
+];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 type Props = {
@@ -28,73 +33,75 @@ export function FeeReceiptUploader({ feeId, initialUrl, onUploaded }: Props) {
         setSignedUrl(null);
         return;
       }
-      
+
       // Extract file path from URL
       const filePath = initialUrl.split('/').pop();
       if (!filePath) return;
-      
+
       try {
         const { data, error } = await supabase.storage
           .from('fees')
           .createSignedUrl(filePath, 1800); // 30 min expiry
-        
+
         if (error) {
           console.error('Error getting signed URL:', error);
           return;
         }
-        
+
         setFileUrl(initialUrl);
         setSignedUrl(data.signedUrl);
       } catch (err) {
         console.error('Error fetching signed URL:', err);
       }
     };
-    
+
     fetchSignedUrl();
   }, [initialUrl]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     // Validate file type
     if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-      toast.error('Invalid file type. Only JPEG, PNG, WebP images and PDF are allowed.');
+      toast.error(
+        'Invalid file type. Only JPEG, PNG, WebP images and PDF are allowed.'
+      );
       return;
     }
-    
+
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
       toast.error('File too large. Maximum size is 5MB.');
       return;
     }
-    
+
     setUploading(true);
     const fileExt = file.name.split('.').pop()?.toLowerCase();
     const filePath = `fee_${feeId}.${fileExt}`;
-    
+
     // Upload file to Supabase
     const { error } = await supabase.storage
       .from('fees')
       .upload(filePath, file, { upsert: true });
-      
+
     if (error) {
       toast.error('Error uploading file: ' + error.message);
       setUploading(false);
       return;
     }
-    
+
     // Get signed URL for secure access
     const { data: signedData, error: signedError } = await supabase.storage
       .from('fees')
       .createSignedUrl(filePath, 1800); // 30 min expiry
-    
+
     if (signedError) {
       toast.error('Error getting file URL: ' + signedError.message);
       setUploading(false);
       return;
     }
-    
+
     // Store the path reference (not signed URL) in database
     const publicUrl = `${filePath}`;
     setFileUrl(publicUrl);

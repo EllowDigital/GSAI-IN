@@ -78,7 +78,9 @@ export function useBeltLevels() {
     // Try to find white belt for specific discipline
     if (discipline) {
       const disciplineBelt = belts.find(
-        (belt) => belt.discipline === discipline && (belt.color.toLowerCase() === 'white' || belt.rank === 1)
+        (belt) =>
+          belt.discipline === discipline &&
+          (belt.color.toLowerCase() === 'white' || belt.rank === 1)
       );
       if (disciplineBelt) return disciplineBelt.id;
     }
