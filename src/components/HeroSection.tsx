@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import {
-  ArrowDownCircle,
   Volume2,
   VolumeX,
-  Play,
   Instagram,
 } from 'lucide-react';
 
@@ -27,6 +25,14 @@ const bgImages = [
 // Path to your introductory video
 const videoSrc = '/assets/slider/intro.mp4';
 const IMAGE_DURATION = 4000;
+
+// Animated words for the headline
+const animatedWords = [
+  { text: 'Fire', emoji: '🔥' },
+  { text: 'Warrior', emoji: '🐯' },
+  { text: 'Strength', emoji: '💪' },
+  { text: 'Discipline', emoji: '⚔️' },
+];
 
 // --- Framer Motion Variants ---
 
@@ -63,17 +69,17 @@ const staggerContainer: Variants = {
   },
 };
 
-const scrollIndicatorVariants: Variants = {
-  hidden: { opacity: 0, y: -10 },
-  visible: {
+const wordVariants: Variants = {
+  initial: { opacity: 0, y: 20 },
+  animate: {
     opacity: 1,
     y: 0,
-    transition: {
-      duration: 0.8,
-      delay: 1,
-      repeat: Infinity,
-      repeatType: 'reverse',
-    },
+    transition: { duration: 0.5, ease: 'easeOut' },
+  },
+  exit: {
+    opacity: 0,
+    y: -20,
+    transition: { duration: 0.4, ease: 'easeIn' },
   },
 };
 
@@ -82,10 +88,30 @@ export default function HeroSection() {
   const [mediaMode, setMediaMode] = useState<'video' | 'images'>('video');
   const [isMuted, setIsMuted] = useState(true);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [wordIndex, setWordIndex] = useState(0);
+  const [showSanskrit, setShowSanskrit] = useState(false);
   const imageTimerRef = useRef<NodeJS.Timeout | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroImgRef = useRef<HTMLImageElement | null>(null);
   const isVideoActive = mediaMode === 'video';
+
+  // Word animation cycle every 2.5s
+  useEffect(() => {
+    const wordTimer = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % animatedWords.length);
+    }, 2500);
+    return () => clearInterval(wordTimer);
+  }, []);
+
+  // Sanskrit quote scroll fade effect
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      setShowSanskrit(scrollY >= 20);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Preload hero images
   useEffect(() => {
@@ -298,16 +324,31 @@ export default function HeroSection() {
             Government Recognized • ISO 9001:2015
           </motion.div>
 
-          {/* Heading */}
-          <motion.h1
+          {/* Heading with Word Highlight Animation */}
+          <motion.h2
             variants={textVariants}
             className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight mb-4 tracking-tight"
           >
             Ghatak Sports Academy India —{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600">
-              Unleash Your Inner Fire
+            <span className="text-white">Unleash Your Inner </span>
+            <span className="inline-block min-w-[180px] sm:min-w-[220px] md:min-w-[280px] text-left">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={wordIndex}
+                  variants={wordVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="inline-flex items-center gap-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600"
+                >
+                  {animatedWords[wordIndex].text}
+                  <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
+                    {animatedWords[wordIndex].emoji}
+                  </span>
+                </motion.span>
+              </AnimatePresence>
             </span>
-          </motion.h1>
+          </motion.h2>
 
           {/* Subheading */}
           <motion.p
@@ -333,7 +374,10 @@ export default function HeroSection() {
               <span className="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-black"></span>
               <span className="relative flex items-center gap-2">
                 Explore Programs
-                <ArrowDownCircle className="w-5 h-5 group-hover:translate-y-1 transition-transform" />
+                <svg className="w-5 h-5 group-hover:translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" strokeWidth="2" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v8m0 0l-3-3m3 3l3-3" />
+                </svg>
               </span>
             </a>
 
@@ -348,6 +392,24 @@ export default function HeroSection() {
                 Follow on Instagram
               </span>
             </a>
+          </motion.div>
+
+          {/* Sanskrit Quote - Scroll Fade */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ 
+              opacity: showSanskrit ? 1 : 0, 
+              y: showSanskrit ? 0 : 10 
+            }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="mt-10 md:mt-14 text-center"
+          >
+            <p className="text-xl sm:text-2xl md:text-3xl font-serif text-yellow-400/80 tracking-wide mb-2" style={{ fontFamily: 'serif' }}>
+              शौर्यं बलं अनुशासनम्।
+            </p>
+            <p className="text-sm sm:text-base text-gray-400 italic tracking-wider">
+              Strength is born from discipline.
+            </p>
           </motion.div>
         </motion.div>
       </div>
@@ -384,22 +446,25 @@ export default function HeroSection() {
           </motion.div>
         </AnimatePresence>
 
+        {/* Minimal Scroll Indicator - Line with Moving Dot */}
         <a
           href="#about"
           aria-label="Scroll down"
           className="pointer-events-auto group"
         >
-          <motion.div
-            className="flex flex-col items-center gap-2 text-white/50 group-hover:text-yellow-400 transition-colors duration-300"
-            variants={scrollIndicatorVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <span className="text-[10px] font-bold tracking-[0.2em] uppercase">
-              Scroll Down
-            </span>
-            <ArrowDownCircle className="w-6 h-6" />
-          </motion.div>
+          <div className="relative h-16 w-[2px] bg-white/20 rounded-full overflow-hidden group-hover:bg-yellow-500/30 transition-colors duration-300">
+            <motion.div
+              className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-full shadow-lg shadow-yellow-500/50"
+              animate={{
+                y: [0, 56, 0],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: 'easeInOut',
+              }}
+            />
+          </div>
         </a>
       </div>
     </section>
