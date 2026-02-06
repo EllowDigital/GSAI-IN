@@ -6,11 +6,14 @@
 // - Silent Retries for Schema Mismatches
 // ---------------------------------------------------------
 
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import { writeFileSync } from 'fs';
 import { SitemapStream, streamToPromise } from 'sitemap';
 import { createClient } from '@supabase/supabase-js';
 import { performance } from 'perf_hooks';
+
+dotenv.config({ path: '.env.local' });
+dotenv.config();
 
 // ---------------------- Logger Utility --------------------
 const Logger = {
