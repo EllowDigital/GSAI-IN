@@ -14,7 +14,7 @@ export const generateArticleStructuredData = (
   },
   type: 'blog' | 'news'
 ) => {
-  const baseUrl = 'https://ghatakgsai.netlify.app';
+  const baseUrl = 'https://ghataksportsacademy.com';
 
   return {
     '@context': 'https://schema.org',
@@ -62,7 +62,7 @@ export const generateEventStructuredData = (event: {
   location?: string | null;
   image_url?: string | null;
 }) => {
-  const baseUrl = 'https://ghatakgsai.netlify.app';
+  const baseUrl = 'https://ghataksportsacademy.com';
 
   return {
     '@context': 'https://schema.org',

@@ -59,6 +59,8 @@ export function BlogPostModal({
     });
   };
 
+  
+
   const content = (
     <div className="space-y-6">
       {post.image_url && (

@@ -33,6 +33,7 @@ const AllEventsPage = lazy(() => import('./pages/AllEventsPage'));
 const AllNewsPage = lazy(() => import('./pages/AllNewsPage'));
 const AllBlogsPage = lazy(() => import('./pages/AllBlogsPage'));
 const AllGalleryPage = lazy(() => import('./pages/AllGalleryPage'));
+const LocationLucknow = lazy(() => import('./pages/LocationLucknow'));
 
 const AdminArea = lazy(() => import('./pages/admin/AdminArea'));
 
@@ -227,6 +228,10 @@ const App = () => {
                     <Route path="/news" element={<AllNewsPage />} />
                     <Route path="/blogs" element={<AllBlogsPage />} />
                     <Route path="/gallery" element={<AllGalleryPage />} />
+                    <Route
+                      path="/locations/lucknow"
+                      element={<LocationLucknow />}
+                    />
 
                     <Route path="*" element={<NotFound />} />
                   </Routes>
