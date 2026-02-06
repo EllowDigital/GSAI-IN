@@ -454,14 +454,32 @@ export default function HeroSection() {
         >
           <div className="relative h-16 w-[2px] bg-white/20 rounded-full overflow-hidden group-hover:bg-yellow-500/30 transition-colors duration-300">
             <motion.div
-              className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-full shadow-lg shadow-yellow-500/50"
+              className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-full"
               animate={{
                 y: [0, 56, 0],
+                boxShadow: [
+                  '0 0 8px 2px rgba(234, 179, 8, 0.6), 0 0 16px 4px rgba(249, 115, 22, 0.4)',
+                  '0 0 12px 4px rgba(234, 179, 8, 0.8), 0 0 24px 8px rgba(249, 115, 22, 0.5)',
+                  '0 0 8px 2px rgba(234, 179, 8, 0.6), 0 0 16px 4px rgba(249, 115, 22, 0.4)',
+                ],
+                scale: [1, 1.2, 1],
               }}
               transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: 'easeInOut',
+                y: {
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                },
+                boxShadow: {
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                },
+                scale: {
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                },
               }}
             />
           </div>
