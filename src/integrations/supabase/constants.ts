@@ -21,13 +21,14 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     '  → Add: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_SUPABASE_PROJECT_ID',
     '',
   ].join('\n');
-  
+
   console.error(errorMsg);
-  
+
   // Show user-friendly error in the UI
   if (typeof document !== 'undefined') {
     const errorDiv = document.createElement('div');
-    errorDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#dc2626;color:white;padding:20px;z-index:99999;font-family:system-ui;';
+    errorDiv.style.cssText =
+      'position:fixed;top:0;left:0;right:0;background:#dc2626;color:white;padding:20px;z-index:99999;font-family:system-ui;';
     errorDiv.innerHTML = `
       <h2 style="margin:0 0 10px 0;">⚠️ Configuration Error</h2>
       <p style="margin:0;">The application is missing required Supabase configuration.</p>

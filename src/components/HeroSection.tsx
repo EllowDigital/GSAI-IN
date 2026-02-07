@@ -1,5 +1,11 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { motion, AnimatePresence, Variants, useScroll, useTransform } from 'framer-motion';
+import {
+  motion,
+  AnimatePresence,
+  Variants,
+  useScroll,
+  useTransform,
+} from 'framer-motion';
 import { Volume2, VolumeX, Instagram } from 'lucide-react';
 
 // Array of background images for the slider
@@ -265,7 +271,11 @@ export default function HeroSection() {
             animate={{
               y: [-20, -100, -20],
               x: [0, Math.sin(particle.id) * 30, 0],
-              opacity: [particle.opacity, particle.opacity * 1.5, particle.opacity],
+              opacity: [
+                particle.opacity,
+                particle.opacity * 1.5,
+                particle.opacity,
+              ],
               scale: [1, 1.2, 1],
             }}
             transition={{
@@ -291,7 +301,7 @@ export default function HeroSection() {
             }}
             animate={{
               y: [0, -60 - i * 10, 0],
-              x: [0, (i % 2 === 0 ? 20 : -20), 0],
+              x: [0, i % 2 === 0 ? 20 : -20, 0],
               scale: [1, 1.3, 1],
             }}
             transition={{
@@ -305,7 +315,7 @@ export default function HeroSection() {
       </div>
 
       {/* Background Media Container with Parallax */}
-      <motion.div 
+      <motion.div
         className="absolute inset-0 z-0 overflow-hidden"
         style={{ y: parallaxY, scale: parallaxScale }}
       >
@@ -399,7 +409,9 @@ export default function HeroSection() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-1.5 w-1.5 xs:h-2 xs:w-2 bg-yellow-500"></span>
             </span>
-            <span className="whitespace-nowrap">Government Recognized • ISO 9001:2015</span>
+            <span className="whitespace-nowrap">
+              Government Recognized • ISO 9001:2015
+            </span>
           </motion.div>
 
           {/* Heading with Word Highlight Animation */}
@@ -440,7 +452,10 @@ export default function HeroSection() {
             <span className="text-yellow-400 font-semibold">Martial Arts</span>,{' '}
             <span className="text-orange-500 font-semibold">Fitness</span> &{' '}
             <span className="text-red-500 font-semibold">Self-Defense</span>.
-            <span className="hidden xs:inline"> Join the elite community of champions.</span>
+            <span className="hidden xs:inline">
+              {' '}
+              Join the elite community of champions.
+            </span>
           </motion.p>
 
           {/* CTA Buttons */}
@@ -582,7 +597,11 @@ export default function HeroSection() {
               }}
               transition={{
                 y: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
-                boxShadow: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
+                boxShadow: {
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                },
                 scale: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
               }}
             />
