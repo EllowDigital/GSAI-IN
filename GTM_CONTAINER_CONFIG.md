@@ -107,7 +107,21 @@ This trigger fires on: All Page Views
 ```
 *This is a built-in trigger - no need to create*
 
-### 2. SPA Pageview
+### 2. History Change (Built-in) ⚠️ CRITICAL FOR REACT
+```
+Trigger Name: History Change
+Trigger Type: History Change
+This trigger fires on: All History Changes
+```
+*This is a built-in trigger - just enable it*
+
+**WHY THIS IS CRITICAL FOR REACT SPAs:**
+- React Router uses the History API for navigation
+- Browser back/forward buttons trigger history changes
+- Without this trigger, back/forward navigation won't be tracked
+- This complements our custom pageview events
+
+### 3. SPA Pageview
 ```
 Trigger Name: SPA Pageview
 Trigger Type: Custom Event
@@ -115,7 +129,7 @@ Event name: pageview
 This trigger fires on: All Custom Events
 ```
 
-### 3. Scroll Depth Tracking
+### 4. Scroll Depth Tracking
 ```
 Trigger Name: Scroll Depth
 Trigger Type: Custom Event
@@ -123,7 +137,7 @@ Event name: scroll_depth
 This trigger fires on: All Custom Events
 ```
 
-### 4. CTA Click
+### 5. CTA Click
 ```
 Trigger Name: CTA Click
 Trigger Type: Custom Event
@@ -131,7 +145,7 @@ Event name: cta_click
 This trigger fires on: All Custom Events
 ```
 
-### 5. Form Submit
+### 6. Form Submit
 ```
 Trigger Name: Form Submit
 Trigger Type: Custom Event
@@ -139,7 +153,7 @@ Event name: form_submit
 This trigger fires on: All Custom Events
 ```
 
-### 6. Form Error
+### 7. Form Error
 ```
 Trigger Name: Form Error
 Trigger Type: Custom Event
