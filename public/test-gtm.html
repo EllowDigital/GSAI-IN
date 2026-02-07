@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GTM & GA4 Test Page</title>
+  
+  <!-- Google Tag Manager -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-5GCSP6H7');
+  </script>
+  <!-- End Google Tag Manager -->
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 40px;
+      background: #f5f5f5;
+      line-height: 1.6;
+    }
+    .container { max-width: 1000px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h1 { color: #1a73e8; margin-bottom: 20px; font-size: 32px; }
+    h2 { color: #333; margin: 30px 0 15px; padding-top: 20px; border-top: 2px solid #e0e0e0; font-size: 24px; }
+    h3 { color: #555; margin: 20px 0 10px; font-size: 18px; }
+    .status { padding: 15px; border-radius: 6px; margin: 15px 0; font-weight: 500; }
+    .success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
+    .error { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
+    .warning { background: #fff3cd; color: #856404; border-left: 4px solid #ffc107; }
+    .info { background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8; }
+    button {
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      margin: 10px 10px 10px 0;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+    button:hover { background: #1557b0; }
+    button:active { transform: scale(0.98); }
+    code {
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      color: #e83e8c;
+    }
+    .code-block {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 20px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 15px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+    }
+    .test-results { margin-top: 20px; }
+    #gtm-status, #ga4-status, #events-log { min-height: 60px; }
+    .event-item {
+      background: #f8f9fa;
+      padding: 10px;
+      margin: 5px 0;
+      border-left: 3px solid #1a73e8;
+      border-radius: 3px;
+      font-size: 14px;
+    }
+    .instructions {
+      background: #e7f3ff;
+      padding: 20px;
+      border-radius: 6px;
+      margin: 20px 0;
+      border-left: 4px solid #1a73e8;
+    }
+    .instructions ol { margin-left: 20px; margin-top: 10px; }
+    .instructions li { margin: 8px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background: #f8f9fa;
+      font-weight: 600;
+      color: #333;
+    }
+    tr:hover { background: #f8f9fa; }
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+    .badge-success { background: #28a745; color: white; }
+    .badge-danger { background: #dc3545; color: white; }
+    .badge-warning { background: #ffc107; color: #000; }
+    a { color: #1a73e8; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5GCSP6H7"
+      height="0" width="0" style="display:none;visibility:hidden"></iframe>
+  </noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="container">
+    <h1>🔍 GTM & GA4 Test Page</h1>
+    <p style="font-size: 18px; color: #666; margin-bottom: 30px;">
+      This diagnostic page helps you verify your Google Tag Manager and Google Analytics 4 setup.
+    </p>
+
+    <!-- GTM Status -->
+    <h2>1. GTM Status</h2>
+    <div id="gtm-status" class="test-results"></div>
+
+    <!-- GA4 Status -->
+    <h2>2. GA4 Configuration</h2>
+    <div id="ga4-status" class="test-results"></div>
+
+    <!-- Events Log -->
+    <h2>3. DataLayer Events</h2>
+    <button onclick="refreshEvents()">🔄 Refresh Events</button>
+    <button onclick="triggerTestEvent()">🚀 Send Test Event</button>
+    <button onclick="triggerPageview()">📄 Send Test Pageview</button>
+    <div id="events-log" class="test-results"></div>
+
+    <!-- Network Requests -->
+    <h2>4. Network Requests</h2>
+    <button onclick="checkNetworkRequests()">🔍 Check GA4 Requests</button>
+    <div id="network-status" class="test-results"></div>
+
+    <!-- Configuration Details -->
+    <h2>5. Current Configuration</h2>
+    <table>
+      <tr>
+        <th>Setting</th>
+        <th>Value</th>
+        <th>Status</th>
+      </tr>
+      <tr>
+        <td>GTM Container ID</td>
+        <td><code>GTM-5GCSP6H7</code></td>
+        <td><span id="gtm-id-status"></span></td>
+      </tr>
+      <tr>
+        <td>GA4 Measurement ID</td>
+        <td><code>G-DN204S2BBC</code></td>
+        <td><span class="badge badge-warning">Configure in GTM</span></td>
+      </tr>
+      <tr>
+        <td>dataLayer</td>
+        <td id="datalayer-count">-</td>
+        <td><span id="datalayer-status"></span></td>
+      </tr>
+    </table>
+
+    <!-- What to Check -->
+    <div class="instructions">
+      <h3>📋 What to Check in GTM:</h3>
+      <ol>
+        <li><strong>Container Published:</strong> Go to <a href="https://tagmanager.google.com" target="_blank">tagmanager.google.com</a> → Container GTM-5GCSP6H7 → Check if there's a "PUBLISH" or "Submit" button (if yes, click it!)</li>
+        <li><strong>GA4 Tag Exists:</strong> Tags → Look for "GA4 Configuration" tag with Measurement ID: G-DN204S2BBC</li>
+        <li><strong>Triggers Set:</strong> Your GA4 tag should have 3 triggers:
+          <ul style="margin-top: 8px;">
+            <li>All Pages (built-in)</li>
+            <li>History Change</li>
+            <li>Custom Event: pageview</li>
+          </ul>
+        </li>
+        <li><strong>Automatic Pageview Disabled:</strong> In GA4 Configuration Tag → "Send a pageview event" should be UNCHECKED</li>
+      </ol>
+    </div>
+
+    <!-- Common Issues -->
+    <h2>6. Common Issues & Solutions</h2>
+    
+    <h3>❌ If GTM dataLayer is undefined:</h3>
+    <div class="status error">
+      <strong>Problem:</strong> GTM script not loading<br>
+      <strong>Solution:</strong> Check index.html has GTM script in &lt;head&gt; section
+    </div>
+
+    <h3>⚠️ If dataLayer exists but no GA4 requests:</h3>
+    <div class="status warning">
+      <strong>Problem:</strong> GTM container not published OR GA4 tag not configured<br>
+      <strong>Solution:</strong> Go to GTM → Publish container → Check GA4 tag exists and has correct triggers
+    </div>
+
+    <h3>⚠️ If pageview events not appearing:</h3>
+    <div class="status warning">
+      <strong>Problem:</strong> PageTracker component not active in React app<br>
+      <strong>Solution:</strong> Check src/App.tsx has PageTracker component rendered
+    </div>
+
+    <!-- Quick Links -->
+    <h2>7. Quick Links</h2>
+    <div style="margin: 20px 0;">
+      <a href="https://tagmanager.google.com" target="_blank" style="display: inline-block; background: #1a73e8; color: white; padding: 12px 24px; margin: 10px 10px 10px 0; border-radius: 4px; text-decoration: none;">
+        📊 Open GTM Dashboard
+      </a>
+      <a href="https://analytics.google.com" target="_blank" style="display: inline-block; background: #ea4335; color: white; padding: 12px 24px; margin: 10px 10px 10px 0; border-radius: 4px; text-decoration: none;">
+        📈 Open GA4 Dashboard
+      </a>
+    </div>
+
+    <!-- Console Commands -->
+    <h2>8. Console Commands</h2>
+    <p>Open browser console (F12) and run these:</p>
+    
+    <div class="code-block">
+// Check dataLayer
+window.dataLayer
+
+// Filter pageview events
+window.dataLayer.filter(e => e.event === 'pageview')
+
+// Send manual test event
+window.dataLayer.push({
+  event: 'test_event',
+  category: 'testing',
+  action: 'manual_test'
+})
+    </div>
+
+    <!-- Footer -->
+    <div style="margin-top: 50px; padding-top: 20px; border-top: 2px solid #e0e0e0; text-align: center; color: #666;">
+      <p>For detailed debugging guide, see: <strong>DEBUG_GA4_GTM.md</strong></p>
+      <p style="margin-top: 10px; font-size: 14px;">Last Updated: February 2026</p>
+    </div>
+  </div>
+
+  <script>
+    // Run tests on page load
+    window.addEventListener('load', function() {
+      setTimeout(runAllTests, 1000);
+    });
+
+    function runAllTests() {
+      checkGTMStatus();
+      checkGA4Status();
+      refreshEvents();
+    }
+
+    function checkGTMStatus() {
+      const statusDiv = document.getElementById('gtm-status');
+      const gtmIdStatus = document.getElementById('gtm-id-status');
+      const dlayerCount = document.getElementById('datalayer-count');
+      const dlayerStatus = document.getElementById('datalayer-status');
+      
+      if (typeof window.dataLayer !== 'undefined') {
+        statusDiv.innerHTML = '<div class="status success">✅ <strong>SUCCESS:</strong> GTM dataLayer is active and receiving events</div>';
+        gtmIdStatus.innerHTML = '<span class="badge badge-success">✓ Loaded</span>';
+        dlayerCount.textContent = window.dataLayer.length + ' events';
+        dlayerStatus.innerHTML = '<span class="badge badge-success">✓ Active</span>';
+        
+        // Check for gtm.js event
+        const gtmInit = window.dataLayer.find(e => e.event === 'gtm.js');
+        if (gtmInit) {
+          statusDiv.innerHTML += '<div class="status info">ℹ️ GTM initialized at: ' + new Date(gtmInit['gtm.start']).toLocaleString() + '</div>';
+        }
+      } else {
+        statusDiv.innerHTML = '<div class="status error">❌ <strong>ERROR:</strong> GTM dataLayer not found. GTM script may not be loading correctly.</div>';
+        gtmIdStatus.innerHTML = '<span class="badge badge-danger">✗ Not Loaded</span>';
+        dlayerCount.textContent = 'N/A';
+        dlayerStatus.innerHTML = '<span class="badge badge-danger">✗ Inactive</span>';
+      }
+    }
+
+    function checkGA4Status() {
+      const statusDiv = document.getElementById('ga4-status');
+      
+      if (window.performance && window.performance.getEntriesByType) {
+        const resources = window.performance.getEntriesByType('resource');
+        const ga4Requests = resources.filter(r => 
+          r.name.includes('google-analytics.com') || 
+          r.name.includes('/g/collect')
+        );
+        
+        if (ga4Requests.length > 0) {
+          statusDiv.innerHTML = '<div class="status success">✅ <strong>SUCCESS:</strong> GA4 is sending data (' + ga4Requests.length + ' requests detected)</div>';
+          statusDiv.innerHTML += '<div class="status info">ℹ️ <strong>Latest request:</strong> ' + new Date(ga4Requests[ga4Requests.length-1].startTime).toLocaleTimeString() + '</div>';
+        } else {
+          statusDiv.innerHTML = '<div class="status warning">⚠️ <strong>WARNING:</strong> No GA4 network requests detected yet.</div>';
+          statusDiv.innerHTML += '<div class="status info">💡 <strong>Possible causes:</strong><br>• GTM container not published<br>• GA4 Configuration Tag not created in GTM<br>• GA4 tag not firing (check triggers)</div>';
+        }
+      } else {
+        statusDiv.innerHTML = '<div class="status warning">⚠️ Cannot check network requests (Performance API not available)</div>';
+      }
+    }
+
+    function refreshEvents() {
+      const logDiv = document.getElementById('events-log');
+      
+      if (window.dataLayer) {
+        let html = '<h3>All Events (' + window.dataLayer.length + '):</h3>';
+        
+        window.dataLayer.slice(-10).reverse().forEach((event, index) => {
+          const eventName = event.event || 'No event name';
+          const eventData = JSON.stringify(event, null, 2);
+          html += '<div class="event-item"><strong>' + eventName + '</strong><br><code style="font-size: 12px;">' + escapeHtml(eventData) + '</code></div>';
+        });
+        
+        logDiv.innerHTML = html;
+      } else {
+        logDiv.innerHTML = '<div class="status error">❌ dataLayer not available</div>';
+      }
+    }
+
+    function triggerTestEvent() {
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: 'test_event',
+          test_category: 'manual_test',
+          test_action: 'button_click',
+          test_timestamp: new Date().toISOString()
+        });
+        alert('✅ Test event sent to dataLayer!\n\nCheck the "DataLayer Events" section and your GTM Preview mode.');
+        refreshEvents();
+      } else {
+        alert('❌ dataLayer not available');
+      }
+    }
+
+    function triggerPageview() {
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: 'pageview',
+          page_path: '/test-page',
+          page_location: window.location.href,
+          page_title: 'Test Pageview'
+        });
+        alert('✅ Test pageview sent to dataLayer!\n\nCheck GA4 Real-Time reports (may take 30-60 seconds to appear).');
+        refreshEvents();
+      } else {
+        alert('❌ dataLayer not available');
+      }
+    }
+
+    function checkNetworkRequests() {
+      const statusDiv = document.getElementById('network-status');
+      
+      if (window.performance && window.performance.getEntriesByType) {
+        const resources = window.performance.getEntriesByType('resource');
+        
+        // Check GTM requests
+        const gtmRequests = resources.filter(r => r.name.includes('googletagmanager.com'));
+        
+        // Check GA4 requests
+        const ga4Requests = resources.filter(r => 
+          r.name.includes('google-analytics.com') || 
+          r.name.includes('/g/collect')
+        );
+        
+        let html = '<h3>Network Request Summary:</h3>';
+        html += '<div class="status ' + (gtmRequests.length > 0 ? 'success' : 'error') + '">';
+        html += '<strong>GTM Requests:</strong> ' + gtmRequests.length;
+        if (gtmRequests.length > 0) {
+          html += '<br><small>✓ GTM script loaded successfully</small>';
+        }
+        html += '</div>';
+        
+        html += '<div class="status ' + (ga4Requests.length > 0 ? 'success' : 'warning') + '">';
+        html += '<strong>GA4 Requests:</strong> ' + ga4Requests.length;
+        if (ga4Requests.length === 0) {
+          html += '<br><small>⚠️ No GA4 data being sent yet - check GTM container configuration</small>';
+        } else {
+          html += '<br><small>✓ GA4 is collecting data</small>';
+        }
+        html += '</div>';
+        
+        statusDiv.innerHTML = html;
+      } else {
+        statusDiv.innerHTML = '<div class="status warning">⚠️ Performance API not available</div>';
+      }
+    }
+
+    function escapeHtml(text) {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+  </script>
+</body>
+</html>
