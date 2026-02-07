@@ -94,15 +94,10 @@ const initSupabase = async () => {
 };
 
 // ---------------------- Static Pages ----------------------
+// Note: Fragment identifiers (URLs with #) are removed as they are not separate
+// crawlable resources and are typically ignored by search engines in sitemaps.
 const marketingPages = [
   { url: '/', changefreq: 'weekly', priority: 1.0 },
-  { url: '/#about', changefreq: 'monthly', priority: 0.6 },
-  { url: '/#programs', changefreq: 'weekly', priority: 0.8 },
-  { url: '/#events', changefreq: 'daily', priority: 0.75 },
-  { url: '/#news', changefreq: 'daily', priority: 0.72 },
-  { url: '/#testimonials', changefreq: 'monthly', priority: 0.5 },
-  { url: '/#recognition', changefreq: 'monthly', priority: 0.4 },
-  { url: '/#contact', changefreq: 'monthly', priority: 0.6 },
   { url: '/events', changefreq: 'daily', priority: 0.75 },
   { url: '/news', changefreq: 'daily', priority: 0.72 },
   { url: '/blogs', changefreq: 'daily', priority: 0.7 },

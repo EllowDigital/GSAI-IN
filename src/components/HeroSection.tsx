@@ -5,6 +5,7 @@ import {
   Variants,
   useScroll,
   useTransform,
+  useMotionValueEvent,
 } from 'framer-motion';
 import { Volume2, VolumeX, Instagram } from 'lucide-react';
 
@@ -127,16 +128,10 @@ export default function HeroSection() {
     return () => clearInterval(wordTimer);
   }, []);
 
-  // Sanskrit quote scroll fade effect
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      setShowSanskrit(scrollY >= 20);
-    };
-    handleScroll();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  // Sanskrit quote scroll fade effect - using Framer Motion's scrollY to avoid duplicate listeners
+  useMotionValueEvent(scrollY, 'change', (latest) => {
+    setShowSanskrit(latest >= 20);
+  });
 
   // Preload hero images
   useEffect(() => {
