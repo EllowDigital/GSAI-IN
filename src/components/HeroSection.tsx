@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { motion, AnimatePresence, Variants, useScroll, useTransform } from 'framer-motion';
 import { Volume2, VolumeX, Instagram } from 'lucide-react';
 
 // Array of background images for the slider
@@ -79,6 +79,19 @@ const wordVariants: Variants = {
   },
 };
 
+// Floating particle configuration
+const generateParticles = (count: number) => {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 4 + 2,
+    duration: Math.random() * 15 + 10,
+    delay: Math.random() * 5,
+    opacity: Math.random() * 0.4 + 0.1,
+  }));
+};
+
 export default function HeroSection() {
   const [imgIndex, setImgIndex] = useState(0);
   const [mediaMode, setMediaMode] = useState<'video' | 'images'>('video');
@@ -89,7 +102,16 @@ export default function HeroSection() {
   const imageTimerRef = useRef<NodeJS.Timeout | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroImgRef = useRef<HTMLImageElement | null>(null);
+  const heroRef = useRef<HTMLElement>(null);
   const isVideoActive = mediaMode === 'video';
+
+  // Memoize particles to prevent regeneration on each render
+  const particles = useMemo(() => generateParticles(20), []);
+
+  // Parallax scroll effect
+  const { scrollY } = useScroll();
+  const parallaxY = useTransform(scrollY, [0, 500], [0, 150]);
+  const parallaxScale = useTransform(scrollY, [0, 500], [1.05, 1.15]);
 
   // Word animation cycle every 2.5s
   useEffect(() => {
@@ -218,6 +240,7 @@ export default function HeroSection() {
 
   return (
     <section
+      ref={heroRef}
       id="hero"
       onClick={handleUserInteraction}
       className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-black text-white cursor-default"
@@ -226,8 +249,66 @@ export default function HeroSection() {
       <h1 className="sr-only">
         Martial Arts Training in Lucknow — Ghatak Sports Academy India
       </h1>
-      {/* Background Media Container */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
+
+      {/* Floating Particles Layer */}
+      <div className="absolute inset-0 z-[5] pointer-events-none overflow-hidden">
+        {particles.map((particle) => (
+          <motion.div
+            key={particle.id}
+            className="absolute rounded-full bg-gradient-to-br from-yellow-400/40 to-orange-500/30"
+            style={{
+              left: `${particle.x}%`,
+              top: `${particle.y}%`,
+              width: particle.size,
+              height: particle.size,
+            }}
+            animate={{
+              y: [-20, -100, -20],
+              x: [0, Math.sin(particle.id) * 30, 0],
+              opacity: [particle.opacity, particle.opacity * 1.5, particle.opacity],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: particle.duration,
+              repeat: Infinity,
+              delay: particle.delay,
+              ease: 'easeInOut',
+            }}
+          />
+        ))}
+        {/* Larger accent particles */}
+        {[...Array(5)].map((_, i) => (
+          <motion.div
+            key={`accent-${i}`}
+            className="absolute rounded-full"
+            style={{
+              left: `${15 + i * 18}%`,
+              top: `${20 + (i % 3) * 25}%`,
+              width: 6 + i * 2,
+              height: 6 + i * 2,
+              background: `radial-gradient(circle, rgba(234, 179, 8, ${0.3 - i * 0.04}) 0%, transparent 70%)`,
+              boxShadow: `0 0 ${10 + i * 5}px ${3 + i}px rgba(234, 179, 8, ${0.15 - i * 0.02})`,
+            }}
+            animate={{
+              y: [0, -60 - i * 10, 0],
+              x: [0, (i % 2 === 0 ? 20 : -20), 0],
+              scale: [1, 1.3, 1],
+            }}
+            transition={{
+              duration: 12 + i * 3,
+              repeat: Infinity,
+              delay: i * 1.5,
+              ease: 'easeInOut',
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Background Media Container with Parallax */}
+      <motion.div 
+        className="absolute inset-0 z-0 overflow-hidden"
+        style={{ y: parallaxY, scale: parallaxScale }}
+      >
         <div className="relative h-full w-full">
           {/* Ensure a high-priority background image is present for LCP.
                 This <img> renders immediately (eager + fetchpriority) so
@@ -277,10 +358,6 @@ export default function HeroSection() {
             )}
           </AnimatePresence>
 
-          {/* Enhanced Gradient Overlay */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/90" />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/50" />
-
           {/* Mute Button */}
           {isVideoActive && (
             <motion.button
@@ -299,7 +376,11 @@ export default function HeroSection() {
             </motion.button>
           )}
         </div>
-      </div>
+      </motion.div>
+
+      {/* Gradient Overlays (outside parallax container for stable appearance) */}
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-black/80 via-black/40 to-black/90" />
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-black/50 via-transparent to-black/50" />
 
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-3 xs:px-4 sm:px-6 lg:px-8 text-center">
