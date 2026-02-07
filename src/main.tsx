@@ -14,7 +14,8 @@ try {
 // Ensure root element exists
 const rootElement = document.getElementById('root');
 if (!rootElement) {
-  document.body.innerHTML = '<div style="padding: 20px; font-family: system-ui; color: red;">❌ Error: Root element not found. Please refresh the page.</div>';
+  document.body.innerHTML =
+    '<div style="padding: 20px; font-family: system-ui; color: red;">❌ Error: Root element not found. Please refresh the page.</div>';
   throw new Error('Root element not found');
 }
 
@@ -31,7 +32,8 @@ try {
   );
 } catch (error) {
   console.error('Failed to render app:', error);
-  document.body.innerHTML = '<div style="padding: 20px; font-family: system-ui;"><h1 style="color: red;">❌ Application Error</h1><p>Failed to load the application. Please check the console for details.</p><button onclick="location.reload()" style="padding: 10px 20px; margin-top: 10px; cursor: pointer;">Reload Page</button></div>';
+  document.body.innerHTML =
+    '<div style="padding: 20px; font-family: system-ui;"><h1 style="color: red;">❌ Application Error</h1><p>Failed to load the application. Please check the console for details.</p><button onclick="location.reload()" style="padding: 10px 20px; margin-top: 10px; cursor: pointer;">Reload Page</button></div>';
 }
 
 // Register the service worker for PWA functionality with error handling

@@ -1,5 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import {
+  motion,
+  AnimatePresence,
+  Variants,
+  useScroll,
+  useTransform,
+} from 'framer-motion';
 import { Volume2, VolumeX, Instagram } from 'lucide-react';
 
 // Array of background images for the slider
@@ -79,6 +85,19 @@ const wordVariants: Variants = {
   },
 };
 
+// Floating particle configuration
+const generateParticles = (count: number) => {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 4 + 2,
+    duration: Math.random() * 15 + 10,
+    delay: Math.random() * 5,
+    opacity: Math.random() * 0.4 + 0.1,
+  }));
+};
+
 export default function HeroSection() {
   const [imgIndex, setImgIndex] = useState(0);
   const [mediaMode, setMediaMode] = useState<'video' | 'images'>('video');
@@ -89,7 +108,16 @@ export default function HeroSection() {
   const imageTimerRef = useRef<NodeJS.Timeout | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroImgRef = useRef<HTMLImageElement | null>(null);
+  const heroRef = useRef<HTMLElement>(null);
   const isVideoActive = mediaMode === 'video';
+
+  // Memoize particles to prevent regeneration on each render
+  const particles = useMemo(() => generateParticles(20), []);
+
+  // Parallax scroll effect
+  const { scrollY } = useScroll();
+  const parallaxY = useTransform(scrollY, [0, 500], [0, 150]);
+  const parallaxScale = useTransform(scrollY, [0, 500], [1.05, 1.15]);
 
   // Word animation cycle every 2.5s
   useEffect(() => {
@@ -218,6 +246,7 @@ export default function HeroSection() {
 
   return (
     <section
+      ref={heroRef}
       id="hero"
       onClick={handleUserInteraction}
       className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-black text-white cursor-default"
@@ -226,8 +255,70 @@ export default function HeroSection() {
       <h1 className="sr-only">
         Martial Arts Training in Lucknow — Ghatak Sports Academy India
       </h1>
-      {/* Background Media Container */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
+
+      {/* Floating Particles Layer */}
+      <div className="absolute inset-0 z-[5] pointer-events-none overflow-hidden">
+        {particles.map((particle) => (
+          <motion.div
+            key={particle.id}
+            className="absolute rounded-full bg-gradient-to-br from-yellow-400/40 to-orange-500/30"
+            style={{
+              left: `${particle.x}%`,
+              top: `${particle.y}%`,
+              width: particle.size,
+              height: particle.size,
+            }}
+            animate={{
+              y: [-20, -100, -20],
+              x: [0, Math.sin(particle.id) * 30, 0],
+              opacity: [
+                particle.opacity,
+                particle.opacity * 1.5,
+                particle.opacity,
+              ],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: particle.duration,
+              repeat: Infinity,
+              delay: particle.delay,
+              ease: 'easeInOut',
+            }}
+          />
+        ))}
+        {/* Larger accent particles */}
+        {[...Array(5)].map((_, i) => (
+          <motion.div
+            key={`accent-${i}`}
+            className="absolute rounded-full"
+            style={{
+              left: `${15 + i * 18}%`,
+              top: `${20 + (i % 3) * 25}%`,
+              width: 6 + i * 2,
+              height: 6 + i * 2,
+              background: `radial-gradient(circle, rgba(234, 179, 8, ${0.3 - i * 0.04}) 0%, transparent 70%)`,
+              boxShadow: `0 0 ${10 + i * 5}px ${3 + i}px rgba(234, 179, 8, ${0.15 - i * 0.02})`,
+            }}
+            animate={{
+              y: [0, -60 - i * 10, 0],
+              x: [0, i % 2 === 0 ? 20 : -20, 0],
+              scale: [1, 1.3, 1],
+            }}
+            transition={{
+              duration: 12 + i * 3,
+              repeat: Infinity,
+              delay: i * 1.5,
+              ease: 'easeInOut',
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Background Media Container with Parallax */}
+      <motion.div
+        className="absolute inset-0 z-0 overflow-hidden"
+        style={{ y: parallaxY, scale: parallaxScale }}
+      >
         <div className="relative h-full w-full">
           {/* Ensure a high-priority background image is present for LCP.
                 This <img> renders immediately (eager + fetchpriority) so
@@ -277,10 +368,6 @@ export default function HeroSection() {
             )}
           </AnimatePresence>
 
-          {/* Enhanced Gradient Overlay */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/90" />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/50" />
-
           {/* Mute Button */}
           {isVideoActive && (
             <motion.button
@@ -299,80 +386,92 @@ export default function HeroSection() {
             </motion.button>
           )}
         </div>
-      </div>
+      </motion.div>
+
+      {/* Gradient Overlays (outside parallax container for stable appearance) */}
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-black/80 via-black/40 to-black/90" />
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-black/50 via-transparent to-black/50" />
 
       {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-4 text-center">
+      <div className="relative z-10 container mx-auto px-3 xs:px-4 sm:px-6 lg:px-8 text-center">
         <motion.div
           variants={staggerContainer}
           initial="initial"
           animate={!isVideoActive ? 'animate' : 'initial'}
-          className="flex flex-col items-center"
+          className="flex flex-col items-center max-w-5xl mx-auto"
         >
           {/* Badge */}
           <motion.div
             variants={textVariants}
-            className="inline-flex items-center gap-x-2 px-4 py-1.5 mb-6 md:mb-8 border border-yellow-500/30 rounded-full text-yellow-400/90 text-xs sm:text-sm font-medium bg-yellow-500/10 backdrop-blur-sm"
+            className="inline-flex items-center gap-x-1.5 xs:gap-x-2 px-3 xs:px-4 py-1 xs:py-1.5 mb-4 xs:mb-6 md:mb-8 border border-yellow-500/30 rounded-full text-yellow-400/90 text-[10px] xs:text-xs sm:text-sm font-medium bg-yellow-500/10 backdrop-blur-sm"
           >
-            <span className="relative flex h-2 w-2">
+            <span className="relative flex h-1.5 w-1.5 xs:h-2 xs:w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-500"></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 xs:h-2 xs:w-2 bg-yellow-500"></span>
             </span>
-            Government Recognized • ISO 9001:2015
+            <span className="whitespace-nowrap">
+              Government Recognized • ISO 9001:2015
+            </span>
           </motion.div>
 
           {/* Heading with Word Highlight Animation */}
           <motion.h2
             variants={textVariants}
-            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight mb-4 tracking-tight"
+            className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-white leading-[1.15] xs:leading-tight mb-3 xs:mb-4 tracking-tight px-1"
           >
-            Ghatak Sports Academy India —{' '}
-            <span className="text-white">Unleash Your Inner </span>
-            <span className="inline-block min-w-[180px] sm:min-w-[220px] md:min-w-[280px] text-left">
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={wordIndex}
-                  variants={wordVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  className="inline-flex items-center gap-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600"
-                >
-                  {animatedWords[wordIndex].text}
-                  <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
-                    {animatedWords[wordIndex].emoji}
-                  </span>
-                </motion.span>
-              </AnimatePresence>
+            <span className="block sm:inline">Ghatak Sports Academy India</span>
+            <span className="hidden sm:inline"> — </span>
+            <span className="block sm:inline mt-1 sm:mt-0">
+              <span className="text-white">Unleash Your Inner </span>
+              <span className="inline-block min-w-[100px] xs:min-w-[140px] sm:min-w-[180px] md:min-w-[220px] lg:min-w-[280px] text-left align-bottom">
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={wordIndex}
+                    variants={wordVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    className="inline-flex items-center gap-1 xs:gap-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600"
+                  >
+                    {animatedWords[wordIndex].text}
+                    <span className="text-lg xs:text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl">
+                      {animatedWords[wordIndex].emoji}
+                    </span>
+                  </motion.span>
+                </AnimatePresence>
+              </span>
             </span>
           </motion.h2>
 
           {/* Subheading */}
           <motion.p
             variants={textVariants}
-            className="text-base sm:text-lg md:text-xl text-gray-300 mb-8 md:mb-12 max-w-2xl mx-auto leading-relaxed"
+            className="text-sm xs:text-base sm:text-lg md:text-xl text-gray-300 mb-6 xs:mb-8 md:mb-10 max-w-xl md:max-w-2xl mx-auto leading-relaxed px-2"
           >
             Premier training for{' '}
             <span className="text-yellow-400 font-semibold">Martial Arts</span>,{' '}
             <span className="text-orange-500 font-semibold">Fitness</span> &{' '}
             <span className="text-red-500 font-semibold">Self-Defense</span>.
-            Join the elite community of champions.
+            <span className="hidden xs:inline">
+              {' '}
+              Join the elite community of champions.
+            </span>
           </motion.p>
 
           {/* CTA Buttons */}
           <motion.div
             variants={textVariants}
-            className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
+            className="flex flex-col xs:flex-row gap-3 xs:gap-4 w-full xs:w-auto px-2 xs:px-0"
           >
             <a
               href="#programs"
-              className="group relative inline-flex items-center justify-center px-8 py-3.5 text-base font-bold text-white transition-all duration-200 bg-gradient-to-r from-yellow-500 to-red-600 rounded-xl hover:shadow-lg hover:shadow-orange-500/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 overflow-hidden"
+              className="group relative inline-flex items-center justify-center px-5 xs:px-6 sm:px-8 py-3 xs:py-3.5 text-sm xs:text-base font-bold text-white transition-all duration-200 bg-gradient-to-r from-yellow-500 to-red-600 rounded-lg xs:rounded-xl hover:shadow-lg hover:shadow-orange-500/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 overflow-hidden"
             >
               <span className="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-black"></span>
               <span className="relative flex items-center gap-2">
                 Explore Programs
                 <svg
-                  className="w-5 h-5 group-hover:translate-y-1 transition-transform"
+                  className="w-4 h-4 xs:w-5 xs:h-5 group-hover:translate-y-1 transition-transform"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -394,11 +493,12 @@ export default function HeroSection() {
               href="https://www.instagram.com/ghataksportsacademy/"
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center justify-center px-8 py-3.5 text-base font-bold text-white transition-all duration-200 bg-white/10 border border-white/20 rounded-xl hover:bg-white/20 hover:border-white/40 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50"
+              className="group inline-flex items-center justify-center px-5 xs:px-6 sm:px-8 py-3 xs:py-3.5 text-sm xs:text-base font-bold text-white transition-all duration-200 bg-white/10 border border-white/20 rounded-lg xs:rounded-xl hover:bg-white/20 hover:border-white/40 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50"
             >
               <span className="flex items-center gap-2">
-                <Instagram className="w-5 h-5 text-pink-500 group-hover:scale-110 transition-transform" />
-                Follow on Instagram
+                <Instagram className="w-4 h-4 xs:w-5 xs:h-5 text-pink-500 group-hover:scale-110 transition-transform" />
+                <span className="hidden xs:inline">Follow on Instagram</span>
+                <span className="xs:hidden">Instagram</span>
               </span>
             </a>
           </motion.div>
@@ -411,15 +511,15 @@ export default function HeroSection() {
               y: showSanskrit ? 0 : 10,
             }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="mt-10 md:mt-14 text-center"
+            className="mt-6 xs:mt-8 sm:mt-10 md:mt-12 text-center px-2"
           >
             <p
               lang="sa"
-              className="text-xl sm:text-2xl md:text-3xl font-serif text-yellow-400/80 tracking-wide mb-2"
+              className="text-base xs:text-lg sm:text-xl md:text-2xl lg:text-3xl font-serif text-yellow-400/80 tracking-wide mb-1 xs:mb-2"
             >
               शौर्यं बलं अनुशासनम्।
             </p>
-            <p className="text-sm sm:text-base text-gray-400 italic tracking-wider">
+            <p className="text-xs xs:text-sm sm:text-base text-gray-400 italic tracking-wider">
               Strength is born from discipline.
             </p>
           </motion.div>
@@ -427,10 +527,10 @@ export default function HeroSection() {
       </div>
 
       {/* Bottom Controls: Scroll Indicator and Slider Navigation */}
-      <div className="absolute left-0 right-0 bottom-6 xl:bottom-12 flex flex-col items-center gap-6 z-20 px-4 pointer-events-none">
+      <div className="absolute left-0 right-0 bottom-4 xs:bottom-6 lg:bottom-8 xl:bottom-12 flex flex-col items-center gap-4 xs:gap-6 z-20 px-3 xs:px-4 pointer-events-none">
         <AnimatePresence>
           <motion.div
-            className="pointer-events-auto hidden xl:flex flex-wrap items-center justify-center gap-2 w-auto max-w-[90vw] mx-auto px-4 py-2.5 rounded-full border border-white/10 bg-black/40 backdrop-blur-md shadow-xl"
+            className="pointer-events-auto hidden lg:flex flex-wrap items-center justify-center gap-1.5 xl:gap-2 w-auto max-w-[90vw] mx-auto px-3 xl:px-4 py-2 xl:py-2.5 rounded-full border border-white/10 bg-black/40 backdrop-blur-md shadow-xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
@@ -441,13 +541,13 @@ export default function HeroSection() {
                 key={idx}
                 onClick={() => goToImage(idx)}
                 type="button"
-                className={`group relative inline-flex items-center justify-center p-2 rounded-full transition-all duration-300 focus:outline-none ${
+                className={`group relative inline-flex items-center justify-center p-1.5 xl:p-2 rounded-full transition-all duration-300 focus:outline-none ${
                   imgIndex === idx ? 'scale-105' : 'hover:scale-105'
                 }`}
                 aria-label={`Go to slide ${idx + 1}`}
               >
                 <span
-                  className={`inline-block rounded-full transition-all duration-300 w-3 h-3 ${
+                  className={`inline-block rounded-full transition-all duration-300 w-2.5 h-2.5 xl:w-3 xl:h-3 ${
                     imgIndex === idx
                       ? 'bg-gradient-to-r from-yellow-400 to-red-500 opacity-100'
                       : 'bg-white/30 group-hover:bg-white/60'
@@ -458,17 +558,36 @@ export default function HeroSection() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Minimal Scroll Indicator - Line with Moving Dot */}
+        {/* Minimal Scroll Indicator - Line with Moving Dot & Trail Effect */}
         <a
           href="#about"
           aria-label="Scroll down"
           className="pointer-events-auto group"
         >
-          <div className="relative h-16 w-[2px] bg-white/20 rounded-full overflow-hidden group-hover:bg-yellow-500/30 transition-colors duration-300">
+          <div className="relative h-14 sm:h-16 w-[2px] bg-white/20 rounded-full overflow-hidden group-hover:bg-yellow-500/30 transition-colors duration-300">
+            {/* Trail particles */}
+            {[0, 1, 2].map((i) => (
+              <motion.div
+                key={i}
+                className="absolute left-1/2 -translate-x-1/2 w-1 h-1 bg-yellow-400/40 rounded-full"
+                animate={{
+                  y: [0, 48, 0],
+                  opacity: [0, 0.6, 0],
+                  scale: [0.5, 0.8, 0.5],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  delay: i * 0.15,
+                }}
+              />
+            ))}
+            {/* Main glowing dot */}
             <motion.div
               className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-full"
               animate={{
-                y: [0, 56, 0],
+                y: [0, 48, 0],
                 boxShadow: [
                   '0 0 8px 2px rgba(234, 179, 8, 0.6), 0 0 16px 4px rgba(249, 115, 22, 0.4)',
                   '0 0 12px 4px rgba(234, 179, 8, 0.8), 0 0 24px 8px rgba(249, 115, 22, 0.5)',
@@ -477,21 +596,13 @@ export default function HeroSection() {
                 scale: [1, 1.2, 1],
               }}
               transition={{
-                y: {
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                },
+                y: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
                 boxShadow: {
                   duration: 1.5,
                   repeat: Infinity,
                   ease: 'easeInOut',
                 },
-                scale: {
-                  duration: 1.5,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                },
+                scale: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
               }}
             />
           </div>

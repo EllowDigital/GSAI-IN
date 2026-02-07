@@ -141,6 +141,8 @@ export function Seo({
     },
   ];
 
+  const canonicalPath = buildCanonicalPath(fullCanonicalUrl, canonicalBase);
+
   if (!canonicalIsHome) {
     const pathSegments = canonicalPath
       .split('/')
@@ -186,7 +188,6 @@ export function Seo({
   if (noFollow) robots.push('nofollow');
   const robotsContent = robots.length > 0 ? robots.join(', ') : 'index, follow';
 
-  const canonicalPath = buildCanonicalPath(fullCanonicalUrl, canonicalBase);
   const alternateUrls = siteDomains.map(
     (domain) => `${domain}${canonicalPath}`
   );
