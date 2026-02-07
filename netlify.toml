@@ -13,6 +13,9 @@ framework = "vite"
 # Allow sitemap + clients to know the canonical URL during production builds.
 [context.production.environment]
 SITE_URL = "https://ghatakgsai.netlify.app"
+# Note: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, and VITE_SUPABASE_PROJECT_ID
+# should be set in Netlify Dashboard > Site settings > Environment variables
+# These are NOT defined here for security reasons
 
 # Preview deploys get their own unique URL, so fall back to DEPLOY_PRIME_URL.
 [context.deploy-preview.environment]

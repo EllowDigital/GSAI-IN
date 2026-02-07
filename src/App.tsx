@@ -101,7 +101,12 @@ const App = () => {
   );
 
   useEffect(() => {
-    initializeSupabaseOptimization();
+    try {
+      initializeSupabaseOptimization();
+    } catch (error) {
+      console.error('Failed to initialize Supabase optimization:', error);
+      // Continue loading even if optimization fails
+    }
 
     const timeout = setTimeout(() => setLoading(false), 1000);
 
