@@ -25,7 +25,8 @@ const rootElement = document.getElementById('root');
 if (!rootElement) {
   const errorDiv = document.createElement('div');
   errorDiv.style.cssText = 'padding: 20px; font-family: system-ui; color: red;';
-  errorDiv.textContent = '❌ Error: Root element not found. Please refresh the page.';
+  errorDiv.textContent =
+    '❌ Error: Root element not found. Please refresh the page.';
   document.body.appendChild(errorDiv);
   throw new Error('Root element not found');
 }
@@ -45,19 +46,21 @@ try {
   console.error('Failed to render app:', error);
   const errorContainer = document.createElement('div');
   errorContainer.style.cssText = 'padding: 20px; font-family: system-ui;';
-  
+
   const title = document.createElement('h1');
   title.style.color = 'red';
   title.textContent = '❌ Application Error';
-  
+
   const message = document.createElement('p');
-  message.textContent = 'Failed to load the application. Please check the console for details.';
-  
+  message.textContent =
+    'Failed to load the application. Please check the console for details.';
+
   const reloadButton = document.createElement('button');
   reloadButton.textContent = 'Reload Page';
-  reloadButton.style.cssText = 'padding: 10px 20px; margin-top: 10px; cursor: pointer;';
+  reloadButton.style.cssText =
+    'padding: 10px 20px; margin-top: 10px; cursor: pointer;';
   reloadButton.addEventListener('click', () => location.reload());
-  
+
   errorContainer.appendChild(title);
   errorContainer.appendChild(message);
   errorContainer.appendChild(reloadButton);
