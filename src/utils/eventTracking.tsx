@@ -1,9 +1,9 @@
 /**
  * Event Tracking Components & Utilities
- * 
+ *
  * Production-ready components and utilities for tracking user interactions
  * These wrap common UI patterns with automatic GTM tracking
- * 
+ *
  * FEATURES:
  * - TrackedButton: Button with automatic click tracking
  * - TrackedLink: Link with automatic click and outbound tracking
@@ -12,7 +12,12 @@
  */
 
 import React, { ComponentProps, FormEvent, MouseEvent } from 'react';
-import { trackCTAClick, trackOutboundClick, trackFormSubmit, trackFormError } from '@/utils/gtm';
+import {
+  trackCTAClick,
+  trackOutboundClick,
+  trackFormSubmit,
+  trackFormError,
+} from '@/utils/gtm';
 
 // ==========================================
 // TrackedButton Component
@@ -26,7 +31,7 @@ interface TrackedButtonProps extends ComponentProps<'button'> {
 
 /**
  * Button component with automatic click tracking
- * 
+ *
  * USAGE:
  * ```tsx
  * <TrackedButton
@@ -75,13 +80,13 @@ interface TrackedLinkProps extends ComponentProps<'a'> {
 /**
  * Link component with automatic click tracking
  * Automatically detects and tracks outbound links
- * 
+ *
  * USAGE:
  * ```tsx
  * <TrackedLink href="/programs" trackingLabel="View Programs">
  *   Our Programs
  * </TrackedLink>
- * 
+ *
  * <TrackedLink href="https://external.com" trackingLabel="Partner Site">
  *   Visit Partner
  * </TrackedLink>
@@ -96,7 +101,8 @@ export const TrackedLink: React.FC<TrackedLinkProps> = ({
   ...props
 }) => {
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
-    const linkText = trackingLabel || (typeof children === 'string' ? children : href || '');
+    const linkText =
+      trackingLabel || (typeof children === 'string' ? children : href || '');
 
     // Check if link is outbound
     const isOutbound = trackAsOutbound || (href && isExternalUrl(href));
@@ -132,7 +138,7 @@ interface TrackedFormProps extends ComponentProps<'form'> {
 
 /**
  * Form component with automatic submission and error tracking
- * 
+ *
  * USAGE:
  * ```tsx
  * <TrackedForm
@@ -164,8 +170,9 @@ export const TrackedForm: React.FC<TrackedFormProps> = ({
         const firstInvalid = form.querySelector(':invalid') as HTMLInputElement;
         if (firstInvalid) {
           const fieldName = firstInvalid.name || firstInvalid.id || 'unknown';
-          const errorMessage = firstInvalid.validationMessage || 'Validation error';
-          
+          const errorMessage =
+            firstInvalid.validationMessage || 'Validation error';
+
           trackFormError(formId, fieldName, errorMessage);
 
           if (onValidationError) {
@@ -214,7 +221,7 @@ const isExternalUrl = (url: string): boolean => {
 
 /**
  * HOC: Add tracking to any component's click handler
- * 
+ *
  * USAGE:
  * ```tsx
  * const TrackedCustomButton = withClickTracking(CustomButton, {
@@ -251,11 +258,11 @@ export function withClickTracking<P extends { onClick?: (e: any) => void }>(
 /**
  * Hook: Track form field changes
  * Useful for understanding where users struggle in forms
- * 
+ *
  * USAGE:
  * ```tsx
  * const trackFieldChange = useFormFieldTracking('contact_form');
- * 
+ *
  * <input
  *   name="email"
  *   onChange={(e) => trackFieldChange('email', e.target.value)}
@@ -282,10 +289,10 @@ export const useFormFieldTracking = (formId: string) => {
 
 /**
  * EXAMPLE 1: Track CTA Button Click
- * 
+ *
  * ```tsx
  * import { TrackedButton } from '@/utils/eventTracking';
- * 
+ *
  * <TrackedButton
  *   trackingLabel="Join Now"
  *   trackingCategory="hero_section"
@@ -300,10 +307,10 @@ export const useFormFieldTracking = (formId: string) => {
 
 /**
  * EXAMPLE 2: Track Form Submission
- * 
+ *
  * ```tsx
  * import { TrackedForm } from '@/utils/eventTracking';
- * 
+ *
  * <TrackedForm
  *   formId="contact_form"
  *   formName="Contact Form"
@@ -318,10 +325,10 @@ export const useFormFieldTracking = (formId: string) => {
 
 /**
  * EXAMPLE 3: Track Outbound Link
- * 
+ *
  * ```tsx
  * import { TrackedLink } from '@/utils/eventTracking';
- * 
+ *
  * <TrackedLink
  *   href="https://facebook.com/ghataksportsacademy"
  *   trackingLabel="Facebook Page"
@@ -333,15 +340,15 @@ export const useFormFieldTracking = (formId: string) => {
 
 /**
  * EXAMPLE 4: Manual Event Tracking
- * 
+ *
  * ```tsx
  * import { trackCTAClick, trackVideo } from '@/utils/gtm';
- * 
+ *
  * const handlePlayVideo = () => {
  *   trackVideo('play', 'Introduction Video', videoUrl);
  *   // ... play video logic
  * };
- * 
+ *
  * const handleDownload = () => {
  *   trackFileDownload('/brochure.pdf', 'Academy Brochure');
  *   // ... download logic

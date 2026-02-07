@@ -1,9 +1,9 @@
 /**
  * SEO Utilities for React SPA
- * 
+ *
  * Production-ready helpers for managing SEO in a Single Page Application
  * Handles canonical URLs, meta tags, structured data, and sitemap generation
- * 
+ *
  * IMPORTANT FOR SPAs:
  * - Use react-helmet-async for dynamic meta tag management
  * - Canonical URLs prevent duplicate content issues
@@ -16,14 +16,14 @@ import { useLocation } from 'react-router-dom';
 /**
  * Get canonical URL for current page
  * Ensures consistent URL format (no trailing slashes, lowercase, etc.)
- * 
+ *
  * USAGE:
  * const canonicalUrl = getCanonicalUrl();
  */
 export const getCanonicalUrl = (customPath?: string): string => {
   const baseUrl = 'https://ghataksportsacademy.com';
   const path = customPath || window.location.pathname;
-  
+
   // Normalize path: remove trailing slash, lowercase
   const normalizedPath = path
     .toLowerCase()
@@ -39,7 +39,7 @@ export const getCanonicalUrl = (customPath?: string): string => {
 /**
  * Hook to update canonical URL on route changes
  * Automatically adds/updates canonical link tag in document head
- * 
+ *
  * USAGE:
  * function MyPage() {
  *   useCanonicalUrl(); // Automatically manages canonical URL
@@ -53,8 +53,10 @@ export const useCanonicalUrl = (customPath?: string): void => {
     const canonicalUrl = getCanonicalUrl(customPath || location.pathname);
 
     // Find or create canonical link tag
-    let canonicalLink = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
-    
+    let canonicalLink = document.querySelector(
+      'link[rel="canonical"]'
+    ) as HTMLLinkElement;
+
     if (!canonicalLink) {
       canonicalLink = document.createElement('link');
       canonicalLink.setAttribute('rel', 'canonical');
@@ -72,7 +74,7 @@ export const useCanonicalUrl = (customPath?: string): void => {
 /**
  * Generate structured data (JSON-LD) for SEO
  * Returns properly formatted JSON-LD script content
- * 
+ *
  * USAGE:
  * const breadcrumbData = generateStructuredData('BreadcrumbList', {
  *   itemListElement: [...]
@@ -94,7 +96,7 @@ export const generateStructuredData = (
 /**
  * Get page title based on route
  * Centralized function for consistent page titles
- * 
+ *
  * USAGE:
  * const title = getPageTitle('/events');
  */
@@ -130,23 +132,30 @@ export const getPageTitle = (pathname: string): string => {
 /**
  * Get meta description based on route
  * Centralized function for consistent meta descriptions
- * 
+ *
  * USAGE:
  * const description = getMetaDescription('/events');
  */
 export const getMetaDescription = (pathname: string): string => {
-  const defaultDescription = 
-    'Join Ghatak Sports Academy India™ — the nation\'s top martial arts and self-defense institute. Train in karate, taekwondo, fitness, and more.';
+  const defaultDescription =
+    "Join Ghatak Sports Academy India™ — the nation's top martial arts and self-defense institute. Train in karate, taekwondo, fitness, and more.";
 
   const descriptionMap: Record<string, string> = {
     '/': defaultDescription,
-    '/events': 'Upcoming martial arts events, tournaments, and workshops at Ghatak Sports Academy India. Join us for world-class training events.',
-    '/news': 'Latest news and updates from Ghatak Sports Academy India. Stay informed about achievements, announcements, and academy updates.',
-    '/blogs': 'Expert insights on martial arts training, techniques, and fitness from Ghatak Sports Academy India. Learn from professional coaches.',
-    '/gallery': 'Photo gallery showcasing training sessions, events, and student achievements at Ghatak Sports Academy India.',
-    '/privacy': 'Privacy Policy for Ghatak Sports Academy India. Learn how we protect your personal information.',
-    '/terms': 'Terms of Service for Ghatak Sports Academy India. Read our policies and guidelines.',
-    '/locations/lucknow': 'Visit our Lucknow location in Indira Nagar. Get directions, contact information, and class schedules.',
+    '/events':
+      'Upcoming martial arts events, tournaments, and workshops at Ghatak Sports Academy India. Join us for world-class training events.',
+    '/news':
+      'Latest news and updates from Ghatak Sports Academy India. Stay informed about achievements, announcements, and academy updates.',
+    '/blogs':
+      'Expert insights on martial arts training, techniques, and fitness from Ghatak Sports Academy India. Learn from professional coaches.',
+    '/gallery':
+      'Photo gallery showcasing training sessions, events, and student achievements at Ghatak Sports Academy India.',
+    '/privacy':
+      'Privacy Policy for Ghatak Sports Academy India. Learn how we protect your personal information.',
+    '/terms':
+      'Terms of Service for Ghatak Sports Academy India. Read our policies and guidelines.',
+    '/locations/lucknow':
+      'Visit our Lucknow location in Indira Nagar. Get directions, contact information, and class schedules.',
   };
 
   return descriptionMap[pathname] || defaultDescription;
@@ -155,27 +164,28 @@ export const getMetaDescription = (pathname: string): string => {
 /**
  * Get Open Graph image based on route
  * Returns appropriate social sharing image URL
- * 
+ *
  * USAGE:
  * const ogImage = getOGImage('/events');
  */
 export const getOGImage = (customImage?: string): string => {
-  const defaultImage = 'https://ghataksportsacademy.com/assets/img/social-preview.png';
+  const defaultImage =
+    'https://ghataksportsacademy.com/assets/img/social-preview.png';
   return customImage || defaultImage;
 };
 
 /**
  * Check for duplicate routes/canonical issues
  * Helps prevent SEO problems during development
- * 
+ *
  * USAGE:
  * const hasDuplicates = checkForDuplicateRoutes(['/event', '/events']);
  */
 export const checkForDuplicateRoutes = (routes: string[]): boolean => {
-  const normalized = routes.map(route => 
+  const normalized = routes.map((route) =>
     route.toLowerCase().replace(/\/$/, '')
   );
-  
+
   const uniqueRoutes = new Set(normalized);
   const hasDuplicates = uniqueRoutes.size !== normalized.length;
 
@@ -189,13 +199,20 @@ export const checkForDuplicateRoutes = (routes: string[]): boolean => {
 /**
  * Generate sitemap entry for a URL
  * Helper for building sitemap.xml programmatically
- * 
+ *
  * USAGE:
  * const sitemapEntry = generateSitemapEntry('/events', 'daily', 0.8);
  */
 export const generateSitemapEntry = (
   url: string,
-  changefreq: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never' = 'weekly',
+  changefreq:
+    | 'always'
+    | 'hourly'
+    | 'daily'
+    | 'weekly'
+    | 'monthly'
+    | 'yearly'
+    | 'never' = 'weekly',
   priority: number = 0.5,
   lastmod?: string
 ): string => {
@@ -215,11 +232,13 @@ export const generateSitemapEntry = (
 /**
  * Validate URL structure for SEO
  * Checks for common SEO issues in URLs
- * 
+ *
  * USAGE:
  * const isValid = validateUrlStructure('/blog/my-post');
  */
-export const validateUrlStructure = (url: string): {
+export const validateUrlStructure = (
+  url: string
+): {
   isValid: boolean;
   issues: string[];
 } => {
@@ -237,7 +256,9 @@ export const validateUrlStructure = (url: string): {
 
   // Check for special characters (except dash and underscore)
   if (/[^a-z0-9\-_/]/.test(url)) {
-    issues.push('URL contains special characters - use only lowercase, numbers, and dashes');
+    issues.push(
+      'URL contains special characters - use only lowercase, numbers, and dashes'
+    );
   }
 
   // Check for multiple consecutive slashes
@@ -259,7 +280,7 @@ export const validateUrlStructure = (url: string): {
 /**
  * Generate robots meta tag content
  * Controls search engine crawling behavior
- * 
+ *
  * USAGE:
  * const robotsContent = getRobotsMetaContent(true, true);
  */
@@ -275,7 +296,7 @@ export const getRobotsMetaContent = (
 /**
  * Check if page should be indexed
  * Some pages (admin, private) should not be indexed
- * 
+ *
  * USAGE:
  * const shouldIndex = shouldPageBeIndexed('/admin/dashboard');
  */
@@ -288,22 +309,24 @@ export const shouldPageBeIndexed = (pathname: string): boolean => {
     /^\/(pages\/)?success/,
   ];
 
-  return !noIndexPatterns.some(pattern => pattern.test(pathname));
+  return !noIndexPatterns.some((pattern) => pattern.test(pathname));
 };
 
 /**
  * Get hreflang tags for multi-language support
  * Generates alternate language links
- * 
+ *
  * USAGE:
  * const hreflangTags = getHreflangTags('/events');
  */
-export const getHreflangTags = (pathname: string): Array<{
+export const getHreflangTags = (
+  pathname: string
+): Array<{
   lang: string;
   url: string;
 }> => {
   const baseUrl = 'https://ghataksportsacademy.com';
-  
+
   return [
     { lang: 'x-default', url: `${baseUrl}${pathname}` },
     { lang: 'en', url: `${baseUrl}${pathname}` },
@@ -320,10 +343,10 @@ export const trackSEOIssues = (pathname: string): void => {
   if (process.env.NODE_ENV !== 'development') return;
 
   const { isValid, issues } = validateUrlStructure(pathname);
-  
+
   if (!isValid) {
     console.warn('🔍 SEO Issues detected on:', pathname);
-    issues.forEach(issue => console.warn('  -', issue));
+    issues.forEach((issue) => console.warn('  -', issue));
   }
 
   if (!shouldPageBeIndexed(pathname)) {

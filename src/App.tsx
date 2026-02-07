@@ -213,7 +213,7 @@ const App = () => {
           <TooltipProvider>
             {/* GTM PageTracker for SPA routing - tracks all route changes */}
             <PageTracker />
-            
+
             <Toaster />
             <Sonner />
             {loading && <Preloader />}

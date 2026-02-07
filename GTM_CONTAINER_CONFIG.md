@@ -164,7 +164,7 @@ This trigger fires on: All Custom Events
 ```
 Tag Name: GA4 Configuration
 Tag Type: Google Analytics: GA4 Configuration
-Measurement ID: G-XXXXXXXXXX (your actual GA4 ID)
+Measurement ID: G-DN204S2BBC
 
 Configuration:
 ☑️ Configuration Settings
@@ -179,10 +179,15 @@ Advanced Settings:
   Tag firing options: Once per page
 
 Triggering:
-  Trigger: SPA Pageview
+  Trigger 1: All Pages (initial page load)
+  Trigger 2: History Change (⚠️ CRITICAL for React SPAs!)
+  Trigger 3: SPA Pageview (our custom event)
 ```
 
-**CRITICAL:** The "Send a pageview event when this configuration loads" MUST be unchecked!
+**CRITICAL:** 
+- The "Send a pageview event when this configuration loads" MUST be unchecked!
+- For React SPAs, you MUST add the "History Change" trigger
+- This ensures tracking works on browser back/forward buttons
 
 ### 2. GA4 Event - Pageview
 

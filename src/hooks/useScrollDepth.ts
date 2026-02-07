@@ -1,19 +1,19 @@
 /**
  * useScrollDepth Hook
- * 
+ *
  * React hook for tracking scroll depth milestones (25%, 50%, 75%, 100%)
  * Critical SEO metric that measures user engagement
- * 
+ *
  * USAGE:
  * ```tsx
  * import { useScrollDepth } from '@/hooks/useScrollDepth';
- * 
+ *
  * function MyComponent() {
  *   useScrollDepth(); // Automatically tracks scroll depth
  *   return <div>...</div>;
  * }
  * ```
- * 
+ *
  * HOW IT WORKS:
  * - Listens to scroll events (throttled for performance)
  * - Calculates percentage of page scrolled
@@ -49,9 +49,7 @@ export const useScrollDepth = () => {
 
       // Calculate scroll percentage
       const scrollableDistance = documentHeight - windowHeight;
-      const scrollPercent = Math.round(
-        (scrollTop / scrollableDistance) * 100
-      );
+      const scrollPercent = Math.round((scrollTop / scrollableDistance) * 100);
 
       // Define milestones to track
       const thresholds = [25, 50, 75, 100];
