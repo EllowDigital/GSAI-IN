@@ -128,7 +128,6 @@ const defaultVideoMeta = [{
   title: 'Ghatak Sports Academy India - Training Introduction',
   description: 'Watch our introductory video showcasing martial arts training, facilities, and student achievements at Ghatak Sports Academy India.',
   content_loc: `${hostname}/assets/slider/intro.mp4`,
-  player_loc: `${hostname}/`,
   duration: 120,
   publication_date: '2025-03-01T00:00:00Z',
   family_friendly: 'yes',
