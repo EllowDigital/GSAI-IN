@@ -2,23 +2,27 @@
 <html lang="en">
 
 <head>
-  <!-- Google Analytics (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DN204S2BBC"></script>
+  <!-- ============================== -->
+  <!-- 🚀 Google Tag Manager -->
+  <!-- ============================== -->
+  <!-- 
+    GTM loads BEFORE React renders to ensure tracking is ready.
+    GA4 is configured inside GTM, not here.
+    Replace GTM-XXXXXXX with your actual GTM Container ID.
+  -->
   <script>
+    // Initialize dataLayer before GTM loads
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-DN204S2BBC');
+    
+    // GTM snippet - loads synchronously to be ready before React
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-XXXXXXX');
   </script>
-  <!-- End Google Analytics -->
-  
-  <!-- Google Tag Manager -->
-  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer','GTM-5GCSP6H7');</script>
   <!-- End Google Tag Manager -->
+  
   <!-- ============================== -->
   <!-- ✅ Basic Page Configuration -->
   <!-- ============================== -->
@@ -31,7 +35,13 @@
   <title>Ghatak Sports Academy India™ | Top Martial Arts Training in India</title>
 
   <!-- ============================== -->
-  <!-- 📱 PWA & Mobile Web App -->
+  <!-- � Google Search Console Verification -->
+  <!-- ============================== -->
+  <!-- Replace the content value with your actual GSC verification code -->
+  <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE_HERE" />
+  
+  <!-- ============================== -->
+  <!-- �📱 PWA & Mobile Web App -->
   <!-- ============================== -->
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -200,9 +210,12 @@
 </head>
 
 <body>
-  <!-- Google Tag Manager (noscript) -->
+  <!-- ============================== -->
+  <!-- 🚀 Google Tag Manager (noscript) -->
+  <!-- ============================== -->
+  <!-- Fallback for users with JavaScript disabled -->
   <noscript>
-    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5GCSP6H7"
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
       height="0" width="0" style="display:none;visibility:hidden"></iframe>
   </noscript>
   <!-- End Google Tag Manager (noscript) -->
