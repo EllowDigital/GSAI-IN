@@ -20,6 +20,7 @@ import Preloader from './components/Preloader';
 import OfflineBanner from './components/OfflineBanner';
 import PWAInstallToast from './components/PWAInstallToast';
 import EnhancedErrorBoundary from './components/EnhancedErrorBoundary';
+import PageTracker from './components/PageTracker';
 
 // Lazy load components for better performance
 const HomePageWrapper = lazy(() => import('./pages/HomePageWrapper'));
@@ -210,6 +211,9 @@ const App = () => {
       <HelmetProvider>
         <QueryClientProvider client={queryClient}>
           <TooltipProvider>
+            {/* GTM PageTracker for SPA routing - tracks all route changes */}
+            <PageTracker />
+
             <Toaster />
             <Sonner />
             {loading && <Preloader />}
