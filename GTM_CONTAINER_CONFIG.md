@@ -161,7 +161,7 @@ Event name: form_error
 This trigger fires on: All Custom Events
 ```
 
-### 7. Outbound Click
+### 8. Outbound Click
 ```
 Trigger Name: Outbound Click
 Trigger Type: Custom Event

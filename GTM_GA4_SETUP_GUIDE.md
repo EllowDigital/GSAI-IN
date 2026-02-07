@@ -38,19 +38,16 @@ Before implementing, you need:
 
 ## 🚀 Implementation Steps
 
-### Step 1: Update Google Tag Manager ID
+### Step 1: Verify GTM Integration
 
-**File:** `index.html` (line 16)
+**File:** `index.html`
 
-```html
-<!-- Replace GTM-XXXXXXX with your actual GTM Container ID -->
-})(window,document,'script','dataLayer','GTM-XXXXXXX');
-```
+✅ **Already Configured:**
+- GTM Container ID: `GTM-5GCSP6H7` (lines 16 & 296)
+- dataLayer initialized before GTM loads
+- Noscript fallback included
 
-**Also update:** Line 296 (noscript fallback)
-```html
-<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
-```
+**Still needs:** Google Search Console verification code (line 37)
 
 ### Step 2: Add Google Search Console Verification
 
@@ -102,11 +99,19 @@ Navigate to **Tags → New**
 
 1. **Tag Configuration:**
    - Tag Type: `Google Analytics: GA4 Configuration`
-   - Measurement ID: `G-XXXXXXXXXX` (your GA4 ID)
+   - Measurement ID: `G-DN204S2BBC`
    - **CRITICAL:** Uncheck "Send a pageview event when this configuration loads"
 
-2. **Triggering:**
-   - Trigger: `SPA Pageview` (create in next step)
+2. **Triggering (Add all 3 triggers):**
+   - Trigger 1: `All Pages` (initial page load)
+   - Trigger 2: `History Change` (⚠️ **CRITICAL for React!**)
+   - Trigger 3: `SPA Pageview` (custom event - create in next step)
+
+**Why History Change is Critical:**
+- React Router uses the History API for navigation
+- Browser back/forward buttons trigger history changes
+- Without this, back/forward navigation won't be tracked
+- This works alongside our custom pageview events
 
 ### C. Create Custom Event Trigger for Pageviews
 

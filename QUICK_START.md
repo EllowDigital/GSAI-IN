@@ -8,15 +8,13 @@
 
 ### File: `index.html`
 
-**Line 16 & Line 296:**
-```html
-<!-- Replace GTM-XXXXXXX with your actual GTM Container ID -->
-'GTM-XXXXXXX'  →  'GTM-5GCSP6H7'  (example)
-```
+✅ **Already Configured:**
+- GTM Container ID: `GTM-5GCSP6H7`
+- GA4 Measurement ID (in GTM): `G-DN204S2BBC`
 
-**Line 37:**
+**Only need to update:**
 ```html
-<!-- Replace with your Google Search Console verification code -->
+<!-- Line 37: Replace with your Google Search Console verification code -->
 content="YOUR_VERIFICATION_CODE_HERE"  →  content="abc123xyz..."
 ```
 
@@ -54,7 +52,7 @@ Go to **Tags → New**
 ```
 Tag Name: GA4 Configuration
 Tag Type: Google Analytics: GA4 Configuration
-Measurement ID: G-XXXXXXXXXX (YOUR GA4 ID)
+Measurement ID: G-DN204S2BBC
 
 ⚠️ CRITICAL: UNCHECK "Send a pageview event when this configuration loads"
 
@@ -63,7 +61,10 @@ Fields to Set:
   page_location → {{Page Location}}
   page_title → {{Page Title}}
 
-Triggering: SPA Pageview
+Triggering (add all 3):
+  1. All Pages (initial load)
+  2. History Change (⚠️ CRITICAL for React!)
+  3. SPA Pageview (custom event)
 ```
 
 ### D. Create Event Tags (2 min)
