@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import { initializeBuildOptimizations } from './utils/buildOptimization';
+import { validateSupabaseConfig } from './integrations/supabase/constants';
 import { BrowserRouter } from 'react-router-dom';
 
 // Initialize build optimizations
@@ -11,11 +12,22 @@ try {
   console.error('Failed to initialize build optimizations:', error);
 }
 
+// Validate Supabase configuration
+try {
+  validateSupabaseConfig();
+} catch (error) {
+  console.error('Supabase configuration validation failed:', error);
+  throw error; // Re-throw to prevent app from starting with invalid config
+}
+
 // Ensure root element exists
 const rootElement = document.getElementById('root');
 if (!rootElement) {
-  document.body.innerHTML =
-    '<div style="padding: 20px; font-family: system-ui; color: red;">❌ Error: Root element not found. Please refresh the page.</div>';
+  const errorDiv = document.createElement('div');
+  errorDiv.style.cssText = 'padding: 20px; font-family: system-ui; color: red;';
+  errorDiv.textContent =
+    '❌ Error: Root element not found. Please refresh the page.';
+  document.body.appendChild(errorDiv);
   throw new Error('Root element not found');
 }
 
@@ -32,8 +44,27 @@ try {
   );
 } catch (error) {
   console.error('Failed to render app:', error);
-  document.body.innerHTML =
-    '<div style="padding: 20px; font-family: system-ui;"><h1 style="color: red;">❌ Application Error</h1><p>Failed to load the application. Please check the console for details.</p><button onclick="location.reload()" style="padding: 10px 20px; margin-top: 10px; cursor: pointer;">Reload Page</button></div>';
+  const errorContainer = document.createElement('div');
+  errorContainer.style.cssText = 'padding: 20px; font-family: system-ui;';
+
+  const title = document.createElement('h1');
+  title.style.color = 'red';
+  title.textContent = '❌ Application Error';
+
+  const message = document.createElement('p');
+  message.textContent =
+    'Failed to load the application. Please check the console for details.';
+
+  const reloadButton = document.createElement('button');
+  reloadButton.textContent = 'Reload Page';
+  reloadButton.style.cssText =
+    'padding: 10px 20px; margin-top: 10px; cursor: pointer;';
+  reloadButton.addEventListener('click', () => location.reload());
+
+  errorContainer.appendChild(title);
+  errorContainer.appendChild(message);
+  errorContainer.appendChild(reloadButton);
+  document.body.appendChild(errorContainer);
 }
 
 // Register the service worker for PWA functionality with error handling

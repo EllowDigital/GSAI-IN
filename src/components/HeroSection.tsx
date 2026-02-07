@@ -127,16 +127,15 @@ export default function HeroSection() {
     return () => clearInterval(wordTimer);
   }, []);
 
-  // Sanskrit quote scroll fade effect
+  // Sanskrit quote scroll fade effect - using Framer Motion's scrollY value
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      setShowSanskrit(scrollY >= 20);
-    };
-    handleScroll();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    const unsubscribe = scrollY.on('change', (value) => {
+      setShowSanskrit(value >= 20);
+    });
+    // Set initial state
+    setShowSanskrit(scrollY.get() >= 20);
+    return () => unsubscribe();
+  }, [scrollY]);
 
   // Preload hero images
   useEffect(() => {

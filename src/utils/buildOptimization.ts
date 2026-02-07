@@ -58,12 +58,6 @@ export const optimizedUtils = {
 export const memoryOptimization = {
   clearUnusedResources: () => {
     if (typeof window !== 'undefined') {
-      // Keep console.error in production for debugging
-      if (process.env.NODE_ENV === 'production') {
-        // Don't disable console methods - they're needed for debugging
-        // Only clear debug logs if needed
-      }
-
       // Force garbage collection if available
       if ('gc' in window && typeof (window as any).gc === 'function') {
         (window as any).gc();

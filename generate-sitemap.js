@@ -94,15 +94,9 @@ const initSupabase = async () => {
 };
 
 // ---------------------- Static Pages ----------------------
+// Note: Fragment identifiers (e.g. /#about) are removed as they're not separate crawlable resources
 const marketingPages = [
   { url: '/', changefreq: 'weekly', priority: 1.0 },
-  { url: '/#about', changefreq: 'monthly', priority: 0.6 },
-  { url: '/#programs', changefreq: 'weekly', priority: 0.8 },
-  { url: '/#events', changefreq: 'daily', priority: 0.75 },
-  { url: '/#news', changefreq: 'daily', priority: 0.72 },
-  { url: '/#testimonials', changefreq: 'monthly', priority: 0.5 },
-  { url: '/#recognition', changefreq: 'monthly', priority: 0.4 },
-  { url: '/#contact', changefreq: 'monthly', priority: 0.6 },
   { url: '/events', changefreq: 'daily', priority: 0.75 },
   { url: '/news', changefreq: 'daily', priority: 0.72 },
   { url: '/blogs', changefreq: 'daily', priority: 0.7 },
@@ -128,7 +122,6 @@ const defaultVideoMeta = [{
   title: 'Ghatak Sports Academy India - Training Introduction',
   description: 'Watch our introductory video showcasing martial arts training, facilities, and student achievements at Ghatak Sports Academy India.',
   content_loc: `${hostname}/assets/slider/intro.mp4`,
-  player_loc: `${hostname}/`,
   duration: 120,
   publication_date: '2025-03-01T00:00:00Z',
   family_friendly: 'yes',
