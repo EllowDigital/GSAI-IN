@@ -200,7 +200,10 @@ export default function HeroSection() {
       const playPromise = currentVideo.play();
       if (playPromise) {
         playPromise.catch((error) => {
-          console.warn('Video autoplay was blocked. Showing slideshow as fallback.', error);
+          console.warn(
+            'Video autoplay was blocked. Showing slideshow as fallback.',
+            error
+          );
           setMediaMode('images');
         });
       }
@@ -211,12 +214,15 @@ export default function HeroSection() {
   }, [isVideoActive]);
 
   // --- Event Handlers ---
-  const goToImage = useCallback((index: number) => {
-    setImgIndex(index);
-    if (mediaMode === 'video') {
-      setMediaMode('images');
-    }
-  }, [mediaMode]);
+  const goToImage = useCallback(
+    (index: number) => {
+      setImgIndex(index);
+      if (mediaMode === 'video') {
+        setMediaMode('images');
+      }
+    },
+    [mediaMode]
+  );
 
   const handleVideoEnd = useCallback(() => {
     setMediaMode('images');
@@ -229,13 +235,16 @@ export default function HeroSection() {
     }
   }, [hasInteracted]);
 
-  const toggleMute = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    setIsMuted((prev) => !prev);
-    if (!hasInteracted) {
-      setHasInteracted(true);
-    }
-  }, [hasInteracted]);
+  const toggleMute = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      setIsMuted((prev) => !prev);
+      if (!hasInteracted) {
+        setHasInteracted(true);
+      }
+    },
+    [hasInteracted]
+  );
 
   const scrollToAbout = useCallback(() => {
     const aboutSection = document.getElementById('about');
@@ -271,7 +280,11 @@ export default function HeroSection() {
             animate={{
               y: [-20, -80, -20],
               x: [0, Math.sin(particle.id) * 20, 0],
-              opacity: [particle.opacity, particle.opacity * 1.5, particle.opacity],
+              opacity: [
+                particle.opacity,
+                particle.opacity * 1.5,
+                particle.opacity,
+              ],
               scale: [1, 1.2, 1],
             }}
             transition={{
@@ -360,10 +373,13 @@ export default function HeroSection() {
       <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-black/70 via-black/30 to-black/80" />
       <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-black/40 via-transparent to-black/40" />
       {/* Vignette effect */}
-      <div className="pointer-events-none absolute inset-0 z-[2]" style={{ boxShadow: 'inset 0 0 150px 50px rgba(0,0,0,0.5)' }} />
+      <div
+        className="pointer-events-none absolute inset-0 z-[2]"
+        style={{ boxShadow: 'inset 0 0 150px 50px rgba(0,0,0,0.5)' }}
+      />
 
       {/* Main Content */}
-      <motion.div 
+      <motion.div
         className="relative z-10 w-full px-4 sm:px-6 lg:px-8 text-center"
         style={{ opacity: contentOpacity }}
       >
@@ -382,7 +398,9 @@ export default function HeroSection() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-yellow-500"></span>
             </span>
-            <span className="whitespace-nowrap">Government Recognized • ISO 9001:2015</span>
+            <span className="whitespace-nowrap">
+              Government Recognized • ISO 9001:2015
+            </span>
           </motion.div>
 
           {/* Heading with Word Highlight Animation */}
@@ -423,7 +441,10 @@ export default function HeroSection() {
             <span className="text-yellow-400 font-semibold">Martial Arts</span>,{' '}
             <span className="text-orange-500 font-semibold">Fitness</span> &{' '}
             <span className="text-red-500 font-semibold">Self-Defense</span>.
-            <span className="hidden sm:inline"> Join the elite community of champions.</span>
+            <span className="hidden sm:inline">
+              {' '}
+              Join the elite community of champions.
+            </span>
           </motion.p>
 
           {/* CTA Buttons */}
@@ -551,7 +572,11 @@ export default function HeroSection() {
               }}
               transition={{
                 y: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
-                boxShadow: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
+                boxShadow: {
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                },
                 scale: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
               }}
             />
