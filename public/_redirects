@@ -1,9 +1,11 @@
 
-## Netlify redirect rules to canonicalize host and scheme
-# Redirect www to non-www (HTTPS canonical)
-https://www.ghatakgsai.netlify.app/* https://ghatakgsai.netlify.app/:splat 301!
-http://www.ghatakgsai.netlify.app/* https://ghatakgsai.netlify.app/:splat 301!
-# Ensure non-HTTPS requests are redirected to HTTPS
-http://ghatakgsai.netlify.app/* https://ghatakgsai.netlify.app/:splat 301!
+## Netlify redirect rules for domain migration and canonical URLs
 
+# Force 301 redirect from old Netlify domain to production domain
+https://ghatakgsai.netlify.app/*  https://ghataksportsacademy.com/:splat  301!
+http://ghatakgsai.netlify.app/*  https://ghataksportsacademy.com/:splat  301!
+https://www.ghatakgsai.netlify.app/*  https://ghataksportsacademy.com/:splat  301!
+http://www.ghatakgsai.netlify.app/*  https://ghataksportsacademy.com/:splat  301!
+
+# SPA fallback - must be last
 /*    /index.html   200
