@@ -29,8 +29,7 @@ const Logger = {
 
 // ---------------------- Hostname Logic --------------------
 const PRIMARY_HOST = 'https://ghataksportsacademy.com';
-const SECONDARY_HOST = 'https://ghatakgsai.netlify.app';
-const FALLBACK_HOSTS = [PRIMARY_HOST, SECONDARY_HOST];
+const FALLBACK_HOSTS = [PRIMARY_HOST];
 const placeholderHosts = new Set([
   'https://yourdomain.com', 'http://yourdomain.com', 'yourdomain.com',
   'https://example.com', 'http://example.com', 'example.com',
