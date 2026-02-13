@@ -94,18 +94,19 @@ const initSupabase = async () => {
 
 // ---------------------- Static Pages ----------------------
 // Note: Fragment identifiers (e.g. /#about) are removed as they're not separate crawlable resources
+// Note: The sitemap library rounds priorities to 1 decimal place
 const marketingPages = [
   { url: '/', changefreq: 'weekly', priority: 1.0 },
-  { url: '/events', changefreq: 'daily', priority: 0.75 },
-  { url: '/news', changefreq: 'daily', priority: 0.72 },
+  { url: '/events', changefreq: 'daily', priority: 0.8 },
+  { url: '/news', changefreq: 'daily', priority: 0.7 },
   { url: '/blogs', changefreq: 'daily', priority: 0.7 },
   { url: '/gallery', changefreq: 'weekly', priority: 0.6 },
   { url: '/contact', changefreq: 'monthly', priority: 0.6 },
   { url: '/corporate', changefreq: 'monthly', priority: 0.6 },
   { url: '/locations/lucknow', changefreq: 'monthly', priority: 0.5 },
-  { url: '/privacy', changefreq: 'yearly', priority: 0.35 },
-  { url: '/terms', changefreq: 'yearly', priority: 0.35 },
-  { url: '/pages/success.html', changefreq: 'yearly', priority: 0.25 },
+  { url: '/privacy', changefreq: 'yearly', priority: 0.3 },
+  { url: '/terms', changefreq: 'yearly', priority: 0.3 },
+  { url: '/pages/success.html', changefreq: 'yearly', priority: 0.2 },
 ];
 
 const defaultImageMeta = [{
@@ -261,7 +262,7 @@ async function generateSitemap() {
       if (url) sitemap.write({
         url: `/blog/${url}`,
         changefreq: 'weekly',
-        priority: 0.82,
+        priority: 0.8,
         lastmod: toISODate(resolveTimestamp(b, ['published_at'])),
         img: resolveImage(b),
       });
@@ -273,7 +274,7 @@ async function generateSitemap() {
       if (url) sitemap.write({
         url: `/news/${url}`,
         changefreq: 'weekly',
-        priority: 0.78,
+        priority: 0.8,
         lastmod: toISODate(resolveTimestamp(n, ['date'])),
         img: resolveImage(n),
       });
@@ -285,7 +286,7 @@ async function generateSitemap() {
       if (url) sitemap.write({
         url: `/event/${url}`,
         changefreq: 'daily',
-        priority: 0.88,
+        priority: 0.9,
         lastmod: toISODate(resolveTimestamp(e, ['from_date', 'date', 'end_date'])),
         img: resolveImage(e),
       });
