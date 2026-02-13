@@ -49,7 +49,15 @@ export const useScrollDepth = () => {
 
       // Calculate scroll percentage
       const scrollableDistance = documentHeight - windowHeight;
-      const scrollPercent = Math.round((scrollTop / scrollableDistance) * 100);
+      
+      // Guard against division by zero when there's no scrollable distance
+      if (scrollableDistance <= 0) {
+        // No scrollable distance; avoid division by zero and skip tracking
+        return;
+      }
+      
+      const rawPercent = (scrollTop / scrollableDistance) * 100;
+      const scrollPercent = Math.min(100, Math.max(0, Math.round(rawPercent)));
 
       // Define milestones to track
       const thresholds = [25, 50, 75, 100];
