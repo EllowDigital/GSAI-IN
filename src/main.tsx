@@ -17,8 +17,8 @@ try {
   validateSupabaseConfig();
 } catch (error) {
   console.error('Supabase configuration validation failed:', error);
-  // Re-throw in production to prevent app from starting with invalid config
-  // In development, validation only warns but doesn't throw
+  // validateSupabaseConfig handles env-specific behavior (e.g., only throws in production)
+  // This catch logs and re-throws any error that was thrown
   throw error;
 }
 

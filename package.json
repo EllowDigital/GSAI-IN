@@ -33,9 +33,9 @@
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "prepare": "husky",
-    "deploy": "git add . && git commit -m \"🚀 Auto deploy\" && git push origin dev",
-    "deploy:prod": "git checkout main && git merge dev --no-edit && git push origin main && git checkout dev",
-    "update": "rimraf node_modules dist package-lock.json && npm install"
+    "deploy": "git add . && git commit -m \"🚀 Auto-deploy: Updates pushed to dev\" && git push origin dev",
+    "deploy:prod": "git checkout main && git merge dev --no-edit && git push origin main && git checkout dev && echo ✅ Production Deployed & Switched back to Dev",
+    "update": "rimraf node_modules dist && npm install"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
