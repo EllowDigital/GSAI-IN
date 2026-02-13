@@ -1,11 +1,16 @@
 
 ## Netlify redirect rules for domain migration and canonical URLs
 
+# Force HTTPS and canonical domain (non-www)
+http://ghataksportsacademy.com/* https://ghataksportsacademy.com/:splat 301!
+https://www.ghataksportsacademy.com/* https://ghataksportsacademy.com/:splat 301!
+http://www.ghataksportsacademy.com/* https://ghataksportsacademy.com/:splat 301!
+
 # Force 301 redirect from old Netlify domain to production domain
-https://ghatakgsai.netlify.app/*  https://ghataksportsacademy.com/:splat  301!
-http://ghatakgsai.netlify.app/*  https://ghataksportsacademy.com/:splat  301!
-https://www.ghatakgsai.netlify.app/*  https://ghataksportsacademy.com/:splat  301!
-http://www.ghatakgsai.netlify.app/*  https://ghataksportsacademy.com/:splat  301!
+https://ghatakgsai.netlify.app/* https://ghataksportsacademy.com/:splat 301!
+http://ghatakgsai.netlify.app/* https://ghataksportsacademy.com/:splat 301!
+https://www.ghatakgsai.netlify.app/* https://ghataksportsacademy.com/:splat 301!
+http://www.ghatakgsai.netlify.app/* https://ghataksportsacademy.com/:splat 301!
 
 # SPA fallback - must be last
-/*    /index.html   200
+/* /index.html 200

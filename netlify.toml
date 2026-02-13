@@ -12,7 +12,7 @@ framework = "vite"
 
 # Allow sitemap + clients to know the canonical URL during production builds.
 [context.production.environment]
-SITE_URL = "https://ghatakgsai.netlify.app"
+SITE_URL = "https://ghataksportsacademy.com"
 # Note: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, and VITE_SUPABASE_PROJECT_ID
 # should be set in Netlify Dashboard > Site settings > Environment variables
 # These are NOT defined here for security reasons
