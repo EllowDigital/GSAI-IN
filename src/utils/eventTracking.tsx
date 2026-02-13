@@ -12,6 +12,7 @@
  */
 
 import React, { ComponentProps, FormEvent, MouseEvent } from 'react';
+import { Link } from 'react-router-dom';
 import {
   trackCTAClick,
   trackOutboundClick,
@@ -80,6 +81,7 @@ interface TrackedLinkProps extends ComponentProps<'a'> {
 /**
  * Link component with automatic click tracking
  * Automatically detects and tracks outbound links
+ * Uses React Router Link for internal navigation to avoid page reloads
  *
  * USAGE:
  * ```tsx
@@ -119,10 +121,22 @@ export const TrackedLink: React.FC<TrackedLinkProps> = ({
     }
   };
 
+  // Use React Router Link for internal links to avoid page reload
+  const isExternal = trackAsOutbound || (href && isExternalUrl(href));
+
+  if (isExternal || !href) {
+    return (
+      <a {...props} href={href} onClick={handleClick}>
+        {children}
+      </a>
+    );
+  }
+
+  // For internal links, use React Router Link
   return (
-    <a {...props} href={href} onClick={handleClick}>
+    <Link {...props} to={href} onClick={handleClick as any}>
       {children}
-    </a>
+    </Link>
   );
 };
 

@@ -17,7 +17,9 @@ try {
   validateSupabaseConfig();
 } catch (error) {
   console.error('Supabase configuration validation failed:', error);
-  throw error; // Re-throw to prevent app from starting with invalid config
+  // Re-throw in production to prevent app from starting with invalid config
+  // In development, validation only warns but doesn't throw
+  throw error;
 }
 
 // Ensure root element exists

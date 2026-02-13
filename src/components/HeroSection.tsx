@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import type { MouseEvent } from 'react';
 import {
   motion,
   AnimatePresence,
@@ -128,10 +129,14 @@ export default function HeroSection() {
 
   // Sanskrit quote scroll fade effect
   useEffect(() => {
-    const unsubscribe = scrollY.on('change', (value) => {
+    const handleScrollChange = (value: number) => {
       setShowSanskrit(value >= 20);
-    });
-    setShowSanskrit(scrollY.get() >= 20);
+    };
+
+    // Trigger handler with current value to initialize
+    handleScrollChange(scrollY.get());
+
+    const unsubscribe = scrollY.on('change', handleScrollChange);
     return () => unsubscribe();
   }, [scrollY]);
 
@@ -236,7 +241,7 @@ export default function HeroSection() {
   }, [hasInteracted]);
 
   const toggleMute = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
+    (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
       setIsMuted((prev) => !prev);
       if (!hasInteracted) {
@@ -535,6 +540,7 @@ export default function HeroSection() {
 
         {/* Scroll Indicator */}
         <button
+          type="button"
           onClick={scrollToAbout}
           aria-label="Scroll down to about section"
           className="pointer-events-auto group"

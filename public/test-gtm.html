@@ -177,7 +177,7 @@
     <div class="instructions">
       <h3>📋 What to Check in GTM:</h3>
       <ol>
-        <li><strong>Container Published:</strong> Go to <a href="https://tagmanager.google.com" target="_blank">tagmanager.google.com</a> → Container GTM-5GCSP6H7 → Check if there's a "PUBLISH" or "Submit" button (if yes, click it!)</li>
+        <li><strong>Container Published:</strong> Go to <a href="https://tagmanager.google.com" target="_blank" rel="noopener noreferrer">tagmanager.google.com</a> → Container GTM-5GCSP6H7 → Check if there's a "PUBLISH" or "Submit" button (if yes, click it!)</li>
         <li><strong>GA4 Tag Exists:</strong> Tags → Look for "GA4 Configuration" tag with Measurement ID: G-DN204S2BBC</li>
         <li><strong>Triggers Set:</strong> Your GA4 tag should have 3 triggers:
           <ul style="margin-top: 8px;">
@@ -214,10 +214,10 @@
     <!-- Quick Links -->
     <h2>7. Quick Links</h2>
     <div style="margin: 20px 0;">
-      <a href="https://tagmanager.google.com" target="_blank" style="display: inline-block; background: #1a73e8; color: white; padding: 12px 24px; margin: 10px 10px 10px 0; border-radius: 4px; text-decoration: none;">
+      <a href="https://tagmanager.google.com" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: #1a73e8; color: white; padding: 12px 24px; margin: 10px 10px 10px 0; border-radius: 4px; text-decoration: none;">
         📊 Open GTM Dashboard
       </a>
-      <a href="https://analytics.google.com" target="_blank" style="display: inline-block; background: #ea4335; color: white; padding: 12px 24px; margin: 10px 10px 10px 0; border-radius: 4px; text-decoration: none;">
+      <a href="https://analytics.google.com" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: #ea4335; color: white; padding: 12px 24px; margin: 10px 10px 10px 0; border-radius: 4px; text-decoration: none;">
         📈 Open GA4 Dashboard
       </a>
     </div>
@@ -243,7 +243,7 @@ window.dataLayer.push({
 
     <!-- Footer -->
     <div style="margin-top: 50px; padding-top: 20px; border-top: 2px solid #e0e0e0; text-align: center; color: #666;">
-      <p>For detailed debugging guide, see: <strong>DEBUG_GA4_GTM.md</strong></p>
+      <p>For a detailed debugging guide, see the official Google Analytics 4 and Google Tag Manager documentation.</p>
       <p style="margin-top: 10px; font-size: 14px;">Last Updated: February 2026</p>
     </div>
   </div>
@@ -296,8 +296,10 @@ window.dataLayer.push({
         );
         
         if (ga4Requests.length > 0) {
+          const latestRequest = ga4Requests[ga4Requests.length - 1];
+          const latestRequestTime = new Date(performance.timeOrigin + latestRequest.startTime).toLocaleTimeString();
           statusDiv.innerHTML = '<div class="status success">✅ <strong>SUCCESS:</strong> GA4 is sending data (' + ga4Requests.length + ' requests detected)</div>';
-          statusDiv.innerHTML += '<div class="status info">ℹ️ <strong>Latest request:</strong> ' + new Date(ga4Requests[ga4Requests.length-1].startTime).toLocaleTimeString() + '</div>';
+          statusDiv.innerHTML += '<div class="status info">ℹ️ <strong>Latest request:</strong> ' + latestRequestTime + '</div>';
         } else {
           statusDiv.innerHTML = '<div class="status warning">⚠️ <strong>WARNING:</strong> No GA4 network requests detected yet.</div>';
           statusDiv.innerHTML += '<div class="status info">💡 <strong>Possible causes:</strong><br>• GTM container not published<br>• GA4 Configuration Tag not created in GTM<br>• GA4 tag not firing (check triggers)</div>';

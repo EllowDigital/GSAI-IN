@@ -117,7 +117,7 @@
     scroll-behavior: smooth;
     overflow-x: hidden;
     /* Ensure proper scroll snap for hero to about transition */
-    scroll-padding-top: 4rem;
+    scroll-padding-top: var(--nav-height);
   }
 
   body {

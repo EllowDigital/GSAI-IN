@@ -32,16 +32,7 @@
 
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-
-/**
- * Extend Window interface to include dataLayer
- * This ensures TypeScript knows about the GTM dataLayer
- */
-declare global {
-  interface Window {
-    dataLayer: any[];
-  }
-}
+import { trackPageView } from '@/utils/gtm';
 
 export const PageTracker: React.FC = () => {
   const location = useLocation();
@@ -50,31 +41,8 @@ export const PageTracker: React.FC = () => {
     // Construct full page path including query parameters
     const pagePath = location.pathname + location.search;
 
-    // Push pageview event to dataLayer for GTM to process
-    // GTM will forward this to GA4 based on trigger configuration
-    if (window.dataLayer) {
-      window.dataLayer.push({
-        event: 'pageview',
-        page_path: pagePath,
-        page_location: window.location.href, // Full URL with protocol and domain
-        page_title: document.title, // Current page title
-      });
-
-      // Optional: Log in development for debugging
-      if (process.env.NODE_ENV === 'development') {
-        console.log('📊 GTM Pageview Tracked:', {
-          event: 'pageview',
-          page_path: pagePath,
-          page_location: window.location.href,
-          page_title: document.title,
-        });
-      }
-    } else {
-      // Warn if GTM is not loaded (should never happen in production)
-      console.warn(
-        '⚠️ GTM dataLayer not found. Ensure GTM is loaded in index.html before React.'
-      );
-    }
+    // Use centralized trackPageView utility for consistent tracking
+    trackPageView(pagePath, document.title);
   }, [location]); // Re-run whenever route changes
 
   // This component doesn't render anything

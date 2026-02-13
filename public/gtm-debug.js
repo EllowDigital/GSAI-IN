@@ -232,7 +232,7 @@
       console.log('      3. Create GA4 Configuration Tag');
       console.log('      4. Add Measurement ID: G-DN204S2BBC');
       console.log('      5. PUBLISH the container');
-      console.log('      Follow: DEBUG_GA4_GTM.md for step-by-step guide');
+      console.log('      Follow the official GTM and GA4 documentation for detailed setup steps');
       console.log('');
     }
   }
@@ -254,9 +254,7 @@
   console.log('\n');
   console.log('%c📚 DOCUMENTATION', 'background: #4285f4; color: white; font-size: 18px; padding: 10px;');
   console.log('===============================================\n');
-  console.log('   📖 Complete debugging guide: DEBUG_GA4_GTM.md');
-  console.log('   📖 GTM setup guide: GTM_CONTAINER_CONFIG.md');
-  console.log('   📖 Quick start: QUICK_START.md');
+  console.log('   📖 For setup and quick-start instructions, refer to your project\'s README or internal documentation.');
   console.log('\n');
   
   console.log('%c=== END OF DIAGNOSTIC REPORT ===', 'font-size: 14px; font-weight: bold;');
