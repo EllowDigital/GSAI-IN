@@ -123,7 +123,7 @@ export const TrackedLink: React.FC<TrackedLinkProps> = ({
 
   // Use React Router Link for internal links to avoid page reload
   const isExternal = trackAsOutbound || (href && isExternalUrl(href));
-  
+
   if (isExternal || !href) {
     return (
       <a {...props} href={href} onClick={handleClick}>
