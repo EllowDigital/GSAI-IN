@@ -1,5 +1,5 @@
 Contact: mailto:ghatakgsai@gmail.com
-Expires: 2027-02-13T23:59:59.000Z
+Expires: 2026-08-13T23:59:59.000Z
 Encryption: https://ghataksportsacademy.com/
 Preferred-Languages: en
 Canonical: https://ghataksportsacademy.com/.well-known/security.txt

@@ -33,9 +33,9 @@
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "prepare": "husky",
-    "deploy": "git add . && git commit -m \"🚀 Auto deploy\" && git push origin dev",
-    "deploy:prod": "git checkout main && git merge dev --no-edit && git push origin main && git checkout dev",
-    "update": "rimraf node_modules dist package-lock.json && npm install"
+    "deploy": "git add . && git commit -m \"🚀 Auto-deploy: Updates pushed to dev\" && git push origin dev",
+    "deploy:prod": "git checkout main && git merge dev --no-edit && git push origin main && git checkout dev && echo ✅ Production Deployed & Switched back to Dev",
+    "update": "rimraf node_modules dist && npm install"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -117,9 +117,11 @@
     "@eslint/js": "^9.9.0",
     "@tailwindcss/typography": "^0.5.15",
     "@testing-library/jest-dom": "^6.9.1",
+    "@types/dompurify": "^3.0.5",
     "@types/node": "^22.5.5",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@types/yup": "^0.32.0",
     "@typescript-eslint/eslint-plugin": "^8.34.1",
     "@typescript-eslint/parser": "^8.34.1",
     "@vitejs/plugin-react-swc": "^3.5.0",

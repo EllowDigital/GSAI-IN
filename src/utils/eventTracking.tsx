@@ -73,7 +73,11 @@ export const TrackedButton: React.FC<TrackedButtonProps> = ({
 // TrackedLink Component
 // ==========================================
 
-interface TrackedLinkProps extends ComponentProps<'a'> {
+// Omit anchor-specific props that conflict with React Router Link
+type AnchorProps = Omit<ComponentProps<'a'>, 'href'>;
+
+interface TrackedLinkProps extends AnchorProps {
+  href?: string; // Made optional to support both internal and external links
   trackingLabel?: string; // Custom label (defaults to link text)
   trackAsOutbound?: boolean; // Force tracking as outbound (auto-detected by default)
 }
@@ -133,8 +137,18 @@ export const TrackedLink: React.FC<TrackedLinkProps> = ({
   }
 
   // For internal links, use React Router Link
+  // Filter out anchor-specific props that don't apply to Link component
+  const {
+    target,
+    rel,
+    download,
+    hrefLang,
+    ping,
+    referrerPolicy,
+    ...linkProps
+  } = props;
   return (
-    <Link {...props} to={href} onClick={handleClick as any}>
+    <Link {...linkProps} to={href} onClick={handleClick as any}>
       {children}
     </Link>
   );
