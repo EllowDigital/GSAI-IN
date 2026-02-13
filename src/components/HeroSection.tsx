@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import type { MouseEvent } from 'react';
 import {
   motion,
   AnimatePresence,
@@ -236,7 +237,7 @@ export default function HeroSection() {
   }, [hasInteracted]);
 
   const toggleMute = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
+    (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
       setIsMuted((prev) => !prev);
       if (!hasInteracted) {
@@ -535,6 +536,7 @@ export default function HeroSection() {
 
         {/* Scroll Indicator */}
         <button
+          type="button"
           onClick={scrollToAbout}
           aria-label="Scroll down to about section"
           className="pointer-events-auto group"
