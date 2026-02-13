@@ -12,6 +12,7 @@
  */
 
 import React, { ComponentProps, FormEvent, MouseEvent } from 'react';
+import { Link } from 'react-router-dom';
 import {
   trackCTAClick,
   trackOutboundClick,
