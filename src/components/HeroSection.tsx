@@ -129,17 +129,16 @@ export default function HeroSection() {
 
   // Sanskrit quote scroll fade effect
   useEffect(() => {
-    // Set initial state based on current scroll position
-    const initialValue = scrollY.get();
-    if (initialValue >= 20 && !showSanskrit) {
-      setShowSanskrit(true);
-    }
-    
-    const unsubscribe = scrollY.on('change', (value) => {
+    const handleScrollChange = (value: number) => {
       setShowSanskrit(value >= 20);
-    });
+    };
+    
+    // Trigger handler with current value to initialize
+    handleScrollChange(scrollY.get());
+    
+    const unsubscribe = scrollY.on('change', handleScrollChange);
     return () => unsubscribe();
-  }, [scrollY, showSanskrit]);
+  }, [scrollY]);
 
   // Preload hero images
   useEffect(() => {
