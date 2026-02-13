@@ -132,10 +132,10 @@ export default function HeroSection() {
     const handleScrollChange = (value: number) => {
       setShowSanskrit(value >= 20);
     };
-    
+
     // Trigger handler with current value to initialize
     handleScrollChange(scrollY.get());
-    
+
     const unsubscribe = scrollY.on('change', handleScrollChange);
     return () => unsubscribe();
   }, [scrollY]);
