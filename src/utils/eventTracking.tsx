@@ -138,7 +138,15 @@ export const TrackedLink: React.FC<TrackedLinkProps> = ({
 
   // For internal links, use React Router Link
   // Filter out anchor-specific props that don't apply to Link component
-  const { target, rel, download, hrefLang, ping, referrerPolicy, ...linkProps } = props;
+  const {
+    target,
+    rel,
+    download,
+    hrefLang,
+    ping,
+    referrerPolicy,
+    ...linkProps
+  } = props;
   return (
     <Link {...linkProps} to={href} onClick={handleClick as any}>
       {children}
