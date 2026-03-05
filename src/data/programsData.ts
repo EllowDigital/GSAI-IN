@@ -81,7 +81,7 @@ export const programs: Program[] = [
     category: 'Fitness',
     level: 'All Levels',
     fullDescription:
-      'Kickboxing combines boxing punches with powerful kicks for an intense full-body workout. Our sessions blend technique drills, pad work, and high-intensity interval training. It\'s the perfect programme for those looking to burn fat, build lean muscle, and learn striking fundamentals simultaneously.',
+      "Kickboxing combines boxing punches with powerful kicks for an intense full-body workout. Our sessions blend technique drills, pad work, and high-intensity interval training. It's the perfect programme for those looking to burn fat, build lean muscle, and learn striking fundamentals simultaneously.",
     benefits: [
       'High-calorie burn (up to 800/session)',
       'Full-body toning',
@@ -141,7 +141,7 @@ export const programs: Program[] = [
     category: 'Traditional',
     level: 'All Levels',
     fullDescription:
-      'Kalaripayattu is one of the oldest martial arts in the world, originating from Kerala, India. Our programme covers meipayattu (body exercises), kolthari (wooden weapons), ankathari (metal weapons), and verumkai (bare-hand combat). Students connect with India\'s warrior heritage while developing extraordinary flexibility and body awareness.',
+      "Kalaripayattu is one of the oldest martial arts in the world, originating from Kerala, India. Our programme covers meipayattu (body exercises), kolthari (wooden weapons), ankathari (metal weapons), and verumkai (bare-hand combat). Students connect with India's warrior heritage while developing extraordinary flexibility and body awareness.",
     benefits: [
       'Ancient Indian warrior tradition',
       'Extraordinary flexibility',
@@ -167,7 +167,7 @@ export const programs: Program[] = [
       'Escape & evasion techniques',
       'Confidence in threatening situations',
       'No prior experience needed',
-      'Specially designed women\'s safety modules',
+      "Specially designed women's safety modules",
     ],
     schedule: 'Mon–Sat — Special weekend workshops available',
     ageGroup: 'All ages (8+)',
@@ -181,7 +181,7 @@ export const programs: Program[] = [
     category: 'Fitness',
     level: 'All Levels',
     fullDescription:
-      'Our Fat Loss programme combines martial arts drills with high-intensity interval training for maximum calorie burn. Sessions include pad work, bodyweight circuits, agility ladders, and functional movements. Guided by our coaches, you\'ll transform your physique while learning combat fundamentals.',
+      "Our Fat Loss programme combines martial arts drills with high-intensity interval training for maximum calorie burn. Sessions include pad work, bodyweight circuits, agility ladders, and functional movements. Guided by our coaches, you'll transform your physique while learning combat fundamentals.",
     benefits: [
       'Up to 1000 calories per session',
       'Lean muscle development',

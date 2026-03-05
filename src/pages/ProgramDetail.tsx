@@ -2,7 +2,14 @@ import React from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Clock, Users, CalendarDays, CheckCircle2, ChevronRight } from 'lucide-react';
+import {
+  ArrowLeft,
+  Clock,
+  Users,
+  CalendarDays,
+  CheckCircle2,
+  ChevronRight,
+} from 'lucide-react';
 import { programs } from '@/data/programsData';
 import Navbar from '@/components/Navbar';
 import FooterSection from '@/components/FooterSection';
@@ -19,7 +26,10 @@ export default function ProgramDetail() {
     <>
       <Helmet>
         <title>{program.title} Training — GSAI Lucknow</title>
-        <meta name="description" content={program.fullDescription.slice(0, 155)} />
+        <meta
+          name="description"
+          content={program.fullDescription.slice(0, 155)}
+        />
       </Helmet>
 
       <Navbar />
@@ -80,8 +90,12 @@ export default function ProgramDetail() {
                   <Clock className="w-5 h-5 text-yellow-400" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Duration</p>
-                  <p className="text-white font-semibold text-sm">{program.duration}</p>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
+                    Duration
+                  </p>
+                  <p className="text-white font-semibold text-sm">
+                    {program.duration}
+                  </p>
                 </div>
               </div>
 
@@ -90,8 +104,12 @@ export default function ProgramDetail() {
                   <Users className="w-5 h-5 text-yellow-400" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Age Group</p>
-                  <p className="text-white font-semibold text-sm">{program.ageGroup}</p>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
+                    Age Group
+                  </p>
+                  <p className="text-white font-semibold text-sm">
+                    {program.ageGroup}
+                  </p>
                 </div>
               </div>
 
@@ -100,8 +118,12 @@ export default function ProgramDetail() {
                   <CalendarDays className="w-5 h-5 text-yellow-400" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Schedule</p>
-                  <p className="text-white font-semibold text-sm">{program.schedule}</p>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
+                    Schedule
+                  </p>
+                  <p className="text-white font-semibold text-sm">
+                    {program.schedule}
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -118,7 +140,9 @@ export default function ProgramDetail() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
               >
-                <h2 className="text-2xl font-bold text-white mb-6">Key Benefits</h2>
+                <h2 className="text-2xl font-bold text-white mb-6">
+                  Key Benefits
+                </h2>
                 <ul className="space-y-4">
                   {program.benefits.map((b) => (
                     <li key={b} className="flex items-start gap-3">
@@ -137,12 +161,16 @@ export default function ProgramDetail() {
                 className="flex flex-col justify-between"
               >
                 <div>
-                  <h2 className="text-2xl font-bold text-white mb-4">Skill Level</h2>
+                  <h2 className="text-2xl font-bold text-white mb-4">
+                    Skill Level
+                  </h2>
                   <span className="inline-block px-4 py-2 rounded-full bg-white/5 border border-white/10 text-yellow-400 font-bold text-lg">
                     {program.level}
                   </span>
                   <p className="text-gray-400 mt-4 leading-relaxed">
-                    Our experienced instructors adapt every session to match your current ability, ensuring safe progression and consistent improvement.
+                    Our experienced instructors adapt every session to match
+                    your current ability, ensuring safe progression and
+                    consistent improvement.
                   </p>
                 </div>
 
@@ -160,7 +188,9 @@ export default function ProgramDetail() {
         {/* Other Programs */}
         <section className="py-12 md:py-20 border-t border-white/5">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-bold text-white mb-8">Explore Other Programs</h2>
+            <h2 className="text-2xl font-bold text-white mb-8">
+              Explore Other Programs
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {otherPrograms.map((p) => (
                 <Link
@@ -187,4 +217,3 @@ export default function ProgramDetail() {
     </>
   );
 }
-
