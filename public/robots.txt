@@ -11,10 +11,6 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 
-# Block indexing of machine-readable or sensitive file types
-Disallow: /*.json
-Disallow: /*.zip
-
 # Sitemap location (update if domain changes)
 Sitemap: https://ghataksportsacademy.com/sitemap.xml
 

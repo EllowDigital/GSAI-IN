@@ -40,6 +40,33 @@ const HomePageWrapper: React.FC = () => {
     }
   }, [isLoading, location.hash]);
 
+  // Support direct section URLs used in sitemap and external links.
+  useEffect(() => {
+    if (isLoading) return;
+
+    const sectionMap: Record<string, string> = {
+      '/contact': '#contact',
+      '/corporate': '#corporate',
+    };
+
+    const targetHash = sectionMap[location.pathname];
+    if (!targetHash) return;
+
+    const timer = setTimeout(() => {
+      const element = document.querySelector(targetHash);
+      if (!element) return;
+
+      const offsetTop =
+        element.getBoundingClientRect().top + window.pageYOffset - 80;
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth',
+      });
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [isLoading, location.pathname]);
+
   useEffect(() => {
     // Enhanced auth session check with better error handling
     const checkInitialSession = async () => {

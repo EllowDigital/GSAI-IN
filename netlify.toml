@@ -24,3 +24,8 @@ SITE_URL = "${DEPLOY_PRIME_URL}"
 # Lovable.dev uses its own dev server flag so we can enable the tagging plugin.
 [template.environment]
 LOVABLE_DEV_SERVER = "true"
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
