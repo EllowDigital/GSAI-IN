@@ -35,6 +35,7 @@ const AllNewsPage = lazy(() => import('./pages/AllNewsPage'));
 const AllBlogsPage = lazy(() => import('./pages/AllBlogsPage'));
 const AllGalleryPage = lazy(() => import('./pages/AllGalleryPage'));
 const LocationLucknow = lazy(() => import('./pages/LocationLucknow'));
+const ProgramDetail = lazy(() => import('./pages/ProgramDetail'));
 
 const AdminArea = lazy(() => import('./pages/admin/AdminArea'));
 
@@ -251,6 +252,7 @@ const App = () => {
                       path="/locations/lucknow"
                       element={<LocationLucknow />}
                     />
+                    <Route path="/programs/:slug" element={<ProgramDetail />} />
 
                     <Route path="*" element={<NotFound />} />
                   </Routes>
