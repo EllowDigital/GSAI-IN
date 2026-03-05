@@ -1,73 +1,8 @@
 import React from 'react';
 import { motion, Variants } from 'framer-motion';
 import { Sparkles, Zap, Target, Shield } from 'lucide-react';
-
-// Program data
-const programs = [
-  {
-    icon: '🥋',
-    title: 'Karate',
-    desc: 'Traditional strikes & self-discipline',
-    category: 'Traditional',
-    level: 'Beginner to Advanced',
-  },
-  {
-    icon: '🦵',
-    title: 'Taekwondo',
-    desc: 'Dynamic kicks & sparring',
-    category: 'Olympic Sport',
-    level: 'All Levels',
-  },
-  {
-    icon: '🥊',
-    title: 'Boxing',
-    desc: 'Build stamina & precision',
-    category: 'Combat Sport',
-    level: 'Beginner to Pro',
-  },
-  {
-    icon: '🥋',
-    title: 'Kickboxing',
-    desc: 'Cardio meets combat',
-    category: 'Fitness',
-    level: 'All Levels',
-  },
-  {
-    icon: '🤼',
-    title: 'Grappling',
-    desc: 'Ground control tactics',
-    category: 'Combat Sport',
-    level: 'Intermediate+',
-  },
-  {
-    icon: '🥋',
-    title: 'MMA',
-    desc: 'Striking & grappling combined',
-    category: 'Mixed Martial Arts',
-    level: 'Advanced',
-  },
-  {
-    icon: '🕉️',
-    title: 'Kalaripayattu',
-    desc: "India's ancient warrior art",
-    category: 'Traditional',
-    level: 'All Levels',
-  },
-  {
-    icon: '🛡️',
-    title: 'Self-Defense',
-    desc: 'Practical safety training',
-    category: 'Life Skills',
-    level: 'Beginner',
-  },
-  {
-    icon: '🏋️',
-    title: 'Fat Loss',
-    desc: 'Burn fat, build agility',
-    category: 'Fitness',
-    level: 'All Levels',
-  },
-];
+import { Link } from 'react-router-dom';
+import { programs } from '@/data/programsData';
 
 // Animation variants
 const containerVariants: Variants = {
@@ -214,8 +149,8 @@ export default function ProgramsSection() {
                 </div>
 
                 <div className="mt-auto">
-                  <a
-                    href="#contact"
+                  <Link
+                    to={`/programs/${prog.slug}`}
                     className="btn-primary w-full justify-center gap-2 py-2.5 text-sm sm:text-base bg-gradient-to-r from-yellow-500 to-red-600 hover:from-yellow-400 hover:to-red-500 border-0 text-white"
                   >
                     <span>Learn more</span>
@@ -232,7 +167,7 @@ export default function ProgramsSection() {
                         d="M9 5l7 7-7 7"
                       />
                     </svg>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </motion.div>
