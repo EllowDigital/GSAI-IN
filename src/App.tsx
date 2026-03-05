@@ -6,7 +6,13 @@ import React, {
   lazy,
   Suspense,
 } from 'react';
-import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import {
+  Navigate,
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -35,6 +41,7 @@ const AllNewsPage = lazy(() => import('./pages/AllNewsPage'));
 const AllBlogsPage = lazy(() => import('./pages/AllBlogsPage'));
 const AllGalleryPage = lazy(() => import('./pages/AllGalleryPage'));
 const LocationLucknow = lazy(() => import('./pages/LocationLucknow'));
+const ProgramDetail = lazy(() => import('./pages/ProgramDetail'));
 
 const AdminArea = lazy(() => import('./pages/admin/AdminArea'));
 
@@ -247,10 +254,25 @@ const App = () => {
                     <Route path="/news" element={<AllNewsPage />} />
                     <Route path="/blogs" element={<AllBlogsPage />} />
                     <Route path="/gallery" element={<AllGalleryPage />} />
+
+                    {/* Section landing aliases to prevent direct-link 404s */}
+                    <Route path="/contact" element={<HomePageWrapper />} />
+                    <Route path="/corporate" element={<HomePageWrapper />} />
+
+                    {/* Legacy static path aliases */}
+                    <Route
+                      path="/pages/privacy.html"
+                      element={<Navigate to="/privacy" replace />}
+                    />
+                    <Route
+                      path="/pages/terms.html"
+                      element={<Navigate to="/terms" replace />}
+                    />
                     <Route
                       path="/locations/lucknow"
                       element={<LocationLucknow />}
                     />
+                    <Route path="/programs/:slug" element={<ProgramDetail />} />
 
                     <Route path="*" element={<NotFound />} />
                   </Routes>
