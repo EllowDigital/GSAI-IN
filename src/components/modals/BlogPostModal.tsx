@@ -1,6 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import DOMPurify from 'dompurify';
+import sanitizeHtml from 'sanitize-html';
 import {
   Dialog,
   DialogContent,
@@ -42,8 +42,8 @@ export function BlogPostModal({
   const isMobile = useIsMobile();
   // Sanitize blog content to prevent XSS attacks
   const sanitizedContent = post
-    ? DOMPurify.sanitize(post.content, {
-        ALLOWED_TAGS: [
+    ? sanitizeHtml(post.content, {
+        allowedTags: [
           'p',
           'br',
           'strong',
@@ -66,7 +66,11 @@ export function BlogPostModal({
           'span',
           'div',
         ],
-        ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'target', 'rel', 'class'],
+        allowedAttributes: {
+          a: ['href', 'title', 'target', 'rel', 'class'],
+          img: ['src', 'alt', 'title', 'class'],
+          '*': ['class'],
+        },
       })
     : '';
 

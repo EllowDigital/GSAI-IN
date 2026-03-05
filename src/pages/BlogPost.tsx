@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Clock, Share2, User } from 'lucide-react';
-import DOMPurify from 'dompurify';
+import sanitizeHtml from 'sanitize-html';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -239,8 +239,8 @@ export default function BlogPost() {
               <div
                 className="leading-relaxed"
                 dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(post.content, {
-                    ALLOWED_TAGS: [
+                  __html: sanitizeHtml(post.content, {
+                    allowedTags: [
                       'p',
                       'br',
                       'strong',
@@ -263,15 +263,11 @@ export default function BlogPost() {
                       'span',
                       'div',
                     ],
-                    ALLOWED_ATTR: [
-                      'href',
-                      'src',
-                      'alt',
-                      'title',
-                      'target',
-                      'rel',
-                      'class',
-                    ],
+                    allowedAttributes: {
+                      a: ['href', 'title', 'target', 'rel', 'class'],
+                      img: ['src', 'alt', 'title', 'class'],
+                      '*': ['class'],
+                    },
                   }),
                 }}
               />
