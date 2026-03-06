@@ -37,13 +37,6 @@ export default function ProgramDetail() {
       name: 'Ghatak Sports Academy India',
     },
     url: programUrl,
-    offers: {
-      '@type': 'Offer',
-      url: programUrl,
-      priceCurrency: 'INR',
-      availability: 'https://schema.org/InStock',
-      itemCondition: 'https://schema.org/NewCondition',
-    },
   };
 
   const courseStructuredData = {
