@@ -13,6 +13,7 @@ import {
 import { programs } from '@/data/programsData';
 import Navbar from '@/components/Navbar';
 import FooterSection from '@/components/FooterSection';
+import InternalLinksBlock from '@/components/InternalLinksBlock';
 
 export default function ProgramDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -209,6 +210,36 @@ export default function ProgramDetail() {
                 </Link>
               ))}
             </div>
+
+            <InternalLinksBlock
+              title="Related Internal Links"
+              items={[
+                {
+                  to: '/programs',
+                  label: 'All Programs',
+                  description:
+                    'Return to the complete programs listing with category filters.',
+                },
+                {
+                  to: '/events',
+                  label: 'Academy Events',
+                  description:
+                    'Check upcoming workshops, gradings, and competition events.',
+                },
+                {
+                  to: '/blogs',
+                  label: 'Training Blog',
+                  description:
+                    'Read coaching insights, tips, and martial arts guides.',
+                },
+                {
+                  to: '/contact',
+                  label: 'Contact Academy',
+                  description:
+                    'Reach out for batch timings, trial classes, and enrolment.',
+                },
+              ]}
+            />
           </div>
         </section>
 

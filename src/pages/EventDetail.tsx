@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import Seo from '@/components/Seo';
 import { motion } from 'framer-motion';
+import InternalLinksBlock from '@/components/InternalLinksBlock';
 
 interface Event {
   id: string;
@@ -360,6 +361,36 @@ export default function EventDetail() {
             </div>
 
             {/* Call to Action */}
+            <InternalLinksBlock
+              title="Related Internal Links"
+              items={[
+                {
+                  to: '/events',
+                  label: 'All Events',
+                  description:
+                    'See every upcoming and recent event from the academy.',
+                },
+                {
+                  to: '/programs',
+                  label: 'All Training Programs',
+                  description:
+                    'Explore martial arts and fitness programs for all levels.',
+                },
+                {
+                  to: '/news',
+                  label: 'Latest Academy News',
+                  description:
+                    'Stay updated with announcements and achievements.',
+                },
+                {
+                  to: '/contact',
+                  label: 'Contact and Enquiry',
+                  description:
+                    'Ask about registration, schedules, and event participation.',
+                },
+              ]}
+            />
+
             <div className="p-8 bg-gradient-to-r from-yellow-500/10 to-red-600/10 rounded-3xl border border-white/10 backdrop-blur-md relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 

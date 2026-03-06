@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import Seo from '@/components/Seo';
 import { motion } from 'framer-motion';
+import InternalLinksBlock from '@/components/InternalLinksBlock';
 
 interface NewsItem {
   id: string;
@@ -309,6 +310,36 @@ export default function NewsDetail() {
             </div>
 
             {/* Call to Action */}
+            <InternalLinksBlock
+              title="Related Internal Links"
+              items={[
+                {
+                  to: '/news',
+                  label: 'All News Updates',
+                  description:
+                    'Read all announcements and academy updates in one place.',
+                },
+                {
+                  to: '/events',
+                  label: 'Events and Tournaments',
+                  description:
+                    'Discover upcoming workshops, competitions, and special events.',
+                },
+                {
+                  to: '/programs',
+                  label: 'Programs and Disciplines',
+                  description:
+                    'Find the right martial arts and fitness program for your goal.',
+                },
+                {
+                  to: '/blogs',
+                  label: 'Martial Arts Blog',
+                  description:
+                    'Learn techniques, insights, and training tips from our coaches.',
+                },
+              ]}
+            />
+
             <div className="p-8 bg-gradient-to-r from-yellow-500/10 to-red-600/10 rounded-3xl border border-white/10 backdrop-blur-md relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 

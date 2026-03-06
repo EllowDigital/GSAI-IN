@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import Seo from '@/components/Seo';
 import { motion } from 'framer-motion';
+import InternalLinksBlock from '@/components/InternalLinksBlock';
 
 interface BlogPost {
   id: string;
@@ -274,6 +275,36 @@ export default function BlogPost() {
             </article>
 
             {/* Call to Action */}
+            <InternalLinksBlock
+              title="Related Internal Links"
+              items={[
+                {
+                  to: '/blogs',
+                  label: 'All Blog Articles',
+                  description:
+                    'Browse every martial arts and fitness article from our academy.',
+                },
+                {
+                  to: '/programs',
+                  label: 'Training Programs',
+                  description:
+                    'Explore Karate, Taekwondo, Boxing, MMA, and other programs.',
+                },
+                {
+                  to: '/events',
+                  label: 'Upcoming Events',
+                  description:
+                    'Check tournaments, workshops, and academy events.',
+                },
+                {
+                  to: '/locations/lucknow',
+                  label: 'Lucknow Academy Location',
+                  description:
+                    'See training location details, timings, and contact info.',
+                },
+              ]}
+            />
+
             <div className="mt-16 p-8 bg-gradient-to-br from-yellow-500/10 to-red-600/10 rounded-3xl border border-white/10 backdrop-blur-md relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
