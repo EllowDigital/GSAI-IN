@@ -9,6 +9,7 @@ import Seo from '@/components/Seo';
 import { motion } from 'framer-motion';
 import InternalLinksBlock from '@/components/InternalLinksBlock';
 import { generateArticleStructuredData } from '@/utils/seoUtils';
+import { injectContextualInternalLinks } from '@/utils/internalLinking';
 
 interface BlogPost {
   id: string;
@@ -147,6 +148,46 @@ export default function BlogPost() {
     'blog'
   );
 
+  const enrichedContent = useMemo(
+    () => injectContextualInternalLinks(post.content),
+    [post.content]
+  );
+
+  const sanitizedContent = useMemo(
+    () =>
+      sanitizeHtml(enrichedContent, {
+        allowedTags: [
+          'p',
+          'br',
+          'strong',
+          'em',
+          'u',
+          'h1',
+          'h2',
+          'h3',
+          'h4',
+          'h5',
+          'h6',
+          'ul',
+          'ol',
+          'li',
+          'a',
+          'img',
+          'blockquote',
+          'pre',
+          'code',
+          'span',
+          'div',
+        ],
+        allowedAttributes: {
+          a: ['href', 'title', 'target', 'rel', 'class'],
+          img: ['src', 'alt', 'title', 'class'],
+          '*': ['class'],
+        },
+      }),
+    [enrichedContent]
+  );
+
   return (
     <>
       <Seo
@@ -258,36 +299,7 @@ export default function BlogPost() {
               <div
                 className="leading-relaxed"
                 dangerouslySetInnerHTML={{
-                  __html: sanitizeHtml(post.content, {
-                    allowedTags: [
-                      'p',
-                      'br',
-                      'strong',
-                      'em',
-                      'u',
-                      'h1',
-                      'h2',
-                      'h3',
-                      'h4',
-                      'h5',
-                      'h6',
-                      'ul',
-                      'ol',
-                      'li',
-                      'a',
-                      'img',
-                      'blockquote',
-                      'pre',
-                      'code',
-                      'span',
-                      'div',
-                    ],
-                    allowedAttributes: {
-                      a: ['href', 'title', 'target', 'rel', 'class'],
-                      img: ['src', 'alt', 'title', 'class'],
-                      '*': ['class'],
-                    },
-                  }),
+                  __html: sanitizedContent,
                 }}
               />
             </article>

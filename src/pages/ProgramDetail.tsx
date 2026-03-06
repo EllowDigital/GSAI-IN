@@ -23,7 +23,8 @@ export default function ProgramDetail() {
 
   const otherPrograms = programs.filter((p) => p.slug !== slug).slice(0, 3);
   const programUrl = `https://ghataksportsacademy.com/programs/${program.slug}`;
-  const programImage = 'https://ghataksportsacademy.com/assets/img/social-preview.png';
+  const programImage =
+    'https://ghataksportsacademy.com/assets/img/social-preview.png';
 
   const productStructuredData = {
     '@context': 'https://schema.org',
