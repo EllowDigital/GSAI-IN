@@ -41,7 +41,7 @@ export default function AllProgramsPage() {
       <Seo
         title="All Programs — Ghatak Sports Academy India"
         description="Explore all martial arts and fitness programs at GSAI. Filter by category to find the perfect training for you."
-        url="https://ghataksportsacademy.com/programs"
+        canonical="https://ghataksportsacademy.com/programs"
       />
       <Navbar />
       <main className="min-h-screen bg-[#0a0a0a] pt-20">
