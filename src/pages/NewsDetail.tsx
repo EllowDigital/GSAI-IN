@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Share2, User } from 'lucide-react';
+import sanitizeHtml from 'sanitize-html';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,6 +10,7 @@ import Seo from '@/components/Seo';
 import { motion } from 'framer-motion';
 import InternalLinksBlock from '@/components/InternalLinksBlock';
 import { generateArticleStructuredData } from '@/utils/seoUtils';
+import { injectContextualInternalLinks } from '@/utils/internalLinking';
 
 interface NewsItem {
   id: string;
@@ -25,6 +27,24 @@ export default function NewsDetail() {
   const navigate = useNavigate();
   const [news, setNews] = useState<NewsItem | null>(null);
   const [loading, setLoading] = useState(true);
+  const rawNewsContent = news?.short_description || news?.title || '';
+
+  const enrichedNewsContent = useMemo(
+    () => injectContextualInternalLinks(rawNewsContent, 3),
+    [rawNewsContent]
+  );
+
+  const sanitizedNewsContent = useMemo(
+    () =>
+      sanitizeHtml(enrichedNewsContent, {
+        allowedTags: ['p', 'br', 'strong', 'em', 'a', 'span'],
+        allowedAttributes: {
+          a: ['href', 'title', 'target', 'rel', 'class'],
+          '*': ['class'],
+        },
+      }),
+    [enrichedNewsContent]
+  );
 
   useEffect(() => {
     if (!id) return;
@@ -312,9 +332,10 @@ export default function NewsDetail() {
             <article className="mb-12">
               {/* Since the news table only has short_description, we'll expand on that */}
               <div className="prose prose-lg max-w-none prose-invert prose-p:text-gray-300 prose-headings:text-white">
-                <p className="leading-relaxed text-lg">
-                  {news.short_description}
-                </p>
+                <p
+                  className="leading-relaxed text-lg"
+                  dangerouslySetInnerHTML={{ __html: sanitizedNewsContent }}
+                />
 
                 <div className="mt-10 p-8 bg-gradient-to-br from-blue-900/20 to-cyan-900/20 rounded-2xl border border-blue-500/20">
                   <h3 className="text-xl font-bold text-blue-400 mb-4">

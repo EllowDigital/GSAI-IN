@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, MapPin, Share2, Clock } from 'lucide-react';
+import sanitizeHtml from 'sanitize-html';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,6 +10,7 @@ import Seo from '@/components/Seo';
 import { motion } from 'framer-motion';
 import InternalLinksBlock from '@/components/InternalLinksBlock';
 import { generateEventStructuredData } from '@/utils/seoUtils';
+import { injectContextualInternalLinks } from '@/utils/internalLinking';
 
 interface Event {
   id: string;
@@ -26,6 +28,24 @@ export default function EventDetail() {
   const navigate = useNavigate();
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
+  const rawEventDescription = event?.description || '';
+
+  const enrichedEventDescription = useMemo(
+    () => injectContextualInternalLinks(rawEventDescription, 3),
+    [rawEventDescription]
+  );
+
+  const sanitizedEventDescription = useMemo(
+    () =>
+      sanitizeHtml(enrichedEventDescription, {
+        allowedTags: ['p', 'br', 'strong', 'em', 'a', 'span'],
+        allowedAttributes: {
+          a: ['href', 'title', 'target', 'rel', 'class'],
+          '*': ['class'],
+        },
+      }),
+    [enrichedEventDescription]
+  );
 
   useEffect(() => {
     if (!id) return;
@@ -268,9 +288,12 @@ export default function EventDetail() {
                       Event Details
                     </h2>
                     <div className="prose prose-lg max-w-none prose-invert prose-p:text-gray-300 prose-headings:text-white">
-                      <p className="leading-relaxed whitespace-pre-wrap">
-                        {event.description}
-                      </p>
+                      <p
+                        className="leading-relaxed whitespace-pre-wrap"
+                        dangerouslySetInnerHTML={{
+                          __html: sanitizedEventDescription,
+                        }}
+                      />
                     </div>
                   </section>
                 )}
