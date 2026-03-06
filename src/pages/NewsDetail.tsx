@@ -139,6 +139,61 @@ export default function NewsDetail() {
     'news'
   );
 
+  const newsWebPageStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: news.title,
+    description:
+      news.short_description ||
+      `Read the latest update from Ghatak Sports Academy India: ${news.title}.`,
+    url: `https://ghataksportsacademy.com/news/${news.id}`,
+    inLanguage: 'en-IN',
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'Ghatak Sports Academy India™',
+      url: 'https://ghataksportsacademy.com',
+    },
+    about: {
+      '@type': 'Thing',
+      name: 'Martial arts academy news and updates',
+    },
+    primaryImageOfPage: news.image_url || undefined,
+  };
+
+  const newsSpeakableStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: news.title,
+    url: `https://ghataksportsacademy.com/news/${news.id}`,
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['h1', 'article p:first-of-type'],
+    },
+  };
+
+  const newsFaqStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Where can I see upcoming academy events?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Visit https://ghataksportsacademy.com/events to view all upcoming events, workshops, and tournament announcements.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'How do I start training at Ghatak Sports Academy India?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Go to the contact section on the homepage and request a trial class, or call +91 63941 35988 for direct support.',
+        },
+      },
+    ],
+  };
+
   return (
     <>
       <Seo
@@ -151,7 +206,12 @@ export default function NewsDetail() {
         type="article"
         publishDate={news.date}
         modifiedDate={news.date}
-        structuredData={[newsStructuredData]}
+        structuredData={[
+          newsStructuredData,
+          newsWebPageStructuredData,
+          newsSpeakableStructuredData,
+          newsFaqStructuredData,
+        ]}
       />
 
       <div className="min-h-screen bg-black relative overflow-hidden">

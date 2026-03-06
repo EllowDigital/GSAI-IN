@@ -189,6 +189,61 @@ export default function BlogPost() {
     'blog'
   );
 
+  const blogWebPageStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: post.title,
+    description:
+      post.description ||
+      `Read ${post.title} from Ghatak Sports Academy India.`,
+    url: `https://ghataksportsacademy.com/blog/${post.id}`,
+    inLanguage: 'en-IN',
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'Ghatak Sports Academy India™',
+      url: 'https://ghataksportsacademy.com',
+    },
+    about: {
+      '@type': 'Thing',
+      name: 'Martial arts training and fitness',
+    },
+    primaryImageOfPage: post.image_url || undefined,
+  };
+
+  const blogSpeakableStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: post.title,
+    url: `https://ghataksportsacademy.com/blog/${post.id}`,
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['h1', 'article p:first-of-type'],
+    },
+  };
+
+  const blogFaqStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Where can I find all martial arts programs?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'You can explore all available programs on the All Programs page at https://ghataksportsacademy.com/programs.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'How can I contact Ghatak Sports Academy India?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Use the contact section on the homepage or call +91 63941 35988 for enquiries and trial classes.',
+        },
+      },
+    ],
+  };
+
   return (
     <>
       <Seo
@@ -201,7 +256,12 @@ export default function BlogPost() {
         type="article"
         publishDate={post.published_at || undefined}
         modifiedDate={post.published_at || undefined}
-        structuredData={[articleStructuredData]}
+        structuredData={[
+          articleStructuredData,
+          blogWebPageStructuredData,
+          blogSpeakableStructuredData,
+          blogFaqStructuredData,
+        ]}
       />
 
       <div className="min-h-screen bg-black relative overflow-hidden">
