@@ -26,6 +26,47 @@ export default function BlogPost() {
   const navigate = useNavigate();
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
+  const rawContent = post?.content || '';
+
+  const enrichedContent = useMemo(
+    () => injectContextualInternalLinks(rawContent),
+    [rawContent]
+  );
+
+  const sanitizedContent = useMemo(
+    () =>
+      sanitizeHtml(enrichedContent, {
+        allowedTags: [
+          'p',
+          'br',
+          'strong',
+          'em',
+          'u',
+          'h1',
+          'h2',
+          'h3',
+          'h4',
+          'h5',
+          'h6',
+          'ul',
+          'ol',
+          'li',
+          'a',
+          'img',
+          'blockquote',
+          'pre',
+          'code',
+          'span',
+          'div',
+        ],
+        allowedAttributes: {
+          a: ['href', 'title', 'target', 'rel', 'class'],
+          img: ['src', 'alt', 'title', 'class'],
+          '*': ['class'],
+        },
+      }),
+    [enrichedContent]
+  );
 
   useEffect(() => {
     if (!id) return;
@@ -146,46 +187,6 @@ export default function BlogPost() {
       author: post.created_by || 'Ghatak Sports Academy India',
     },
     'blog'
-  );
-
-  const enrichedContent = useMemo(
-    () => injectContextualInternalLinks(post.content),
-    [post.content]
-  );
-
-  const sanitizedContent = useMemo(
-    () =>
-      sanitizeHtml(enrichedContent, {
-        allowedTags: [
-          'p',
-          'br',
-          'strong',
-          'em',
-          'u',
-          'h1',
-          'h2',
-          'h3',
-          'h4',
-          'h5',
-          'h6',
-          'ul',
-          'ol',
-          'li',
-          'a',
-          'img',
-          'blockquote',
-          'pre',
-          'code',
-          'span',
-          'div',
-        ],
-        allowedAttributes: {
-          a: ['href', 'title', 'target', 'rel', 'class'],
-          img: ['src', 'alt', 'title', 'class'],
-          '*': ['class'],
-        },
-      }),
-    [enrichedContent]
   );
 
   return (
