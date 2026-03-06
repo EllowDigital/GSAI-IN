@@ -8,7 +8,11 @@ const LINK_RULES: LinkRule[] = [
   { key: 'karate', pattern: /\bkarate\b/i, href: '/programs/karate' },
   { key: 'taekwondo', pattern: /\btaekwondo\b/i, href: '/programs/taekwondo' },
   { key: 'boxing', pattern: /\bboxing\b/i, href: '/programs/boxing' },
-  { key: 'kickboxing', pattern: /\bkickboxing\b/i, href: '/programs/kickboxing' },
+  {
+    key: 'kickboxing',
+    pattern: /\bkickboxing\b/i,
+    href: '/programs/kickboxing',
+  },
   { key: 'grappling', pattern: /\bgrappling\b/i, href: '/programs/grappling' },
   { key: 'mma', pattern: /\bmma\b/i, href: '/programs/mma' },
   {
@@ -59,7 +63,10 @@ export function injectContextualInternalLinks(
   }
 
   const parser = new window.DOMParser();
-  const doc = parser.parseFromString(`<div id="root">${html}</div>`, 'text/html');
+  const doc = parser.parseFromString(
+    `<div id="root">${html}</div>`,
+    'text/html'
+  );
   const root = doc.getElementById('root');
 
   if (!root) return html;
