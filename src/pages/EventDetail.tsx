@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import Seo from '@/components/Seo';
 import { motion } from 'framer-motion';
 import InternalLinksBlock from '@/components/InternalLinksBlock';
+import { generateEventStructuredData } from '@/utils/seoUtils';
 
 interface Event {
   id: string;
@@ -145,6 +146,15 @@ export default function EventDetail() {
   }
 
   const dateInfo = formatDateRange(event.from_date, event.end_date, event.date);
+  const eventStructuredData = generateEventStructuredData({
+    id: event.id,
+    title: event.title,
+    description: event.description,
+    from_date: event.from_date || event.date,
+    to_date: event.end_date,
+    location: 'Ghatak Sports Academy India, Lucknow',
+    image_url: event.image_url,
+  });
 
   return (
     <>
@@ -155,6 +165,7 @@ export default function EventDetail() {
           `Join us for ${event.title} - An exciting event at Ghatak Sports Academy India, your premier martial arts training institute.`
         }
         canonical={`/event/${event.id}`}
+        structuredData={[eventStructuredData]}
       />
 
       <div className="min-h-screen bg-black relative overflow-hidden">

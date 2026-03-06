@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import Seo from '@/components/Seo';
 import { motion } from 'framer-motion';
 import InternalLinksBlock from '@/components/InternalLinksBlock';
+import { generateArticleStructuredData } from '@/utils/seoUtils';
 
 interface NewsItem {
   id: string;
@@ -125,6 +126,19 @@ export default function NewsDetail() {
     );
   }
 
+  const newsStructuredData = generateArticleStructuredData(
+    {
+      id: news.id,
+      title: news.title,
+      description: news.short_description,
+      content: news.short_description || news.title,
+      published_at: news.date,
+      image_url: news.image_url,
+      author: news.created_by || 'Ghatak Sports Academy India',
+    },
+    'news'
+  );
+
   return (
     <>
       <Seo
@@ -134,6 +148,10 @@ export default function NewsDetail() {
           `Read the latest news: ${news.title} from Ghatak Sports Academy India, your premier martial arts training institute.`
         }
         canonical={`/news/${news.id}`}
+        type="article"
+        publishDate={news.date}
+        modifiedDate={news.date}
+        structuredData={[newsStructuredData]}
       />
 
       <div className="min-h-screen bg-black relative overflow-hidden">

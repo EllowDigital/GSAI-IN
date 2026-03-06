@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import Seo from '@/components/Seo';
 import { motion } from 'framer-motion';
 import InternalLinksBlock from '@/components/InternalLinksBlock';
+import { generateArticleStructuredData } from '@/utils/seoUtils';
 
 interface BlogPost {
   id: string;
@@ -133,6 +134,19 @@ export default function BlogPost() {
     );
   }
 
+  const articleStructuredData = generateArticleStructuredData(
+    {
+      id: post.id,
+      title: post.title,
+      description: post.description,
+      content: post.content,
+      published_at: post.published_at,
+      image_url: post.image_url,
+      author: post.created_by || 'Ghatak Sports Academy India',
+    },
+    'blog'
+  );
+
   return (
     <>
       <Seo
@@ -142,6 +156,10 @@ export default function BlogPost() {
           `Read ${post.title} - Latest blog post from Ghatak Sports Academy India, your premier martial arts training institute.`
         }
         canonical={`/blog/${post.id}`}
+        type="article"
+        publishDate={post.published_at || undefined}
+        modifiedDate={post.published_at || undefined}
+        structuredData={[articleStructuredData]}
       />
 
       <div className="min-h-screen bg-black relative overflow-hidden">
