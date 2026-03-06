@@ -99,7 +99,9 @@ export default function AllProgramsPage() {
                     : 'bg-white/5 text-gray-400 border-white/10 hover:border-yellow-500/30 hover:text-yellow-500'
                 }`}
               >
-                {cat === 'All' && <Filter className="w-3.5 h-3.5 inline mr-1.5" />}
+                {cat === 'All' && (
+                  <Filter className="w-3.5 h-3.5 inline mr-1.5" />
+                )}
                 {cat}
               </button>
             ))}

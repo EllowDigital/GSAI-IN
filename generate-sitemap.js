@@ -158,6 +158,59 @@ const resolveTimestamp = (row, candidates = []) => {
   return new Date().toISOString();
 };
 
+const staticRouteDefaults = {
+  changefreq: 'weekly',
+  priority: 0.6,
+};
+
+const staticRouteOverrides = {
+  '/': { changefreq: 'weekly', priority: 1.0 },
+  '/programs': { changefreq: 'weekly', priority: 0.8 },
+  '/events': { changefreq: 'daily', priority: 0.8 },
+  '/news': { changefreq: 'daily', priority: 0.7 },
+  '/blogs': { changefreq: 'daily', priority: 0.7 },
+  '/gallery': { changefreq: 'weekly', priority: 0.6 },
+  '/contact': { changefreq: 'monthly', priority: 0.6 },
+  '/corporate': { changefreq: 'monthly', priority: 0.6 },
+  '/locations/lucknow': { changefreq: 'monthly', priority: 0.5 },
+  '/privacy': { changefreq: 'yearly', priority: 0.3 },
+  '/terms': { changefreq: 'yearly', priority: 0.3 },
+  '/pages/success.html': { changefreq: 'yearly', priority: 0.2 },
+};
+
+const shouldIncludeStaticRoute = (url) => {
+  if (!url || !url.startsWith('/')) return false;
+  if (url.includes('*') || url.includes(':')) return false;
+  if (url.startsWith('/admin')) return false;
+
+  // Skip legacy redirect aliases to avoid duplicate indexing.
+  if (url === '/pages/privacy.html' || url === '/pages/terms.html') return false;
+
+  return true;
+};
+
+const getAppStaticRouteEntries = () => {
+  const appRoutesPath = './src/App.tsx';
+
+  try {
+    const source = readFileSync(appRoutesPath, 'utf8');
+    const routeRegex = /path="([^"]+)"/g;
+    const paths = [...source.matchAll(routeRegex)]
+      .map((match) => match[1])
+      .filter(shouldIncludeStaticRoute);
+
+    const uniquePaths = [...new Set(paths)];
+    return uniquePaths.map((url) => ({
+      url,
+      ...staticRouteDefaults,
+      ...(staticRouteOverrides[url] || {}),
+    }));
+  } catch (err) {
+    Logger.warn(`Could not auto-discover routes from ${appRoutesPath}: ${err.message}`);
+    return [];
+  }
+};
+
 const getProgramPageEntries = () => {
   const programsDataPath = './src/data/programsData.ts';
 
@@ -246,8 +299,14 @@ async function generateSitemap() {
   try {
     const sitemap = new SitemapStream({ hostname });
 
+    const appStaticPages = getAppStaticRouteEntries();
+    const staticPages = [
+      ...marketingPages,
+      ...appStaticPages,
+    ].filter((page, index, arr) => index === arr.findIndex((p) => p.url === page.url));
+
     // 2. Static Pages
-    marketingPages.forEach((p) => sitemap.write({
+    staticPages.forEach((p) => sitemap.write({
       ...p,
       lastmod: toISODate(),
       img: defaultImageMeta,
@@ -329,9 +388,15 @@ async function generateSitemap() {
 
     console.log(''); // Spacer
     Logger.success('Sitemap Generated Successfully!');
+
+    const staticCount = staticPages.length;
+    const programCount = programPages.length;
+    const totalUrls = staticCount + programCount + blogs.length + news.length + events.length;
+
     console.log(`----------------------------------------`);
-    console.log(`   • Total URLs     : ${marketingPages.length + blogs.length + news.length + events.length}`);
-    console.log(`   • Static Pages   : ${marketingPages.length}`);
+    console.log(`   • Total URLs     : ${totalUrls}`);
+    console.log(`   • Static Pages   : ${staticCount}`);
+    console.log(`   • Program Pages  : ${programCount}`);
     console.log(`   • Dynamic Blogs  : ${blogs.length}`);
     console.log(`   • Dynamic News   : ${news.length}`);
     console.log(`   • Dynamic Events : ${events.length}`);
