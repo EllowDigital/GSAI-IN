@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, Variants } from 'framer-motion';
-import { Sparkles, Zap, Target, Shield } from 'lucide-react';
+import { Sparkles, Zap, Target, Shield, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { programs } from '@/data/programsData';
 
@@ -189,9 +189,13 @@ export default function ProgramsSection() {
             >
               Start Your Journey Today
             </a>
-            <span className="text-gray-400 text-sm sm:text-base font-medium">
-              Free consultation & trial class available
-            </span>
+            <Link
+              to="/programs"
+              className="inline-flex items-center gap-2 text-yellow-500 hover:text-yellow-400 font-semibold text-sm sm:text-base transition-colors group"
+            >
+              View All Programs
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
         </motion.div>
       </div>

@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Share2, User } from 'lucide-react';
+import sanitizeHtml from 'sanitize-html';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import Seo from '@/components/Seo';
 import { motion } from 'framer-motion';
+import InternalLinksBlock from '@/components/InternalLinksBlock';
+import { generateArticleStructuredData } from '@/utils/seoUtils';
+import { injectContextualInternalLinks } from '@/utils/internalLinking';
 
 interface NewsItem {
   id: string;
@@ -23,6 +27,24 @@ export default function NewsDetail() {
   const navigate = useNavigate();
   const [news, setNews] = useState<NewsItem | null>(null);
   const [loading, setLoading] = useState(true);
+  const rawNewsContent = news?.short_description || news?.title || '';
+
+  const enrichedNewsContent = useMemo(
+    () => injectContextualInternalLinks(rawNewsContent, 3),
+    [rawNewsContent]
+  );
+
+  const sanitizedNewsContent = useMemo(
+    () =>
+      sanitizeHtml(enrichedNewsContent, {
+        allowedTags: ['p', 'br', 'strong', 'em', 'a', 'span'],
+        allowedAttributes: {
+          a: ['href', 'title', 'target', 'rel', 'class'],
+          '*': ['class'],
+        },
+      }),
+    [enrichedNewsContent]
+  );
 
   useEffect(() => {
     if (!id) return;
@@ -124,6 +146,74 @@ export default function NewsDetail() {
     );
   }
 
+  const newsStructuredData = generateArticleStructuredData(
+    {
+      id: news.id,
+      title: news.title,
+      description: news.short_description,
+      content: news.short_description || news.title,
+      published_at: news.date,
+      image_url: news.image_url,
+      author: news.created_by || 'Ghatak Sports Academy India',
+    },
+    'news'
+  );
+
+  const newsWebPageStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: news.title,
+    description:
+      news.short_description ||
+      `Read the latest update from Ghatak Sports Academy India: ${news.title}.`,
+    url: `https://ghataksportsacademy.com/news/${news.id}`,
+    inLanguage: 'en-IN',
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'Ghatak Sports Academy India™',
+      url: 'https://ghataksportsacademy.com',
+    },
+    about: {
+      '@type': 'Thing',
+      name: 'Martial arts academy news and updates',
+    },
+    primaryImageOfPage: news.image_url || undefined,
+  };
+
+  const newsSpeakableStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: news.title,
+    url: `https://ghataksportsacademy.com/news/${news.id}`,
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['h1', 'article p:first-of-type'],
+    },
+  };
+
+  const newsFaqStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Where can I see upcoming academy events?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Visit https://ghataksportsacademy.com/events to view all upcoming events, workshops, and tournament announcements.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'How do I start training at Ghatak Sports Academy India?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Go to the contact section on the homepage and request a trial class, or call +91 63941 35988 for direct support.',
+        },
+      },
+    ],
+  };
+
   return (
     <>
       <Seo
@@ -133,6 +223,15 @@ export default function NewsDetail() {
           `Read the latest news: ${news.title} from Ghatak Sports Academy India, your premier martial arts training institute.`
         }
         canonical={`/news/${news.id}`}
+        type="article"
+        publishDate={news.date}
+        modifiedDate={news.date}
+        structuredData={[
+          newsStructuredData,
+          newsWebPageStructuredData,
+          newsSpeakableStructuredData,
+          newsFaqStructuredData,
+        ]}
       />
 
       <div className="min-h-screen bg-black relative overflow-hidden">
@@ -233,9 +332,10 @@ export default function NewsDetail() {
             <article className="mb-12">
               {/* Since the news table only has short_description, we'll expand on that */}
               <div className="prose prose-lg max-w-none prose-invert prose-p:text-gray-300 prose-headings:text-white">
-                <p className="leading-relaxed text-lg">
-                  {news.short_description}
-                </p>
+                <p
+                  className="leading-relaxed text-lg"
+                  dangerouslySetInnerHTML={{ __html: sanitizedNewsContent }}
+                />
 
                 <div className="mt-10 p-8 bg-gradient-to-br from-blue-900/20 to-cyan-900/20 rounded-2xl border border-blue-500/20">
                   <h3 className="text-xl font-bold text-blue-400 mb-4">
@@ -309,6 +409,36 @@ export default function NewsDetail() {
             </div>
 
             {/* Call to Action */}
+            <InternalLinksBlock
+              title="Related Internal Links"
+              items={[
+                {
+                  to: '/news',
+                  label: 'All News Updates',
+                  description:
+                    'Read all announcements and academy updates in one place.',
+                },
+                {
+                  to: '/events',
+                  label: 'Events and Tournaments',
+                  description:
+                    'Discover upcoming workshops, competitions, and special events.',
+                },
+                {
+                  to: '/programs',
+                  label: 'Programs and Disciplines',
+                  description:
+                    'Find the right martial arts and fitness program for your goal.',
+                },
+                {
+                  to: '/blogs',
+                  label: 'Martial Arts Blog',
+                  description:
+                    'Learn techniques, insights, and training tips from our coaches.',
+                },
+              ]}
+            />
+
             <div className="p-8 bg-gradient-to-r from-yellow-500/10 to-red-600/10 rounded-3xl border border-white/10 backdrop-blur-md relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 

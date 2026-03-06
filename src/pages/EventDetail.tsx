@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, MapPin, Share2, Clock } from 'lucide-react';
+import sanitizeHtml from 'sanitize-html';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import Seo from '@/components/Seo';
 import { motion } from 'framer-motion';
+import InternalLinksBlock from '@/components/InternalLinksBlock';
+import { generateEventStructuredData } from '@/utils/seoUtils';
+import { injectContextualInternalLinks } from '@/utils/internalLinking';
 
 interface Event {
   id: string;
@@ -24,6 +28,24 @@ export default function EventDetail() {
   const navigate = useNavigate();
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
+  const rawEventDescription = event?.description || '';
+
+  const enrichedEventDescription = useMemo(
+    () => injectContextualInternalLinks(rawEventDescription, 3),
+    [rawEventDescription]
+  );
+
+  const sanitizedEventDescription = useMemo(
+    () =>
+      sanitizeHtml(enrichedEventDescription, {
+        allowedTags: ['p', 'br', 'strong', 'em', 'a', 'span'],
+        allowedAttributes: {
+          a: ['href', 'title', 'target', 'rel', 'class'],
+          '*': ['class'],
+        },
+      }),
+    [enrichedEventDescription]
+  );
 
   useEffect(() => {
     if (!id) return;
@@ -144,6 +166,15 @@ export default function EventDetail() {
   }
 
   const dateInfo = formatDateRange(event.from_date, event.end_date, event.date);
+  const eventStructuredData = generateEventStructuredData({
+    id: event.id,
+    title: event.title,
+    description: event.description,
+    from_date: event.from_date || event.date,
+    to_date: event.end_date,
+    location: 'Ghatak Sports Academy India, Lucknow',
+    image_url: event.image_url,
+  });
 
   return (
     <>
@@ -154,6 +185,7 @@ export default function EventDetail() {
           `Join us for ${event.title} - An exciting event at Ghatak Sports Academy India, your premier martial arts training institute.`
         }
         canonical={`/event/${event.id}`}
+        structuredData={[eventStructuredData]}
       />
 
       <div className="min-h-screen bg-black relative overflow-hidden">
@@ -256,9 +288,12 @@ export default function EventDetail() {
                       Event Details
                     </h2>
                     <div className="prose prose-lg max-w-none prose-invert prose-p:text-gray-300 prose-headings:text-white">
-                      <p className="leading-relaxed whitespace-pre-wrap">
-                        {event.description}
-                      </p>
+                      <p
+                        className="leading-relaxed whitespace-pre-wrap"
+                        dangerouslySetInnerHTML={{
+                          __html: sanitizedEventDescription,
+                        }}
+                      />
                     </div>
                   </section>
                 )}
@@ -360,6 +395,36 @@ export default function EventDetail() {
             </div>
 
             {/* Call to Action */}
+            <InternalLinksBlock
+              title="Related Internal Links"
+              items={[
+                {
+                  to: '/events',
+                  label: 'All Events',
+                  description:
+                    'See every upcoming and recent event from the academy.',
+                },
+                {
+                  to: '/programs',
+                  label: 'All Training Programs',
+                  description:
+                    'Explore martial arts and fitness programs for all levels.',
+                },
+                {
+                  to: '/news',
+                  label: 'Latest Academy News',
+                  description:
+                    'Stay updated with announcements and achievements.',
+                },
+                {
+                  to: '/contact',
+                  label: 'Contact and Enquiry',
+                  description:
+                    'Ask about registration, schedules, and event participation.',
+                },
+              ]}
+            />
+
             <div className="p-8 bg-gradient-to-r from-yellow-500/10 to-red-600/10 rounded-3xl border border-white/10 backdrop-blur-md relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 

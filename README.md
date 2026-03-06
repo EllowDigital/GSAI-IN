@@ -52,6 +52,15 @@ PWA                 | Vite PWA Plugin (Custom Install Flow)
 
 ------------------------------------------------------------
 
+🔎 SEO DISCOVERY ENDPOINTS
+
+- `https://ghataksportsacademy.com/robots.txt`
+- `https://ghataksportsacademy.com/sitemap.xml`
+
+The sitemap is generated via `npm run sitemap` and referenced in `public/robots.txt`.
+
+------------------------------------------------------------
+
 ✨ KEY FEATURES
 
 🥋 Belt Progression System

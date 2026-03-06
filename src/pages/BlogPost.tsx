@@ -7,6 +7,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import Seo from '@/components/Seo';
 import { motion } from 'framer-motion';
+import InternalLinksBlock from '@/components/InternalLinksBlock';
+import { generateArticleStructuredData } from '@/utils/seoUtils';
+import { injectContextualInternalLinks } from '@/utils/internalLinking';
 
 interface BlogPost {
   id: string;
@@ -23,6 +26,47 @@ export default function BlogPost() {
   const navigate = useNavigate();
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
+  const rawContent = post?.content || '';
+
+  const enrichedContent = useMemo(
+    () => injectContextualInternalLinks(rawContent),
+    [rawContent]
+  );
+
+  const sanitizedContent = useMemo(
+    () =>
+      sanitizeHtml(enrichedContent, {
+        allowedTags: [
+          'p',
+          'br',
+          'strong',
+          'em',
+          'u',
+          'h1',
+          'h2',
+          'h3',
+          'h4',
+          'h5',
+          'h6',
+          'ul',
+          'ol',
+          'li',
+          'a',
+          'img',
+          'blockquote',
+          'pre',
+          'code',
+          'span',
+          'div',
+        ],
+        allowedAttributes: {
+          a: ['href', 'title', 'target', 'rel', 'class'],
+          img: ['src', 'alt', 'title', 'class'],
+          '*': ['class'],
+        },
+      }),
+    [enrichedContent]
+  );
 
   useEffect(() => {
     if (!id) return;
@@ -132,6 +176,74 @@ export default function BlogPost() {
     );
   }
 
+  const articleStructuredData = generateArticleStructuredData(
+    {
+      id: post.id,
+      title: post.title,
+      description: post.description,
+      content: post.content,
+      published_at: post.published_at,
+      image_url: post.image_url,
+      author: post.created_by || 'Ghatak Sports Academy India',
+    },
+    'blog'
+  );
+
+  const blogWebPageStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: post.title,
+    description:
+      post.description ||
+      `Read ${post.title} from Ghatak Sports Academy India.`,
+    url: `https://ghataksportsacademy.com/blog/${post.id}`,
+    inLanguage: 'en-IN',
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'Ghatak Sports Academy India™',
+      url: 'https://ghataksportsacademy.com',
+    },
+    about: {
+      '@type': 'Thing',
+      name: 'Martial arts training and fitness',
+    },
+    primaryImageOfPage: post.image_url || undefined,
+  };
+
+  const blogSpeakableStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: post.title,
+    url: `https://ghataksportsacademy.com/blog/${post.id}`,
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['h1', 'article p:first-of-type'],
+    },
+  };
+
+  const blogFaqStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Where can I find all martial arts programs?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'You can explore all available programs on the All Programs page at https://ghataksportsacademy.com/programs.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'How can I contact Ghatak Sports Academy India?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Use the contact section on the homepage or call +91 63941 35988 for enquiries and trial classes.',
+        },
+      },
+    ],
+  };
+
   return (
     <>
       <Seo
@@ -141,6 +253,15 @@ export default function BlogPost() {
           `Read ${post.title} - Latest blog post from Ghatak Sports Academy India, your premier martial arts training institute.`
         }
         canonical={`/blog/${post.id}`}
+        type="article"
+        publishDate={post.published_at || undefined}
+        modifiedDate={post.published_at || undefined}
+        structuredData={[
+          articleStructuredData,
+          blogWebPageStructuredData,
+          blogSpeakableStructuredData,
+          blogFaqStructuredData,
+        ]}
       />
 
       <div className="min-h-screen bg-black relative overflow-hidden">
@@ -239,41 +360,42 @@ export default function BlogPost() {
               <div
                 className="leading-relaxed"
                 dangerouslySetInnerHTML={{
-                  __html: sanitizeHtml(post.content, {
-                    allowedTags: [
-                      'p',
-                      'br',
-                      'strong',
-                      'em',
-                      'u',
-                      'h1',
-                      'h2',
-                      'h3',
-                      'h4',
-                      'h5',
-                      'h6',
-                      'ul',
-                      'ol',
-                      'li',
-                      'a',
-                      'img',
-                      'blockquote',
-                      'pre',
-                      'code',
-                      'span',
-                      'div',
-                    ],
-                    allowedAttributes: {
-                      a: ['href', 'title', 'target', 'rel', 'class'],
-                      img: ['src', 'alt', 'title', 'class'],
-                      '*': ['class'],
-                    },
-                  }),
+                  __html: sanitizedContent,
                 }}
               />
             </article>
 
             {/* Call to Action */}
+            <InternalLinksBlock
+              title="Related Internal Links"
+              items={[
+                {
+                  to: '/blogs',
+                  label: 'All Blog Articles',
+                  description:
+                    'Browse every martial arts and fitness article from our academy.',
+                },
+                {
+                  to: '/programs',
+                  label: 'Training Programs',
+                  description:
+                    'Explore Karate, Taekwondo, Boxing, MMA, and other programs.',
+                },
+                {
+                  to: '/events',
+                  label: 'Upcoming Events',
+                  description:
+                    'Check tournaments, workshops, and academy events.',
+                },
+                {
+                  to: '/locations/lucknow',
+                  label: 'Lucknow Academy Location',
+                  description:
+                    'See training location details, timings, and contact info.',
+                },
+              ]}
+            />
+
             <div className="mt-16 p-8 bg-gradient-to-br from-yellow-500/10 to-red-600/10 rounded-3xl border border-white/10 backdrop-blur-md relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 

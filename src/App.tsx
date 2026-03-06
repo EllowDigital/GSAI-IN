@@ -27,6 +27,7 @@ import OfflineBanner from './components/OfflineBanner';
 import PWAInstallToast from './components/PWAInstallToast';
 import EnhancedErrorBoundary from './components/EnhancedErrorBoundary';
 import PageTracker from './components/PageTracker';
+import ScrollToTop from './components/ScrollToTop';
 
 // Lazy load components for better performance
 const HomePageWrapper = lazy(() => import('./pages/HomePageWrapper'));
@@ -42,6 +43,7 @@ const AllBlogsPage = lazy(() => import('./pages/AllBlogsPage'));
 const AllGalleryPage = lazy(() => import('./pages/AllGalleryPage'));
 const LocationLucknow = lazy(() => import('./pages/LocationLucknow'));
 const ProgramDetail = lazy(() => import('./pages/ProgramDetail'));
+const AllProgramsPage = lazy(() => import('./pages/AllProgramsPage'));
 
 const AdminArea = lazy(() => import('./pages/admin/AdminArea'));
 
@@ -220,6 +222,7 @@ const App = () => {
           <TooltipProvider>
             {/* GTM PageTracker for SPA routing - tracks all route changes */}
             <PageTracker />
+            <ScrollToTop />
 
             <Toaster />
             <Sonner />
@@ -272,6 +275,7 @@ const App = () => {
                       path="/locations/lucknow"
                       element={<LocationLucknow />}
                     />
+                    <Route path="/programs" element={<AllProgramsPage />} />
                     <Route path="/programs/:slug" element={<ProgramDetail />} />
 
                     <Route path="*" element={<NotFound />} />

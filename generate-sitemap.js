@@ -7,7 +7,7 @@
 // ---------------------------------------------------------
 
 import dotenv from 'dotenv';
-import { writeFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { SitemapStream, streamToPromise } from 'sitemap';
 import { createClient } from '@supabase/supabase-js';
 import { performance } from 'perf_hooks';
@@ -97,6 +97,7 @@ const initSupabase = async () => {
 // Note: The sitemap library rounds priorities to 1 decimal place
 const marketingPages = [
   { url: '/', changefreq: 'weekly', priority: 1.0 },
+  { url: '/programs', changefreq: 'weekly', priority: 0.8 },
   { url: '/events', changefreq: 'daily', priority: 0.8 },
   { url: '/news', changefreq: 'daily', priority: 0.7 },
   { url: '/blogs', changefreq: 'daily', priority: 0.7 },
@@ -155,6 +156,81 @@ const resolveTimestamp = (row, candidates = []) => {
     if (row[c]) return row[c];
   }
   return new Date().toISOString();
+};
+
+const staticRouteDefaults = {
+  changefreq: 'weekly',
+  priority: 0.6,
+};
+
+const staticRouteOverrides = {
+  '/': { changefreq: 'weekly', priority: 1.0 },
+  '/programs': { changefreq: 'weekly', priority: 0.8 },
+  '/events': { changefreq: 'daily', priority: 0.8 },
+  '/news': { changefreq: 'daily', priority: 0.7 },
+  '/blogs': { changefreq: 'daily', priority: 0.7 },
+  '/gallery': { changefreq: 'weekly', priority: 0.6 },
+  '/contact': { changefreq: 'monthly', priority: 0.6 },
+  '/corporate': { changefreq: 'monthly', priority: 0.6 },
+  '/locations/lucknow': { changefreq: 'monthly', priority: 0.5 },
+  '/privacy': { changefreq: 'yearly', priority: 0.3 },
+  '/terms': { changefreq: 'yearly', priority: 0.3 },
+  '/pages/success.html': { changefreq: 'yearly', priority: 0.2 },
+};
+
+const shouldIncludeStaticRoute = (url) => {
+  if (!url || !url.startsWith('/')) return false;
+  if (url.includes('*') || url.includes(':')) return false;
+  if (url.startsWith('/admin')) return false;
+
+  // Skip legacy redirect aliases to avoid duplicate indexing.
+  if (url === '/pages/privacy.html' || url === '/pages/terms.html') return false;
+
+  return true;
+};
+
+const getAppStaticRouteEntries = () => {
+  const appRoutesPath = './src/App.tsx';
+
+  try {
+    const source = readFileSync(appRoutesPath, 'utf8');
+    const routeRegex = /path="([^"]+)"/g;
+    const paths = [...source.matchAll(routeRegex)]
+      .map((match) => match[1])
+      .filter(shouldIncludeStaticRoute);
+
+    const uniquePaths = [...new Set(paths)];
+    return uniquePaths.map((url) => ({
+      url,
+      ...staticRouteDefaults,
+      ...(staticRouteOverrides[url] || {}),
+    }));
+  } catch (err) {
+    Logger.warn(`Could not auto-discover routes from ${appRoutesPath}: ${err.message}`);
+    return [];
+  }
+};
+
+const getProgramPageEntries = () => {
+  const programsDataPath = './src/data/programsData.ts';
+
+  try {
+    const source = readFileSync(programsDataPath, 'utf8');
+    const slugRegex = /slug:\s*'([^']+)'/g;
+    const slugs = [...source.matchAll(slugRegex)]
+      .map((match) => match[1])
+      .filter(Boolean);
+
+    const uniqueSlugs = [...new Set(slugs)];
+    return uniqueSlugs.map((slug) => ({
+      url: `/programs/${slug}`,
+      changefreq: 'weekly',
+      priority: 0.7,
+    }));
+  } catch (err) {
+    Logger.warn(`Could not read program slugs from ${programsDataPath}: ${err.message}`);
+    return [];
+  }
 };
 
 // ---------------------- Smart Fetch (Silent Retry) --------
@@ -223,12 +299,26 @@ async function generateSitemap() {
   try {
     const sitemap = new SitemapStream({ hostname });
 
+    const appStaticPages = getAppStaticRouteEntries();
+    const staticPages = [
+      ...marketingPages,
+      ...appStaticPages,
+    ].filter((page, index, arr) => index === arr.findIndex((p) => p.url === page.url));
+
     // 2. Static Pages
-    marketingPages.forEach((p) => sitemap.write({
+    staticPages.forEach((p) => sitemap.write({
       ...p,
       lastmod: toISODate(),
       img: defaultImageMeta,
       video: p.url === '/' ? defaultVideoMeta : undefined, // Add video to homepage
+    }));
+
+    // Program detail pages (/programs/:slug)
+    const programPages = getProgramPageEntries();
+    programPages.forEach((p) => sitemap.write({
+      ...p,
+      lastmod: toISODate(),
+      img: defaultImageMeta,
     }));
 
     // 3. Dynamic Content Fetch
@@ -298,9 +388,15 @@ async function generateSitemap() {
 
     console.log(''); // Spacer
     Logger.success('Sitemap Generated Successfully!');
+
+    const staticCount = staticPages.length;
+    const programCount = programPages.length;
+    const totalUrls = staticCount + programCount + blogs.length + news.length + events.length;
+
     console.log(`----------------------------------------`);
-    console.log(`   • Total URLs     : ${marketingPages.length + blogs.length + news.length + events.length}`);
-    console.log(`   • Static Pages   : ${marketingPages.length}`);
+    console.log(`   • Total URLs     : ${totalUrls}`);
+    console.log(`   • Static Pages   : ${staticCount}`);
+    console.log(`   • Program Pages  : ${programCount}`);
     console.log(`   • Dynamic Blogs  : ${blogs.length}`);
     console.log(`   • Dynamic News   : ${news.length}`);
     console.log(`   • Dynamic Events : ${events.length}`);

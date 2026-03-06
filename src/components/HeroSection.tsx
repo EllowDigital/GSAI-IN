@@ -104,6 +104,7 @@ export default function HeroSection() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [wordIndex, setWordIndex] = useState(0);
   const [showSanskrit, setShowSanskrit] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
   const imageTimerRef = useRef<NodeJS.Timeout | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroImgRef = useRef<HTMLImageElement | null>(null);
@@ -112,6 +113,15 @@ export default function HeroSection() {
 
   // Memoize particles to prevent regeneration on each render
   const particles = useMemo(() => generateParticles(15), []);
+
+  // Mouse-following spotlight
+  const handleMouseMove = useCallback((e: MouseEvent<HTMLElement>) => {
+    const rect = heroRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setMousePos({ x, y });
+  }, []);
 
   // Parallax scroll effect
   const { scrollY } = useScroll();
@@ -263,8 +273,16 @@ export default function HeroSection() {
       ref={heroRef}
       id="hero"
       onClick={handleUserInteraction}
+      onMouseMove={handleMouseMove}
       className="relative isolate flex min-h-[100dvh] items-center justify-center overflow-hidden bg-black text-white cursor-default"
     >
+      {/* Mouse-following spotlight */}
+      <div
+        className="pointer-events-none absolute inset-0 z-[3] transition-opacity duration-300 hidden md:block"
+        style={{
+          background: `radial-gradient(600px circle at ${mousePos.x}% ${mousePos.y}%, rgba(234,179,8,0.06), transparent 60%)`,
+        }}
+      />
       {/* Visually-hidden H1 for SEO */}
       <h1 className="sr-only">
         Martial Arts Training in Lucknow — Ghatak Sports Academy India

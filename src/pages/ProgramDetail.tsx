@@ -1,6 +1,5 @@
 import React from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
@@ -13,6 +12,8 @@ import {
 import { programs } from '@/data/programsData';
 import Navbar from '@/components/Navbar';
 import FooterSection from '@/components/FooterSection';
+import InternalLinksBlock from '@/components/InternalLinksBlock';
+import Seo from '@/components/Seo';
 
 export default function ProgramDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -21,16 +22,52 @@ export default function ProgramDetail() {
   if (!program) return <Navigate to="/programs" replace />;
 
   const otherPrograms = programs.filter((p) => p.slug !== slug).slice(0, 3);
+  const programUrl = `https://ghataksportsacademy.com/programs/${program.slug}`;
+  const programImage =
+    'https://ghataksportsacademy.com/assets/img/social-preview.png';
+
+  const productStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: `${program.title} Training Program`,
+    description: program.fullDescription,
+    category: 'Martial Arts Training Program',
+    image: [programImage],
+    brand: {
+      '@type': 'Brand',
+      name: 'Ghatak Sports Academy India',
+    },
+    url: programUrl,
+  };
+
+  const courseStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    name: `${program.title} Course`,
+    description: program.fullDescription,
+    provider: {
+      '@type': 'Organization',
+      name: 'Ghatak Sports Academy India',
+      sameAs: 'https://ghataksportsacademy.com',
+    },
+    hasCourseInstance: {
+      '@type': 'CourseInstance',
+      courseMode: 'offline',
+      location: {
+        '@type': 'Place',
+        name: 'Ghatak Sports Academy India, Lucknow',
+      },
+    },
+  };
 
   return (
     <>
-      <Helmet>
-        <title>{program.title} Training — GSAI Lucknow</title>
-        <meta
-          name="description"
-          content={program.fullDescription.slice(0, 155)}
-        />
-      </Helmet>
+      <Seo
+        title={`${program.title} Training — GSAI Lucknow`}
+        description={program.fullDescription.slice(0, 155)}
+        canonical={`/programs/${program.slug}`}
+        structuredData={[productStructuredData, courseStructuredData]}
+      />
 
       <Navbar />
 
@@ -209,6 +246,36 @@ export default function ProgramDetail() {
                 </Link>
               ))}
             </div>
+
+            <InternalLinksBlock
+              title="Related Internal Links"
+              items={[
+                {
+                  to: '/programs',
+                  label: 'All Programs',
+                  description:
+                    'Return to the complete programs listing with category filters.',
+                },
+                {
+                  to: '/events',
+                  label: 'Academy Events',
+                  description:
+                    'Check upcoming workshops, gradings, and competition events.',
+                },
+                {
+                  to: '/blogs',
+                  label: 'Training Blog',
+                  description:
+                    'Read coaching insights, tips, and martial arts guides.',
+                },
+                {
+                  to: '/contact',
+                  label: 'Contact Academy',
+                  description:
+                    'Reach out for batch timings, trial classes, and enrolment.',
+                },
+              ]}
+            />
           </div>
         </section>
 

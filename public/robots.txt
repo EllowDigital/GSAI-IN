@@ -11,7 +11,7 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 
-# Sitemap location (update if domain changes)
+# Sitemap location
 Sitemap: https://ghataksportsacademy.com/sitemap.xml
 
 # ------------------------------------------------------------

@@ -15,10 +15,11 @@ export const generateArticleStructuredData = (
   type: 'blog' | 'news'
 ) => {
   const baseUrl = 'https://ghataksportsacademy.com';
+  const schemaType = type === 'news' ? 'NewsArticle' : 'Article';
 
   return {
     '@context': 'https://schema.org',
-    '@type': 'Article',
+    '@type': schemaType,
     headline: article.title,
     description: article.description || extractFirstSentence(article.content),
     image: article.image_url
