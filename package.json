@@ -19,7 +19,7 @@
     "glob": "11.1.0"
   },
   "scripts": {
-    "dev": "npm run sitemap && vite",
+    "dev": "vite",
     "build": "npm run clean && npm run typecheck && npm run sitemap && vite build",
     "build:fast": "vite build --mode production --emptyOutDir=false",
     "build:dev": "vite build --mode development",
