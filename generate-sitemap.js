@@ -7,7 +7,7 @@
 // ---------------------------------------------------------
 
 import dotenv from 'dotenv';
-import { writeFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { SitemapStream, streamToPromise } from 'sitemap';
 import { createClient } from '@supabase/supabase-js';
 import { performance } from 'perf_hooks';
@@ -97,6 +97,7 @@ const initSupabase = async () => {
 // Note: The sitemap library rounds priorities to 1 decimal place
 const marketingPages = [
   { url: '/', changefreq: 'weekly', priority: 1.0 },
+  { url: '/programs', changefreq: 'weekly', priority: 0.8 },
   { url: '/events', changefreq: 'daily', priority: 0.8 },
   { url: '/news', changefreq: 'daily', priority: 0.7 },
   { url: '/blogs', changefreq: 'daily', priority: 0.7 },
@@ -155,6 +156,28 @@ const resolveTimestamp = (row, candidates = []) => {
     if (row[c]) return row[c];
   }
   return new Date().toISOString();
+};
+
+const getProgramPageEntries = () => {
+  const programsDataPath = './src/data/programsData.ts';
+
+  try {
+    const source = readFileSync(programsDataPath, 'utf8');
+    const slugRegex = /slug:\s*'([^']+)'/g;
+    const slugs = [...source.matchAll(slugRegex)]
+      .map((match) => match[1])
+      .filter(Boolean);
+
+    const uniqueSlugs = [...new Set(slugs)];
+    return uniqueSlugs.map((slug) => ({
+      url: `/programs/${slug}`,
+      changefreq: 'weekly',
+      priority: 0.7,
+    }));
+  } catch (err) {
+    Logger.warn(`Could not read program slugs from ${programsDataPath}: ${err.message}`);
+    return [];
+  }
 };
 
 // ---------------------- Smart Fetch (Silent Retry) --------
@@ -229,6 +252,14 @@ async function generateSitemap() {
       lastmod: toISODate(),
       img: defaultImageMeta,
       video: p.url === '/' ? defaultVideoMeta : undefined, // Add video to homepage
+    }));
+
+    // Program detail pages (/programs/:slug)
+    const programPages = getProgramPageEntries();
+    programPages.forEach((p) => sitemap.write({
+      ...p,
+      lastmod: toISODate(),
+      img: defaultImageMeta,
     }));
 
     // 3. Dynamic Content Fetch
