@@ -37,20 +37,21 @@ export default function DashboardHome() {
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard-analytics'],
     queryFn: async () => {
-      const [studentsRes, feesRes, blogsRes, newsRes, eventsRes, galleryRes, enrollRes, announcementsRes] =
+      const [studentsRes, feesRes, blogsRes, newsRes, eventsRes, galleryRes, enrollRes, announcementsRes, attendanceRes] =
         await Promise.all([
           supabase
             .from('students')
             .select('id, program, join_date, default_monthly_fee, fee_status'),
           supabase
             .from('fees')
-            .select('id, status, paid_amount, month, year, student_id'),
+            .select('id, status, paid_amount, monthly_fee, month, year, student_id'),
           supabase.from('blogs').select('id, created_at'),
           supabase.from('news').select('id, created_at, status'),
           supabase.from('events').select('id, date'),
           supabase.from('gallery_images').select('id'),
           supabase.from('enrollment_requests' as any).select('id, status') as any,
           supabase.from('announcements').select('id, is_active'),
+          supabase.from('attendance').select('id, student_id, date, status'),
         ]);
 
       return {
@@ -62,6 +63,7 @@ export default function DashboardHome() {
         gallery: galleryRes.data || [],
         enrollments: (enrollRes.data || []) as any[],
         announcements: (announcementsRes.data || []) as any[],
+        attendance: attendanceRes.data || [],
       };
     },
     staleTime: 1000 * 60 * 5,
