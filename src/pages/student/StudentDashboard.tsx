@@ -254,6 +254,13 @@ export default function StudentDashboard() {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Credits Footer */}
+      <footer className="border-t border-border/50 py-3 text-center">
+        <p className="text-[10px] text-muted-foreground/50">
+          Built by <span className="text-muted-foreground/70">Sarwan Yadav</span> · <span className="text-muted-foreground/70">EllowDigital</span>
+        </p>
+      </footer>
     </div>
   );
 }
