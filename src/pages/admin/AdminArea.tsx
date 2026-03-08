@@ -16,6 +16,7 @@ import Testimonials from './dashboard/Testimonials';
 import Competitions from './dashboard/Competitions';
 import Announcements from './dashboard/Announcements';
 import EnrollmentRequests from './dashboard/EnrollmentRequests';
+import Attendance from './dashboard/Attendance';
 
 const AdminArea = () => {
   return (
