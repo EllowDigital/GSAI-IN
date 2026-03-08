@@ -108,21 +108,28 @@ export default function AssignStudentBeltDialog({
       });
     }
 
-    // For level-based disciplines, use discipline config levels instead of belt_levels table
-    if (isLevelBased && disciplineConfig?.levels) {
-      return disciplineConfig.levels.map((level, idx) => ({
-        label: level,
-        value: `level-${idx}`,
-        color: undefined,
-        discipline: studentProgram,
-      }));
+    // For level-based disciplines, use real discipline_levels from DB
+    if (isLevelBased) {
+      const matchingLevels = disciplineLevels.filter(
+        (dl) => dl.discipline.toLowerCase() === studentProgram.toLowerCase()
+      );
+      if (matchingLevels.length > 0) {
+        return matchingLevels
+          .sort((a, b) => a.order - b.order)
+          .map((dl) => ({
+            label: dl.label,
+            value: dl.value,
+            color: undefined,
+            discipline: dl.discipline,
+          }));
+      }
     }
 
     // Fallback: show general belts
     return belts.filter(
       (belt) => belt.discipline === 'general' || !belt.discipline
     );
-  }, [belts, studentId, studentProgram, isBeltBased, isLevelBased, disciplineConfig]);
+  }, [belts, disciplineLevels, studentId, studentProgram, isBeltBased, isLevelBased]);
 
   // Note: belt selection is reset when the student is changed in the handler below.
 
