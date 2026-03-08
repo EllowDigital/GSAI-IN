@@ -224,6 +224,9 @@ export default function ProgramDetail() {
           </div>
         </section>
 
+        {/* Testimonials */}
+        <ProgramTestimonials programSlug={program.slug} programTitle={program.title} />
+
         {/* Enquiry Form */}
         <ProgramEnquiryForm programTitle={program.title} />
 
