@@ -1,10 +1,8 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Trophy, Calendar, MapPin, ArrowRight, Users } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Trophy, Calendar, MapPin, ArrowRight, Users, Sparkles } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 
@@ -26,89 +24,207 @@ export default function UpcomingCompetitionsSection() {
 
   if (isLoading || competitions.length === 0) return null;
 
+  const variants = {
+    container: {
+      hidden: { opacity: 0 },
+      visible: {
+        opacity: 1,
+        transition: { staggerChildren: 0.12, delayChildren: 0.2 },
+      },
+    },
+    card: {
+      hidden: { opacity: 0, y: 30 },
+      visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+    },
+    header: {
+      hidden: { opacity: 0, y: 30 },
+      visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+    },
+  };
+
   return (
-    <section id="competitions" className="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-background to-muted/20">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-8 sm:mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-500 text-xs sm:text-sm font-medium mb-4">
-            <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Upcoming Tournaments
+    <section
+      id="competitions"
+      className="section-shell relative bg-[#0a0a0a] overflow-hidden py-12 md:py-20 lg:py-24"
+    >
+      {/* Decorative Background */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
+        <div className="absolute top-20 left-10 w-64 h-64 md:w-72 md:h-72 bg-yellow-500/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-72 h-72 md:w-80 md:h-80 bg-red-600/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 md:w-64 md:h-64 bg-orange-500/10 rounded-full blur-3xl" />
+      </div>
+
+      {/* Floating Icons */}
+      <Sparkles className="absolute top-16 right-8 w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 opacity-30 animate-float" />
+      <Trophy
+        className="absolute bottom-20 left-8 w-8 h-8 sm:w-10 sm:h-10 text-red-500 opacity-25 animate-float"
+        style={{ animationDelay: '2s' }}
+      />
+
+      <div className="section-stack relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Heading */}
+        <motion.div
+          className="text-center mb-12 md:mb-16 lg:mb-20"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={variants.header}
+        >
+          <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-yellow-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/20">
+              <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            </div>
+            <span className="text-base sm:text-lg font-semibold text-yellow-500 tracking-wide uppercase">
+              Upcoming Tournaments
+            </span>
           </div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-foreground">
-            Compete & <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">Excel</span>
+
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight">
+            Compete &{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500">
+              Excel
+            </span>
           </h2>
-          <p className="text-muted-foreground mt-2 max-w-lg mx-auto text-sm sm:text-base">
-            Join upcoming competitions and showcase your martial arts skills. Login to Student Portal to register.
+
+          <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed mb-6 sm:mb-8 px-2">
+            Join upcoming competitions and showcase your martial arts skills.
+            Login to Student Portal to register.
           </p>
-        </div>
+
+          {/* Divider */}
+          <div className="flex items-center justify-center gap-2 sm:gap-4">
+            <div className="h-px w-10 sm:w-16 bg-gradient-to-r from-transparent to-yellow-500" />
+            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-500 rounded-full animate-pulse" />
+            <div className="h-px w-20 sm:w-32 bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500" />
+            <div
+              className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full animate-pulse"
+              style={{ animationDelay: '0.5s' }}
+            />
+            <div className="h-px w-10 sm:w-16 bg-gradient-to-r from-red-500 to-transparent" />
+          </div>
+        </motion.div>
 
         {/* Competition Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          variants={variants.container}
+        >
           {competitions.map((comp: any) => (
-            <Card key={comp.id} className="group border border-border overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all duration-300">
+            <motion.div
+              key={comp.id}
+              variants={variants.card}
+              className="group relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm overflow-hidden hover:border-yellow-500/30 transition-all duration-500 hover:shadow-[0_8px_32px_rgba(234,179,8,0.15)]"
+            >
               {comp.image_url && (
-                <div className="h-36 sm:h-40 overflow-hidden">
+                <div className="h-40 sm:h-44 overflow-hidden relative">
                   <img
                     src={comp.image_url}
                     alt={comp.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     loading="lazy"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
+                  {/* Status badge on image */}
+                  <div className="absolute top-3 right-3">
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md ${
+                        comp.status === 'ongoing'
+                          ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                          : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                      }`}
+                    >
+                      {comp.status === 'ongoing' ? (
+                        <>
+                          <span className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse" />
+                          Live Now
+                        </>
+                      ) : (
+                        'Upcoming'
+                      )}
+                    </span>
+                  </div>
                 </div>
               )}
-              <CardContent className={`p-4 space-y-3 ${!comp.image_url ? 'pt-5' : ''}`}>
-                <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-bold text-foreground text-sm sm:text-base line-clamp-2 flex-1">{comp.name}</h3>
-                  <Badge
-                    variant="outline"
-                    className={`shrink-0 text-[10px] ${
-                      comp.status === 'ongoing'
-                        ? 'bg-green-500/10 text-green-600 border-green-500/30'
-                        : 'bg-orange-500/10 text-orange-600 border-orange-500/30'
-                    }`}
-                  >
-                    {comp.status === 'ongoing' ? '🔴 Live' : 'Upcoming'}
-                  </Badge>
-                </div>
 
-                {comp.description && (
-                  <p className="text-xs text-muted-foreground line-clamp-2">{comp.description}</p>
+              <div className={`p-5 space-y-3 ${!comp.image_url ? 'pt-6' : ''}`}>
+                {/* Status badge when no image */}
+                {!comp.image_url && (
+                  <div className="mb-2">
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
+                        comp.status === 'ongoing'
+                          ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                          : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                      }`}
+                    >
+                      {comp.status === 'ongoing' ? (
+                        <>
+                          <span className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse" />
+                          Live Now
+                        </>
+                      ) : (
+                        'Upcoming'
+                      )}
+                    </span>
+                  </div>
                 )}
 
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-3 h-3 text-primary" />
+                <h3 className="font-bold text-white text-base sm:text-lg line-clamp-2 group-hover:text-yellow-400 transition-colors duration-300">
+                  {comp.name}
+                </h3>
+
+                {comp.description && (
+                  <p className="text-sm text-gray-400 line-clamp-2 leading-relaxed">{comp.description}</p>
+                )}
+
+                <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-500 pt-1">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-yellow-500" />
                     {format(new Date(comp.date), 'MMM d, yyyy')}
-                    {comp.end_date && ` - ${format(new Date(comp.end_date), 'MMM d')}`}
+                    {comp.end_date && ` – ${format(new Date(comp.end_date), 'MMM d')}`}
                   </span>
                   {comp.location_text && (
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-primary" /> {comp.location_text}
+                    <span className="flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-orange-500" /> {comp.location_text}
                     </span>
                   )}
                   {comp.max_participants && (
-                    <span className="flex items-center gap-1">
-                      <Users className="w-3 h-3 text-primary" /> Max {comp.max_participants}
+                    <span className="flex items-center gap-1.5">
+                      <Users className="w-3.5 h-3.5 text-red-500" /> Max {comp.max_participants}
                     </span>
                   )}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+
+              {/* Bottom gradient accent */}
+              <div className="h-0.5 w-full bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* CTA */}
-        <div className="mt-8 sm:mt-10 text-center space-y-3">
-          <p className="text-xs sm:text-sm text-muted-foreground">
+        <motion.div
+          className="mt-12 sm:mt-16 text-center space-y-4"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          viewport={{ once: true }}
+        >
+          <p className="text-sm sm:text-base text-gray-400">
             🎓 Students can register for competitions via the{' '}
-            <Link to="/student/login" className="text-primary font-semibold hover:underline">Student Portal</Link>
+            <Link to="/student/login" className="text-yellow-500 font-semibold hover:text-yellow-400 transition-colors underline underline-offset-2">
+              Student Portal
+            </Link>
           </p>
           <Link to="/student/login">
-            <Button variant="outline" className="gap-2 rounded-full">
+            <button className="btn-primary justify-center gap-2 bg-gradient-to-r from-yellow-500 to-red-600 border-0 mt-3">
               Go to Student Portal <ArrowRight className="w-4 h-4" />
-            </Button>
+            </button>
           </Link>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
