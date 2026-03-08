@@ -11,18 +11,25 @@ export default function StudentLogin() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   if (isAuthenticated) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
     setError(null);
+    setSubmitting(true);
     try {
       await signIn(loginId.trim(), password);
     } catch (err: any) {
       setError(err.message || 'Login failed');
+    } finally {
+      setSubmitting(false);
     }
   };
+
+  const isDisabled = isLoading || submitting;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
@@ -43,9 +50,10 @@ export default function StudentLogin() {
               id="login-id"
               value={loginId}
               onChange={e => setLoginId(e.target.value)}
-              placeholder="e.g. STU001"
+              placeholder="e.g. GSAI-5549"
               required
               autoComplete="username"
+              disabled={isDisabled}
             />
           </div>
 
@@ -61,6 +69,7 @@ export default function StudentLogin() {
                 required
                 autoComplete="current-password"
                 className="pr-10"
+                disabled={isDisabled}
               />
               <button
                 type="button"
@@ -77,10 +86,14 @@ export default function StudentLogin() {
             <div className="text-sm text-destructive bg-destructive/10 rounded-lg p-3 text-center">{error}</div>
           )}
 
-          <Button type="submit" disabled={isLoading} className="w-full h-11">
-            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sign In'}
+          <Button type="submit" disabled={isDisabled} className="w-full h-11">
+            {isDisabled ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sign In'}
           </Button>
         </form>
+
+        <p className="text-center text-xs text-muted-foreground">
+          Default password: <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">GSAI-STUDENT-[year]</code>
+        </p>
 
         <div className="text-center">
           <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
