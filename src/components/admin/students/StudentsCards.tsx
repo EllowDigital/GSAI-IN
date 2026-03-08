@@ -9,9 +9,13 @@ import {
   Calendar,
   Phone,
   Users,
+  KeyRound,
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
+import CreatePortalAccountDialog from '../CreatePortalAccountDialog';
 
 type StudentRow = {
   id: string;
@@ -84,9 +88,19 @@ export default function StudentsCards({
   onDelete,
   loading,
 }: Props) {
-  const [studentsWithBelts, setStudentsWithBelts] = useState<StudentWithBelt[]>(
-    []
-  );
+  const [studentsWithBelts, setStudentsWithBelts] = useState<StudentWithBelt[]>([]);
+  const [portalStudent, setPortalStudent] = useState<{ id: string; name: string; program: string } | null>(null);
+
+  // Fetch which students already have portal accounts
+  const { data: portalAccountIds = new Set<string>() } = useQuery({
+    queryKey: ['students-portal-status'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('student_portal_accounts')
+        .select('student_id') as any;
+      return new Set<string>((data || []).map((r: any) => r.student_id));
+    },
+  });
 
   useEffect(() => {
     const fetchBelts = async () => {
@@ -161,6 +175,7 @@ export default function StudentsCards({
   }
 
   return (
+    <>
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
       {studentsWithBelts.map((stu) => (
         <Card
@@ -200,6 +215,22 @@ export default function StudentsCards({
                 </div>
               </div>
               <div className="flex gap-1.5 flex-shrink-0">
+                {!(portalAccountIds as Set<string>).has(stu.id) ? (
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => setPortalStudent({ id: stu.id, name: stu.name, program: stu.program })}
+                    className="h-8 w-8 rounded-lg hover:bg-accent hover:text-accent-foreground"
+                    aria-label="Create portal account"
+                    title="Create Portal Account"
+                  >
+                    <KeyRound className="w-4 h-4" />
+                  </Button>
+                ) : (
+                  <Badge variant="outline" className="text-[10px] h-6 px-1.5 border-green-500/30 text-green-600">
+                    Portal ✓
+                  </Badge>
+                )}
                 <Button
                   size="icon"
                   variant="ghost"
@@ -243,5 +274,12 @@ export default function StudentsCards({
         </Card>
       ))}
     </div>
+
+    <CreatePortalAccountDialog
+      open={!!portalStudent}
+      onOpenChange={(val) => { if (!val) setPortalStudent(null); }}
+      student={portalStudent}
+    />
+    </>
   );
 }
