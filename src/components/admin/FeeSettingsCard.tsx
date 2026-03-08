@@ -30,7 +30,11 @@ export default function FeeSettingsCard() {
 
   const handleSave = async () => {
     if (!newFee || Number(newFee) < 0) {
-      toast({ title: 'Invalid fee', description: 'Fee must be a positive number', variant: 'error' });
+      toast({
+        title: 'Invalid fee',
+        description: 'Fee must be a positive number',
+        variant: 'error',
+      });
       return;
     }
     setSaving(true);
@@ -41,7 +45,10 @@ export default function FeeSettingsCard() {
         .eq('key', 'default_monthly_fee');
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['academy-settings'] });
-      toast({ title: 'Default fee updated', description: `New default: ₹${newFee}/month` });
+      toast({
+        title: 'Default fee updated',
+        description: `New default: ₹${newFee}/month`,
+      });
       setEditing(false);
     } catch (err: any) {
       toast({ title: 'Error', description: err.message, variant: 'error' });
@@ -58,7 +65,9 @@ export default function FeeSettingsCard() {
             <Settings className="w-4 h-4 text-primary" />
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Default Monthly Fee (all new students)</p>
+            <p className="text-xs text-muted-foreground">
+              Default Monthly Fee (all new students)
+            </p>
             {editing ? (
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-sm font-medium">₹</span>
@@ -72,20 +81,40 @@ export default function FeeSettingsCard() {
                 />
               </div>
             ) : (
-              <p className="text-lg font-bold text-foreground">₹{Number(currentFee).toLocaleString()}</p>
+              <p className="text-lg font-bold text-foreground">
+                ₹{Number(currentFee).toLocaleString()}
+              </p>
             )}
           </div>
         </div>
         {editing ? (
           <div className="flex gap-2">
-            <Button variant="ghost" size="sm" onClick={() => setEditing(false)} disabled={saving}>Cancel</Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setEditing(false)}
+              disabled={saving}
+            >
+              Cancel
+            </Button>
             <Button size="sm" onClick={handleSave} disabled={saving}>
-              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4 mr-1" />}
+              {saving ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4 mr-1" />
+              )}
               Save
             </Button>
           </div>
         ) : (
-          <Button variant="outline" size="sm" onClick={() => { setNewFee(currentFee); setEditing(true); }}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setNewFee(currentFee);
+              setEditing(true);
+            }}
+          >
             Edit
           </Button>
         )}

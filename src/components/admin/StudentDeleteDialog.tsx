@@ -25,10 +25,15 @@ export default function StudentDeleteDialog({ student, onClose }: Props) {
     try {
       // All related data (fees, attendance, progress, promotions, competitions,
       // certificates, portal accounts) are automatically deleted via ON DELETE CASCADE
-      const { error } = await supabase.from('students').delete().eq('id', student.id);
+      const { error } = await supabase
+        .from('students')
+        .delete()
+        .eq('id', student.id);
       if (error) throw error;
 
-      toast.success(`${student.name} and all related data permanently deleted.`);
+      toast.success(
+        `${student.name} and all related data permanently deleted.`
+      );
       onClose();
     } catch (err: any) {
       toast.error('Error deleting student: ' + err.message);
@@ -44,10 +49,16 @@ export default function StudentDeleteDialog({ student, onClose }: Props) {
           <AlertDialogDescription>
             This will permanently remove{' '}
             <span className="font-semibold">{student.name}</span> and{' '}
-            <span className="text-destructive font-medium">all related data</span> including:
-            fees, attendance, progress, belt promotions, competition registrations, certificates, and portal account.
-            <br /><br />
-            <span className="font-semibold text-destructive">This action cannot be undone.</span>
+            <span className="text-destructive font-medium">
+              all related data
+            </span>{' '}
+            including: fees, attendance, progress, belt promotions, competition
+            registrations, certificates, and portal account.
+            <br />
+            <br />
+            <span className="font-semibold text-destructive">
+              This action cannot be undone.
+            </span>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

@@ -1,7 +1,13 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from '@/hooks/use-toast';
@@ -138,9 +144,14 @@ export function FeeForm({
         notes: values.notes?.trim() || null,
         receipt_url: values.receipt_url ?? null,
         updated_at: now,
-        status: values.status_override === 'auto' 
-          ? getFeeStatus({ monthly_fee, paid_amount, balance_due: calcBalance() })
-          : values.status_override,
+        status:
+          values.status_override === 'auto'
+            ? getFeeStatus({
+                monthly_fee,
+                paid_amount,
+                balance_due: calcBalance(),
+              })
+            : values.status_override,
       };
 
       const payload =

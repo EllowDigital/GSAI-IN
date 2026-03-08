@@ -10,16 +10,37 @@ interface CompResult {
   competitions: { name: string; date: string } | null;
 }
 
-const MEDAL_MAP: Record<string, { emoji: string; label: string; glow: string; border: string }> = {
-  gold: { emoji: '🥇', label: 'Gold', glow: 'shadow-yellow-500/20', border: 'border-yellow-500/30' },
-  silver: { emoji: '🥈', label: 'Silver', glow: 'shadow-gray-400/20', border: 'border-gray-400/30' },
-  bronze: { emoji: '🥉', label: 'Bronze', glow: 'shadow-orange-500/20', border: 'border-orange-500/30' },
+const MEDAL_MAP: Record<
+  string,
+  { emoji: string; label: string; glow: string; border: string }
+> = {
+  gold: {
+    emoji: '🥇',
+    label: 'Gold',
+    glow: 'shadow-yellow-500/20',
+    border: 'border-yellow-500/30',
+  },
+  silver: {
+    emoji: '🥈',
+    label: 'Silver',
+    glow: 'shadow-gray-400/20',
+    border: 'border-gray-400/30',
+  },
+  bronze: {
+    emoji: '🥉',
+    label: 'Bronze',
+    glow: 'shadow-orange-500/20',
+    border: 'border-orange-500/30',
+  },
 };
 
 const variants = {
   container: {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.2 } },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.08, delayChildren: 0.2 },
+    },
   },
   card: {
     hidden: { opacity: 0, y: 25 },
@@ -35,12 +56,12 @@ export default function CompetitionResultsSection() {
   const { data: results = [], isLoading } = useQuery({
     queryKey: ['public-achievements'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = (await supabase
         .from('competition_registrations')
         .select('position, students(name, program), competitions(name, date)')
         .in('position', ['gold', 'silver', 'bronze'])
         .order('registered_at', { ascending: false })
-        .limit(12) as any;
+        .limit(12)) as any;
       if (error) throw error;
       return (data || []) as CompResult[];
     },
@@ -61,9 +82,7 @@ export default function CompetitionResultsSection() {
       </div>
 
       {/* Floating Icons */}
-      <Trophy
-        className="absolute top-14 left-8 w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 opacity-25 animate-float"
-      />
+      <Trophy className="absolute top-14 left-8 w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 opacity-25 animate-float" />
       <Sparkles
         className="absolute bottom-16 right-8 w-7 h-7 sm:w-9 sm:h-9 text-orange-500 opacity-20 animate-float"
         style={{ animationDelay: '3s' }}
@@ -95,7 +114,8 @@ export default function CompetitionResultsSection() {
           </h2>
 
           <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed mb-6 sm:mb-8 px-2">
-            Celebrating the achievements of our martial arts athletes on the national and international stage.
+            Celebrating the achievements of our martial arts athletes on the
+            national and international stage.
           </p>
 
           {/* Divider */}
@@ -142,13 +162,15 @@ export default function CompetitionResultsSection() {
                       {r.competitions?.name}
                     </p>
                     <div className="flex items-center gap-2 pt-0.5">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold border ${
-                        r.position === 'gold'
-                          ? 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30'
-                          : r.position === 'silver'
-                          ? 'bg-gray-400/15 text-gray-300 border-gray-400/30'
-                          : 'bg-orange-500/15 text-orange-400 border-orange-500/30'
-                      }`}>
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold border ${
+                          r.position === 'gold'
+                            ? 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30'
+                            : r.position === 'silver'
+                              ? 'bg-gray-400/15 text-gray-300 border-gray-400/30'
+                              : 'bg-orange-500/15 text-orange-400 border-orange-500/30'
+                        }`}
+                      >
                         {medal.label}
                       </span>
                       <span className="text-[10px] sm:text-xs text-gray-500">

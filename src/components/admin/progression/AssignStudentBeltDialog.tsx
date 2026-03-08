@@ -129,7 +129,14 @@ export default function AssignStudentBeltDialog({
     return belts.filter(
       (belt) => belt.discipline === 'general' || !belt.discipline
     );
-  }, [belts, disciplineLevels, studentId, studentProgram, isBeltBased, isLevelBased]);
+  }, [
+    belts,
+    disciplineLevels,
+    studentId,
+    studentProgram,
+    isBeltBased,
+    isLevelBased,
+  ]);
 
   // Note: belt selection is reset when the student is changed in the handler below.
 

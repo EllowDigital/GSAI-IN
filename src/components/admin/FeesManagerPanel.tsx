@@ -14,7 +14,15 @@ import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Grid, List, DollarSign, CheckSquare, X, Zap, Loader2 } from 'lucide-react';
+import {
+  Grid,
+  List,
+  DollarSign,
+  CheckSquare,
+  X,
+  Zap,
+  Loader2,
+} from 'lucide-react';
 
 export default function FeesManagerPanel() {
   const now = new Date();
@@ -57,7 +65,9 @@ export default function FeesManagerPanel() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('students')
-        .select('id, name, program, default_monthly_fee, profile_image_url, discount_percent');
+        .select(
+          'id, name, program, default_monthly_fee, profile_image_url, discount_percent'
+        );
       if (error) throw error;
       return data || [];
     },
@@ -138,17 +148,22 @@ export default function FeesManagerPanel() {
   // Batch fee generation mutation
   const batchGenerateMutation = useMutation({
     mutationFn: async () => {
-      if (!students || students.length === 0) throw new Error('No students found');
-      
-      const existingStudentIds = new Set((fees || []).map(f => f.student_id));
-      const studentsWithoutFee = students.filter(s => !existingStudentIds.has(s.id));
-      
-      if (studentsWithoutFee.length === 0) throw new Error('All students already have fee records for this month');
+      if (!students || students.length === 0)
+        throw new Error('No students found');
 
-      const records = studentsWithoutFee.map(s => {
-        const discountedFee = s.discount_percent > 0
-          ? Math.round(s.default_monthly_fee * (1 - s.discount_percent / 100))
-          : s.default_monthly_fee || 2000;
+      const existingStudentIds = new Set((fees || []).map((f) => f.student_id));
+      const studentsWithoutFee = students.filter(
+        (s) => !existingStudentIds.has(s.id)
+      );
+
+      if (studentsWithoutFee.length === 0)
+        throw new Error('All students already have fee records for this month');
+
+      const records = studentsWithoutFee.map((s) => {
+        const discountedFee =
+          s.discount_percent > 0
+            ? Math.round(s.default_monthly_fee * (1 - s.discount_percent / 100))
+            : s.default_monthly_fee || 2000;
         return {
           student_id: s.id,
           month: filterMonth,
@@ -166,7 +181,10 @@ export default function FeesManagerPanel() {
     },
     onSuccess: (count) => {
       queryClient.invalidateQueries({ queryKey: ['fees'] });
-      toast({ title: 'Batch Generated', description: `Created fee records for ${count} students` });
+      toast({
+        title: 'Batch Generated',
+        description: `Created fee records for ${count} students`,
+      });
     },
     onError: (error: any) => {
       toast({ title: 'Error', description: error.message, variant: 'error' });

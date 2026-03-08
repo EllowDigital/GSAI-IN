@@ -31,10 +31,7 @@ import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
 import StudentAvatarUploader from './StudentAvatarUploader';
-import {
-  safeAsync,
-  formatErrorForDisplay,
-} from '@/utils/errorHandling';
+import { safeAsync, formatErrorForDisplay } from '@/utils/errorHandling';
 import {
   sanitizeText,
   validateAadharNumber,
@@ -77,9 +74,17 @@ interface StudentModalProps {
   student?: any;
 }
 
-export default function StudentModal({ open, onOpenChange, student }: StudentModalProps) {
+export default function StudentModal({
+  open,
+  onOpenChange,
+  student,
+}: StudentModalProps) {
   const { getWhiteBeltId } = useBeltLevels();
-  const { programs: existingPrograms, addProgram, removeProgram } = useStudentPrograms(student?.id);
+  const {
+    programs: existingPrograms,
+    addProgram,
+    removeProgram,
+  } = useStudentPrograms(student?.id);
   const [additionalPrograms, setAdditionalPrograms] = useState<string[]>([]);
   const [addingProgram, setAddingProgram] = useState('');
   const queryClient = useQueryClient();
@@ -100,44 +105,57 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
   const form = useForm<StudentFormValues>({
     resolver: zodResolver(StudentSchema),
     defaultValues: {
-      name: '', aadhar_number: '', program: '',
+      name: '',
+      aadhar_number: '',
+      program: '',
       join_date: new Date().toISOString().slice(0, 10),
-      parent_name: '', parent_contact: '',
-      profile_image_url: null, default_monthly_fee: 2000, discount_percent: 0,
+      parent_name: '',
+      parent_contact: '',
+      profile_image_url: null,
+      default_monthly_fee: 2000,
+      discount_percent: 0,
     },
   });
 
   useEffect(() => {
     if (student) {
       form.reset({
-        name: student.name || '', aadhar_number: student.aadhar_number || '',
+        name: student.name || '',
+        aadhar_number: student.aadhar_number || '',
         program: student.program || '',
         join_date: student.join_date ? student.join_date.slice(0, 10) : '',
-        parent_name: student.parent_name || '', parent_contact: student.parent_contact || '',
+        parent_name: student.parent_name || '',
+        parent_contact: student.parent_contact || '',
         profile_image_url: student.profile_image_url || null,
         default_monthly_fee: student.default_monthly_fee ?? 2000,
         discount_percent: student.discount_percent ?? 0,
       });
     } else {
       form.reset({
-        name: '', aadhar_number: '', program: '',
+        name: '',
+        aadhar_number: '',
+        program: '',
         join_date: new Date().toISOString().slice(0, 10),
-        parent_name: '', parent_contact: '',
-        profile_image_url: null, default_monthly_fee: globalFee ?? 2000, discount_percent: 0,
+        parent_name: '',
+        parent_contact: '',
+        profile_image_url: null,
+        default_monthly_fee: globalFee ?? 2000,
+        discount_percent: 0,
       });
       setAdditionalPrograms([]);
     }
   }, [student, open, globalFee]);
 
-  const handleAvatarUpload = (url: string) => form.setValue('profile_image_url', url);
+  const handleAvatarUpload = (url: string) =>
+    form.setValue('profile_image_url', url);
 
   const currentPrimary = useWatch({ control: form.control, name: 'program' });
   const enrolledProgramNames = student
-    ? existingPrograms.map(p => p.program_name)
+    ? existingPrograms.map((p) => p.program_name)
     : [currentPrimary, ...additionalPrograms].filter(Boolean);
 
   const availableToAdd = programOptions.filter(
-    p => !enrolledProgramNames.includes(p.value)
+    (p) => !enrolledProgramNames.includes(p.value)
   );
 
   const handleAddAdditionalProgram = async () => {
@@ -145,17 +163,19 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
     if (student) {
       await addProgram(student.id, addingProgram, student.join_date);
     } else {
-      setAdditionalPrograms(prev => [...prev, addingProgram]);
+      setAdditionalPrograms((prev) => [...prev, addingProgram]);
     }
     setAddingProgram('');
   };
 
   const handleRemoveAdditionalProgram = async (programName: string) => {
     if (student) {
-      const prog = existingPrograms.find(p => p.program_name === programName && !p.is_primary);
+      const prog = existingPrograms.find(
+        (p) => p.program_name === programName && !p.is_primary
+      );
       if (prog) await removeProgram(prog.id);
     } else {
-      setAdditionalPrograms(prev => prev.filter(p => p !== programName));
+      setAdditionalPrograms((prev) => prev.filter((p) => p !== programName));
     }
   };
 
@@ -178,18 +198,29 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
       return;
     }
 
-    const aadharValidation = validateAadharNumber(sanitizedValues.aadhar_number);
-    if (!aadharValidation.isValid) { toast.error('Aadhar must be exactly 12 digits.'); return; }
+    const aadharValidation = validateAadharNumber(
+      sanitizedValues.aadhar_number
+    );
+    if (!aadharValidation.isValid) {
+      toast.error('Aadhar must be exactly 12 digits.');
+      return;
+    }
 
     const phoneValidation = validatePhoneNumber(sanitizedValues.parent_contact);
-    if (!phoneValidation.isValid) { toast.error('Contact must be 10 digits starting with 6-9.'); return; }
+    if (!phoneValidation.isValid) {
+      toast.error('Contact must be 10 digits starting with 6-9.');
+      return;
+    }
 
     const { data: result, error } = await safeAsync(async () => {
       if (!student) {
         const { data: existing } = await supabase
-          .from('students').select('id, name')
-          .eq('aadhar_number', aadharValidation.sanitized).maybeSingle();
-        if (existing) throw new Error(`Student already exists: ${existing.name}`);
+          .from('students')
+          .select('id, name')
+          .eq('aadhar_number', aadharValidation.sanitized)
+          .maybeSingle();
+        if (existing)
+          throw new Error(`Student already exists: ${existing.name}`);
       }
 
       const payload = {
@@ -206,25 +237,35 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
 
       if (student) {
         const { data, error } = await supabase
-          .from('students').update(payload).eq('id', student.id).select().single();
+          .from('students')
+          .update(payload)
+          .eq('id', student.id)
+          .select()
+          .single();
         if (error) throw error;
 
         // Update primary program in junction table
-        await supabase.from('student_programs')
+        await supabase
+          .from('student_programs')
           .update({ is_primary: false })
           .eq('student_id', student.id);
-        await supabase.from('student_programs')
-          .upsert({
+        await supabase.from('student_programs').upsert(
+          {
             student_id: student.id,
             program_name: sanitizedValues.program,
             joined_at: sanitizedValues.join_date,
             is_primary: true,
-          }, { onConflict: 'student_id,program_name' });
+          },
+          { onConflict: 'student_id,program_name' }
+        );
 
         return data;
       } else {
         const { data, error } = await supabase
-          .from('students').insert([payload]).select().single();
+          .from('students')
+          .insert([payload])
+          .select()
+          .single();
         if (error) throw error;
 
         // Insert primary program
@@ -238,7 +279,7 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
         // Insert additional programs
         if (additionalPrograms.length > 0) {
           await supabase.from('student_programs').insert(
-            additionalPrograms.map(prog => ({
+            additionalPrograms.map((prog) => ({
               student_id: data.id,
               program_name: prog,
               joined_at: sanitizedValues.join_date,
@@ -250,11 +291,20 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
         // Assign white belt
         const whiteBeltId = getWhiteBeltId(data.program);
         if (data && whiteBeltId) {
-          await supabase.from('student_progress').insert({
-            student_id: data.id, belt_level_id: whiteBeltId, status: 'needs_work',
-          }).then(({ error }) => {
-            if (error) console.warn('Could not auto-assign white belt:', error.message);
-          });
+          await supabase
+            .from('student_progress')
+            .insert({
+              student_id: data.id,
+              belt_level_id: whiteBeltId,
+              status: 'needs_work',
+            })
+            .then(({ error }) => {
+              if (error)
+                console.warn(
+                  'Could not auto-assign white belt:',
+                  error.message
+                );
+            });
         }
 
         return data;
@@ -264,7 +314,9 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
     if (error) {
       toast.error(formatErrorForDisplay(error));
     } else {
-      toast.success(`Student ${student ? 'updated' : 'created'}: ${result?.name}`);
+      toast.success(
+        `Student ${student ? 'updated' : 'created'}: ${result?.name}`
+      );
       queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['students'] });
@@ -286,43 +338,96 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <StudentAvatarUploader
-              url={useWatch({ control: form.control, name: 'profile_image_url', defaultValue: form.getValues('profile_image_url') })}
+              url={useWatch({
+                control: form.control,
+                name: 'profile_image_url',
+                defaultValue: form.getValues('profile_image_url'),
+              })}
               onUploaded={handleAvatarUpload}
             />
-            <FormField control={form.control} name="name" render={({ field }) => (
-              <FormItem><FormLabel>Name</FormLabel><FormControl><Input placeholder="Student Name" {...field} required /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="aadhar_number" render={({ field }) => (
-              <FormItem><FormLabel>Aadhar Number</FormLabel><FormControl><Input placeholder="12 digit Aadhar" maxLength={12} {...field} required /></FormControl><FormMessage /></FormItem>
-            )} />
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Student Name" {...field} required />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="aadhar_number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Aadhar Number</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="12 digit Aadhar"
+                      maxLength={12}
+                      {...field}
+                      required
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Primary Program */}
-            <FormField control={form.control} name="program" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Primary Program</FormLabel>
-                <FormControl>
-                  <Select value={field.value} onValueChange={field.onChange} required>
-                    <SelectTrigger><SelectValue placeholder="Select primary program" /></SelectTrigger>
-                    <SelectContent>
-                      {programOptions.map(opt => (
-                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+            <FormField
+              control={form.control}
+              name="program"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Primary Program</FormLabel>
+                  <FormControl>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      required
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select primary program" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {programOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Additional Programs */}
             <div className="space-y-2">
               <FormLabel>Additional Programs</FormLabel>
               <div className="flex flex-wrap gap-1.5">
-                {(student ? existingPrograms.filter(p => !p.is_primary) : additionalPrograms.map(p => ({ program_name: p }))).map((prog: any) => (
-                  <Badge key={prog.program_name} variant="secondary" className="gap-1 pr-1">
+                {(student
+                  ? existingPrograms.filter((p) => !p.is_primary)
+                  : additionalPrograms.map((p) => ({ program_name: p }))
+                ).map((prog: any) => (
+                  <Badge
+                    key={prog.program_name}
+                    variant="secondary"
+                    className="gap-1 pr-1"
+                  >
                     {prog.program_name}
-                    <button type="button" onClick={() => handleRemoveAdditionalProgram(prog.program_name)}
-                      className="ml-1 hover:bg-destructive/20 rounded-full p-0.5">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleRemoveAdditionalProgram(prog.program_name)
+                      }
+                      className="ml-1 hover:bg-destructive/20 rounded-full p-0.5"
+                    >
                       <X className="h-3 w-3" />
                     </button>
                   </Badge>
@@ -330,49 +435,130 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
               </div>
               {availableToAdd.length > 0 && (
                 <div className="flex gap-2">
-                  <Select value={addingProgram} onValueChange={setAddingProgram}>
+                  <Select
+                    value={addingProgram}
+                    onValueChange={setAddingProgram}
+                  >
                     <SelectTrigger className="flex-1 h-8 text-xs">
                       <SelectValue placeholder="Add another program..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {availableToAdd.map(opt => (
-                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                      {availableToAdd.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  <Button type="button" size="sm" variant="outline" className="h-8"
-                    onClick={handleAddAdditionalProgram} disabled={!addingProgram}>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="h-8"
+                    onClick={handleAddAdditionalProgram}
+                    disabled={!addingProgram}
+                  >
                     <Plus className="h-3 w-3" />
                   </Button>
                 </div>
               )}
             </div>
 
-            <FormField control={form.control} name="join_date" render={({ field }) => (
-              <FormItem><FormLabel>Join Date</FormLabel><FormControl><Input type="date" {...field} required /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="parent_name" render={({ field }) => (
-              <FormItem><FormLabel>Parent Name</FormLabel><FormControl><Input placeholder="Parent Name" {...field} required /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="parent_contact" render={({ field }) => (
-              <FormItem><FormLabel>Parent Contact</FormLabel><FormControl><Input placeholder="10 digit number" maxLength={10} {...field} required /></FormControl><FormMessage /></FormItem>
-            )} />
+            <FormField
+              control={form.control}
+              name="join_date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Join Date</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} required />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="parent_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Parent Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Parent Name" {...field} required />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="parent_contact"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Parent Contact</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="10 digit number"
+                      maxLength={10}
+                      {...field}
+                      required
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="grid grid-cols-2 gap-3">
-              <FormField control={form.control} name="default_monthly_fee" render={({ field }) => (
-                <FormItem><FormLabel>Monthly Fee (₹)</FormLabel><FormControl>
-                  <Input type="number" min={0} placeholder="2000" {...field} onChange={e => field.onChange(Number(e.target.value))} />
-                </FormControl><FormMessage /></FormItem>
-              )} />
-              <FormField control={form.control} name="discount_percent" render={({ field }) => (
-                <FormItem><FormLabel>Discount (%)</FormLabel><FormControl>
-                  <Input type="number" min={0} max={100} placeholder="0" {...field} onChange={e => field.onChange(Number(e.target.value))} />
-                </FormControl><FormMessage /></FormItem>
-              )} />
+              <FormField
+                control={form.control}
+                name="default_monthly_fee"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Monthly Fee (₹)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        placeholder="2000"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="discount_percent"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Discount (%)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        max={100}
+                        placeholder="0"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancel
+              </Button>
               <Button type="submit">{student ? 'Update' : 'Create'}</Button>
             </div>
           </form>

@@ -210,9 +210,13 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
           Sign Out
         </button>
         <div className="pt-2 border-t border-border/50 text-center">
-          <p className="text-[10px] text-muted-foreground/60 font-medium">v1.0.0</p>
+          <p className="text-[10px] text-muted-foreground/60 font-medium">
+            v1.0.0
+          </p>
           <p className="text-[9px] text-muted-foreground/40 mt-0.5">
-            Built by <span className="text-muted-foreground/60">Sarwan Yadav</span> · <span className="text-muted-foreground/60">EllowDigital</span>
+            Built by{' '}
+            <span className="text-muted-foreground/60">Sarwan Yadav</span> ·{' '}
+            <span className="text-muted-foreground/60">EllowDigital</span>
           </p>
         </div>
       </div>

@@ -25,8 +25,18 @@ interface FeeReminderButtonProps {
 }
 
 const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
 // FormSubmit.co sends TO this verified email (academy inbox)
@@ -78,23 +88,29 @@ Ghatak Sports Academy`;
     try {
       // FormSubmit.co sends the notification TO the academy email
       // The parent/student email is included in the body for reference
-      const response = await fetch(`https://formsubmit.co/ajax/${FORMSUBMIT_ACADEMY_EMAIL}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({
-          _subject: `Fee Reminder: ${studentName} - ${MONTH_NAMES[month - 1]} ${year}`,
-          _template: 'table',
-          _captcha: 'false',
-          _replyto: email,
-          'Student Name': studentName,
-          'Parent Name': parentName,
-          'Parent Contact': parentContact,
-          'Recipient Email': email,
-          'Amount Due': `₹${amount.toLocaleString()}`,
-          'Month/Year': `${MONTH_NAMES[month - 1]} ${year}`,
-          'Message': message,
-        }),
-      });
+      const response = await fetch(
+        `https://formsubmit.co/ajax/${FORMSUBMIT_ACADEMY_EMAIL}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            _subject: `Fee Reminder: ${studentName} - ${MONTH_NAMES[month - 1]} ${year}`,
+            _template: 'table',
+            _captcha: 'false',
+            _replyto: email,
+            'Student Name': studentName,
+            'Parent Name': parentName,
+            'Parent Contact': parentContact,
+            'Recipient Email': email,
+            'Amount Due': `₹${amount.toLocaleString()}`,
+            'Month/Year': `${MONTH_NAMES[month - 1]} ${year}`,
+            Message: message,
+          }),
+        }
+      );
 
       if (response.ok) {
         // Also open WhatsApp as secondary channel
@@ -166,7 +182,8 @@ Ghatak Sports Academy`;
                 required
               />
               <p className="text-[10px] text-muted-foreground">
-                Email notification is sent to the academy. WhatsApp message opens for the parent.
+                Email notification is sent to the academy. WhatsApp message
+                opens for the parent.
               </p>
             </div>
 
@@ -182,20 +199,36 @@ Ghatak Sports Academy`;
             </div>
 
             <div className="bg-muted/50 rounded-lg p-3 text-sm space-y-1">
-              <p><span className="font-medium">Student:</span> {studentName}</p>
-              <p><span className="font-medium">Amount:</span> ₹{amount.toLocaleString()}</p>
-              <p><span className="font-medium">Period:</span> {MONTH_NAMES[month - 1]} {year}</p>
+              <p>
+                <span className="font-medium">Student:</span> {studentName}
+              </p>
+              <p>
+                <span className="font-medium">Amount:</span> ₹
+                {amount.toLocaleString()}
+              </p>
+              <p>
+                <span className="font-medium">Period:</span>{' '}
+                {MONTH_NAMES[month - 1]} {year}
+              </p>
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDialogOpen(false)}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={sending}>
                 {sending ? (
-                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending...</>
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending...
+                  </>
                 ) : (
-                  <><Send className="w-4 h-4 mr-2" /> Send Reminder</>
+                  <>
+                    <Send className="w-4 h-4 mr-2" /> Send Reminder
+                  </>
                 )}
               </Button>
             </DialogFooter>

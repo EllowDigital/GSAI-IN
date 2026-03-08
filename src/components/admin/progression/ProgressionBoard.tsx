@@ -768,7 +768,11 @@ export default function ProgressionBoard() {
             if (existing) {
               const { error } = await supabase
                 .from('student_discipline_progress')
-                .update({ status: payload.status === 'passed' ? 'completed' : 'in_progress', updated_at: new Date().toISOString() })
+                .update({
+                  status:
+                    payload.status === 'passed' ? 'completed' : 'in_progress',
+                  updated_at: new Date().toISOString(),
+                })
                 .eq('id', existing.id);
               if (error) throw error;
             } else {
@@ -777,7 +781,8 @@ export default function ProgressionBoard() {
                 .insert({
                   student_id: payload.studentId,
                   discipline_level_id: payload.beltLevelId,
-                  status: payload.status === 'passed' ? 'completed' : 'in_progress',
+                  status:
+                    payload.status === 'passed' ? 'completed' : 'in_progress',
                 });
               if (error) throw error;
             }
