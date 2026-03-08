@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { toast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
-import { UserPlus, Search, Eye, Check, X, Clock, Trash2, Phone, User, Copy, CheckCircle, KeyRound } from 'lucide-react';
+import { UserPlus, Search, Eye, Check, X, Clock, Trash2, Phone, User, Copy, CheckCircle, KeyRound, Mail } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 
 interface EnrollmentRequest {
@@ -65,6 +65,25 @@ export default function EnrollmentRequestsManager() {
     },
   });
 
+  // Send rejection email via formsubmit.co
+  const sendRejectionEmail = async (req: EnrollmentRequest, notes: string) => {
+    try {
+      const parentEmail = `${req.parent_phone}@student.gsai.app`; // fallback
+      // formsubmit.co uses phone-based WhatsApp as primary channel
+      // Build a rejection WhatsApp message
+      const message = `Dear ${req.parent_name},\n\nWe regret to inform you that the enrollment request for ${req.student_name} in the ${req.program} program has not been approved at this time.\n\n${notes ? `Reason: ${notes}\n\n` : ''}If you have questions, please contact us.\n\nGhatak Sports Academy India`;
+      
+      // Open WhatsApp with rejection message
+      window.open(
+        `https://wa.me/91${req.parent_phone}?text=${encodeURIComponent(message)}`,
+        '_blank'
+      );
+      toast.success('WhatsApp opened with rejection message');
+    } catch {
+      toast.error('Failed to open WhatsApp');
+    }
+  };
+
   const updateMutation = useMutation({
     mutationFn: async ({ id, status, notes }: { id: string; status: string; notes?: string }) => {
       const { error } = await supabase
@@ -72,10 +91,19 @@ export default function EnrollmentRequestsManager() {
         .update({ status, admin_notes: notes || null, reviewed_at: new Date().toISOString() } as any)
         .eq('id', id) as any;
       if (error) throw error;
+      return { id, status, notes };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['enrollment-requests'] });
       toast.success('Request updated');
+      
+      // If rejected, auto-open WhatsApp with rejection message
+      if (data.status === 'rejected') {
+        const req = requests.find(r => r.id === data.id);
+        if (req) {
+          sendRejectionEmail(req, data.notes || '');
+        }
+      }
       setViewReq(null);
     },
     onError: (e: Error) => toast.error(e.message),
@@ -93,7 +121,6 @@ export default function EnrollmentRequestsManager() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  // Approve & create student + portal account
   const [approving, setApproving] = useState(false);
 
   const handleStartApprove = (req: EnrollmentRequest) => {
@@ -101,7 +128,6 @@ export default function EnrollmentRequestsManager() {
     setApproveStep('confirm');
     setAadharNumber(req.aadhar_number || '');
     setJoinDate(new Date().toISOString().slice(0, 10));
-    // Auto-generate login ID from last 4 digits of Aadhar
     const last4 = req.aadhar_number ? req.aadhar_number.slice(-4) : '';
     const namePrefix = req.student_name.replace(/\s+/g, '').slice(0, 4).toUpperCase();
     setLoginId(`GSAI-${namePrefix}${last4}`);
@@ -118,7 +144,6 @@ export default function EnrollmentRequestsManager() {
     }
     setApproving(true);
     try {
-      // Create student record
       const { data: student, error } = await supabase.from('students').insert({
         name: approveReq.student_name,
         aadhar_number: aadharNumber,
@@ -129,9 +154,8 @@ export default function EnrollmentRequestsManager() {
       }).select().single();
       if (error) throw error;
 
-      // Mark enrollment as approved
       const { error: updateError } = await supabase.from('enrollment_requests' as any)
-        .update({ status: 'approved', reviewed_at: new Date().toISOString(), reviewed_by: student.created_by || null } as any)
+        .update({ status: 'approved', admin_notes: adminNotes || null, reviewed_at: new Date().toISOString() } as any)
         .eq('id', approveReq.id) as any;
       if (updateError) {
         console.error('Failed to update enrollment status:', updateError);
@@ -188,6 +212,14 @@ export default function EnrollmentRequestsManager() {
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast.success('Copied!');
+  };
+
+  const handleRejectWithNotes = (req: EnrollmentRequest) => {
+    if (!adminNotes.trim()) {
+      toast.error('Please add a reason/note before rejecting');
+      return;
+    }
+    updateMutation.mutate({ id: req.id, status: 'rejected', notes: adminNotes });
   };
 
   const filtered = requests.filter(r => {
@@ -253,6 +285,12 @@ export default function EnrollmentRequestsManager() {
                       <span>Age: {req.age} • {req.gender}</span>
                       <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {format(new Date(req.created_at), 'MMM d, yyyy')}</span>
                     </div>
+                    {/* Show admin notes if present */}
+                    {req.admin_notes && (
+                      <p className="text-xs text-muted-foreground italic mt-1 bg-muted/50 rounded px-2 py-1">
+                        📝 {req.admin_notes}
+                      </p>
+                    )}
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0 flex-wrap">
                     <Button variant="outline" size="sm" className="text-xs h-8 gap-1" onClick={() => { setViewReq(req); setAdminNotes(req.admin_notes || ''); }}>
@@ -266,18 +304,21 @@ export default function EnrollmentRequestsManager() {
                     {req.status === 'approved' && (
                       <Badge variant="outline" className="text-[10px] h-7 px-2 border-green-500/30 text-green-600 bg-green-500/5">✓ Approved</Badge>
                     )}
+                    {req.status === 'rejected' && (
+                      <Badge variant="outline" className="text-[10px] h-7 px-2 border-red-500/30 text-red-600 bg-red-500/5">✗ Rejected</Badge>
+                    )}
                     {req.status === 'pending' && (
                       <>
                         <Button size="sm" className="text-xs h-8 gap-1 bg-blue-600 hover:bg-blue-700" onClick={() => updateMutation.mutate({ id: req.id, status: 'contacted' })}>
                           <Phone className="w-3 h-3" />
                         </Button>
-                        <Button size="sm" variant="destructive" className="text-xs h-8 gap-1" onClick={() => updateMutation.mutate({ id: req.id, status: 'rejected' })}>
+                        <Button size="sm" variant="destructive" className="text-xs h-8 gap-1" onClick={() => { setViewReq(req); setAdminNotes(req.admin_notes || ''); }}>
                           <X className="w-3 h-3" />
                         </Button>
                       </>
                     )}
                     {req.status === 'contacted' && (
-                      <Button size="sm" variant="destructive" className="text-xs h-8 gap-1" onClick={() => updateMutation.mutate({ id: req.id, status: 'rejected' })}>
+                      <Button size="sm" variant="destructive" className="text-xs h-8 gap-1" onClick={() => { setViewReq(req); setAdminNotes(req.admin_notes || ''); }}>
                         <X className="w-3 h-3" /> Reject
                       </Button>
                     )}
@@ -320,10 +361,37 @@ export default function EnrollmentRequestsManager() {
                 {viewReq.message && <div className="col-span-2"><p className="text-xs text-muted-foreground">Message</p><p className="font-medium">{viewReq.message}</p></div>}
                 <div className="col-span-2"><p className="text-xs text-muted-foreground">Submitted</p><p className="font-medium">{format(new Date(viewReq.created_at), 'PPp')}</p></div>
               </div>
+
+              {/* Admin Notes */}
               <div>
                 <label className="text-xs font-medium text-muted-foreground">Admin Notes</label>
-                <Textarea value={adminNotes} onChange={e => setAdminNotes(e.target.value)} placeholder="Add notes..." rows={2} className="mt-1" />
+                <Textarea
+                  value={adminNotes}
+                  onChange={e => setAdminNotes(e.target.value)}
+                  placeholder="Add notes (required for rejection)..."
+                  rows={2}
+                  className="mt-1"
+                  disabled={viewReq.status === 'approved' || viewReq.status === 'rejected'}
+                />
+                {viewReq.status === 'rejected' && viewReq.admin_notes && (
+                  <p className="text-xs text-red-500 mt-1 italic">Rejection reason: {viewReq.admin_notes}</p>
+                )}
               </div>
+
+              {/* Save notes button for any status */}
+              {viewReq.status !== 'approved' && viewReq.status !== 'rejected' && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full text-xs"
+                  onClick={() => {
+                    updateMutation.mutate({ id: viewReq.id, status: viewReq.status, notes: adminNotes });
+                  }}
+                >
+                  💾 Save Notes
+                </Button>
+              )}
+
               {viewReq.status !== 'approved' && viewReq.status !== 'rejected' && (
                 <div className="flex flex-wrap gap-2">
                   {viewReq.status === 'pending' && (
@@ -334,8 +402,13 @@ export default function EnrollmentRequestsManager() {
                   <Button size="sm" className="gap-1 text-xs bg-green-600 hover:bg-green-700" onClick={() => { setViewReq(null); handleStartApprove(viewReq); }}>
                     <Check className="w-3 h-3" /> Approve & Add Student
                   </Button>
-                  <Button size="sm" variant="destructive" className="gap-1 text-xs" onClick={() => updateMutation.mutate({ id: viewReq.id, status: 'rejected', notes: adminNotes })}>
-                    <X className="w-3 h-3" /> Reject
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="gap-1 text-xs"
+                    onClick={() => handleRejectWithNotes(viewReq)}
+                  >
+                    <X className="w-3 h-3" /> Reject & Notify
                   </Button>
                 </div>
               )}
@@ -345,8 +418,9 @@ export default function EnrollmentRequestsManager() {
                 </div>
               )}
               {viewReq.status === 'rejected' && (
-                <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive font-medium">
-                  ❌ This enrollment has been rejected.
+                <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive font-medium space-y-2">
+                  <p>❌ This enrollment has been rejected.</p>
+                  {viewReq.admin_notes && <p className="text-xs opacity-80">Reason: {viewReq.admin_notes}</p>}
                 </div>
               )}
               <a href={`https://wa.me/91${viewReq.parent_phone}`} target="_blank" rel="noopener noreferrer" className="block w-full text-center py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors">

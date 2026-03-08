@@ -5,12 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from '@/hooks/use-toast';
 import Spinner from '@/components/ui/spinner';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isToday, isSameMonth } from 'date-fns';
-import { CalendarCheck, ChevronLeft, ChevronRight, Check, X, Clock, UserCheck, Users, Search, Sun } from 'lucide-react';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
+import { CalendarCheck, ChevronLeft, ChevronRight, Check, X, Clock, UserCheck, Search, Sun, Lock } from 'lucide-react';
 
 const STATUS_OPTIONS = [
   { value: 'present', label: 'Present', icon: '✅', color: 'bg-green-500/10 text-green-600' },
@@ -32,7 +31,6 @@ export default function AttendanceManager() {
     return d;
   }, [monthOffset]);
 
-  // Fetch students
   const { data: students = [] } = useQuery({
     queryKey: ['attendance-students'],
     queryFn: async () => {
@@ -45,7 +43,6 @@ export default function AttendanceManager() {
     },
   });
 
-  // Fetch attendance for selected date
   const { data: dayAttendance = [], isLoading: dayLoading } = useQuery({
     queryKey: ['attendance-day', selectedDate],
     queryFn: async () => {
@@ -58,7 +55,6 @@ export default function AttendanceManager() {
     },
   });
 
-  // Fetch monthly attendance for report
   const { data: monthAttendance = [] } = useQuery({
     queryKey: ['attendance-month', format(currentMonth, 'yyyy-MM')],
     queryFn: async () => {
@@ -78,26 +74,30 @@ export default function AttendanceManager() {
     mutationFn: async ({ studentId, status }: { studentId: string; status: string }) => {
       const existing = (dayAttendance as any[]).find((a: any) => a.student_id === studentId);
       if (existing) {
-        const { error } = await (supabase
-          .from('attendance' as any)
-          .update({ status, check_in_time: status !== 'absent' ? new Date().toISOString() : null } as any)
-          .eq('id', existing.id) as any);
-        if (error) throw error;
-      } else {
-        const { error } = await (supabase
-          .from('attendance' as any)
-          .insert({
-            student_id: studentId,
-            date: selectedDate,
-            status,
-            check_in_time: status !== 'absent' ? new Date().toISOString() : null,
-          } as any) as any);
-        if (error) throw error;
+        // Already marked — do NOT allow changes
+        throw new Error('Attendance already marked for this student today. It cannot be changed.');
+      }
+      // Insert new record
+      const { error } = await (supabase
+        .from('attendance' as any)
+        .insert({
+          student_id: studentId,
+          date: selectedDate,
+          status,
+          check_in_time: status !== 'absent' ? new Date().toISOString() : null,
+        } as any) as any);
+      if (error) {
+        // Unique constraint violation
+        if (error.code === '23505') {
+          throw new Error('Attendance already recorded for this student today.');
+        }
+        throw error;
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['attendance-day', selectedDate] });
       queryClient.invalidateQueries({ queryKey: ['attendance-month'] });
+      toast.success('Attendance marked');
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -106,6 +106,7 @@ export default function AttendanceManager() {
     mutationFn: async (studentId: string) => {
       const existing = (dayAttendance as any[]).find((a: any) => a.student_id === studentId);
       if (!existing) { toast.error('Student not checked in'); return; }
+      if (existing.check_out_time) { toast.error('Already checked out'); return; }
       const { error } = await (supabase
         .from('attendance' as any)
         .update({ check_out_time: new Date().toISOString() } as any)
@@ -122,10 +123,16 @@ export default function AttendanceManager() {
   const markAllPresent = async () => {
     const unmarked = students.filter(s => !(dayAttendance as any[]).find((a: any) => a.student_id === s.id));
     if (unmarked.length === 0) { toast.info('All students already marked'); return; }
+    let count = 0;
     for (const s of unmarked) {
-      await markAttendanceMutation.mutateAsync({ studentId: s.id, status: 'present' });
+      try {
+        await markAttendanceMutation.mutateAsync({ studentId: s.id, status: 'present' });
+        count++;
+      } catch {
+        // skip already marked
+      }
     }
-    toast.success(`Marked ${unmarked.length} students present`);
+    if (count > 0) toast.success(`Marked ${count} students present`);
   };
 
   const attendanceMap = useMemo(() => {
@@ -139,7 +146,6 @@ export default function AttendanceManager() {
     s.program.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Monthly stats
   const daysInMonth = eachDayOfInterval({ start: startOfMonth(currentMonth), end: endOfMonth(currentMonth) });
 
   const monthlyStats = useMemo(() => {
@@ -171,7 +177,10 @@ export default function AttendanceManager() {
           <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
             <CalendarCheck className="w-5 h-5 text-primary" /> Attendance
           </h2>
-          <p className="text-sm text-muted-foreground">Daily check-in/check-out & monthly reports</p>
+          <p className="text-sm text-muted-foreground">
+            Daily check-in/check-out & monthly reports
+            <span className="ml-2 text-xs text-yellow-600">⚠ Once marked, attendance cannot be changed</span>
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Input type="date" value={selectedDate} onChange={e => setSelectedDate(e.target.value)} className="w-auto h-9" />
@@ -239,8 +248,9 @@ export default function AttendanceManager() {
                   {filteredStudents.map(student => {
                     const record = attendanceMap[student.id];
                     const statusConfig = STATUS_OPTIONS.find(s => s.value === record?.status);
+                    const isLocked = !!record; // Once marked, locked
                     return (
-                      <TableRow key={student.id}>
+                      <TableRow key={student.id} className={isLocked ? 'bg-muted/20' : ''}>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             {student.profile_image_url ? (
@@ -256,9 +266,12 @@ export default function AttendanceManager() {
                         <TableCell className="text-sm">{student.program}</TableCell>
                         <TableCell>
                           {record ? (
-                            <Badge variant="outline" className={`text-xs ${statusConfig?.color || ''}`}>
-                              {statusConfig?.icon} {statusConfig?.label}
-                            </Badge>
+                            <div className="flex items-center gap-1.5">
+                              <Badge variant="outline" className={`text-xs ${statusConfig?.color || ''}`}>
+                                {statusConfig?.icon} {statusConfig?.label}
+                              </Badge>
+                              <Lock className="w-3 h-3 text-muted-foreground" title="Locked — cannot be changed" />
+                            </div>
                           ) : (
                             <Badge variant="outline" className="text-xs text-muted-foreground">Unmarked</Badge>
                           )}
@@ -271,18 +284,29 @@ export default function AttendanceManager() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center justify-end gap-1">
-                            <Button variant="ghost" size="sm" className="h-7 px-1.5 text-green-600" title="Present"
-                              onClick={() => markAttendanceMutation.mutate({ studentId: student.id, status: 'present' })}>
-                              <Check className="w-3.5 h-3.5" />
-                            </Button>
-                            <Button variant="ghost" size="sm" className="h-7 px-1.5 text-red-600" title="Absent"
-                              onClick={() => markAttendanceMutation.mutate({ studentId: student.id, status: 'absent' })}>
-                              <X className="w-3.5 h-3.5" />
-                            </Button>
-                            <Button variant="ghost" size="sm" className="h-7 px-1.5 text-yellow-600" title="Late"
-                              onClick={() => markAttendanceMutation.mutate({ studentId: student.id, status: 'late' })}>
-                              <Clock className="w-3.5 h-3.5" />
-                            </Button>
+                            {isLocked ? (
+                              <span className="text-xs text-muted-foreground italic flex items-center gap-1">
+                                <Lock className="w-3 h-3" /> Locked
+                              </span>
+                            ) : (
+                              <>
+                                <Button variant="ghost" size="sm" className="h-7 px-1.5 text-green-600" title="Present"
+                                  onClick={() => markAttendanceMutation.mutate({ studentId: student.id, status: 'present' })}
+                                  disabled={markAttendanceMutation.isPending}>
+                                  <Check className="w-3.5 h-3.5" />
+                                </Button>
+                                <Button variant="ghost" size="sm" className="h-7 px-1.5 text-red-600" title="Absent"
+                                  onClick={() => markAttendanceMutation.mutate({ studentId: student.id, status: 'absent' })}
+                                  disabled={markAttendanceMutation.isPending}>
+                                  <X className="w-3.5 h-3.5" />
+                                </Button>
+                                <Button variant="ghost" size="sm" className="h-7 px-1.5 text-yellow-600" title="Late"
+                                  onClick={() => markAttendanceMutation.mutate({ studentId: student.id, status: 'late' })}
+                                  disabled={markAttendanceMutation.isPending}>
+                                  <Clock className="w-3.5 h-3.5" />
+                                </Button>
+                              </>
+                            )}
                             {record && !record.check_out_time && record.status !== 'absent' && (
                               <Button variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={() => markCheckout.mutate(student.id)}>
                                 Out
