@@ -164,6 +164,26 @@ export default function CompetitionResultsSection() {
             );
           })}
         </motion.div>
+
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="text-center mt-12 md:mt-16"
+        >
+          <div className="inline-flex flex-col sm:flex-row items-center gap-4 bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10 shadow-sm">
+            <a href="#competitions">
+              <button className="btn-primary w-full sm:w-auto justify-center px-8 py-3 text-base sm:text-lg shadow-lg shadow-yellow-500/20 bg-gradient-to-r from-yellow-500 to-red-600 border-0 text-white gap-2">
+                View Upcoming Competitions <Trophy className="w-4 h-4" />
+              </button>
+            </a>
+            <span className="text-gray-400 text-sm sm:text-base font-medium">
+              See what's coming next and compete with the best
+            </span>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

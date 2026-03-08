@@ -207,23 +207,22 @@ export default function UpcomingCompetitionsSection() {
 
         {/* CTA */}
         <motion.div
-          className="mt-12 sm:mt-16 text-center space-y-4"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="text-center mt-12 md:mt-16"
         >
-          <p className="text-sm sm:text-base text-gray-400">
-            🎓 Students can register for competitions via the{' '}
-            <Link to="/student/login" className="text-yellow-500 font-semibold hover:text-yellow-400 transition-colors underline underline-offset-2">
-              Student Portal
+          <div className="inline-flex flex-col sm:flex-row items-center gap-4 bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10 shadow-sm">
+            <Link to="/student/login">
+              <button className="btn-primary w-full sm:w-auto justify-center px-8 py-3 text-base sm:text-lg shadow-lg shadow-yellow-500/20 bg-gradient-to-r from-yellow-500 to-red-600 border-0 text-white gap-2">
+                Register via Student Portal <ArrowRight className="w-4 h-4" />
+              </button>
             </Link>
-          </p>
-          <Link to="/student/login">
-            <button className="btn-primary justify-center gap-2 bg-gradient-to-r from-yellow-500 to-red-600 border-0 mt-3">
-              Go to Student Portal <ArrowRight className="w-4 h-4" />
-            </button>
-          </Link>
+            <span className="text-gray-400 text-sm sm:text-base font-medium">
+              Login to register for upcoming competitions
+            </span>
+          </div>
         </motion.div>
       </div>
     </section>
