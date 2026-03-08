@@ -113,7 +113,7 @@ export default function EnrollmentRequestsManager() {
       if (data.status === 'rejected') {
         const req = requests.find(r => r.id === data.id);
         if (req) {
-          sendRejectionEmail(req, data.notes || '');
+          sendRejectionNotification(req, data.notes || '');
         }
       }
       setViewReq(null);
