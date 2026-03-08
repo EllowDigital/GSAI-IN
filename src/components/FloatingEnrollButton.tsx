@@ -8,7 +8,7 @@ export default function FloatingEnrollButton() {
   const location = useLocation();
   const [visible, setVisible] = useState(false);
 
-  const isHidden = HIDDEN_ROUTES.some(r => location.pathname.startsWith(r));
+  const isHidden = HIDDEN_ROUTES.some((r) => location.pathname.startsWith(r));
 
   useEffect(() => {
     const handleScroll = () => setVisible(window.scrollY > 400);

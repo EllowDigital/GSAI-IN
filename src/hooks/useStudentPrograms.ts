@@ -30,38 +30,47 @@ export function useStudentPrograms(studentId?: string) {
     enabled: !!studentId,
   });
 
-  const addProgram = useCallback(async (studentId: string, programName: string, joinDate?: string) => {
-    const { error } = await supabase.from('student_programs').insert({
-      student_id: studentId,
-      program_name: programName,
-      joined_at: joinDate || new Date().toISOString().slice(0, 10),
-      is_primary: false,
-    });
-    if (error) {
-      if (error.code === '23505') {
-        toast.error(`Student is already enrolled in ${programName}`);
-      } else {
-        toast.error('Failed to add program: ' + error.message);
+  const addProgram = useCallback(
+    async (studentId: string, programName: string, joinDate?: string) => {
+      const { error } = await supabase.from('student_programs').insert({
+        student_id: studentId,
+        program_name: programName,
+        joined_at: joinDate || new Date().toISOString().slice(0, 10),
+        is_primary: false,
+      });
+      if (error) {
+        if (error.code === '23505') {
+          toast.error(`Student is already enrolled in ${programName}`);
+        } else {
+          toast.error('Failed to add program: ' + error.message);
+        }
+        return false;
       }
-      return false;
-    }
-    queryClient.invalidateQueries({ queryKey: ['student-programs'] });
-    queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
-    toast.success(`Added ${programName} program`);
-    return true;
-  }, [queryClient]);
+      queryClient.invalidateQueries({ queryKey: ['student-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
+      toast.success(`Added ${programName} program`);
+      return true;
+    },
+    [queryClient]
+  );
 
-  const removeProgram = useCallback(async (programId: string) => {
-    const { error } = await supabase.from('student_programs').delete().eq('id', programId);
-    if (error) {
-      toast.error('Failed to remove program: ' + error.message);
-      return false;
-    }
-    queryClient.invalidateQueries({ queryKey: ['student-programs'] });
-    queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
-    toast.success('Program removed');
-    return true;
-  }, [queryClient]);
+  const removeProgram = useCallback(
+    async (programId: string) => {
+      const { error } = await supabase
+        .from('student_programs')
+        .delete()
+        .eq('id', programId);
+      if (error) {
+        toast.error('Failed to remove program: ' + error.message);
+        return false;
+      }
+      queryClient.invalidateQueries({ queryKey: ['student-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
+      toast.success('Program removed');
+      return true;
+    },
+    [queryClient]
+  );
 
   return { programs, isLoading, addProgram, removeProgram };
 }

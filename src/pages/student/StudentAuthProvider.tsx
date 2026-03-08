@@ -1,4 +1,12 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+  useCallback,
+  useRef,
+} from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Session } from '@supabase/supabase-js';
@@ -21,17 +29,26 @@ interface StudentAuthContextType {
 }
 
 const StudentAuthContext = createContext<StudentAuthContextType>({
-  session: null, profile: null, isLoading: true, isAuthenticated: false,
-  signIn: async () => {}, signOut: async () => {},
+  session: null,
+  profile: null,
+  isLoading: true,
+  isAuthenticated: false,
+  signIn: async () => {},
+  signOut: async () => {},
 });
 
-export function useStudentAuth() { return useContext(StudentAuthContext); }
+export function useStudentAuth() {
+  return useContext(StudentAuthContext);
+}
 
 export function StudentAuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [authAnimation, setAuthAnimation] = useState<null | { type: 'login' | 'logout'; message: string }>(null);
+  const [authAnimation, setAuthAnimation] = useState<null | {
+    type: 'login' | 'logout';
+    message: string;
+  }>(null);
   const authTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isSigningOut = useRef(false);
   const navigate = useNavigate();
@@ -44,31 +61,38 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const triggerAnimation = (type: 'login' | 'logout', message: string, duration = 1800) => {
+  const triggerAnimation = (
+    type: 'login' | 'logout',
+    message: string,
+    duration = 1800
+  ) => {
     clearAnimationTimeout();
     setAuthAnimation({ type, message });
     authTimeoutRef.current = setTimeout(() => setAuthAnimation(null), duration);
   };
 
-  const loadProfile = useCallback(async (userId: string): Promise<StudentProfile | null> => {
-    try {
-      const { data, error } = await supabase
-        .from('student_portal_accounts')
-        .select('student_id, login_id, students(name, program)')
-        .eq('auth_user_id', userId)
-        .maybeSingle() as any;
+  const loadProfile = useCallback(
+    async (userId: string): Promise<StudentProfile | null> => {
+      try {
+        const { data, error } = (await supabase
+          .from('student_portal_accounts')
+          .select('student_id, login_id, students(name, program)')
+          .eq('auth_user_id', userId)
+          .maybeSingle()) as any;
 
-      if (error || !data) return null;
-      return {
-        studentId: data.student_id,
-        loginId: data.login_id,
-        studentName: data.students?.name || '',
-        program: data.students?.program || '',
-      };
-    } catch {
-      return null;
-    }
-  }, []);
+        if (error || !data) return null;
+        return {
+          studentId: data.student_id,
+          loginId: data.login_id,
+          studentName: data.students?.name || '',
+          program: data.students?.program || '',
+        };
+      } catch {
+        return null;
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     let mounted = true;
@@ -85,7 +109,10 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
           if (!mounted) return;
           if (prof) {
             setProfile(prof);
-            if (location.pathname === '/student/login' || location.pathname === '/student') {
+            if (
+              location.pathname === '/student/login' ||
+              location.pathname === '/student'
+            ) {
               navigate('/student/dashboard', { replace: true });
             }
           } else {
@@ -98,16 +125,18 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
     };
     init();
 
-    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
-      if (!mounted || isSigningOut.current) return;
-      setSession(newSession);
-      if (newSession) {
-        const prof = await loadProfile(newSession.user.id);
-        if (mounted) setProfile(prof);
-      } else {
-        if (mounted) setProfile(null);
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      async (_event, newSession) => {
+        if (!mounted || isSigningOut.current) return;
+        setSession(newSession);
+        if (newSession) {
+          const prof = await loadProfile(newSession.user.id);
+          if (mounted) setProfile(prof);
+        } else {
+          if (mounted) setProfile(null);
+        }
       }
-    });
+    );
 
     return () => {
       mounted = false;
@@ -120,7 +149,10 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     try {
       const email = `${loginId.toLowerCase().trim()}@student.gsai.app`;
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
       if (error) throw new Error(error.message);
 
       const prof = await loadProfile(data.user.id);
@@ -130,7 +162,7 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
       }
       setProfile(prof);
       triggerAnimation('login', `Welcome back, ${prof.studentName}!`, 2200);
-      await new Promise(r => setTimeout(r, 1500));
+      await new Promise((r) => setTimeout(r, 1500));
       navigate('/student/dashboard', { replace: true });
       setTimeout(() => setAuthAnimation(null), 800);
     } finally {
@@ -143,7 +175,7 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
     triggerAnimation('logout', 'You have been signed out successfully.', 2500);
 
     try {
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
       await supabase.auth.signOut();
     } catch {
       // Ignore sign-out errors
@@ -152,16 +184,23 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
     setSession(null);
     setProfile(null);
 
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 300));
     setAuthAnimation(null);
     isSigningOut.current = false;
     navigate('/', { replace: true });
   };
 
   return (
-    <StudentAuthContext.Provider value={{
-      session, profile, isLoading, isAuthenticated: !!profile, signIn, signOut,
-    }}>
+    <StudentAuthContext.Provider
+      value={{
+        session,
+        profile,
+        isLoading,
+        isAuthenticated: !!profile,
+        signIn,
+        signOut,
+      }}
+    >
       {children}
       {authAnimation && (
         <AuthCelebration

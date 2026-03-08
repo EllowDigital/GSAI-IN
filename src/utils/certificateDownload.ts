@@ -9,7 +9,9 @@ const sanitizeFileName = (value: string) =>
     .replace(/[\\/:*?"<>|]+/g, '-')
     .replace(/\s+/g, '-');
 
-export const extractCertificateStoragePath = (certificateUrl: string): string | null => {
+export const extractCertificateStoragePath = (
+  certificateUrl: string
+): string | null => {
   if (!certificateUrl) return null;
 
   if (!certificateUrl.startsWith('http')) {
@@ -21,12 +23,16 @@ export const extractCertificateStoragePath = (certificateUrl: string): string | 
 
     const publicIndex = parsed.pathname.indexOf(CERTIFICATE_PUBLIC_PREFIX);
     if (publicIndex !== -1) {
-      return decodeURIComponent(parsed.pathname.slice(publicIndex + CERTIFICATE_PUBLIC_PREFIX.length));
+      return decodeURIComponent(
+        parsed.pathname.slice(publicIndex + CERTIFICATE_PUBLIC_PREFIX.length)
+      );
     }
 
     const signedIndex = parsed.pathname.indexOf(CERTIFICATE_SIGNED_PREFIX);
     if (signedIndex !== -1) {
-      return decodeURIComponent(parsed.pathname.slice(signedIndex + CERTIFICATE_SIGNED_PREFIX.length));
+      return decodeURIComponent(
+        parsed.pathname.slice(signedIndex + CERTIFICATE_SIGNED_PREFIX.length)
+      );
     }
   } catch {
     // Ignore URL parser errors and use regex fallback.

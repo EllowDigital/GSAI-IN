@@ -1,6 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ArrowLeftRight, CheckCircle2, Clock, Users, CalendarDays } from 'lucide-react';
+import {
+  X,
+  ArrowLeftRight,
+  CheckCircle2,
+  Clock,
+  Users,
+  CalendarDays,
+} from 'lucide-react';
 import { programs, Program } from '@/data/programsData';
 
 interface ProgramCompareDrawerProps {
@@ -9,9 +16,16 @@ interface ProgramCompareDrawerProps {
   onClear: () => void;
 }
 
-export default function ProgramCompareDrawer({ selected, onRemove, onClear }: ProgramCompareDrawerProps) {
+export default function ProgramCompareDrawer({
+  selected,
+  onRemove,
+  onClear,
+}: ProgramCompareDrawerProps) {
   const selectedPrograms = useMemo(
-    () => selected.map((s) => programs.find((p) => p.slug === s)).filter(Boolean) as Program[],
+    () =>
+      selected
+        .map((s) => programs.find((p) => p.slug === s))
+        .filter(Boolean) as Program[],
     [selected]
   );
 
@@ -31,14 +45,19 @@ export default function ProgramCompareDrawer({ selected, onRemove, onClear }: Pr
         <div className="container mx-auto flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap min-w-0">
             <ArrowLeftRight className="w-4 h-4 text-yellow-400 flex-shrink-0" />
-            <span className="text-sm text-gray-300 flex-shrink-0">Compare:</span>
+            <span className="text-sm text-gray-300 flex-shrink-0">
+              Compare:
+            </span>
             {selectedPrograms.map((p) => (
               <span
                 key={p.slug}
                 className="inline-flex items-center gap-1 px-2.5 py-1 bg-yellow-500/10 text-yellow-400 text-xs font-semibold rounded-full border border-yellow-500/20"
               >
                 {p.icon} {p.title}
-                <button onClick={() => onRemove(p.slug)} className="ml-0.5 hover:text-white">
+                <button
+                  onClick={() => onRemove(p.slug)}
+                  className="ml-0.5 hover:text-white"
+                >
                   <X className="w-3 h-3" />
                 </button>
               </span>
@@ -84,7 +103,10 @@ export default function ProgramCompareDrawer({ selected, onRemove, onClear }: Pr
                   <ArrowLeftRight className="w-5 h-5 text-yellow-400" />
                   Program Comparison
                 </h2>
-                <button onClick={() => setShowFull(false)} className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors">
+                <button
+                  onClick={() => setShowFull(false)}
+                  className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                >
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -93,28 +115,60 @@ export default function ProgramCompareDrawer({ selected, onRemove, onClear }: Pr
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-white/10">
-                      <th className="text-left text-gray-500 font-medium p-4 min-w-[120px]">Feature</th>
+                      <th className="text-left text-gray-500 font-medium p-4 min-w-[120px]">
+                        Feature
+                      </th>
                       {selectedPrograms.map((p) => (
-                        <th key={p.slug} className="text-center p-4 min-w-[180px]">
+                        <th
+                          key={p.slug}
+                          className="text-center p-4 min-w-[180px]"
+                        >
                           <span className="text-3xl block mb-1">{p.icon}</span>
-                          <span className="text-white font-bold">{p.title}</span>
+                          <span className="text-white font-bold">
+                            {p.title}
+                          </span>
                         </th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
-                    <CompareRow label="Category" icon={null} values={selectedPrograms.map((p) => p.category)} />
-                    <CompareRow label="Level" icon={null} values={selectedPrograms.map((p) => p.level)} />
-                    <CompareRow label="Duration" icon={<Clock className="w-4 h-4" />} values={selectedPrograms.map((p) => p.duration)} />
-                    <CompareRow label="Age Group" icon={<Users className="w-4 h-4" />} values={selectedPrograms.map((p) => p.ageGroup)} />
-                    <CompareRow label="Schedule" icon={<CalendarDays className="w-4 h-4" />} values={selectedPrograms.map((p) => p.schedule)} />
+                    <CompareRow
+                      label="Category"
+                      icon={null}
+                      values={selectedPrograms.map((p) => p.category)}
+                    />
+                    <CompareRow
+                      label="Level"
+                      icon={null}
+                      values={selectedPrograms.map((p) => p.level)}
+                    />
+                    <CompareRow
+                      label="Duration"
+                      icon={<Clock className="w-4 h-4" />}
+                      values={selectedPrograms.map((p) => p.duration)}
+                    />
+                    <CompareRow
+                      label="Age Group"
+                      icon={<Users className="w-4 h-4" />}
+                      values={selectedPrograms.map((p) => p.ageGroup)}
+                    />
+                    <CompareRow
+                      label="Schedule"
+                      icon={<CalendarDays className="w-4 h-4" />}
+                      values={selectedPrograms.map((p) => p.schedule)}
+                    />
                     <tr className="border-b border-white/5">
-                      <td className="p-4 text-gray-400 font-medium align-top">Benefits</td>
+                      <td className="p-4 text-gray-400 font-medium align-top">
+                        Benefits
+                      </td>
                       {selectedPrograms.map((p) => (
                         <td key={p.slug} className="p-4 align-top">
                           <ul className="space-y-1.5">
                             {p.benefits.map((b) => (
-                              <li key={b} className="flex items-start gap-1.5 text-gray-300 text-xs">
+                              <li
+                                key={b}
+                                className="flex items-start gap-1.5 text-gray-300 text-xs"
+                              >
                                 <CheckCircle2 className="w-3.5 h-3.5 text-yellow-400 flex-shrink-0 mt-0.5" />
                                 {b}
                               </li>
@@ -134,15 +188,29 @@ export default function ProgramCompareDrawer({ selected, onRemove, onClear }: Pr
   );
 }
 
-function CompareRow({ label, icon, values }: { label: string; icon: React.ReactNode; values: string[] }) {
+function CompareRow({
+  label,
+  icon,
+  values,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  values: string[];
+}) {
   const allSame = values.every((v) => v === values[0]);
   return (
     <tr className="border-b border-white/5">
       <td className="p-4 text-gray-400 font-medium">
-        <span className="inline-flex items-center gap-1.5">{icon}{label}</span>
+        <span className="inline-flex items-center gap-1.5">
+          {icon}
+          {label}
+        </span>
       </td>
       {values.map((v, i) => (
-        <td key={i} className={`p-4 text-center ${allSame ? 'text-gray-400' : 'text-yellow-400 font-semibold'}`}>
+        <td
+          key={i}
+          className={`p-4 text-center ${allSame ? 'text-gray-400' : 'text-yellow-400 font-semibold'}`}
+        >
           {v}
         </td>
       ))}

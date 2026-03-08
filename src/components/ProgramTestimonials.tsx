@@ -15,7 +15,10 @@ interface ProgramTestimonialsProps {
   programTitle: string;
 }
 
-export default function ProgramTestimonials({ programSlug, programTitle }: ProgramTestimonialsProps) {
+export default function ProgramTestimonials({
+  programSlug,
+  programTitle,
+}: ProgramTestimonialsProps) {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -64,8 +67,12 @@ export default function ProgramTestimonials({ programSlug, programTitle }: Progr
                   />
                 ))}
               </div>
-              <p className="text-gray-300 text-sm leading-relaxed mb-4">"{t.review}"</p>
-              <p className="text-white font-semibold text-sm">— {t.student_name}</p>
+              <p className="text-gray-300 text-sm leading-relaxed mb-4">
+                "{t.review}"
+              </p>
+              <p className="text-white font-semibold text-sm">
+                — {t.student_name}
+              </p>
             </motion.div>
           ))}
         </div>

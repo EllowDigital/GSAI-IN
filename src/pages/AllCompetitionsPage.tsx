@@ -1,6 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Trophy, Calendar, MapPin, Users, ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
+import {
+  Trophy,
+  Calendar,
+  MapPin,
+  Users,
+  ArrowLeft,
+  ArrowRight,
+  Sparkles,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
@@ -14,7 +22,10 @@ import Spinner from '@/components/ui/spinner';
 const variants = {
   container: {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1, delayChildren: 0.2 },
+    },
   },
   card: {
     hidden: { opacity: 0, y: 30 },
@@ -25,12 +36,18 @@ const variants = {
 const AllCompetitionsPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const { data: competitions = [], isLoading, error } = useEnhancedQuery({
+  const {
+    data: competitions = [],
+    isLoading,
+    error,
+  } = useEnhancedQuery({
     queryKey: ['competitions', 'all'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('competitions')
-        .select('id, name, date, end_date, location_text, description, image_url, status, max_participants')
+        .select(
+          'id, name, date, end_date, location_text, description, image_url, status, max_participants'
+        )
         .order('date', { ascending: false });
       if (error) throw error;
       return data || [];
@@ -41,7 +58,9 @@ const AllCompetitionsPage: React.FC = () => {
     retryAttempts: 3,
   });
 
-  const upcoming = competitions.filter((c: any) => c.status === 'upcoming' || c.status === 'ongoing');
+  const upcoming = competitions.filter(
+    (c: any) => c.status === 'upcoming' || c.status === 'ongoing'
+  );
   const past = competitions.filter((c: any) => c.status === 'completed');
 
   const renderCard = (comp: any) => (
@@ -60,32 +79,49 @@ const AllCompetitionsPage: React.FC = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
           <div className="absolute top-3 right-3">
-            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md ${
-              comp.status === 'ongoing'
-                ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                : comp.status === 'completed'
-                ? 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
-                : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-            }`}>
+            <span
+              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md ${
+                comp.status === 'ongoing'
+                  ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                  : comp.status === 'completed'
+                    ? 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                    : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+              }`}
+            >
               {comp.status === 'ongoing' ? (
-                <><span className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse" /> Live Now</>
-              ) : comp.status === 'completed' ? 'Completed' : 'Upcoming'}
+                <>
+                  <span className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse" />{' '}
+                  Live Now
+                </>
+              ) : comp.status === 'completed' ? (
+                'Completed'
+              ) : (
+                'Upcoming'
+              )}
             </span>
           </div>
         </div>
       )}
 
-      <div className={`p-5 sm:p-6 flex flex-col flex-grow ${!comp.image_url ? 'pt-6' : ''}`}>
+      <div
+        className={`p-5 sm:p-6 flex flex-col flex-grow ${!comp.image_url ? 'pt-6' : ''}`}
+      >
         {!comp.image_url && (
           <div className="mb-3">
-            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
-              comp.status === 'ongoing'
-                ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+            <span
+              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
+                comp.status === 'ongoing'
+                  ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                  : comp.status === 'completed'
+                    ? 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                    : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+              }`}
+            >
+              {comp.status === 'ongoing'
+                ? '🔴 Live'
                 : comp.status === 'completed'
-                ? 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
-                : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-            }`}>
-              {comp.status === 'ongoing' ? '🔴 Live' : comp.status === 'completed' ? 'Completed' : 'Upcoming'}
+                  ? 'Completed'
+                  : 'Upcoming'}
             </span>
           </div>
         )}
@@ -95,7 +131,9 @@ const AllCompetitionsPage: React.FC = () => {
         </h3>
 
         {comp.description && (
-          <p className="text-sm text-gray-400 line-clamp-3 leading-relaxed mb-4 flex-grow">{comp.description}</p>
+          <p className="text-sm text-gray-400 line-clamp-3 leading-relaxed mb-4 flex-grow">
+            {comp.description}
+          </p>
         )}
 
         <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-500 pt-2 border-t border-white/10 mt-auto">
@@ -106,12 +144,14 @@ const AllCompetitionsPage: React.FC = () => {
           </span>
           {comp.location_text && (
             <span className="flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-orange-500" /> {comp.location_text}
+              <MapPin className="w-3.5 h-3.5 text-orange-500" />{' '}
+              {comp.location_text}
             </span>
           )}
           {comp.max_participants && (
             <span className="flex items-center gap-1.5">
-              <Users className="w-3.5 h-3.5 text-red-500" /> Max {comp.max_participants}
+              <Users className="w-3.5 h-3.5 text-red-500" /> Max{' '}
+              {comp.max_participants}
             </span>
           )}
         </div>
@@ -126,7 +166,13 @@ const AllCompetitionsPage: React.FC = () => {
       <Seo
         title="All Competitions - Ghatak Sports Academy India"
         description="Browse all competitions, tournaments and championships at Ghatak Sports Academy India. Register via Student Portal to participate."
-        keywords={['martial arts competitions', 'karate tournament', 'taekwondo championship', 'MMA competition', 'sports tournament lucknow']}
+        keywords={[
+          'martial arts competitions',
+          'karate tournament',
+          'taekwondo championship',
+          'MMA competition',
+          'sports tournament lucknow',
+        ]}
       />
 
       <Navbar />
@@ -139,7 +185,10 @@ const AllCompetitionsPage: React.FC = () => {
         </div>
 
         <Sparkles className="absolute top-32 right-12 w-8 h-8 text-yellow-500 opacity-20 animate-float" />
-        <Trophy className="absolute bottom-40 left-10 w-10 h-10 text-red-500 opacity-15 animate-float" style={{ animationDelay: '2s' }} />
+        <Trophy
+          className="absolute bottom-40 left-10 w-10 h-10 text-red-500 opacity-15 animate-float"
+          style={{ animationDelay: '2s' }}
+        />
 
         {/* Header */}
         <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8">
@@ -176,7 +225,8 @@ const AllCompetitionsPage: React.FC = () => {
               </h1>
 
               <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
-                Explore all our competitions. Students can register via the Student Portal.
+                Explore all our competitions. Students can register via the
+                Student Portal.
               </p>
 
               {/* Divider */}
@@ -184,7 +234,10 @@ const AllCompetitionsPage: React.FC = () => {
                 <div className="h-px w-16 bg-gradient-to-r from-transparent to-yellow-500" />
                 <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
                 <div className="h-px w-32 bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500" />
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+                <div
+                  className="w-2 h-2 bg-red-500 rounded-full animate-pulse"
+                  style={{ animationDelay: '0.5s' }}
+                />
                 <div className="h-px w-16 bg-gradient-to-r from-red-500 to-transparent" />
               </div>
             </motion.div>
@@ -198,30 +251,49 @@ const AllCompetitionsPage: React.FC = () => {
               <div className="flex justify-center py-16">
                 <div className="flex flex-col items-center gap-4">
                   <Spinner className="text-yellow-500" />
-                  <span className="text-gray-400 font-medium">Loading competitions...</span>
+                  <span className="text-gray-400 font-medium">
+                    Loading competitions...
+                  </span>
                 </div>
               </div>
             )}
 
             {error && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center py-16">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center py-16"
+              >
                 <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-red-500/20">
                   <Trophy className="w-10 h-10 text-red-500" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-3">Unable to Load Competitions</h3>
-                <button onClick={() => window.location.reload()} className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-all">
+                <h3 className="text-2xl font-bold text-white mb-3">
+                  Unable to Load Competitions
+                </h3>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-all"
+                >
                   Try Again <ArrowRight className="w-4 h-4" />
                 </button>
               </motion.div>
             )}
 
             {!error && !isLoading && competitions.length === 0 && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center py-16">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center py-16"
+              >
                 <div className="w-24 h-24 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Trophy className="w-12 h-12 text-yellow-500" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-3">No Competitions Yet</h3>
-                <p className="text-gray-400 max-w-md mx-auto">Stay tuned for upcoming tournaments and championships!</p>
+                <h3 className="text-2xl font-bold text-white mb-3">
+                  No Competitions Yet
+                </h3>
+                <p className="text-gray-400 max-w-md mx-auto">
+                  Stay tuned for upcoming tournaments and championships!
+                </p>
               </motion.div>
             )}
 
@@ -285,7 +357,8 @@ const AllCompetitionsPage: React.FC = () => {
                 <div className="inline-flex flex-col sm:flex-row items-center gap-4 bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10">
                   <Link to="/student/login">
                     <button className="btn-primary w-full sm:w-auto justify-center px-8 py-3 text-base sm:text-lg shadow-lg shadow-yellow-500/20 bg-gradient-to-r from-yellow-500 to-red-600 border-0 text-white gap-2">
-                      Register via Student Portal <ArrowRight className="w-4 h-4" />
+                      Register via Student Portal{' '}
+                      <ArrowRight className="w-4 h-4" />
                     </button>
                   </Link>
                   <span className="text-gray-400 text-sm sm:text-base font-medium">

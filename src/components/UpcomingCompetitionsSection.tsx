@@ -2,7 +2,14 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { motion } from 'framer-motion';
-import { Trophy, Calendar, MapPin, ArrowRight, Users, Sparkles } from 'lucide-react';
+import {
+  Trophy,
+  Calendar,
+  MapPin,
+  ArrowRight,
+  Users,
+  Sparkles,
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 
@@ -12,7 +19,9 @@ export default function UpcomingCompetitionsSection() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('competitions')
-        .select('id, name, date, end_date, location_text, description, image_url, status, max_participants')
+        .select(
+          'id, name, date, end_date, location_text, description, image_url, status, max_participants'
+        )
         .in('status', ['upcoming', 'ongoing'])
         .order('date', { ascending: true })
         .limit(6);
@@ -177,23 +186,28 @@ export default function UpcomingCompetitionsSection() {
                 </h3>
 
                 {comp.description && (
-                  <p className="text-sm text-gray-400 line-clamp-2 leading-relaxed">{comp.description}</p>
+                  <p className="text-sm text-gray-400 line-clamp-2 leading-relaxed">
+                    {comp.description}
+                  </p>
                 )}
 
                 <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-500 pt-1">
                   <span className="flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5 text-yellow-500" />
                     {format(new Date(comp.date), 'MMM d, yyyy')}
-                    {comp.end_date && ` – ${format(new Date(comp.end_date), 'MMM d')}`}
+                    {comp.end_date &&
+                      ` – ${format(new Date(comp.end_date), 'MMM d')}`}
                   </span>
                   {comp.location_text && (
                     <span className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-orange-500" /> {comp.location_text}
+                      <MapPin className="w-3.5 h-3.5 text-orange-500" />{' '}
+                      {comp.location_text}
                     </span>
                   )}
                   {comp.max_participants && (
                     <span className="flex items-center gap-1.5">
-                      <Users className="w-3.5 h-3.5 text-red-500" /> Max {comp.max_participants}
+                      <Users className="w-3.5 h-3.5 text-red-500" /> Max{' '}
+                      {comp.max_participants}
                     </span>
                   )}
                 </div>

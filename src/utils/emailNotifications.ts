@@ -14,7 +14,9 @@ interface EmailPayload {
   name?: string;
 }
 
-export async function sendFormSubmitEmail(payload: EmailPayload): Promise<boolean> {
+export async function sendFormSubmitEmail(
+  payload: EmailPayload
+): Promise<boolean> {
   try {
     const body: Record<string, string> = {
       _subject: payload.subject,
@@ -28,7 +30,10 @@ export async function sendFormSubmitEmail(payload: EmailPayload): Promise<boolea
 
     const response = await fetch(FORMSUBMIT_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
       body: JSON.stringify(body),
     });
 

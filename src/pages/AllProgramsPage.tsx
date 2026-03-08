@@ -1,7 +1,13 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, Variants, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Filter, Shield, Search, ArrowLeftRight } from 'lucide-react';
+import {
+  ArrowLeft,
+  Filter,
+  Shield,
+  Search,
+  ArrowLeftRight,
+} from 'lucide-react';
 import { programs } from '@/data/programsData';
 import Navbar from '@/components/Navbar';
 import FooterSection from '@/components/FooterSection';
@@ -32,15 +38,15 @@ export default function AllProgramsPage() {
   const [compareList, setCompareList] = useState<string[]>([]);
 
   const filtered = useMemo(() => {
-    let result = activeCategory === 'All'
-      ? programs
-      : programs.filter((p) => p.category === activeCategory);
+    let result =
+      activeCategory === 'All'
+        ? programs
+        : programs.filter((p) => p.category === activeCategory);
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(
         (p) =>
-          p.title.toLowerCase().includes(q) ||
-          p.desc.toLowerCase().includes(q)
+          p.title.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)
       );
     }
     return result;
@@ -51,8 +57,8 @@ export default function AllProgramsPage() {
       prev.includes(slug)
         ? prev.filter((s) => s !== slug)
         : prev.length >= 3
-        ? prev
-        : [...prev, slug]
+          ? prev
+          : [...prev, slug]
     );
   }, []);
 
@@ -65,7 +71,9 @@ export default function AllProgramsPage() {
       />
       <Navbar />
       <main className="min-h-screen bg-[#0a0a0a] pt-20">
-        <div className={`container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 ${compareList.length > 0 ? 'pb-28' : ''}`}>
+        <div
+          className={`container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 ${compareList.length > 0 ? 'pb-28' : ''}`}
+        >
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
             <Link
@@ -176,7 +184,11 @@ export default function AllProgramsPage() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => toggleCompare(prog.slug)}
-                          title={isComparing ? 'Remove from compare' : 'Add to compare'}
+                          title={
+                            isComparing
+                              ? 'Remove from compare'
+                              : 'Add to compare'
+                          }
                           className={`p-1.5 rounded-lg transition-all text-xs ${
                             isComparing
                               ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
@@ -224,7 +236,9 @@ export default function AllProgramsPage() {
         <AnimatePresence>
           <ProgramCompareDrawer
             selected={compareList}
-            onRemove={(slug) => setCompareList((prev) => prev.filter((s) => s !== slug))}
+            onRemove={(slug) =>
+              setCompareList((prev) => prev.filter((s) => s !== slug))
+            }
             onClear={() => setCompareList([])}
           />
         </AnimatePresence>

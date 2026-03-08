@@ -9,8 +9,15 @@ import { Award, ArrowRight, Star } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 
 const BELT_COLORS: Record<string, string> = {
-  white: '#e5e7eb', yellow: '#fbbf24', orange: '#f97316', green: '#22c55e',
-  blue: '#3b82f6', purple: '#a855f7', brown: '#92400e', red: '#ef4444', black: '#1f2937',
+  white: '#e5e7eb',
+  yellow: '#fbbf24',
+  orange: '#f97316',
+  green: '#22c55e',
+  blue: '#3b82f6',
+  purple: '#a855f7',
+  brown: '#92400e',
+  red: '#ef4444',
+  black: '#1f2937',
 };
 
 export default function StudentProgressionTracker() {
@@ -19,15 +26,17 @@ export default function StudentProgressionTracker() {
   const { data: promotions = [], isLoading } = useQuery({
     queryKey: ['student-promotions', profile?.studentId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = (await supabase
         .from('promotion_history')
-        .select(`
+        .select(
+          `
           id, promoted_at, notes,
           from_belt:belt_levels!promotion_history_from_belt_id_fkey(color, rank),
           to_belt:belt_levels!promotion_history_to_belt_id_fkey(color, rank)
-        `)
+        `
+        )
         .eq('student_id', profile!.studentId)
-        .order('promoted_at', { ascending: true }) as any;
+        .order('promoted_at', { ascending: true })) as any;
       if (error) throw error;
       return data || [];
     },
@@ -37,22 +46,28 @@ export default function StudentProgressionTracker() {
   const { data: currentProgress } = useQuery({
     queryKey: ['student-current-progress', profile?.studentId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = (await supabase
         .from('student_progress')
         .select('stripe_count, status, belt_levels(color, rank)')
         .eq('student_id', profile!.studentId)
         .order('created_at', { ascending: false })
         .limit(1)
-        .maybeSingle() as any;
+        .maybeSingle()) as any;
       if (error) throw error;
       return data;
     },
     enabled: !!profile?.studentId,
   });
 
-  if (isLoading) return <div className="flex justify-center py-8"><Spinner size={20} /></div>;
+  if (isLoading)
+    return (
+      <div className="flex justify-center py-8">
+        <Spinner size={20} />
+      </div>
+    );
 
-  const currentBelt = currentProgress?.belt_levels?.color?.toLowerCase() || 'white';
+  const currentBelt =
+    currentProgress?.belt_levels?.color?.toLowerCase() || 'white';
   const stripes = currentProgress?.stripe_count || 0;
 
   return (
@@ -63,14 +78,21 @@ export default function StudentProgressionTracker() {
           <div className="flex items-center gap-4">
             <div
               className="w-16 h-6 rounded-sm border border-border shadow-sm"
-              style={{ backgroundColor: BELT_COLORS[currentBelt] || BELT_COLORS.white }}
+              style={{
+                backgroundColor: BELT_COLORS[currentBelt] || BELT_COLORS.white,
+              }}
             />
             <div>
-              <h3 className="font-semibold text-foreground capitalize">{currentBelt} Belt</h3>
+              <h3 className="font-semibold text-foreground capitalize">
+                {currentBelt} Belt
+              </h3>
               {stripes > 0 && (
                 <div className="flex items-center gap-1 mt-1">
                   {Array.from({ length: stripes }).map((_, i) => (
-                    <Star key={i} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                    <Star
+                      key={i}
+                      className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400"
+                    />
                   ))}
                   <span className="text-xs text-muted-foreground ml-1">
                     {stripes} stripe{stripes > 1 ? 's' : ''}
@@ -99,7 +121,11 @@ export default function StudentProgressionTracker() {
                     <Badge variant="outline" className="capitalize text-xs">
                       <span
                         className="w-2.5 h-2.5 rounded-full mr-1.5 inline-block"
-                        style={{ backgroundColor: BELT_COLORS[p.from_belt?.color?.toLowerCase()] || '#ccc' }}
+                        style={{
+                          backgroundColor:
+                            BELT_COLORS[p.from_belt?.color?.toLowerCase()] ||
+                            '#ccc',
+                        }}
                       />
                       {p.from_belt?.color || '—'}
                     </Badge>
@@ -107,7 +133,11 @@ export default function StudentProgressionTracker() {
                     <Badge variant="outline" className="capitalize text-xs">
                       <span
                         className="w-2.5 h-2.5 rounded-full mr-1.5 inline-block"
-                        style={{ backgroundColor: BELT_COLORS[p.to_belt?.color?.toLowerCase()] || '#ccc' }}
+                        style={{
+                          backgroundColor:
+                            BELT_COLORS[p.to_belt?.color?.toLowerCase()] ||
+                            '#ccc',
+                        }}
                       />
                       {p.to_belt?.color || '—'}
                     </Badge>
@@ -116,7 +146,9 @@ export default function StudentProgressionTracker() {
                     {format(new Date(p.promoted_at), 'MMM d, yyyy')}
                   </p>
                   {p.notes && (
-                    <p className="text-xs text-muted-foreground mt-1 italic">"{p.notes}"</p>
+                    <p className="text-xs text-muted-foreground mt-1 italic">
+                      "{p.notes}"
+                    </p>
                   )}
                 </CardContent>
               </Card>
