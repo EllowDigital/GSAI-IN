@@ -123,8 +123,9 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    triggerAnimation('logout', 'You have been signed out successfully.');
+    triggerAnimation('logout', 'You have been signed out successfully.', 1800);
     await delay(1200);
+    setAuthAnimation(null);
     await supabase.auth.signOut();
     setSession(null);
     setProfile(null);
