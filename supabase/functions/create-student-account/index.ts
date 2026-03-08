@@ -119,20 +119,22 @@ Deno.serve(async (req) => {
     const { error: insertErr } = await supabaseAdmin.from('student_portal_accounts').insert({
       student_id,
       login_id: sanitizedLoginId.toLowerCase(),
-      auth_user_id: authData.user.id,
+      auth_user_id: authUserId,
     });
 
     if (insertErr) {
-      // Cleanup: delete the auth user if record creation fails
-      await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
+      // Only cleanup if we created a new user (not reused)
+      if (authData?.user?.id) {
+        await supabaseAdmin.auth.admin.deleteUser(authUserId);
+      }
       return new Response(JSON.stringify({ error: insertErr.message }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    // Add student role
-    await supabaseAdmin.from('user_roles').insert({
-      user_id: authData.user.id,
+    // Add student role (ignore if already exists)
+    await supabaseAdmin.from('user_roles').upsert({
+      user_id: authUserId,
       role: 'student',
-    });
+    }, { onConflict: 'user_id,role' });
 
     return new Response(JSON.stringify({ success: true, login_id: sanitizedLoginId }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   } catch (err: unknown) {
