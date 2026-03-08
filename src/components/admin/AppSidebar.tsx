@@ -69,6 +69,12 @@ const navItems = [
     icon: GalleryIcon,
     category: 'content',
   },
+  {
+    title: 'Testimonials',
+    url: '/admin/dashboard/testimonials',
+    icon: MessageSquare,
+    category: 'content',
+  },
 ];
 
 interface AppSidebarProps {
