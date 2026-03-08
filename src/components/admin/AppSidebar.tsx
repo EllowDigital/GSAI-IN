@@ -14,6 +14,7 @@ import {
   ChevronRight,
   X,
   Trophy,
+  MessageSquare,
 } from 'lucide-react';
 import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 
