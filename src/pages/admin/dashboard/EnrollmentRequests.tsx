@@ -304,6 +304,7 @@ export default function EnrollmentRequestsManager() {
                 <div><p className="text-xs text-muted-foreground">Parent</p><p className="font-medium">{viewReq.parent_name}</p></div>
                 <div><p className="text-xs text-muted-foreground">Phone</p><a href={`tel:${viewReq.parent_phone}`} className="font-medium text-primary hover:underline">{viewReq.parent_phone}</a></div>
                 <div className="col-span-2"><p className="text-xs text-muted-foreground">Program</p><p className="font-medium">{viewReq.program}</p></div>
+                {viewReq.aadhar_number && <div className="col-span-2"><p className="text-xs text-muted-foreground">Aadhar Number</p><p className="font-medium font-mono">{viewReq.aadhar_number.replace(/(\d{4})(\d{4})(\d{4})/, '$1-$2-$3')}</p></div>}
                 {viewReq.message && <div className="col-span-2"><p className="text-xs text-muted-foreground">Message</p><p className="font-medium">{viewReq.message}</p></div>}
                 <div className="col-span-2"><p className="text-xs text-muted-foreground">Submitted</p><p className="font-medium">{format(new Date(viewReq.created_at), 'PPp')}</p></div>
               </div>
