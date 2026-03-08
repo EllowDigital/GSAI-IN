@@ -13,6 +13,7 @@ import { programs } from '@/data/programsData';
 import Navbar from '@/components/Navbar';
 import FooterSection from '@/components/FooterSection';
 import InternalLinksBlock from '@/components/InternalLinksBlock';
+import ProgramEnquiryForm from '@/components/ProgramEnquiryForm';
 import Seo from '@/components/Seo';
 
 export default function ProgramDetail() {
