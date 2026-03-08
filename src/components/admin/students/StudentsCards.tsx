@@ -88,9 +88,19 @@ export default function StudentsCards({
   onDelete,
   loading,
 }: Props) {
-  const [studentsWithBelts, setStudentsWithBelts] = useState<StudentWithBelt[]>(
-    []
-  );
+  const [studentsWithBelts, setStudentsWithBelts] = useState<StudentWithBelt[]>([]);
+  const [portalStudent, setPortalStudent] = useState<{ id: string; name: string; program: string } | null>(null);
+
+  // Fetch which students already have portal accounts
+  const { data: portalAccountIds = new Set<string>() } = useQuery({
+    queryKey: ['students-portal-status'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('student_portal_accounts')
+        .select('student_id') as any;
+      return new Set<string>((data || []).map((r: any) => r.student_id));
+    },
+  });
 
   useEffect(() => {
     const fetchBelts = async () => {
