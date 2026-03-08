@@ -18,6 +18,8 @@ const enrollSchema = z.object({
   studentName: z.string().trim().min(2, 'Name must be at least 2 characters').max(100),
   age: z.string().min(1, 'Age is required'),
   gender: z.string().min(1, 'Gender is required'),
+  studentEmail: z.string().trim().email('Enter a valid email address').max(255).optional().or(z.literal('')),
+  studentPhone: z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit phone number').optional().or(z.literal('')),
   parentName: z.string().trim().min(2, 'Parent name is required').max(100),
   parentPhone: z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian phone number'),
   program: z.string().min(1, 'Select a program'),
