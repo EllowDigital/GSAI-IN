@@ -14,7 +14,7 @@ import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Grid, List, DollarSign, CheckSquare, X } from 'lucide-react';
+import { Grid, List, DollarSign, CheckSquare, X, Zap, Loader2 } from 'lucide-react';
 
 export default function FeesManagerPanel() {
   const now = new Date();
