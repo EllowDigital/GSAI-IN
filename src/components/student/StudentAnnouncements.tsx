@@ -33,7 +33,7 @@ export default function StudentAnnouncements() {
 
   return (
     <div className="space-y-3">
-      {(announcements as any[]).map((a: any) => {
+      {announcements.map((a) => {
         const config = PRIORITY_CONFIG[a.priority] || PRIORITY_CONFIG.normal;
         const Icon = config.icon;
         return (
