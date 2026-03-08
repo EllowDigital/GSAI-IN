@@ -246,6 +246,9 @@ const App = () => {
                     {/* --- ADMIN ROUTES --- */}
                     <Route path="/admin/*" element={<AdminArea />} />
 
+                    {/* --- STUDENT PORTAL --- */}
+                    <Route path="/student/*" element={<StudentPortal />} />
+
                     {/* CUSTOM ROUTES */}
                     <Route path="/privacy" element={<PrivacyPage />} />
                     <Route path="/terms" element={<TermsPage />} />
