@@ -39,6 +39,7 @@ const EMPTY: Partial<EventRow> = {
   from_date: '',
   end_date: '',
   tag: '',
+  location: '',
 };
 
 // Helper component for date buttons — declared outside modal to avoid creating
