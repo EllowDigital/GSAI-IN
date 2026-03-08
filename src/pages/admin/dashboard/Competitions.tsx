@@ -47,6 +47,8 @@ export default function Competitions() {
     name: '', description: '', date: '', end_date: '', location_text: '',
     max_participants: '', status: 'upcoming', image_url: '',
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const { data: competitions = [], isLoading } = useQuery({
     queryKey: ['competitions'],
