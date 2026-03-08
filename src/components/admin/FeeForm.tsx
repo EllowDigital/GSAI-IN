@@ -243,6 +243,23 @@ export function FeeForm({
         <Input {...form.register('notes')} />
       </div>
       <div>
+        <label className="text-xs font-semibold">Status Override</label>
+        <Select
+          value={form.watch('status_override')}
+          onValueChange={(v) => form.setValue('status_override', v)}
+        >
+          <SelectTrigger className="mt-1">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="auto">Auto (based on amounts)</SelectItem>
+            <SelectItem value="paid">✅ Paid</SelectItem>
+            <SelectItem value="partial">⚠️ Partial</SelectItem>
+            <SelectItem value="unpaid">❌ Unpaid</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
         <label className="text-xs font-semibold">Receipt File</label>
         <FeeReceiptUploader
           feeId={fee?.id || 'temp'}
