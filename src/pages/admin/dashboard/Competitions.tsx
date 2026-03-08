@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import CompetitionCertificates from '@/components/admin/CompetitionCertificates';
+import CompetitionRegistrations from '@/components/admin/CompetitionRegistrations';
 import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
 
 interface Competition {
