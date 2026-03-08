@@ -130,9 +130,13 @@ export default function EnrollmentRequestsManager() {
       if (error) throw error;
 
       // Mark enrollment as approved
-      await supabase.from('enrollment_requests' as any)
-        .update({ status: 'approved', reviewed_at: new Date().toISOString() } as any)
-        .eq('id', approveReq.id);
+      const { error: updateError } = await supabase.from('enrollment_requests' as any)
+        .update({ status: 'approved', reviewed_at: new Date().toISOString(), reviewed_by: student.created_by || null } as any)
+        .eq('id', approveReq.id) as any;
+      if (updateError) {
+        console.error('Failed to update enrollment status:', updateError);
+        toast.error('Student created but enrollment status update failed: ' + updateError.message);
+      }
 
       setCreatedStudentId(student.id);
       setApproveStep('credentials');

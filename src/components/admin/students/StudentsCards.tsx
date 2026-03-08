@@ -97,11 +97,16 @@ export default function StudentsCards({
   const { data: portalAccountIds = new Set<string>() } = useQuery({
     queryKey: ['students-portal-status'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('student_portal_accounts')
         .select('student_id') as any;
+      if (error) {
+        console.error('Failed to fetch portal accounts:', error);
+        return new Set<string>();
+      }
       return new Set<string>((data || []).map((r: any) => r.student_id));
     },
+    staleTime: 30000,
   });
 
   useEffect(() => {
