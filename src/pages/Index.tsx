@@ -602,6 +602,7 @@ export default function Index() {
         <ProgramsSection />
         {/* <CorporateSection /> */}
         <AchievementSection />
+        <CompetitionResultsSection />
         <FounderSection />
         <GallerySection />
         <TestimonialSection />

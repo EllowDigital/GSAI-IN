@@ -538,9 +538,16 @@ export default function Competitions() {
         <CompetitionCertificates
           competition={certOpen}
           open={!!certOpen}
-          onOpenChange={(open) => {
-            if (!open) setCertOpen(null);
-          }}
+          onOpenChange={(open) => { if (!open) setCertOpen(null); }}
+        />
+      )}
+
+      {/* Registrations Modal */}
+      {regsOpen && (
+        <CompetitionRegistrations
+          competition={regsOpen}
+          open={!!regsOpen}
+          onOpenChange={(open) => { if (!open) setRegsOpen(null); }}
         />
       )}
     </div>
