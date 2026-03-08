@@ -70,6 +70,7 @@ export default function AssignStudentBeltDialog({
   onOpenChange,
   students,
   belts,
+  disciplineLevels = [],
   onSubmit,
   loading,
 }: AssignStudentBeltDialogProps) {
