@@ -49,7 +49,7 @@ interface Competition {
 
 const STATUS_OPTIONS = ['upcoming', 'ongoing', 'completed', 'cancelled'] as const;
 const REQUEST_TIMEOUT_MS = 15000;
-const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY?.trim() || '';
+
 
 const statusColors: Record<string, string> = {
   upcoming: 'bg-primary/10 text-primary',
