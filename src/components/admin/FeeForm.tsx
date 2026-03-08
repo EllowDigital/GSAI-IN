@@ -93,6 +93,7 @@ export function FeeForm({
     paid_amount: number;
     notes: string;
     receipt_url?: string | null;
+    status_override: string;
   }) {
     // Validation
     if (!student || typeof student.id !== 'string') {
