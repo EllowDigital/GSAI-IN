@@ -41,6 +41,7 @@ import {
   useProgressionQuery,
 } from '@/hooks/useProgressionQuery';
 import { useBeltLevels } from '@/hooks/useBeltLevels';
+import { useDisciplineLevels } from '@/hooks/useDisciplineLevels';
 import { useStudents } from '@/hooks/useStudents';
 import { usePromotionHistory } from '@/hooks/usePromotionHistory';
 import AssignStudentBeltDialog from './AssignStudentBeltDialog';
