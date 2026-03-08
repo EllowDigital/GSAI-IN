@@ -81,16 +81,36 @@ export default function DashboardHome() {
       0
     );
     const unpaidCount = data.fees.filter((f) => f.status === 'unpaid').length;
+    const partialCount = data.fees.filter((f) => f.status === 'partial').length;
     const pendingEnrollments = data.enrollments.filter((e: any) => e.status === 'pending').length;
     const activeAnnouncements = data.announcements.filter((a: any) => a.is_active).length;
+
+    // Current month collection
+    const currentMonthFees = data.fees.filter(
+      (f) => f.year === now.getFullYear() && f.month === now.getMonth() + 1
+    );
+    const collectedThisMonth = currentMonthFees
+      .reduce((sum, f) => sum + (f.paid_amount || 0), 0);
+    const totalDueThisMonth = currentMonthFees
+      .reduce((sum, f) => sum + (f.monthly_fee || 0), 0);
+    const collectionRate = totalDueThisMonth > 0 
+      ? Math.round((collectedThisMonth / totalDueThisMonth) * 100) 
+      : 0;
+
+    // Attendance this month
+    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+    const thisMonthAttendance = data.attendance.filter((a: any) => a.date >= thisMonthStart);
+    const presentCount = thisMonthAttendance.filter((a: any) => a.status === 'present').length;
+    const totalAttendanceRecords = thisMonthAttendance.length;
+    const attendanceRate = totalAttendanceRecords > 0 
+      ? Math.round((presentCount / totalAttendanceRecords) * 100) 
+      : 0;
 
     // Revenue last 6 months
     const revenueChart = [];
     for (let i = 5; i >= 0; i--) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const monthKey = date.toLocaleDateString('en-US', {
-        month: 'short',
-      });
+      const monthKey = date.toLocaleDateString('en-US', { month: 'short' });
       const revenue = data.fees
         .filter(
           (f) =>
@@ -99,7 +119,13 @@ export default function DashboardHome() {
             f.status === 'paid'
         )
         .reduce((sum, f) => sum + (f.paid_amount || 0), 0);
-      revenueChart.push({ month: monthKey, revenue });
+      
+      // Student count at that point
+      const studentCount = data.students.filter(
+        (s) => new Date(s.join_date) <= new Date(date.getFullYear(), date.getMonth() + 1, 0)
+      ).length;
+      
+      revenueChart.push({ month: monthKey, revenue, students: studentCount });
     }
 
     // Program distribution
@@ -113,8 +139,12 @@ export default function DashboardHome() {
       totalRevenue,
       paidCount: paidFees.length,
       unpaidCount,
+      partialCount,
       pendingEnrollments,
       activeAnnouncements,
+      collectedThisMonth,
+      collectionRate,
+      attendanceRate,
       totalBlogs: data.blogs.length,
       totalNews: data.news.length,
       totalEvents: data.events.length,
