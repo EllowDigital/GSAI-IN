@@ -432,6 +432,7 @@ export default function ProgressionBoard() {
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
 
   const { beltOptions, beltMap } = useBeltLevels();
+  const { levelOptions: disciplineLevelOptions } = useDisciplineLevels();
   const { students } = useStudents();
   const {
     history,
