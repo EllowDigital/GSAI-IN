@@ -24,6 +24,21 @@ export default function StudentDashboard() {
   const { profile, isAuthenticated, isLoading: authLoading, signOut } = useStudentAuth();
   const queryClient = useQueryClient();
 
+  // Fetch all enrolled programs for the student
+  const { data: enrolledPrograms = [] } = useQuery({
+    queryKey: ['student-enrolled-programs', profile?.studentId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('student_programs')
+        .select('program_name, is_primary, joined_at')
+        .eq('student_id', profile!.studentId)
+        .order('is_primary', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!profile?.studentId,
+  });
+
   const { data: competitions = [], isLoading: compLoading } = useQuery({
     queryKey: ['student-competitions'],
     queryFn: async () => {
@@ -86,19 +101,36 @@ export default function StudentDashboard() {
   const upcomingComps = (competitions as any[]).filter((c: any) => c.status === 'upcoming' || c.status === 'ongoing');
   const pastComps = (competitions as any[]).filter((c: any) => c.status === 'completed');
 
+  // Build program display string
+  const programDisplay = enrolledPrograms.length > 0
+    ? enrolledPrograms.map((p: any) => p.program_name).join(', ')
+    : profile?.program || 'N/A';
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center justify-between px-4 lg:px-6 h-14">
-          <div>
+          <div className="min-w-0 flex-1">
             <h1 className="text-base font-semibold text-foreground">Student Portal</h1>
-            <p className="text-xs text-muted-foreground">{profile?.studentName} • {profile?.program}</p>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-xs text-muted-foreground truncate">{profile?.studentName}</span>
+              <span className="text-xs text-muted-foreground">•</span>
+              <div className="flex gap-1 flex-wrap">
+                {enrolledPrograms.length > 0 ? enrolledPrograms.map((p: any, i: number) => (
+                  <Badge key={p.program_name} variant={p.is_primary ? 'default' : 'secondary'} className="text-[9px] px-1.5 py-0 h-4">
+                    {p.program_name}
+                  </Badge>
+                )) : (
+                  <span className="text-xs text-muted-foreground">{profile?.program}</span>
+                )}
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <ChangePasswordDialog />
             <Button variant="ghost" size="sm" onClick={signOut} className="gap-1.5 text-muted-foreground">
-              <LogOut className="w-4 h-4" /> Sign Out
+              <LogOut className="w-4 h-4" /> <span className="hidden sm:inline">Sign Out</span>
             </Button>
           </div>
         </div>
@@ -127,9 +159,8 @@ export default function StudentDashboard() {
             </TabsTrigger>
           </TabsList>
 
-          {/* Competitions Tab - Redesigned */}
+          {/* Competitions Tab */}
           <TabsContent value="competitions" className="space-y-6 mt-4">
-            {/* My Certificates */}
             {(myCertificates as any[]).length > 0 && (
               <Card className="border border-border">
                 <CardHeader className="pb-3">
@@ -139,33 +170,17 @@ export default function StudentDashboard() {
                 </CardHeader>
                 <CardContent className="space-y-2 pt-0">
                   {(myCertificates as any[]).map((cert: any) => (
-                    <div
-                      key={cert.id}
-                      className="flex items-center justify-between gap-3 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
-                    >
+                    <div key={cert.id} className="flex items-center justify-between gap-3 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-foreground truncate">
-                          {cert.competitions?.name || 'Competition'}
-                        </p>
-                        <p className="text-[11px] text-muted-foreground">
-                          {format(new Date(cert.uploaded_at), 'MMM d, yyyy')}
-                        </p>
+                        <p className="text-sm font-medium text-foreground truncate">{cert.competitions?.name || 'Competition'}</p>
+                        <p className="text-[11px] text-muted-foreground">{format(new Date(cert.uploaded_at), 'MMM d, yyyy')}</p>
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="gap-1.5 shrink-0 text-xs"
+                      <Button variant="outline" size="sm" className="gap-1.5 shrink-0 text-xs"
                         onClick={async () => {
                           try {
-                            await downloadCertificateFile({
-                              certificateUrl: cert.certificate_url as string,
-                              fileName: `${cert.competitions?.name || 'competition'}-certificate.pdf`,
-                            });
-                          } catch {
-                            toast.error('Unable to download certificate.');
-                          }
-                        }}
-                      >
+                            await downloadCertificateFile({ certificateUrl: cert.certificate_url as string, fileName: `${cert.competitions?.name || 'competition'}-certificate.pdf` });
+                          } catch { toast.error('Unable to download certificate.'); }
+                        }}>
                         <Download className="w-3 h-3" /> Download
                       </Button>
                     </div>
@@ -174,7 +189,6 @@ export default function StudentDashboard() {
               </Card>
             )}
 
-            {/* Upcoming Competitions */}
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <Swords className="w-4 h-4 text-primary" /> Upcoming Competitions
@@ -196,12 +210,7 @@ export default function StudentDashboard() {
                       <Card key={c.id} className="border border-border overflow-hidden">
                         {c.image_url && (
                           <div className="h-32 sm:h-40 overflow-hidden">
-                            <img
-                              src={c.image_url}
-                              alt={c.name}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
+                            <img src={c.image_url} alt={c.name} className="w-full h-full object-cover" loading="lazy" />
                           </div>
                         )}
                         <CardContent className="p-4 space-y-3">
@@ -226,50 +235,21 @@ export default function StudentDashboard() {
                                 )}
                               </div>
                             </div>
-                            <Badge
-                              variant="outline"
-                              className={`shrink-0 text-[10px] ${
-                                c.status === 'ongoing'
-                                  ? 'bg-green-500/10 text-green-600 border-green-200'
-                                  : 'bg-blue-500/10 text-blue-600 border-blue-200'
-                              }`}
-                            >
+                            <Badge variant="outline" className={`shrink-0 text-[10px] ${c.status === 'ongoing' ? 'bg-green-500/10 text-green-600 border-green-200' : 'bg-blue-500/10 text-blue-600 border-blue-200'}`}>
                               {c.status === 'ongoing' ? 'Live' : 'Upcoming'}
                             </Badge>
                           </div>
-
-                          {c.description && (
-                            <p className="text-xs text-muted-foreground line-clamp-2">{c.description}</p>
-                          )}
-
+                          {c.description && <p className="text-xs text-muted-foreground line-clamp-2">{c.description}</p>}
                           {c.location_text && (
                             <div className="rounded-lg overflow-hidden border border-border">
-                              <iframe
-                                title={`Map: ${c.location_text}`}
-                                src={`https://maps.google.com/maps?q=${encodeURIComponent(c.location_text)}&z=14&output=embed`}
-                                width="100%"
-                                height="120"
-                                style={{ border: 0 }}
-                                loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
-                              />
+                              <iframe title={`Map: ${c.location_text}`} src={`https://maps.google.com/maps?q=${encodeURIComponent(c.location_text)}&z=14&output=embed`} width="100%" height="120" style={{ border: 0 }} loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
                             </div>
                           )}
-
                           <div className="pt-1">
                             {registered ? (
-                              <Badge className="gap-1 bg-green-500/10 text-green-600 border-green-200">
-                                <UserCheck className="w-3 h-3" /> Registered
-                              </Badge>
+                              <Badge className="gap-1 bg-green-500/10 text-green-600 border-green-200"><UserCheck className="w-3 h-3" /> Registered</Badge>
                             ) : (
-                              <Button
-                                size="sm"
-                                onClick={() => registerMutation.mutate(c.id)}
-                                disabled={registerMutation.isPending}
-                                className="text-xs"
-                              >
-                                Register Now
-                              </Button>
+                              <Button size="sm" onClick={() => registerMutation.mutate(c.id)} disabled={registerMutation.isPending} className="text-xs">Register Now</Button>
                             )}
                           </div>
                         </CardContent>
@@ -280,7 +260,6 @@ export default function StudentDashboard() {
               )}
             </div>
 
-            {/* Past Competitions */}
             {pastComps.length > 0 && (
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
@@ -288,16 +267,10 @@ export default function StudentDashboard() {
                 </h3>
                 <div className="space-y-2">
                   {pastComps.slice(0, 5).map((c: any) => (
-                    <div
-                      key={c.id}
-                      className="flex items-center justify-between gap-3 p-3 rounded-lg bg-muted/20 border border-border/50"
-                    >
+                    <div key={c.id} className="flex items-center justify-between gap-3 p-3 rounded-lg bg-muted/20 border border-border/50">
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-foreground truncate">{c.name}</p>
-                        <p className="text-[11px] text-muted-foreground">
-                          {format(new Date(c.date), 'MMM d, yyyy')}
-                          {c.location_text && ` · ${c.location_text}`}
-                        </p>
+                        <p className="text-[11px] text-muted-foreground">{format(new Date(c.date), 'MMM d, yyyy')}{c.location_text && ` · ${c.location_text}`}</p>
                       </div>
                       <Badge variant="secondary" className="text-[10px] shrink-0">Completed</Badge>
                     </div>
@@ -307,25 +280,13 @@ export default function StudentDashboard() {
             )}
           </TabsContent>
 
-          <TabsContent value="progression" className="mt-4">
-            <StudentProgressionTracker />
-          </TabsContent>
-
-          <TabsContent value="attendance" className="mt-4">
-            <StudentAttendanceView />
-          </TabsContent>
-
-          <TabsContent value="fees" className="mt-4">
-            <StudentFeeHistory />
-          </TabsContent>
-
-          <TabsContent value="events" className="mt-4">
-            <StudentEventsView />
-          </TabsContent>
+          <TabsContent value="progression" className="mt-4"><StudentProgressionTracker /></TabsContent>
+          <TabsContent value="attendance" className="mt-4"><StudentAttendanceView /></TabsContent>
+          <TabsContent value="fees" className="mt-4"><StudentFeeHistory /></TabsContent>
+          <TabsContent value="events" className="mt-4"><StudentEventsView /></TabsContent>
         </Tabs>
       </main>
 
-      {/* Credits Footer */}
       <footer className="border-t border-border/50 py-3 text-center">
         <p className="text-[10px] text-muted-foreground/50">
           Built by <span className="text-muted-foreground/70">Sarwan Yadav</span> · <span className="text-muted-foreground/70">EllowDigital</span>

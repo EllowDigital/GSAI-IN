@@ -6,6 +6,7 @@ import { ArrowLeft, Send, User, Phone, BookOpen, Shield, CheckCircle2, CreditCar
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { programs } from '@/data/programsData';
@@ -44,6 +45,10 @@ const steps = [
   { num: 4, text: 'Complete registration & start training' },
 ];
 
+// Shared input class
+const inputClass = "bg-white/[0.04] border-white/[0.08] text-white placeholder:text-gray-600 focus-visible:ring-yellow-500/30 focus-visible:border-yellow-500/40 h-11 text-sm rounded-xl";
+const labelClass = "text-gray-400 text-xs font-medium";
+
 export default function EnrollPage() {
   const [searchParams] = useSearchParams();
   const preselectedProgram = searchParams.get('program') || '';
@@ -74,11 +79,7 @@ export default function EnrollPage() {
 
     try {
       const { data: existingStudent } = await supabase
-        .from('students')
-        .select('id, name')
-        .eq('aadhar_number', data.aadharNumber)
-        .maybeSingle();
-
+        .from('students').select('id, name').eq('aadhar_number', data.aadharNumber).maybeSingle();
       if (existingStudent) {
         toast.error(`A student with this Aadhar number is already registered (${existingStudent.name}).`);
         setErrors(prev => ({ ...prev, aadharNumber: 'This Aadhar number is already registered' }));
@@ -117,7 +118,6 @@ export default function EnrollPage() {
       } as any);
 
       if (error) throw error;
-
       setSubmitted(true);
       toast.success('Enrollment request submitted successfully!');
     } catch (err: any) {
@@ -181,23 +181,22 @@ export default function EnrollPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="pt-20 sm:pt-24"
+              className="pt-20 sm:pt-24 pb-12"
             >
-              <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-12">
+              <div className="max-w-5xl mx-auto px-4 sm:px-6">
                 {/* Back link */}
                 <Link to="/" className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-300 transition-colors mb-6 text-xs sm:text-sm group">
                   <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" /> Back to Home
                 </Link>
 
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8">
-                  {/* Left: Info panel (hidden on mobile, shown on lg+) */}
+                  {/* Left: Info panel */}
                   <motion.aside
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 0.1 }}
                     className="lg:col-span-2 space-y-6"
                   >
-                    {/* Title area - visible on all screens */}
                     <div>
                       <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-[11px] font-semibold tracking-wide uppercase mb-4">
                         <Shield className="w-3.5 h-3.5" /> Enrollment Open
@@ -214,18 +213,11 @@ export default function EnrollPage() {
                       </p>
                     </div>
 
-                    {/* Highlights - visible on lg+ */}
+                    {/* Highlights - lg+ */}
                     <div className="hidden lg:block space-y-5">
-                      {/* Quick stats */}
                       <div className="space-y-2.5">
                         {highlights.map((h, i) => (
-                          <motion.div
-                            key={i}
-                            initial={{ opacity: 0, x: -12 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.3 + i * 0.08 }}
-                            className="flex items-center gap-3 text-sm"
-                          >
+                          <motion.div key={i} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.08 }} className="flex items-center gap-3 text-sm">
                             <div className="w-8 h-8 rounded-lg bg-yellow-500/10 flex items-center justify-center shrink-0">
                               <h.icon className="w-4 h-4 text-yellow-400" />
                             </div>
@@ -234,18 +226,11 @@ export default function EnrollPage() {
                         ))}
                       </div>
 
-                      {/* How it works */}
-                      <div className="mt-6 p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
+                      <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
                         <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">How It Works</h3>
                         <div className="space-y-4">
                           {steps.map((s, i) => (
-                            <motion.div
-                              key={i}
-                              initial={{ opacity: 0, y: 8 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.5 + i * 0.1 }}
-                              className="flex items-start gap-3"
-                            >
+                            <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 + i * 0.1 }} className="flex items-start gap-3">
                               <div className="w-6 h-6 rounded-full bg-gradient-to-br from-yellow-500/20 to-orange-500/10 flex items-center justify-center shrink-0 mt-0.5">
                                 <span className="text-[11px] font-bold text-yellow-400">{s.num}</span>
                               </div>
@@ -257,52 +242,36 @@ export default function EnrollPage() {
                     </div>
                   </motion.aside>
 
-                  {/* Right: Form */}
+                  {/* Right: Form as stacked cards */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
                     className="lg:col-span-3"
                   >
-                    <form
-                      onSubmit={handleSubmit}
-                      className="rounded-2xl border border-white/[0.08] bg-white/[0.02] backdrop-blur-sm overflow-hidden"
-                    >
-                      {/* Form header */}
-                      <div className="px-5 sm:px-7 pt-6 pb-4 border-b border-white/[0.06]">
-                        <h2 className="text-lg font-bold text-white">Enrollment Form</h2>
-                        <p className="text-xs text-gray-500 mt-1">All fields marked * are required</p>
-                      </div>
-
-                      <div className="px-5 sm:px-7 py-5 space-y-6">
-                        {/* Section: Student Details */}
-                        <fieldset className="space-y-4">
-                          <legend className="flex items-center gap-2 text-sm font-semibold text-white mb-1">
-                            <div className="w-6 h-6 rounded-md bg-yellow-500/10 flex items-center justify-center">
-                              <User className="w-3.5 h-3.5 text-yellow-400" />
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      {/* Card 1: Student Details */}
+                      <Card className="bg-white/[0.02] border-white/[0.08] backdrop-blur-sm overflow-hidden">
+                        <CardContent className="p-4 sm:p-6 space-y-4">
+                          <div className="flex items-center gap-2.5 mb-1">
+                            <div className="w-8 h-8 rounded-lg bg-yellow-500/10 flex items-center justify-center">
+                              <User className="w-4 h-4 text-yellow-400" />
                             </div>
-                            Student Details
-                          </legend>
+                            <h2 className="text-sm font-bold text-white">Student Details</h2>
+                          </div>
 
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="sm:col-span-2 sm:col-span-1">
-                              <Label htmlFor="studentName" className="text-gray-400 text-xs font-medium">Student Name *</Label>
-                              <Input
-                                id="studentName"
-                                placeholder="Full name"
-                                value={form.studentName || ''}
-                                onChange={e => handleChange('studentName', e.target.value)}
-                                className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-gray-600 focus-visible:ring-yellow-500/30 focus-visible:border-yellow-500/40 h-10 text-sm rounded-xl"
-                              />
+                              <Label htmlFor="studentName" className={labelClass}>Student Name *</Label>
+                              <Input id="studentName" placeholder="Full name" value={form.studentName || ''}
+                                onChange={e => handleChange('studentName', e.target.value)} className={`mt-1.5 ${inputClass}`} />
                               <FieldError field="studentName" />
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                               <div>
-                                <Label htmlFor="age" className="text-gray-400 text-xs font-medium">Age *</Label>
+                                <Label htmlFor="age" className={labelClass}>Age *</Label>
                                 <Select value={form.age || ''} onValueChange={v => handleChange('age', v)}>
-                                  <SelectTrigger className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white h-10 text-sm rounded-xl">
-                                    <SelectValue placeholder="Age" />
-                                  </SelectTrigger>
+                                  <SelectTrigger className={`mt-1.5 ${inputClass}`}><SelectValue placeholder="Age" /></SelectTrigger>
                                   <SelectContent>
                                     {Array.from({ length: 46 }, (_, i) => i + 5).map(age => (
                                       <SelectItem key={age} value={String(age)}>{age} yrs</SelectItem>
@@ -312,11 +281,9 @@ export default function EnrollPage() {
                                 <FieldError field="age" />
                               </div>
                               <div>
-                                <Label htmlFor="gender" className="text-gray-400 text-xs font-medium">Gender *</Label>
+                                <Label htmlFor="gender" className={labelClass}>Gender *</Label>
                                 <Select value={form.gender || ''} onValueChange={v => handleChange('gender', v)}>
-                                  <SelectTrigger className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white h-10 text-sm rounded-xl">
-                                    <SelectValue placeholder="Select" />
-                                  </SelectTrigger>
+                                  <SelectTrigger className={`mt-1.5 ${inputClass}`}><SelectValue placeholder="Select" /></SelectTrigger>
                                   <SelectContent>
                                     <SelectItem value="Male">Male</SelectItem>
                                     <SelectItem value="Female">Female</SelectItem>
@@ -327,160 +294,121 @@ export default function EnrollPage() {
                               </div>
                             </div>
                           </div>
+
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                              <Label htmlFor="studentEmail" className="text-gray-400 text-xs font-medium">Student Email <span className="text-gray-600">(optional)</span></Label>
+                              <Label htmlFor="studentEmail" className={labelClass}>Student Email <span className="text-gray-600">(optional)</span></Label>
                               <div className="relative">
-                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-600 pointer-events-none" />
-                                <Input
-                                  id="studentEmail"
-                                  type="email"
-                                  placeholder="student@email.com"
-                                  value={form.studentEmail || ''}
+                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-600 pointer-events-none z-10" />
+                                <Input id="studentEmail" type="email" placeholder="student@email.com" value={form.studentEmail || ''}
                                   onChange={e => handleChange('studentEmail', e.target.value)}
-                                  className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-gray-600 focus-visible:ring-yellow-500/30 focus-visible:border-yellow-500/40 h-10 text-sm rounded-xl pl-9"
-                                />
+                                  className={`mt-1.5 pl-9 ${inputClass}`} />
                               </div>
                               <FieldError field="studentEmail" />
                             </div>
                             <div>
-                              <Label htmlFor="studentPhone" className="text-gray-400 text-xs font-medium">Student Phone <span className="text-gray-600">(optional)</span></Label>
+                              <Label htmlFor="studentPhone" className={labelClass}>Student Phone <span className="text-gray-600">(optional)</span></Label>
                               <div className="relative">
-                                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-600 pointer-events-none" />
-                                <Input
-                                  id="studentPhone"
-                                  type="tel"
-                                  placeholder="10-digit mobile"
-                                  value={form.studentPhone || ''}
+                                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-600 pointer-events-none z-10" />
+                                <Input id="studentPhone" type="tel" placeholder="10-digit mobile" value={form.studentPhone || ''}
                                   onChange={e => handleChange('studentPhone', e.target.value.replace(/\D/g, '').slice(0, 10))}
-                                  className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-gray-600 focus-visible:ring-yellow-500/30 focus-visible:border-yellow-500/40 h-10 text-sm rounded-xl pl-9"
-                                  maxLength={10}
-                                  inputMode="numeric"
-                                />
+                                  className={`mt-1.5 pl-9 ${inputClass}`} maxLength={10} inputMode="numeric" />
                               </div>
                               <FieldError field="studentPhone" />
                             </div>
                           </div>
-                        </fieldset>
+                        </CardContent>
+                      </Card>
 
-                        {/* Divider */}
-                        <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
-
-                        {/* Section: Identity */}
-                        <fieldset className="space-y-4">
-                          <legend className="flex items-center gap-2 text-sm font-semibold text-white mb-1">
-                            <div className="w-6 h-6 rounded-md bg-yellow-500/10 flex items-center justify-center">
-                              <CreditCard className="w-3.5 h-3.5 text-yellow-400" />
+                      {/* Card 2: Identity Verification */}
+                      <Card className="bg-white/[0.02] border-white/[0.08] backdrop-blur-sm overflow-hidden">
+                        <CardContent className="p-4 sm:p-6 space-y-4">
+                          <div className="flex items-center gap-2.5 mb-1">
+                            <div className="w-8 h-8 rounded-lg bg-yellow-500/10 flex items-center justify-center">
+                              <CreditCard className="w-4 h-4 text-yellow-400" />
                             </div>
-                            Identity Verification
-                          </legend>
+                            <h2 className="text-sm font-bold text-white">Identity Verification</h2>
+                          </div>
+
                           <div>
-                            <Label htmlFor="aadharNumber" className="text-gray-400 text-xs font-medium">Aadhar Card Number *</Label>
-                            <Input
-                              id="aadharNumber"
-                              placeholder="12-digit Aadhar number"
-                              value={form.aadharNumber || ''}
+                            <Label htmlFor="aadharNumber" className={labelClass}>Aadhar Card Number *</Label>
+                            <Input id="aadharNumber" placeholder="12-digit Aadhar number" value={form.aadharNumber || ''}
                               onChange={e => handleChange('aadharNumber', e.target.value.replace(/\D/g, '').slice(0, 12))}
-                              className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-gray-600 focus-visible:ring-yellow-500/30 focus-visible:border-yellow-500/40 h-10 text-sm rounded-xl tracking-widest"
-                              maxLength={12}
-                              inputMode="numeric"
-                            />
+                              className={`mt-1.5 tracking-widest ${inputClass}`} maxLength={12} inputMode="numeric" />
                             <p className="text-[10px] text-gray-600 mt-1.5 flex items-center gap-1">
                               <Shield className="w-3 h-3" /> Used to generate Student ID (last 4 digits) · Stored securely
                             </p>
                             <FieldError field="aadharNumber" />
                           </div>
-                        </fieldset>
+                        </CardContent>
+                      </Card>
 
-                        {/* Divider */}
-                        <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
-
-                        {/* Section: Parent Info */}
-                        <fieldset className="space-y-4">
-                          <legend className="flex items-center gap-2 text-sm font-semibold text-white mb-1">
-                            <div className="w-6 h-6 rounded-md bg-yellow-500/10 flex items-center justify-center">
-                              <Phone className="w-3.5 h-3.5 text-yellow-400" />
+                      {/* Card 3: Parent / Guardian */}
+                      <Card className="bg-white/[0.02] border-white/[0.08] backdrop-blur-sm overflow-hidden">
+                        <CardContent className="p-4 sm:p-6 space-y-4">
+                          <div className="flex items-center gap-2.5 mb-1">
+                            <div className="w-8 h-8 rounded-lg bg-yellow-500/10 flex items-center justify-center">
+                              <Phone className="w-4 h-4 text-yellow-400" />
                             </div>
-                            Parent / Guardian
-                          </legend>
+                            <h2 className="text-sm font-bold text-white">Parent / Guardian</h2>
+                          </div>
+
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                              <Label htmlFor="parentName" className="text-gray-400 text-xs font-medium">Parent Name *</Label>
-                              <Input
-                                id="parentName"
-                                placeholder="Parent / guardian name"
-                                value={form.parentName || ''}
-                                onChange={e => handleChange('parentName', e.target.value)}
-                                className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-gray-600 focus-visible:ring-yellow-500/30 focus-visible:border-yellow-500/40 h-10 text-sm rounded-xl"
-                              />
+                              <Label htmlFor="parentName" className={labelClass}>Parent Name *</Label>
+                              <Input id="parentName" placeholder="Parent / guardian name" value={form.parentName || ''}
+                                onChange={e => handleChange('parentName', e.target.value)} className={`mt-1.5 ${inputClass}`} />
                               <FieldError field="parentName" />
                             </div>
                             <div>
-                              <Label htmlFor="parentPhone" className="text-gray-400 text-xs font-medium">Phone Number *</Label>
-                              <Input
-                                id="parentPhone"
-                                placeholder="10-digit mobile"
-                                value={form.parentPhone || ''}
+                              <Label htmlFor="parentPhone" className={labelClass}>Phone Number *</Label>
+                              <Input id="parentPhone" placeholder="10-digit mobile" value={form.parentPhone || ''}
                                 onChange={e => handleChange('parentPhone', e.target.value.replace(/\D/g, '').slice(0, 10))}
-                                className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-gray-600 focus-visible:ring-yellow-500/30 focus-visible:border-yellow-500/40 h-10 text-sm rounded-xl"
-                                type="tel"
-                                maxLength={10}
-                                inputMode="numeric"
-                              />
+                                className={`mt-1.5 ${inputClass}`} type="tel" maxLength={10} inputMode="numeric" />
                               <FieldError field="parentPhone" />
                             </div>
                           </div>
-                        </fieldset>
+                        </CardContent>
+                      </Card>
 
-                        {/* Divider */}
-                        <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
-
-                        {/* Section: Program */}
-                        <fieldset className="space-y-4">
-                          <legend className="flex items-center gap-2 text-sm font-semibold text-white mb-1">
-                            <div className="w-6 h-6 rounded-md bg-yellow-500/10 flex items-center justify-center">
-                              <BookOpen className="w-3.5 h-3.5 text-yellow-400" />
+                      {/* Card 4: Program Selection */}
+                      <Card className="bg-white/[0.02] border-white/[0.08] backdrop-blur-sm overflow-hidden">
+                        <CardContent className="p-4 sm:p-6 space-y-4">
+                          <div className="flex items-center gap-2.5 mb-1">
+                            <div className="w-8 h-8 rounded-lg bg-yellow-500/10 flex items-center justify-center">
+                              <BookOpen className="w-4 h-4 text-yellow-400" />
                             </div>
-                            Program Selection
-                          </legend>
+                            <h2 className="text-sm font-bold text-white">Program Selection</h2>
+                          </div>
+
                           <div>
-                            <Label htmlFor="program" className="text-gray-400 text-xs font-medium">Choose Program *</Label>
+                            <Label htmlFor="program" className={labelClass}>Choose Program *</Label>
                             <Select value={form.program || ''} onValueChange={v => handleChange('program', v)}>
-                              <SelectTrigger className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white h-10 text-sm rounded-xl">
+                              <SelectTrigger className={`mt-1.5 ${inputClass}`}>
                                 <SelectValue placeholder="Select a martial arts program" />
                               </SelectTrigger>
                               <SelectContent>
                                 {programs.map(p => (
-                                  <SelectItem key={p.slug} value={p.title}>
-                                    {p.icon} {p.title}
-                                  </SelectItem>
+                                  <SelectItem key={p.slug} value={p.title}>{p.icon} {p.title}</SelectItem>
                                 ))}
                               </SelectContent>
                             </Select>
                             <FieldError field="program" />
                           </div>
-                          <div>
-                            <Label htmlFor="message" className="text-gray-400 text-xs font-medium">Additional Message <span className="text-gray-600">(optional)</span></Label>
-                            <Textarea
-                              id="message"
-                              placeholder="Any specific requirements, preferred batch timing, or questions..."
-                              value={form.message || ''}
-                              onChange={e => handleChange('message', e.target.value)}
-                              className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-gray-600 focus-visible:ring-yellow-500/30 focus-visible:border-yellow-500/40 min-h-[70px] text-sm rounded-xl resize-none"
-                              maxLength={500}
-                            />
-                          </div>
-                        </fieldset>
-                      </div>
 
-                      {/* Submit area */}
-                      <div className="px-5 sm:px-7 py-5 border-t border-white/[0.06] bg-white/[0.01]">
-                        <Button
-                          type="submit"
-                          size="lg"
-                          disabled={saving}
-                          className="w-full rounded-xl bg-gradient-to-r from-yellow-500 via-orange-500 to-red-600 hover:from-yellow-600 hover:via-orange-600 hover:to-red-700 text-white font-bold text-sm h-11 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all duration-300 group"
-                        >
+                          <div>
+                            <Label htmlFor="message" className={labelClass}>Additional Message <span className="text-gray-600">(optional)</span></Label>
+                            <Textarea id="message" placeholder="Any specific requirements, preferred batch timing, or questions..."
+                              value={form.message || ''} onChange={e => handleChange('message', e.target.value)}
+                              className={`mt-1.5 min-h-[70px] resize-none ${inputClass} h-auto`} maxLength={500} />
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Submit */}
+                      <div className="pt-1">
+                        <Button type="submit" size="lg" disabled={saving}
+                          className="w-full rounded-xl bg-gradient-to-r from-yellow-500 via-orange-500 to-red-600 hover:from-yellow-600 hover:via-orange-600 hover:to-red-700 text-white font-bold text-sm h-12 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all duration-300 group">
                           {saving ? (
                             <span className="flex items-center gap-2">
                               <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

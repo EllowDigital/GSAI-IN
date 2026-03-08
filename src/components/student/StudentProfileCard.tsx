@@ -48,6 +48,21 @@ export default function StudentProfileCard() {
     enabled: !!profile?.studentId,
   });
 
+  // Fetch all enrolled programs
+  const { data: enrolledPrograms = [] } = useQuery({
+    queryKey: ['student-all-programs', profile?.studentId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('student_programs')
+        .select('program_name, is_primary, joined_at')
+        .eq('student_id', profile!.studentId)
+        .order('is_primary', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!profile?.studentId,
+  });
+
   const { data: currentBelt } = useQuery({
     queryKey: ['student-belt', profile?.studentId],
     queryFn: async () => {
@@ -67,14 +82,8 @@ export default function StudentProfileCard() {
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !profile) return;
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image must be under 5MB');
-      return;
-    }
-    if (!file.type.startsWith('image/')) {
-      toast.error('Only image files allowed');
-      return;
-    }
+    if (file.size > 5 * 1024 * 1024) { toast.error('Image must be under 5MB'); return; }
+    if (!file.type.startsWith('image/')) { toast.error('Only image files allowed'); return; }
 
     setUploading(true);
     try {
@@ -82,14 +91,9 @@ export default function StudentProfileCard() {
       const path = `${profile.studentId}/${Date.now()}.${ext}`;
       const { error: upErr } = await supabase.storage.from('student-avatars').upload(path, file, { upsert: true });
       if (upErr) throw upErr;
-
       const { data: urlData } = supabase.storage.from('student-avatars').getPublicUrl(path);
-      const { error: updateErr } = await supabase
-        .from('students')
-        .update({ profile_image_url: urlData.publicUrl })
-        .eq('id', profile.studentId);
+      const { error: updateErr } = await supabase.from('students').update({ profile_image_url: urlData.publicUrl }).eq('id', profile.studentId);
       if (updateErr) throw updateErr;
-
       queryClient.invalidateQueries({ queryKey: ['student-profile'] });
       toast.success('Profile photo updated!');
     } catch (err: any) {
@@ -101,37 +105,21 @@ export default function StudentProfileCard() {
 
   const handleOpenEdit = () => {
     if (!student) return;
-    setEditForm({
-      name: student.name || '',
-      parent_name: student.parent_name || '',
-      parent_contact: student.parent_contact || '',
-    });
+    setEditForm({ name: student.name || '', parent_name: student.parent_name || '', parent_contact: student.parent_contact || '' });
     setEditOpen(true);
   };
 
   const handleSaveProfile = async () => {
     if (!profile) return;
-    if (editForm.name.trim().length < 2) {
-      toast.error('Name must be at least 2 characters');
-      return;
-    }
-    if (editForm.parent_contact && !/^[6-9]\d{9}$/.test(editForm.parent_contact)) {
-      toast.error('Phone must be 10 digits starting with 6-9');
-      return;
-    }
+    if (editForm.name.trim().length < 2) { toast.error('Name must be at least 2 characters'); return; }
+    if (editForm.parent_contact && !/^[6-9]\d{9}$/.test(editForm.parent_contact)) { toast.error('Phone must be 10 digits starting with 6-9'); return; }
 
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from('students')
-        .update({
-          name: editForm.name.trim(),
-          parent_name: editForm.parent_name.trim(),
-          parent_contact: editForm.parent_contact.trim(),
-        })
-        .eq('id', profile.studentId);
+      const { error } = await supabase.from('students').update({
+        name: editForm.name.trim(), parent_name: editForm.parent_name.trim(), parent_contact: editForm.parent_contact.trim(),
+      }).eq('id', profile.studentId);
       if (error) throw error;
-
       queryClient.invalidateQueries({ queryKey: ['student-profile'] });
       toast.success('Profile updated!');
       setEditOpen(false);
@@ -149,42 +137,50 @@ export default function StudentProfileCard() {
   const beltStyle = BELT_COLORS[beltColor] || BELT_COLORS.white;
   const initials = student.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
 
+  const programsToShow = enrolledPrograms.length > 0
+    ? enrolledPrograms
+    : [{ program_name: student.program, is_primary: true }];
+
   return (
     <>
       <Card className="border border-border overflow-hidden">
         <CardContent className="p-0">
           {/* Profile Header */}
-          <div className="bg-primary/5 p-6 flex flex-col sm:flex-row items-center gap-4">
+          <div className="bg-primary/5 p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-4">
             <div className="relative group">
               <Avatar className="w-20 h-20 border-2 border-primary/20">
                 <AvatarImage src={student.profile_image_url || ''} alt={student.name} />
                 <AvatarFallback className="text-xl font-bold bg-primary/10 text-primary">{initials}</AvatarFallback>
               </Avatar>
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-                className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-              >
+              <button onClick={() => fileInputRef.current?.click()} disabled={uploading}
+                className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                 {uploading ? <Spinner size={16} /> : <Camera className="w-5 h-5 text-white" />}
               </button>
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
             </div>
-            <div className="text-center sm:text-left flex-1">
+            <div className="text-center sm:text-left flex-1 min-w-0">
               <h2 className="text-xl font-bold text-foreground">{student.name}</h2>
               <p className="text-sm text-muted-foreground font-mono">{profile?.loginId}</p>
             </div>
-            <Button variant="outline" size="sm" className="gap-1.5" onClick={handleOpenEdit}>
+            <Button variant="outline" size="sm" className="gap-1.5 shrink-0" onClick={handleOpenEdit}>
               <Pencil className="w-3.5 h-3.5" /> Edit Profile
             </Button>
           </div>
 
           {/* Details Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-5">
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-              <Dumbbell className="w-5 h-5 text-primary shrink-0" />
-              <div>
-                <p className="text-xs text-muted-foreground">Program</p>
-                <p className="text-sm font-semibold text-foreground">{student.program}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 p-4 sm:p-5">
+            {/* Programs - shows all enrolled programs */}
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+              <Dumbbell className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">Programs</p>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {programsToShow.map((p: any) => (
+                    <Badge key={p.program_name} variant={p.is_primary ? 'default' : 'secondary'} className="text-[10px] px-1.5 py-0">
+                      {p.program_name}
+                    </Badge>
+                  ))}
+                </div>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
@@ -211,9 +207,7 @@ export default function StudentProfileCard() {
       {/* Edit Profile Dialog */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Edit Profile</DialogTitle>
-          </DialogHeader>
+          <DialogHeader><DialogTitle>Edit Profile</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <div>
               <label className="text-sm font-medium">Name *</label>
@@ -227,7 +221,7 @@ export default function StudentProfileCard() {
               <label className="text-sm font-medium">Parent Contact</label>
               <Input value={editForm.parent_contact} onChange={e => setEditForm(f => ({ ...f, parent_contact: e.target.value.replace(/\D/g, '').slice(0, 10) }))} className="mt-1" maxLength={10} placeholder="10-digit number" />
             </div>
-            <p className="text-xs text-muted-foreground">Program and join date can only be changed by admin.</p>
+            <p className="text-xs text-muted-foreground">Programs and join date can only be changed by admin.</p>
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => setEditOpen(false)} className="flex-1 gap-1"><X className="w-3.5 h-3.5" /> Cancel</Button>
               <Button onClick={handleSaveProfile} disabled={saving} className="flex-1 gap-1"><Save className="w-3.5 h-3.5" /> {saving ? 'Saving…' : 'Save'}</Button>
