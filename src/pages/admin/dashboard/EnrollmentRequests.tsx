@@ -140,10 +140,10 @@ export default function EnrollmentRequestsManager() {
     setApproveStep('confirm');
     setAadharNumber(req.aadhar_number || '');
     setJoinDate(new Date().toISOString().slice(0, 10));
-    const last4 = req.aadhar_number ? req.aadhar_number.slice(-4) : '';
-    const namePrefix = req.student_name.replace(/\s+/g, '').slice(0, 4).toUpperCase();
-    setLoginId(`GSAI-${namePrefix}${last4}`);
-    setPassword('');
+    const last4 = req.aadhar_number ? req.aadhar_number.slice(-4) : '0000';
+    setLoginId(`GSAI-${last4}`);
+    const year = new Date().getFullYear();
+    setPassword(`GSAI-STUDENT-${year}`);
     setCreatedStudentId(null);
     setCreatedCreds(null);
   };
