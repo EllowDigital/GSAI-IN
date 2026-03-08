@@ -295,6 +295,71 @@
       }
     }
   </script>
+
+  <!-- 📊 Structured Data: Programs List -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Martial Arts and Fitness Programs",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "item": {
+            "@type": "Course",
+            "name": "Karate Classes",
+            "url": "https://ghataksportsacademy.com/#programs"
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "item": {
+            "@type": "Course",
+            "name": "Taekwondo Training",
+            "url": "https://ghataksportsacademy.com/#programs"
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "item": {
+            "@type": "Course",
+            "name": "MMA Training",
+            "url": "https://ghataksportsacademy.com/#programs"
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "item": {
+            "@type": "Course",
+            "name": "Boxing Classes",
+            "url": "https://ghataksportsacademy.com/#programs"
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "item": {
+            "@type": "Course",
+            "name": "Kickboxing Classes",
+            "url": "https://ghataksportsacademy.com/#programs"
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 6,
+          "item": {
+            "@type": "Course",
+            "name": "Self-Defense Classes",
+            "url": "https://ghataksportsacademy.com/#programs"
+          }
+        }
+      ]
+    }
+  </script>
 </head>
 
 <body>
@@ -431,6 +496,8 @@
   <script type="module" src="/src/main.tsx"></script>
   <!-- Auto-mark external links: adds rel="noopener noreferrer nofollow" and target="_blank" for external anchors -->
   <script>
+    let markScheduled = false;
+
     function markExternalLinks() {
       try {
         const origin = location.origin;
@@ -461,8 +528,37 @@
       }
     }
 
-    // Run after full page load so links rendered by React are included.
+    function scheduleMarkExternalLinks() {
+      if (markScheduled) return;
+      markScheduled = true;
+      requestAnimationFrame(() => {
+        markScheduled = false;
+        markExternalLinks();
+      });
+    }
+
+    // Run on initial parse and after full load.
+    window.addEventListener('DOMContentLoaded', markExternalLinks);
     window.addEventListener('load', markExternalLinks);
+
+    // Keep external-link attributes correct for React SPA updates after load.
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!document.body) return;
+      const observer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          for (const node of mutation.addedNodes) {
+            if (node.nodeType !== Node.ELEMENT_NODE) continue;
+            const element = node;
+            if (element.tagName === 'A' || element.querySelector?.('a')) {
+              scheduleMarkExternalLinks();
+              return;
+            }
+          }
+        }
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
+    });
   </script>
   </body>
 
