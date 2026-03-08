@@ -73,6 +73,8 @@ const StudentSchema = z.object({
     .string()
     .regex(/^\d{10}$/, 'Contact Number must be 10 digits'),
   profile_image_url: z.string().nullable(),
+  default_monthly_fee: z.number().min(0, 'Fee must be non-negative'),
+  discount_percent: z.number().min(0).max(100, 'Discount must be 0-100'),
 });
 
 export type StudentFormValues = z.infer<typeof StudentSchema>;
