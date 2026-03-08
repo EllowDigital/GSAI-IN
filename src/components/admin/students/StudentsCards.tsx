@@ -214,6 +214,22 @@ export default function StudentsCards({
                 </div>
               </div>
               <div className="flex gap-1.5 flex-shrink-0">
+                {!(portalAccountIds as Set<string>).has(stu.id) ? (
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => setPortalStudent({ id: stu.id, name: stu.name, program: stu.program })}
+                    className="h-8 w-8 rounded-lg hover:bg-accent hover:text-accent-foreground"
+                    aria-label="Create portal account"
+                    title="Create Portal Account"
+                  >
+                    <KeyRound className="w-4 h-4" />
+                  </Button>
+                ) : (
+                  <Badge variant="outline" className="text-[10px] h-6 px-1.5 border-green-500/30 text-green-600">
+                    Portal ✓
+                  </Badge>
+                )}
                 <Button
                   size="icon"
                   variant="ghost"
