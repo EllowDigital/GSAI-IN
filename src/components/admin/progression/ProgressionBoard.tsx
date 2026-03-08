@@ -753,7 +753,38 @@ export default function ProgressionBoard() {
         onOpenChange={setAssignDialogOpen}
         students={studentOptions}
         belts={beltOptions}
-        onSubmit={assignStudent}
+        disciplineLevels={disciplineLevelOptions}
+        onSubmit={async (payload) => {
+          if (payload.isLevelBased) {
+            // Write to student_discipline_progress table
+            const { error: checkErr, data: existing } = await supabase
+              .from('student_discipline_progress')
+              .select('id')
+              .eq('student_id', payload.studentId)
+              .eq('discipline_level_id', payload.beltLevelId)
+              .maybeSingle();
+
+            if (existing) {
+              const { error } = await supabase
+                .from('student_discipline_progress')
+                .update({ status: payload.status === 'passed' ? 'completed' : 'in_progress', updated_at: new Date().toISOString() })
+                .eq('id', existing.id);
+              if (error) throw error;
+            } else {
+              const { error } = await supabase
+                .from('student_discipline_progress')
+                .insert({
+                  student_id: payload.studentId,
+                  discipline_level_id: payload.beltLevelId,
+                  status: payload.status === 'passed' ? 'completed' : 'in_progress',
+                });
+              if (error) throw error;
+            }
+            toast.success('Student assigned to level');
+          } else {
+            await assignStudent(payload);
+          }
+        }}
         loading={assigningStudent}
       />
     </div>
