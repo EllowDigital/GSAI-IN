@@ -12,6 +12,7 @@ import Students from './dashboard/Students';
 import FeesManager from './dashboard/FeesManager';
 import Events from './dashboard/Events';
 import Progression from './dashboard/Progression';
+import Testimonials from './dashboard/Testimonials';
 
 const AdminArea = () => {
   return (
