@@ -323,7 +323,40 @@ export default function EnrollPage() {
                               </div>
                             </div>
                           </div>
-                        </fieldset>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="studentEmail" className="text-gray-400 text-xs font-medium">Student Email <span className="text-gray-600">(optional)</span></Label>
+                              <div className="relative">
+                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-600 pointer-events-none" />
+                                <Input
+                                  id="studentEmail"
+                                  type="email"
+                                  placeholder="student@email.com"
+                                  value={form.studentEmail || ''}
+                                  onChange={e => handleChange('studentEmail', e.target.value)}
+                                  className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-gray-600 focus-visible:ring-yellow-500/30 focus-visible:border-yellow-500/40 h-10 text-sm rounded-xl pl-9"
+                                />
+                              </div>
+                              <FieldError field="studentEmail" />
+                            </div>
+                            <div>
+                              <Label htmlFor="studentPhone" className="text-gray-400 text-xs font-medium">Student Phone <span className="text-gray-600">(optional)</span></Label>
+                              <div className="relative">
+                                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-600 pointer-events-none" />
+                                <Input
+                                  id="studentPhone"
+                                  type="tel"
+                                  placeholder="10-digit mobile"
+                                  value={form.studentPhone || ''}
+                                  onChange={e => handleChange('studentPhone', e.target.value.replace(/\D/g, '').slice(0, 10))}
+                                  className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-gray-600 focus-visible:ring-yellow-500/30 focus-visible:border-yellow-500/40 h-10 text-sm rounded-xl pl-9"
+                                  maxLength={10}
+                                  inputMode="numeric"
+                                />
+                              </div>
+                              <FieldError field="studentPhone" />
+                            </div>
+                          </div>
 
                         {/* Divider */}
                         <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
