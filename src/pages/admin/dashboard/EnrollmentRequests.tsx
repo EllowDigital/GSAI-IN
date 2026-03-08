@@ -358,6 +358,8 @@ export default function EnrollmentRequestsManager() {
                 <div><p className="text-xs text-muted-foreground">Age / Gender</p><p className="font-medium">{viewReq.age} yrs • {viewReq.gender}</p></div>
                 <div><p className="text-xs text-muted-foreground">Parent</p><p className="font-medium">{viewReq.parent_name}</p></div>
                 <div><p className="text-xs text-muted-foreground">Phone</p><a href={`tel:${viewReq.parent_phone}`} className="font-medium text-primary hover:underline">{viewReq.parent_phone}</a></div>
+                {viewReq.student_email && <div><p className="text-xs text-muted-foreground">Student Email</p><a href={`mailto:${viewReq.student_email}`} className="font-medium text-primary hover:underline">{viewReq.student_email}</a></div>}
+                {viewReq.student_phone && <div><p className="text-xs text-muted-foreground">Student Phone</p><a href={`tel:${viewReq.student_phone}`} className="font-medium text-primary hover:underline">{viewReq.student_phone}</a></div>}
                 <div className="col-span-2"><p className="text-xs text-muted-foreground">Program</p><p className="font-medium">{viewReq.program}</p></div>
                 {viewReq.aadhar_number && <div className="col-span-2"><p className="text-xs text-muted-foreground">Aadhar Number</p><p className="font-medium font-mono">{viewReq.aadhar_number.replace(/(\d{4})(\d{4})(\d{4})/, '$1-$2-$3')}</p></div>}
                 {viewReq.message && <div className="col-span-2"><p className="text-xs text-muted-foreground">Message</p><p className="font-medium">{viewReq.message}</p></div>}
