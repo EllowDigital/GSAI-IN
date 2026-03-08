@@ -348,31 +348,17 @@ export default function Competitions() {
                   </p>
                 )}
 
-                <div className="flex gap-2 pt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 gap-1 text-xs"
-                    onClick={() => openEdit(c)}
-                  >
+                <div className="flex flex-wrap gap-2 pt-2">
+                  <Button variant="outline" size="sm" className="flex-1 gap-1 text-xs" onClick={() => setRegsOpen(c)}>
+                    <Users className="w-3 h-3" /> Registrations
+                  </Button>
+                  <Button variant="outline" size="sm" className="flex-1 gap-1 text-xs" onClick={() => openEdit(c)}>
                     <Pencil className="w-3 h-3" /> Edit
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 gap-1 text-xs"
-                    onClick={() => setCertOpen(c)}
-                  >
+                  <Button variant="outline" size="sm" className="gap-1 text-xs" onClick={() => setCertOpen(c)}>
                     <Award className="w-3 h-3" /> Certs
                   </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="gap-1 text-xs"
-                    onClick={() => {
-                      if (confirm('Delete this competition?')) deleteMutation.mutate(c.id);
-                    }}
-                  >
+                  <Button variant="destructive" size="sm" className="gap-1 text-xs" onClick={() => { if (confirm('Delete this competition?')) deleteMutation.mutate(c.id); }}>
                     <Trash2 className="w-3 h-3" />
                   </Button>
                 </div>
