@@ -92,9 +92,12 @@ export default function StudentFeeHistory() {
                   <p className="text-xs text-muted-foreground">
                     ₹{fee.paid_amount} / ₹{fee.monthly_fee}
                     {fee.balance_due > 0 && (
-                      <span className="text-red-500 ml-1">• Due: ₹{fee.balance_due}</span>
+                      <span className="text-destructive ml-1">• Due: ₹{fee.balance_due}</span>
                     )}
                   </p>
+                  {fee.notes && (
+                    <p className="text-xs text-muted-foreground mt-0.5 italic">{fee.notes}</p>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">

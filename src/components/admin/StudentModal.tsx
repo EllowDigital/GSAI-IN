@@ -73,6 +73,8 @@ const StudentSchema = z.object({
     .string()
     .regex(/^\d{10}$/, 'Contact Number must be 10 digits'),
   profile_image_url: z.string().nullable(),
+  default_monthly_fee: z.number().min(0, 'Fee must be non-negative'),
+  discount_percent: z.number().min(0).max(100, 'Discount must be 0-100'),
 });
 
 export type StudentFormValues = z.infer<typeof StudentSchema>;
@@ -100,6 +102,8 @@ export default function StudentModal({
       parent_name: '',
       parent_contact: '',
       profile_image_url: null,
+      default_monthly_fee: 2000,
+      discount_percent: 0,
     },
   });
 
@@ -114,6 +118,8 @@ export default function StudentModal({
         parent_name: student.parent_name || '',
         parent_contact: student.parent_contact || '',
         profile_image_url: student.profile_image_url || null,
+        default_monthly_fee: student.default_monthly_fee ?? 2000,
+        discount_percent: student.discount_percent ?? 0,
       });
     } else {
       form.reset({
@@ -124,6 +130,8 @@ export default function StudentModal({
         parent_name: '',
         parent_contact: '',
         profile_image_url: null,
+        default_monthly_fee: 2000,
+        discount_percent: 0,
       });
     }
   }, [student, open]);
@@ -204,6 +212,8 @@ export default function StudentModal({
         parent_name: sanitizedValues.parent_name,
         parent_contact: phoneValidation.sanitized,
         profile_image_url: sanitizedValues.profile_image_url || null,
+        default_monthly_fee: values.default_monthly_fee,
+        discount_percent: values.discount_percent,
       };
 
       if (student) {
@@ -381,6 +391,48 @@ export default function StudentModal({
                 </FormItem>
               )}
             />
+
+            <div className="grid grid-cols-2 gap-3">
+              <FormField
+                control={form.control}
+                name="default_monthly_fee"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Monthly Fee (₹)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        placeholder="2000"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="discount_percent"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Discount (%)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        max={100}
+                        placeholder="0"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <div className="flex justify-end gap-2">
               <Button

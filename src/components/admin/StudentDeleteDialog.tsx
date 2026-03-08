@@ -34,6 +34,7 @@ export default function StudentDeleteDialog({ student, onClose }: Props) {
         supabase.from('student_progress').delete().eq('student_id', sid),
         supabase.from('student_discipline_progress').delete().eq('student_id', sid),
         supabase.from('promotion_history').delete().eq('student_id', sid),
+        supabase.from('attendance').delete().eq('student_id', sid),
       ]);
 
       // Check for errors in related deletions
@@ -67,7 +68,7 @@ export default function StudentDeleteDialog({ student, onClose }: Props) {
             This will permanently remove{' '}
             <span className="font-semibold">{student.name}</span> and{' '}
             <span className="text-destructive font-medium">all related data</span> including:
-            fees, progress, belt promotions, competition registrations, certificates, and portal account.
+            fees, attendance, progress, belt promotions, competition registrations, certificates, and portal account.
             <br /><br />
             <span className="font-semibold text-destructive">This action cannot be undone.</span>
           </AlertDialogDescription>

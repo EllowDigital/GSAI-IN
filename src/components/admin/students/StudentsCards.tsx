@@ -27,6 +27,8 @@ type StudentRow = {
   parent_contact: string;
   profile_image_url: string | null;
   created_at: string | null;
+  default_monthly_fee: number;
+  discount_percent: number;
 };
 
 type StudentWithBelt = StudentRow & {
