@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { z } from 'zod';
-import { ArrowLeft, Send, User, Phone, BookOpen, Shield, CheckCircle2, CreditCard, Star, Trophy, Users, Clock, MapPin } from 'lucide-react';
+import { ArrowLeft, Send, User, Phone, BookOpen, Shield, CheckCircle2, CreditCard, Star, Trophy, Users, Clock, MapPin, Mail } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
