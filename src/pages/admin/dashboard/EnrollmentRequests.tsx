@@ -67,22 +67,32 @@ export default function EnrollmentRequestsManager() {
     },
   });
 
-  // Send rejection email via formsubmit.co
-  const sendRejectionEmail = async (req: EnrollmentRequest, notes: string) => {
-    try {
-      const parentEmail = `${req.parent_phone}@student.gsai.app`; // fallback
-      // formsubmit.co uses phone-based WhatsApp as primary channel
-      // Build a rejection WhatsApp message
-      const message = `Dear ${req.parent_name},\n\nWe regret to inform you that the enrollment request for ${req.student_name} in the ${req.program} program has not been approved at this time.\n\n${notes ? `Reason: ${notes}\n\n` : ''}If you have questions, please contact us.\n\nGhatak Sports Academy India`;
-      
-      // Open WhatsApp with rejection message
-      window.open(
-        `https://wa.me/91${req.parent_phone}?text=${encodeURIComponent(message)}`,
-        '_blank'
-      );
+  // Send rejection notification via WhatsApp + email
+  const sendRejectionNotification = async (req: EnrollmentRequest, notes: string) => {
+    const message = `Dear ${req.parent_name},\n\nWe regret to inform you that the enrollment request for ${req.student_name} in the ${req.program} program has not been approved at this time.\n\n${notes ? `Reason: ${notes}\n\n` : ''}If you have questions, please contact us.\n\nGhatak Sports Academy India`;
+
+    // Open WhatsApp
+    window.open(
+      `https://wa.me/91${req.parent_phone}?text=${encodeURIComponent(message)}`,
+      '_blank'
+    );
+
+    // Also send email if student email exists
+    if (req.student_email) {
+      try {
+        const { sendFormSubmitEmail } = await import('@/utils/emailNotifications');
+        await sendFormSubmitEmail({
+          subject: `Enrollment Update - ${req.student_name}`,
+          message,
+          name: req.student_name,
+          replyTo: req.student_email,
+        });
+        toast.success('Rejection notification sent via WhatsApp & email');
+      } catch {
+        toast.success('WhatsApp opened (email notification failed)');
+      }
+    } else {
       toast.success('WhatsApp opened with rejection message');
-    } catch {
-      toast.error('Failed to open WhatsApp');
     }
   };
 
