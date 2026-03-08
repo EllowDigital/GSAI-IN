@@ -27,14 +27,22 @@ export default function AllProgramsPage() {
     []
   );
   const [activeCategory, setActiveCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const filtered = useMemo(
-    () =>
-      activeCategory === 'All'
-        ? programs
-        : programs.filter((p) => p.category === activeCategory),
-    [activeCategory]
-  );
+  const filtered = useMemo(() => {
+    let result = activeCategory === 'All'
+      ? programs
+      : programs.filter((p) => p.category === activeCategory);
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.title.toLowerCase().includes(q) ||
+          p.desc.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [activeCategory, searchQuery]);
 
   return (
     <>
