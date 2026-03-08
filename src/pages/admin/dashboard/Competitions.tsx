@@ -437,11 +437,7 @@ export default function Competitions() {
                 placeholder="e.g. GSAI Campus, Lucknow"
               />
               <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
-                <span>
-                  {GOOGLE_MAPS_API_KEY
-                    ? 'Google Maps API preview enabled.'
-                    : 'Google Maps API key missing: using fallback preview.'}
-                </span>
+                <span>Free Google Maps embed preview</span>
                 {mapOpenUrl && (
                   <a
                     href={mapOpenUrl}
