@@ -267,6 +267,9 @@ export default function StudentModal({ open, onOpenChange, student }: StudentMod
       toast.success(`Student ${student ? 'updated' : 'created'}: ${result?.name}`);
       queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['student-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      queryClient.invalidateQueries({ queryKey: ['students-portal-status'] });
+      queryClient.invalidateQueries({ queryKey: ['portal-accounts'] });
       onOpenChange(false);
     }
   };
