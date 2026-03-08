@@ -17,6 +17,7 @@ import StudentFeeHistory from '@/components/student/StudentFeeHistory';
 import StudentProgressionTracker from '@/components/student/StudentProgressionTracker';
 import StudentEventsView from '@/components/student/StudentEventsView';
 import StudentAnnouncements from '@/components/student/StudentAnnouncements';
+import StudentAttendanceView from '@/components/student/StudentAttendanceView';
 
 export default function StudentDashboard() {
   const { profile, isAuthenticated, isLoading: authLoading, signOut } = useStudentAuth();
