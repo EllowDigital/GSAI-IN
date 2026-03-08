@@ -135,6 +135,44 @@ export default function FeesManagerPanel() {
     },
   });
 
+  // Batch fee generation mutation
+  const batchGenerateMutation = useMutation({
+    mutationFn: async () => {
+      if (!students || students.length === 0) throw new Error('No students found');
+      
+      const existingStudentIds = new Set((fees || []).map(f => f.student_id));
+      const studentsWithoutFee = students.filter(s => !existingStudentIds.has(s.id));
+      
+      if (studentsWithoutFee.length === 0) throw new Error('All students already have fee records for this month');
+
+      const records = studentsWithoutFee.map(s => {
+        const discountedFee = s.discount_percent > 0
+          ? Math.round(s.default_monthly_fee * (1 - s.discount_percent / 100))
+          : s.default_monthly_fee || 2000;
+        return {
+          student_id: s.id,
+          month: filterMonth,
+          year: filterYear,
+          monthly_fee: discountedFee,
+          paid_amount: 0,
+          balance_due: discountedFee,
+          status: 'unpaid',
+        };
+      });
+
+      const { error } = await supabase.from('fees').insert(records);
+      if (error) throw error;
+      return studentsWithoutFee.length;
+    },
+    onSuccess: (count) => {
+      queryClient.invalidateQueries({ queryKey: ['fees'] });
+      toast({ title: 'Batch Generated', description: `Created fee records for ${count} students` });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message, variant: 'error' });
+    },
+  });
+
   // Compose filtered rows
   const rows = Array.isArray(students)
     ? students
