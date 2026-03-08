@@ -106,7 +106,7 @@ export default function StudentDashboard() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto p-4 lg:p-6 space-y-6">
+      <main className="max-w-4xl mx-auto p-4 lg:p-6 space-y-6 pb-16">
         {/* Announcements Banner */}
         <StudentAnnouncements />
 
@@ -254,6 +254,13 @@ export default function StudentDashboard() {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Credits Footer */}
+      <footer className="border-t border-border/50 py-3 text-center">
+        <p className="text-[10px] text-muted-foreground/50">
+          Built by <span className="text-muted-foreground/70">Sarwan Yadav</span> · <span className="text-muted-foreground/70">EllowDigital</span>
+        </p>
+      </footer>
     </div>
   );
 }
