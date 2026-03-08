@@ -31,7 +31,7 @@ export function useStudents() {
     const { data, error } = await supabase
       .from('students')
       .select(
-        'id, name, aadhar_number, program, join_date, parent_name, parent_contact, profile_image_url, created_at'
+        'id, name, aadhar_number, program, join_date, parent_name, parent_contact, profile_image_url, created_at, default_monthly_fee, discount_percent'
       )
       .order('created_at', { ascending: false });
 
