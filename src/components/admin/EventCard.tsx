@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, MapPin } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
 
 type EventRow = Tables<'events'>;
@@ -60,6 +60,12 @@ const EventCard: React.FC<Props> = ({ event, onEdit, onDelete }) => (
         {event.description && (
           <div className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
             {event.description}
+          </div>
+        )}
+        {(event as any).location && (
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <MapPin className="w-3 h-3 flex-shrink-0" />
+            <span className="truncate">{(event as any).location}</span>
           </div>
         )}
         {event.tag && (

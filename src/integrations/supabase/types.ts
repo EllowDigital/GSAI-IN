@@ -198,6 +198,7 @@ export type Database = {
           from_date: string | null
           id: string
           image_url: string | null
+          location: string | null
           tag: string | null
           title: string
         }
@@ -208,6 +209,7 @@ export type Database = {
           from_date?: string | null
           id?: string
           image_url?: string | null
+          location?: string | null
           tag?: string | null
           title: string
         }
@@ -218,6 +220,7 @@ export type Database = {
           from_date?: string | null
           id?: string
           image_url?: string | null
+          location?: string | null
           tag?: string | null
           title?: string
         }
