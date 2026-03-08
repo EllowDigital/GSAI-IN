@@ -296,46 +296,53 @@ export default function Competitions() {
         /* Card View */
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((c) => (
-            <Card key={c.id} className="flex flex-col border border-border">
-              {c.image_url && (
-                <div className="h-36 overflow-hidden rounded-t-lg">
-                  <img src={c.image_url} alt={c.name} className="w-full h-full object-cover" loading="lazy" />
+            <Card key={c.id} className="group flex flex-col border border-border/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300 overflow-hidden rounded-xl">
+              {c.image_url ? (
+                <div className="h-40 overflow-hidden relative">
+                  <img src={c.image_url} alt={c.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                  <div className="absolute top-2 right-2">
+                    <Badge className={`${statusColors[c.status] || 'bg-muted text-muted-foreground'} text-[10px] shadow-sm`} variant="secondary">{c.status}</Badge>
+                  </div>
+                </div>
+              ) : (
+                <div className="h-24 bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center relative">
+                  <Award className="w-10 h-10 text-primary/20" />
+                  <div className="absolute top-2 right-2">
+                    <Badge className={`${statusColors[c.status] || 'bg-muted text-muted-foreground'} text-[10px]`} variant="secondary">{c.status}</Badge>
+                  </div>
                 </div>
               )}
-              <CardHeader className="pb-2">
-                <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-semibold text-foreground line-clamp-2">{c.name}</h3>
-                  <Badge className={statusColors[c.status] || 'bg-muted text-muted-foreground'} variant="secondary">{c.status}</Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="flex-1 space-y-3">
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Calendar className="w-3.5 h-3.5" />
-                  {format(new Date(c.date), 'MMM d, yyyy')}
-                  {c.end_date && ` – ${format(new Date(c.end_date), 'MMM d, yyyy')}`}
-                </div>
-                {c.location_text && (
+              <CardContent className="flex-1 p-4 space-y-3">
+                <h3 className="font-bold text-foreground line-clamp-2 text-base">{c.name}</h3>
+                <div className="space-y-1.5">
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <MapPin className="w-3.5 h-3.5" /> <span className="truncate">{c.location_text}</span>
+                    <Calendar className="w-3.5 h-3.5 text-primary/60" />
+                    {format(new Date(c.date), 'MMM d, yyyy')}
+                    {c.end_date && ` — ${format(new Date(c.end_date), 'MMM d, yyyy')}`}
                   </div>
-                )}
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Users className="w-3.5 h-3.5" /> {regCounts[c.id] || 0} registered
-                  {c.max_participants && ` / ${c.max_participants} max`}
+                  {c.location_text && (
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <MapPin className="w-3.5 h-3.5 text-primary/60" /> <span className="truncate">{c.location_text}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Users className="w-3.5 h-3.5 text-primary/60" /> {regCounts[c.id] || 0} registered
+                    {c.max_participants && ` / ${c.max_participants} max`}
+                  </div>
                 </div>
                 {c.description && <p className="text-xs text-muted-foreground line-clamp-2">{c.description}</p>}
-                <div className="flex flex-wrap gap-2 pt-2">
-                  <Button variant="outline" size="sm" className="flex-1 gap-1 text-xs" onClick={() => setRegsOpen(c)}>
+                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-border/30">
+                  <Button variant="outline" size="sm" className="flex-1 gap-1 text-xs h-8" onClick={() => setRegsOpen(c)}>
                     <Users className="w-3 h-3" /> Registrations
                   </Button>
-                  <Button variant="outline" size="sm" className="flex-1 gap-1 text-xs" onClick={() => openEdit(c)}>
-                    <Pencil className="w-3 h-3" /> Edit
-                  </Button>
-                  <Button variant="outline" size="sm" className="gap-1 text-xs" onClick={() => setCertOpen(c)}>
+                  <Button variant="outline" size="sm" className="gap-1 text-xs h-8" onClick={() => setCertOpen(c)}>
                     <Award className="w-3 h-3" /> Certs
                   </Button>
-                  <Button variant="destructive" size="sm" className="gap-1 text-xs" onClick={() => { if (confirm('Delete this competition?')) deleteMutation.mutate(c.id); }}>
-                    <Trash2 className="w-3 h-3" />
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(c)}>
+                    <Pencil className="w-3.5 h-3.5" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => { if (confirm('Delete this competition?')) deleteMutation.mutate(c.id); }}>
+                    <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </div>
               </CardContent>
