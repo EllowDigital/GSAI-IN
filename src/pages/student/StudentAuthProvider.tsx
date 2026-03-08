@@ -38,10 +38,10 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
 
   const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-  const triggerAnimation = (type: 'login' | 'logout', message: string) => {
+  const triggerAnimation = (type: 'login' | 'logout', message: string, duration = 1800) => {
     if (authTimeoutRef.current) clearTimeout(authTimeoutRef.current);
     setAuthAnimation({ type, message });
-    authTimeoutRef.current = setTimeout(() => setAuthAnimation(null), 2000);
+    authTimeoutRef.current = setTimeout(() => setAuthAnimation(null), duration);
   };
 
   const loadProfile = useCallback(async (userId: string) => {
