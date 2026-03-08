@@ -48,6 +48,12 @@ const navItems = [
     category: 'manage',
   },
   {
+    title: 'Attendance',
+    url: '/admin/dashboard/attendance',
+    icon: CalendarCheck,
+    category: 'manage',
+  },
+  {
     title: 'Events',
     url: '/admin/dashboard/events',
     icon: Calendar,

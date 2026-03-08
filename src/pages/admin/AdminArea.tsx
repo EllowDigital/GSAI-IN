@@ -36,6 +36,7 @@ const AdminArea = () => {
           <Route path="testimonials" element={<Testimonials />} />
           <Route path="competitions" element={<Competitions />} />
           <Route path="announcements" element={<Announcements />} />
+          <Route path="attendance" element={<Attendance />} />
           <Route path="*" element={<NotFoundAdmin />} />
         </Route>
         <Route path="*" element={<NotFoundAdmin />} />
