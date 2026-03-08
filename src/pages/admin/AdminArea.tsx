@@ -12,6 +12,7 @@ import Students from './dashboard/Students';
 import FeesManager from './dashboard/FeesManager';
 import Events from './dashboard/Events';
 import Progression from './dashboard/Progression';
+import Testimonials from './dashboard/Testimonials';
 
 const AdminArea = () => {
   return (
@@ -27,6 +28,7 @@ const AdminArea = () => {
           <Route path="students" element={<Students />} />
           <Route path="events" element={<Events />} />
           <Route path="progression" element={<Progression />} />
+          <Route path="testimonials" element={<Testimonials />} />
           <Route path="*" element={<NotFoundAdmin />} />
         </Route>
         <Route path="*" element={<NotFoundAdmin />} />

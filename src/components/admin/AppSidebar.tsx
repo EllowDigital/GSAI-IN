@@ -14,6 +14,7 @@ import {
   ChevronRight,
   X,
   Trophy,
+  MessageSquare,
 } from 'lucide-react';
 import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 
@@ -66,6 +67,12 @@ const navItems = [
     title: 'Gallery',
     url: '/admin/dashboard/gallery',
     icon: GalleryIcon,
+    category: 'content',
+  },
+  {
+    title: 'Testimonials',
+    url: '/admin/dashboard/testimonials',
+    icon: MessageSquare,
     category: 'content',
   },
 ];

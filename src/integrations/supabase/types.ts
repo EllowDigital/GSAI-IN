@@ -343,6 +343,39 @@ export type Database = {
         }
         Relationships: []
       }
+      program_testimonials: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_published: boolean
+          program_slug: string
+          rating: number
+          review: string
+          student_name: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_published?: boolean
+          program_slug: string
+          rating?: number
+          review: string
+          student_name: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_published?: boolean
+          program_slug?: string
+          rating?: number
+          review?: string
+          student_name?: string
+        }
+        Relationships: []
+      }
       promotion_history: {
         Row: {
           created_at: string
