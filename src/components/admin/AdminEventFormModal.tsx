@@ -303,6 +303,18 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
                   maxLength={32}
                 />
               </div>
+              <div className="flex flex-col gap-3 sm:gap-4">
+                <label className="font-medium text-sm" htmlFor="event-location">
+                  Location <span className="text-xs text-gray-400">(optional)</span>
+                </label>
+                <Input
+                  id="event-location"
+                  placeholder="e.g. GSAI Campus, Lucknow"
+                  value={(form as any).location ?? ''}
+                  onChange={(e) => handleChange('location' as any, e.target.value)}
+                  maxLength={120}
+                />
+              </div>
             </form>
           </div>
 
