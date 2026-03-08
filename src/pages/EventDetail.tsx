@@ -21,6 +21,7 @@ interface Event {
   end_date: string | null;
   image_url: string | null;
   tag: string | null;
+  location: string | null;
 }
 
 export default function EventDetail() {
