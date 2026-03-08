@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, Variants } from 'framer-motion';
-import { ArrowLeft, Filter, Shield } from 'lucide-react';
+import { ArrowLeft, Filter, Shield, Search } from 'lucide-react';
 import { programs } from '@/data/programsData';
 import Navbar from '@/components/Navbar';
 import FooterSection from '@/components/FooterSection';
@@ -27,14 +27,22 @@ export default function AllProgramsPage() {
     []
   );
   const [activeCategory, setActiveCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const filtered = useMemo(
-    () =>
-      activeCategory === 'All'
-        ? programs
-        : programs.filter((p) => p.category === activeCategory),
-    [activeCategory]
-  );
+  const filtered = useMemo(() => {
+    let result = activeCategory === 'All'
+      ? programs
+      : programs.filter((p) => p.category === activeCategory);
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.title.toLowerCase().includes(q) ||
+          p.desc.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [activeCategory, searchQuery]);
 
   return (
     <>
@@ -80,6 +88,25 @@ export default function AllProgramsPage() {
             <p className="text-lg text-gray-400 max-w-2xl mx-auto">
               Find the perfect martial arts or fitness program for your goals
             </p>
+          </motion.div>
+
+          {/* Search Bar */}
+          <motion.div
+            className="max-w-md mx-auto mb-8"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+          >
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search programs…"
+                className="w-full bg-white/5 border border-white/10 rounded-full pl-11 pr-4 py-2.5 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/30 transition-all"
+              />
+            </div>
           </motion.div>
 
           {/* Category Filters */}
