@@ -71,7 +71,7 @@
   <meta name="distribution" content="global" />
   <meta name="language" content="en-IN" />
   <meta name="coverage" content="Worldwide" />
-  <meta name="referrer" content="no-referrer-when-downgrade" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta name="copyright" content="© 2025 Ghatak Sports Academy™" />
   <meta name="abstract" content="Martial arts and self-defense training in India" />
   <meta name="subject" content="Martial Arts, Self-Defense, Sports Training" />
@@ -265,95 +265,134 @@
     }
   </script>
 
-  <!-- 📊 Structured Data: Course -->
+  <!-- 📊 Structured Data: Course Catalog -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Course",
-      "name": "Martial Arts and Self-Defense Training Program",
-      "description": "A structured training program in karate, taekwondo, MMA, boxing, kickboxing, grappling, and self-defense for all age groups.",
-      "provider": {
-        "@type": "Organization",
-        "name": "Ghatak Sports Academy India",
-        "sameAs": "https://ghataksportsacademy.com"
-      },
-      "hasCourseInstance": {
-        "@type": "CourseInstance",
-        "courseMode": "Onsite",
-        "location": {
-          "@type": "Place",
-          "name": "Ghatak Sports Academy India",
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "Badshah Kheda, Takrohi Rd",
-            "addressLocality": "Lucknow",
-            "addressRegion": "Uttar Pradesh",
-            "postalCode": "226028",
-            "addressCountry": "IN"
-          }
-        }
-      }
-    }
-  </script>
-
-  <!-- 📊 Structured Data: Programs List -->
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "ItemList",
-      "name": "Martial Arts and Fitness Programs",
-      "itemListElement": [
+      "@graph": [
         {
-          "@type": "ListItem",
-          "position": 1,
-          "item": {
-            "@type": "Course",
-            "name": "Karate Classes",
+          "@type": "Course",
+          "name": "Karate Classes",
+          "description": "Structured karate training focused on fundamentals, discipline, kata, and sparring.",
+          "inLanguage": ["en-IN", "hi-IN"],
+          "provider": {
+            "@type": "Organization",
+            "name": "Ghatak Sports Academy India",
+            "sameAs": "https://ghataksportsacademy.com"
+          },
+          "audience": {
+            "@type": "Audience",
+            "audienceType": "Children, Teens, Adults"
+          },
+          "offers": {
+            "@type": "Offer",
+            "category": "Martial Arts Training",
+            "availability": "https://schema.org/InStock",
             "url": "https://ghataksportsacademy.com/#programs"
           }
         },
         {
-          "@type": "ListItem",
-          "position": 2,
-          "item": {
-            "@type": "Course",
-            "name": "Taekwondo Training",
+          "@type": "Course",
+          "name": "Taekwondo Training",
+          "description": "Dynamic taekwondo coaching with kicking drills, forms, and competition-oriented practice.",
+          "inLanguage": ["en-IN", "hi-IN"],
+          "provider": {
+            "@type": "Organization",
+            "name": "Ghatak Sports Academy India",
+            "sameAs": "https://ghataksportsacademy.com"
+          },
+          "audience": {
+            "@type": "Audience",
+            "audienceType": "Children, Teens, Adults"
+          },
+          "offers": {
+            "@type": "Offer",
+            "category": "Martial Arts Training",
+            "availability": "https://schema.org/InStock",
             "url": "https://ghataksportsacademy.com/#programs"
           }
         },
         {
-          "@type": "ListItem",
-          "position": 3,
-          "item": {
-            "@type": "Course",
-            "name": "MMA Training",
+          "@type": "Course",
+          "name": "MMA Training",
+          "description": "Mixed martial arts program combining striking and grappling for practical combat development.",
+          "inLanguage": ["en-IN", "hi-IN"],
+          "provider": {
+            "@type": "Organization",
+            "name": "Ghatak Sports Academy India",
+            "sameAs": "https://ghataksportsacademy.com"
+          },
+          "audience": {
+            "@type": "Audience",
+            "audienceType": "Teens, Adults"
+          },
+          "offers": {
+            "@type": "Offer",
+            "category": "Martial Arts Training",
+            "availability": "https://schema.org/InStock",
             "url": "https://ghataksportsacademy.com/#programs"
           }
         },
         {
-          "@type": "ListItem",
-          "position": 4,
-          "item": {
-            "@type": "Course",
-            "name": "Boxing Classes",
+          "@type": "Course",
+          "name": "Boxing Classes",
+          "description": "Boxing instruction focused on technique, fitness, timing, and ring conditioning.",
+          "inLanguage": ["en-IN", "hi-IN"],
+          "provider": {
+            "@type": "Organization",
+            "name": "Ghatak Sports Academy India",
+            "sameAs": "https://ghataksportsacademy.com"
+          },
+          "audience": {
+            "@type": "Audience",
+            "audienceType": "Teens, Adults"
+          },
+          "offers": {
+            "@type": "Offer",
+            "category": "Combat Sports Training",
+            "availability": "https://schema.org/InStock",
             "url": "https://ghataksportsacademy.com/#programs"
           }
         },
         {
-          "@type": "ListItem",
-          "position": 5,
-          "item": {
-            "@type": "Course",
-            "name": "Kickboxing Classes",
+          "@type": "Course",
+          "name": "Kickboxing Classes",
+          "description": "High-energy kickboxing training for cardio conditioning, technique, and self-defense.",
+          "inLanguage": ["en-IN", "hi-IN"],
+          "provider": {
+            "@type": "Organization",
+            "name": "Ghatak Sports Academy India",
+            "sameAs": "https://ghataksportsacademy.com"
+          },
+          "audience": {
+            "@type": "Audience",
+            "audienceType": "Teens, Adults"
+          },
+          "offers": {
+            "@type": "Offer",
+            "category": "Combat Fitness Training",
+            "availability": "https://schema.org/InStock",
             "url": "https://ghataksportsacademy.com/#programs"
           }
         },
         {
-          "@type": "ListItem",
-          "position": 6,
-          "item": {
-            "@type": "Course",
-            "name": "Self-Defense Classes",
+          "@type": "Course",
+          "name": "Self-Defense Classes",
+          "description": "Practical self-defense sessions for real-world awareness, escape skills, and confidence.",
+          "inLanguage": ["en-IN", "hi-IN"],
+          "provider": {
+            "@type": "Organization",
+            "name": "Ghatak Sports Academy India",
+            "sameAs": "https://ghataksportsacademy.com"
+          },
+          "audience": {
+            "@type": "Audience",
+            "audienceType": "Women, Men, Children"
+          },
+          "offers": {
+            "@type": "Offer",
+            "category": "Self-Defense Training",
+            "availability": "https://schema.org/InStock",
             "url": "https://ghataksportsacademy.com/#programs"
           }
         }
@@ -494,7 +533,7 @@
   </noscript>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
-  <!-- Auto-mark external links: adds rel="noopener noreferrer nofollow" and target="_blank" for external anchors -->
+  <!-- Auto-mark external links: adds rel="noopener noreferrer" and target="_blank" for external anchors -->
   <script>
     let markScheduled = false;
 
@@ -513,7 +552,7 @@
             if (url.origin !== origin) {
               // add safe attributes for external links
               const rel = (a.getAttribute('rel') || '').split(/\s+/).filter(Boolean);
-              ['noopener', 'noreferrer', 'nofollow'].forEach((r) => {
+              ['noopener', 'noreferrer'].forEach((r) => {
                 if (!rel.includes(r)) rel.push(r);
               });
               a.setAttribute('rel', rel.join(' '));
