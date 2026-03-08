@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
 import Spinner from '@/components/ui/spinner';
-import { Plus, Pencil, Trash2, MapPin, Calendar, Users, Award, Upload, Search } from 'lucide-react';
+import { Plus, Pencil, Trash2, MapPin, Calendar, Users, Award, Upload, Search, ImageIcon, X } from 'lucide-react';
 import { format } from 'date-fns';
 import CompetitionCertificates from '@/components/admin/CompetitionCertificates';
 
