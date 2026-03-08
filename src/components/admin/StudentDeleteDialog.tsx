@@ -23,32 +23,9 @@ export default function StudentDeleteDialog({ student, onClose }: Props) {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      const sid = student.id;
-
-      // Delete all related data in parallel (order matters for FK constraints)
-      // First: tables that reference students but have no further deps
-      const deletions = await Promise.allSettled([
-        supabase.from('competition_certificates').delete().eq('student_id', sid),
-        supabase.from('competition_registrations').delete().eq('student_id', sid),
-        supabase.from('fees').delete().eq('student_id', sid),
-        supabase.from('student_progress').delete().eq('student_id', sid),
-        supabase.from('student_discipline_progress').delete().eq('student_id', sid),
-        supabase.from('promotion_history').delete().eq('student_id', sid),
-        supabase.from('attendance').delete().eq('student_id', sid),
-      ]);
-
-      // Check for errors in related deletions
-      for (const result of deletions) {
-        if (result.status === 'fulfilled' && result.value?.error) {
-          console.warn('Related data deletion warning:', result.value.error.message);
-        }
-      }
-
-      // Delete portal account (has FK to students)
-      await supabase.from('student_portal_accounts').delete().eq('student_id', sid);
-
-      // Finally delete the student record
-      const { error } = await supabase.from('students').delete().eq('id', sid);
+      // All related data (fees, attendance, progress, promotions, competitions,
+      // certificates, portal accounts) are automatically deleted via ON DELETE CASCADE
+      const { error } = await supabase.from('students').delete().eq('id', student.id);
       if (error) throw error;
 
       toast.success(`${student.name} and all related data permanently deleted.`);
@@ -80,7 +57,7 @@ export default function StudentDeleteDialog({ student, onClose }: Props) {
             disabled={loading}
             className="bg-red-600 text-white hover:bg-red-800"
           >
-            {loading ? 'Deleting Everything...' : 'Delete Permanently'}
+            {loading ? 'Deleting...' : 'Delete Permanently'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
