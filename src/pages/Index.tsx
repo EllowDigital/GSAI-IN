@@ -615,6 +615,7 @@ export default function Index() {
 
       {/* Footer */}
       <FooterSection />
+      <FloatingEnrollButton />
     </div>
   );
 }
