@@ -24,7 +24,11 @@ export default function ProgramEnquiryForm({ programTitle }: ProgramEnquiryFormP
     const text = encodeURIComponent(
       `Hi, I'm interested in the *${programTitle}* program.\n\nName: ${formData.name.trim()}\nPhone: ${formData.phone.trim()}\nMessage: ${formData.message.trim()}`
     );
-    window.open(`https://web.whatsapp.com/send?phone=916394135988&text=${text}`, '_blank');
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const whatsappUrl = isMobile
+      ? `https://wa.me/916394135988?text=${text}`
+      : `https://web.whatsapp.com/send?phone=916394135988&text=${text}`;
+    window.open(whatsappUrl, '_blank');
     setSubmitted(true);
     setTimeout(() => setSubmitted(false), 4000);
   };
