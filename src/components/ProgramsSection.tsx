@@ -197,6 +197,13 @@ export default function ProgramsSection() {
               View All Programs
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
+            <Link
+              to="/programs"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-yellow-500/30 text-gray-300 hover:text-yellow-400 font-semibold text-sm transition-all"
+            >
+              <ArrowLeftRight className="w-4 h-4" />
+              Compare Programs
+            </Link>
           </div>
         </motion.div>
       </div>
