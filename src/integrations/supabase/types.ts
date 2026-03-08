@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      academy_settings: {
+        Row: {
+          id: string
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: string
+        }
+        Insert: {
+          id?: string
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value: string
+        }
+        Update: {
+          id?: string
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: string
+        }
+        Relationships: []
+      }
       admin_users: {
         Row: {
           created_at: string | null
@@ -937,6 +961,7 @@ export type Database = {
           created_at: string | null
           created_by: string | null
           default_monthly_fee: number
+          discount_percent: number
           encrypted_aadhar_number: string | null
           fee_status: string | null
           id: string
@@ -952,6 +977,7 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           default_monthly_fee?: number
+          discount_percent?: number
           encrypted_aadhar_number?: string | null
           fee_status?: string | null
           id?: string
@@ -967,6 +993,7 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           default_monthly_fee?: number
+          discount_percent?: number
           encrypted_aadhar_number?: string | null
           fee_status?: string | null
           id?: string
