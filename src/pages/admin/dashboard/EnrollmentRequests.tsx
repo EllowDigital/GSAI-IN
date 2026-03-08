@@ -6,11 +6,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { toast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
-import { UserPlus, Search, Eye, Check, X, Clock, Trash2, Phone, User } from 'lucide-react';
+import { UserPlus, Search, Eye, Check, X, Clock, Trash2, Phone, User, Copy, CheckCircle, KeyRound } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 
 interface EnrollmentRequest {
@@ -42,6 +42,16 @@ export default function EnrollmentRequestsManager() {
   const [adminNotes, setAdminNotes] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
+  // Approve flow state
+  const [approveReq, setApproveReq] = useState<EnrollmentRequest | null>(null);
+  const [approveStep, setApproveStep] = useState<'confirm' | 'credentials' | 'done'>('confirm');
+  const [aadharNumber, setAadharNumber] = useState('');
+  const [joinDate, setJoinDate] = useState(new Date().toISOString().slice(0, 10));
+  const [loginId, setLoginId] = useState('');
+  const [password, setPassword] = useState('');
+  const [createdStudentId, setCreatedStudentId] = useState<string | null>(null);
+  const [createdCreds, setCreatedCreds] = useState<{ loginId: string; password: string } | null>(null);
+
   const { data: requests = [], isLoading } = useQuery({
     queryKey: ['enrollment-requests'],
     queryFn: async () => {
@@ -58,11 +68,7 @@ export default function EnrollmentRequestsManager() {
     mutationFn: async ({ id, status, notes }: { id: string; status: string; notes?: string }) => {
       const { error } = await supabase
         .from('enrollment_requests' as any)
-        .update({
-          status,
-          admin_notes: notes || null,
-          reviewed_at: new Date().toISOString(),
-        } as any)
+        .update({ status, admin_notes: notes || null, reviewed_at: new Date().toISOString() } as any)
         .eq('id', id) as any;
       if (error) throw error;
     },
@@ -76,10 +82,7 @@ export default function EnrollmentRequestsManager() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('enrollment_requests' as any)
-        .delete()
-        .eq('id', id) as any;
+      const { error } = await supabase.from('enrollment_requests' as any).delete().eq('id', id) as any;
       if (error) throw error;
     },
     onSuccess: () => {
@@ -88,6 +91,96 @@ export default function EnrollmentRequestsManager() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
+  // Approve & create student + portal account
+  const [approving, setApproving] = useState(false);
+
+  const handleStartApprove = (req: EnrollmentRequest) => {
+    setApproveReq(req);
+    setApproveStep('confirm');
+    setAadharNumber('');
+    setJoinDate(new Date().toISOString().slice(0, 10));
+    setLoginId('');
+    setPassword('');
+    setCreatedStudentId(null);
+    setCreatedCreds(null);
+  };
+
+  const handleCreateStudent = async () => {
+    if (!approveReq) return;
+    if (!/^\d{12}$/.test(aadharNumber)) {
+      toast.error('Aadhar number must be exactly 12 digits');
+      return;
+    }
+    setApproving(true);
+    try {
+      // Create student record
+      const { data: student, error } = await supabase.from('students').insert({
+        name: approveReq.student_name,
+        aadhar_number: aadharNumber,
+        program: approveReq.program,
+        join_date: joinDate,
+        parent_name: approveReq.parent_name,
+        parent_contact: approveReq.parent_phone,
+      }).select().single();
+      if (error) throw error;
+
+      // Mark enrollment as approved
+      await supabase.from('enrollment_requests' as any)
+        .update({ status: 'approved', reviewed_at: new Date().toISOString() } as any)
+        .eq('id', approveReq.id);
+
+      setCreatedStudentId(student.id);
+      setApproveStep('credentials');
+      queryClient.invalidateQueries({ queryKey: ['enrollment-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      toast.success(`Student "${student.name}" created!`);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to create student');
+    } finally {
+      setApproving(false);
+    }
+  };
+
+  const handleCreatePortal = async () => {
+    if (!createdStudentId || !loginId.trim() || !password.trim()) {
+      toast.error('Login ID and password are required');
+      return;
+    }
+    if (password.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+    setApproving(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-student-account', {
+        body: { student_id: createdStudentId, login_id: loginId.trim(), password: password.trim() },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      setCreatedCreds({ loginId: loginId.trim(), password: password.trim() });
+      setApproveStep('done');
+      queryClient.invalidateQueries({ queryKey: ['portal-accounts'] });
+      queryClient.invalidateQueries({ queryKey: ['students-without-portal'] });
+      toast.success('Portal account created!');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to create portal account');
+    } finally {
+      setApproving(false);
+    }
+  };
+
+  const handleCloseApprove = () => {
+    setApproveReq(null);
+    setCreatedStudentId(null);
+    setCreatedCreds(null);
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Copied!');
+  };
 
   const filtered = requests.filter(r => {
     const matchSearch = r.student_name.toLowerCase().includes(search.toLowerCase()) ||
@@ -105,11 +198,9 @@ export default function EnrollmentRequestsManager() {
         <div>
           <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
             <UserPlus className="w-5 h-5 text-primary" /> Enrollment Requests
-            {pendingCount > 0 && (
-              <Badge variant="destructive" className="ml-2 text-xs">{pendingCount} new</Badge>
-            )}
+            {pendingCount > 0 && <Badge variant="destructive" className="ml-2 text-xs">{pendingCount} new</Badge>}
           </h1>
-          <p className="text-sm text-muted-foreground">Review and manage enrollment requests from the website</p>
+          <p className="text-sm text-muted-foreground">Review enrollment requests → approve → create student → set login credentials</p>
         </div>
       </div>
 
@@ -121,17 +212,9 @@ export default function EnrollmentRequestsManager() {
         </div>
         <div className="flex gap-1.5 flex-wrap">
           {['all', 'pending', 'contacted', 'approved', 'rejected'].map(s => (
-            <Button
-              key={s}
-              variant={statusFilter === s ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setStatusFilter(s)}
-              className="text-xs h-8 capitalize"
-            >
+            <Button key={s} variant={statusFilter === s ? 'default' : 'outline'} size="sm" onClick={() => setStatusFilter(s)} className="text-xs h-8 capitalize">
               {s === 'all' ? 'All' : s}
-              {s === 'pending' && pendingCount > 0 && (
-                <span className="ml-1 text-[10px] bg-white/20 px-1.5 py-0.5 rounded-full">{pendingCount}</span>
-              )}
+              {s === 'pending' && pendingCount > 0 && <span className="ml-1 text-[10px] bg-white/20 px-1.5 py-0.5 rounded-full">{pendingCount}</span>}
             </Button>
           ))}
         </div>
@@ -141,7 +224,7 @@ export default function EnrollmentRequestsManager() {
         <div className="flex justify-center py-12"><Spinner size={20} /></div>
       ) : filtered.length === 0 ? (
         <Card><CardContent className="py-12 text-center text-muted-foreground text-sm">
-          {requests.length === 0 ? 'No enrollment requests yet.' : 'No requests match your filters.'}
+          {requests.length === 0 ? 'No enrollment requests yet. Share the enrollment form on your website!' : 'No requests match your filters.'}
         </CardContent></Card>
       ) : (
         <div className="space-y-2">
@@ -163,13 +246,18 @@ export default function EnrollmentRequestsManager() {
                       <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {format(new Date(req.created_at), 'MMM d, yyyy')}</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
+                  <div className="flex items-center gap-1.5 shrink-0 flex-wrap">
                     <Button variant="outline" size="sm" className="text-xs h-8 gap-1" onClick={() => { setViewReq(req); setAdminNotes(req.admin_notes || ''); }}>
                       <Eye className="w-3 h-3" /> View
                     </Button>
+                    {(req.status === 'pending' || req.status === 'contacted') && (
+                      <Button size="sm" className="text-xs h-8 gap-1 bg-green-600 hover:bg-green-700" onClick={() => handleStartApprove(req)}>
+                        <Check className="w-3 h-3" /> Approve & Add
+                      </Button>
+                    )}
                     {req.status === 'pending' && (
                       <>
-                        <Button size="sm" className="text-xs h-8 gap-1 bg-green-600 hover:bg-green-700" onClick={() => updateMutation.mutate({ id: req.id, status: 'contacted' })}>
+                        <Button size="sm" className="text-xs h-8 gap-1 bg-blue-600 hover:bg-blue-700" onClick={() => updateMutation.mutate({ id: req.id, status: 'contacted' })}>
                           <Phone className="w-3 h-3" />
                         </Button>
                         <Button size="sm" variant="destructive" className="text-xs h-8 gap-1" onClick={() => updateMutation.mutate({ id: req.id, status: 'rejected' })}>
@@ -179,9 +267,7 @@ export default function EnrollmentRequestsManager() {
                     )}
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
@@ -205,50 +291,134 @@ export default function EnrollmentRequestsManager() {
       {/* Detail Modal */}
       <Dialog open={!!viewReq} onOpenChange={(o) => { if (!o) setViewReq(null); }}>
         <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Enrollment Request</DialogTitle>
-          </DialogHeader>
+          <DialogHeader><DialogTitle>Enrollment Request</DialogTitle></DialogHeader>
           {viewReq && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div><p className="text-xs text-muted-foreground">Student</p><p className="font-medium">{viewReq.student_name}</p></div>
                 <div><p className="text-xs text-muted-foreground">Age / Gender</p><p className="font-medium">{viewReq.age} yrs • {viewReq.gender}</p></div>
                 <div><p className="text-xs text-muted-foreground">Parent</p><p className="font-medium">{viewReq.parent_name}</p></div>
-                <div><p className="text-xs text-muted-foreground">Phone</p>
-                  <a href={`tel:${viewReq.parent_phone}`} className="font-medium text-primary hover:underline">{viewReq.parent_phone}</a>
-                </div>
+                <div><p className="text-xs text-muted-foreground">Phone</p><a href={`tel:${viewReq.parent_phone}`} className="font-medium text-primary hover:underline">{viewReq.parent_phone}</a></div>
                 <div className="col-span-2"><p className="text-xs text-muted-foreground">Program</p><p className="font-medium">{viewReq.program}</p></div>
-                {viewReq.message && (
-                  <div className="col-span-2"><p className="text-xs text-muted-foreground">Message</p><p className="font-medium">{viewReq.message}</p></div>
-                )}
+                {viewReq.message && <div className="col-span-2"><p className="text-xs text-muted-foreground">Message</p><p className="font-medium">{viewReq.message}</p></div>}
                 <div className="col-span-2"><p className="text-xs text-muted-foreground">Submitted</p><p className="font-medium">{format(new Date(viewReq.created_at), 'PPp')}</p></div>
               </div>
-
               <div>
                 <label className="text-xs font-medium text-muted-foreground">Admin Notes</label>
                 <Textarea value={adminNotes} onChange={e => setAdminNotes(e.target.value)} placeholder="Add notes..." rows={2} className="mt-1" />
               </div>
-
               <div className="flex flex-wrap gap-2">
                 <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={() => updateMutation.mutate({ id: viewReq.id, status: 'contacted', notes: adminNotes })}>
                   <Phone className="w-3 h-3" /> Mark Contacted
                 </Button>
-                <Button size="sm" className="gap-1 text-xs bg-green-600 hover:bg-green-700" onClick={() => updateMutation.mutate({ id: viewReq.id, status: 'approved', notes: adminNotes })}>
-                  <Check className="w-3 h-3" /> Approve
+                <Button size="sm" className="gap-1 text-xs bg-green-600 hover:bg-green-700" onClick={() => { setViewReq(null); handleStartApprove(viewReq); }}>
+                  <Check className="w-3 h-3" /> Approve & Add Student
                 </Button>
                 <Button size="sm" variant="destructive" className="gap-1 text-xs" onClick={() => updateMutation.mutate({ id: viewReq.id, status: 'rejected', notes: adminNotes })}>
                   <X className="w-3 h-3" /> Reject
                 </Button>
               </div>
-
-              <a
-                href={`https://wa.me/91${viewReq.parent_phone}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full text-center py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors"
-              >
+              <a href={`https://wa.me/91${viewReq.parent_phone}`} target="_blank" rel="noopener noreferrer" className="block w-full text-center py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors">
                 📱 WhatsApp Parent
               </a>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Approve & Add Student Flow */}
+      <Dialog open={!!approveReq} onOpenChange={(o) => { if (!o) handleCloseApprove(); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {approveStep === 'confirm' && <><UserPlus className="w-5 h-5 text-green-600" /> Step 1: Create Student</>}
+              {approveStep === 'credentials' && <><KeyRound className="w-5 h-5 text-primary" /> Step 2: Set Login</>}
+              {approveStep === 'done' && <><CheckCircle className="w-5 h-5 text-green-600" /> All Done!</>}
+            </DialogTitle>
+            <DialogDescription>
+              {approveStep === 'confirm' && `Add "${approveReq?.student_name}" to your student roster.`}
+              {approveStep === 'credentials' && 'Create portal login so the student can access their dashboard.'}
+              {approveStep === 'done' && 'Student is enrolled and can now log in.'}
+            </DialogDescription>
+          </DialogHeader>
+
+          {approveStep === 'confirm' && approveReq && (
+            <div className="space-y-4">
+              <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-1.5 text-sm">
+                <div className="flex justify-between"><span className="text-muted-foreground">Name</span><span className="font-medium">{approveReq.student_name}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Program</span><span className="font-medium">{approveReq.program}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Parent</span><span className="font-medium">{approveReq.parent_name}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Phone</span><span className="font-medium">{approveReq.parent_phone}</span></div>
+              </div>
+              <div>
+                <label className="text-sm font-medium">Aadhar Number *</label>
+                <Input value={aadharNumber} onChange={e => setAadharNumber(e.target.value.replace(/\D/g, '').slice(0, 12))} placeholder="12 digit Aadhar number" maxLength={12} className="mt-1" />
+                <p className="text-xs text-muted-foreground mt-1">Required for student records</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium">Join Date *</label>
+                <Input type="date" value={joinDate} onChange={e => setJoinDate(e.target.value)} className="mt-1" />
+              </div>
+              <Button onClick={handleCreateStudent} disabled={approving} className="w-full bg-green-600 hover:bg-green-700">
+                {approving ? <Spinner size={16} /> : 'Create Student Record'}
+              </Button>
+            </div>
+          )}
+
+          {approveStep === 'credentials' && (
+            <div className="space-y-4">
+              <div className="rounded-lg border border-green-500/20 bg-green-500/5 p-3 text-sm text-green-700 dark:text-green-400">
+                ✅ Student record created. Now set up their portal login.
+              </div>
+              <div>
+                <label className="text-sm font-medium">Login ID *</label>
+                <Input value={loginId} onChange={e => setLoginId(e.target.value)} placeholder="e.g. STU001" className="mt-1" />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Password *</label>
+                <Input type="text" value={password} onChange={e => setPassword(e.target.value)} placeholder="Min 6 characters" className="mt-1" />
+                <p className="text-xs text-muted-foreground mt-1">Share this password with the student. They can change it later.</p>
+              </div>
+              <Button onClick={handleCreatePortal} disabled={approving} className="w-full">
+                {approving ? <Spinner size={16} /> : 'Create Portal Account'}
+              </Button>
+              <Button variant="ghost" size="sm" className="w-full text-xs text-muted-foreground" onClick={handleCloseApprove}>
+                Skip — I'll set up login later
+              </Button>
+            </div>
+          )}
+
+          {approveStep === 'done' && createdCreds && (
+            <div className="space-y-4">
+              <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-4 space-y-3">
+                <div className="flex items-center gap-2 text-green-600">
+                  <CheckCircle className="w-5 h-5" />
+                  <span className="font-semibold text-sm">Enrollment Complete!</span>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Login ID:</span>
+                    <div className="flex items-center gap-1.5">
+                      <code className="font-mono text-foreground">{createdCreds.loginId}</code>
+                      <button onClick={() => copyToClipboard(createdCreds.loginId)} className="text-muted-foreground hover:text-foreground"><Copy className="w-3.5 h-3.5" /></button>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Password:</span>
+                    <div className="flex items-center gap-1.5">
+                      <code className="font-mono text-foreground">{createdCreds.password}</code>
+                      <button onClick={() => copyToClipboard(createdCreds.password)} className="text-muted-foreground hover:text-foreground"><Copy className="w-3.5 h-3.5" /></button>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground">Share these credentials with the student. They can change their password from the student portal.</p>
+              </div>
+              {approveReq && (
+                <a href={`https://wa.me/91${approveReq.parent_phone}?text=${encodeURIComponent(`🥋 Welcome to GSAI!\n\nDear ${approveReq.parent_name},\n\n${approveReq.student_name} has been enrolled in ${approveReq.program}.\n\n🔐 Student Portal Login:\nURL: ${window.location.origin}/student/login\nLogin ID: ${createdCreds.loginId}\nPassword: ${createdCreds.password}\n\nThe student can change their password after first login.`)}`} target="_blank" rel="noopener noreferrer" className="block w-full text-center py-2.5 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors">
+                  📱 Send Credentials via WhatsApp
+                </a>
+              )}
+              <Button onClick={handleCloseApprove} className="w-full" variant="outline">Done</Button>
             </div>
           )}
         </DialogContent>
