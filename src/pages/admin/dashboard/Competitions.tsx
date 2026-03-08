@@ -64,6 +64,17 @@ export default function Competitions() {
 
   const saveMutation = useMutation({
     mutationFn: async (values: typeof form & { id?: string }) => {
+      let image_url = values.image_url;
+
+      // Upload image file if selected
+      if (imageFile) {
+        const filename = `competitions/${Date.now()}-${imageFile.name}`;
+        const { error: upErr } = await supabase.storage.from('gallery').upload(filename, imageFile, { upsert: true });
+        if (upErr) throw new Error('Image upload failed: ' + upErr.message);
+        const { data: urlData } = supabase.storage.from('gallery').getPublicUrl(filename);
+        image_url = urlData.publicUrl;
+      }
+
       const payload = {
         name: values.name,
         description: values.description || null,
@@ -72,7 +83,7 @@ export default function Competitions() {
         location_text: values.location_text || null,
         max_participants: values.max_participants ? parseInt(values.max_participants) : null,
         status: values.status,
-        image_url: values.image_url || null,
+        image_url: image_url || null,
       } as any;
 
       if (values.id) {
