@@ -14,6 +14,7 @@ import {
   Phone,
   Mail,
   ChevronRight,
+  GraduationCap,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { NavLinkItem } from './NavLinkItem';
@@ -169,6 +170,16 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                     })}
 
                     <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-4" />
+
+                    <Link
+                      to="/student/login"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-center gap-2 p-3.5 rounded-2xl border border-white/15 text-gray-200 text-base font-semibold hover:bg-white/10 active:scale-[0.98] transition-all"
+                      role="menuitem"
+                    >
+                      <GraduationCap className="w-5 h-5" />
+                      <span>Student Portal</span>
+                    </Link>
 
                     {/* Admin Panel Button */}
                     <Link

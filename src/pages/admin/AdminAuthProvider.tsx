@@ -18,8 +18,10 @@ import {
   POST_LOGIN_REDIRECT_KEY,
   SUPABASE_PROJECT_ID,
 } from '@/integrations/supabase/constants';
+import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
 
 const ADMIN_ROLE: Enums<'app_role'> = 'admin';
+const AUTH_REQUEST_TIMEOUT_MS = 12000;
 const HARD_RELOAD_TYPES: PerformanceNavigationTiming['type'][] = [
   'navigate',
   'back_forward',
@@ -159,25 +161,65 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     );
   };
 
-  const checkAdminStatus = async (userId: string | null): Promise<boolean> => {
+  const checkAdminStatus = async (
+    userId: string | null,
+    email: string | null
+  ): Promise<boolean> => {
     if (!userId) return false;
 
     try {
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('id')
-        .eq('user_id', userId)
-        .eq('role', ADMIN_ROLE)
-        .maybeSingle();
+      const { data: rpcData, error: rpcError } = await withTimeout(
+        supabase.rpc('has_role', { required_role: ADMIN_ROLE }),
+        AUTH_REQUEST_TIMEOUT_MS,
+        'Admin role check timed out.'
+      );
 
-      if (error) {
-        console.error('Admin role lookup failed', error);
-        return false;
+      if (!rpcError && rpcData === true) {
+        return true;
       }
 
-      return !!data;
+      const { data: roleData, error: roleError } = await withTimeout(
+        supabase
+          .from('user_roles')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('role', ADMIN_ROLE)
+          .maybeSingle(),
+        AUTH_REQUEST_TIMEOUT_MS,
+        'Admin role lookup timed out.'
+      );
+
+      if (!roleError && !!roleData) {
+        return true;
+      }
+
+      if (email) {
+        const { data: adminRecord, error: adminError } = await withTimeout(
+          supabase
+            .from('admin_users')
+            .select('id')
+            .eq('email', email)
+            .maybeSingle(),
+          AUTH_REQUEST_TIMEOUT_MS,
+          'Admin account fallback check timed out.'
+        );
+
+        if (!adminError && !!adminRecord) {
+          return true;
+        }
+      }
+
+      if (rpcError || roleError) {
+        console.error('Admin role lookup failed', rpcError || roleError);
+      }
+
+      return false;
     } catch (error) {
-      console.error('Admin status check failed:', error);
+      if (isTimeoutError(error)) {
+        console.warn('Admin status check timed out');
+      } else {
+        console.error('Admin status check failed:', error);
+      }
       return false;
     }
   };
@@ -196,7 +238,7 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     if (typeof adminStatusOverride === 'boolean') {
       isAdminUser = adminStatusOverride;
     } else if (!isAdminUser) {
-      isAdminUser = await checkAdminStatus(userId);
+      isAdminUser = await checkAdminStatus(userId, email);
     }
 
     setSession(newSession);
@@ -209,9 +251,13 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const { data } = await supabase.auth.getSession();
-        const session = data.session;
-        const isAdminUser = await updateAuthState(session);
+        const { data } = await withTimeout(
+          supabase.auth.getSession(),
+          AUTH_REQUEST_TIMEOUT_MS,
+          'Auth session request timed out.'
+        );
+        const activeSession = data.session;
+        const isAdminUser = await updateAuthState(activeSession);
 
         setIsLoading(false);
 
@@ -227,6 +273,9 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
           navigate('/admin/login', { replace: true });
         }
       } catch (error) {
+        if (isTimeoutError(error)) {
+          toast.error('Admin check timed out. Please retry.');
+        }
         console.error('Failed to initialize admin auth', error);
         clearState();
         rememberIntendedRoute();
@@ -253,6 +302,9 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
             navigate('/admin/login', { replace: true });
           }
         } catch (error) {
+          if (isTimeoutError(error)) {
+            toast.error('Connection is slow. Please try again.');
+          }
           console.error('Auth state listener failed', error);
           clearState();
           rememberIntendedRoute();
@@ -273,17 +325,21 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { data, error } = await withTimeout(
+        supabase.auth.signInWithPassword({
+          email,
+          password,
+        }),
+        AUTH_REQUEST_TIMEOUT_MS,
+        'Login request timed out.'
+      );
 
       if (error) {
         throw new Error(error.message);
       }
 
       const signedInUserId = data.user?.id ?? null;
-      const isAdminUser = await checkAdminStatus(signedInUserId);
+      const isAdminUser = await checkAdminStatus(signedInUserId, data.user?.email ?? null);
 
       if (!isAdminUser) {
         await supabase.auth.signOut();
@@ -313,7 +369,11 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error } = await withTimeout(
+        supabase.auth.signOut(),
+        AUTH_REQUEST_TIMEOUT_MS,
+        'Logout request timed out.'
+      );
       if (error) {
         throw new Error(error.message);
       }

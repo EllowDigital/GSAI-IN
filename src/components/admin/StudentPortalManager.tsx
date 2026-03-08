@@ -4,10 +4,31 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
 import Spinner from '@/components/ui/spinner';
 import { UserPlus, Trash2, Search, Key, Copy } from 'lucide-react';
+import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
+
+const REQUEST_TIMEOUT_MS = 15000;
+
+const getErrorMessage = (error: unknown): string => {
+  if (isTimeoutError(error)) {
+    return 'Connection is slow. Please try again.';
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return 'Unexpected error occurred.';
+};
 
 export default function StudentPortalManager() {
   const queryClient = useQueryClient();
@@ -21,10 +42,16 @@ export default function StudentPortalManager() {
   const { data: accounts = [], isLoading } = useQuery({
     queryKey: ['portal-accounts'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('student_portal_accounts')
-        .select('*, students(name, program)')
-        .order('created_at', { ascending: false }) as any;
+      const { data, error } =
+        (await withTimeout(
+          supabase
+            .from('student_portal_accounts')
+            .select('*, students(name, program)')
+            .order('created_at', { ascending: false }),
+          REQUEST_TIMEOUT_MS,
+          'Loading portal accounts timed out.'
+        )) as any;
+
       if (error) throw error;
       return data || [];
     },
@@ -34,24 +61,54 @@ export default function StudentPortalManager() {
   const { data: availableStudents = [] } = useQuery({
     queryKey: ['students-without-portal'],
     queryFn: async () => {
-      const { data: allStudents, error: sErr } = await supabase.from('students').select('id, name, program');
-      if (sErr) throw sErr;
-      const { data: existingAccounts, error: aErr } = await supabase.from('student_portal_accounts').select('student_id') as any;
-      if (aErr) throw aErr;
-      const usedIds = new Set((existingAccounts || []).map((a: any) => a.student_id));
-      return (allStudents || []).filter(s => !usedIds.has(s.id));
+      const { data: allStudents, error: studentsError } = await withTimeout(
+        supabase.from('students').select('id, name, program'),
+        REQUEST_TIMEOUT_MS,
+        'Loading students timed out.'
+      );
+
+      if (studentsError) throw studentsError;
+
+      const { data: existingAccounts, error: accountsError } =
+        (await withTimeout(
+          supabase.from('student_portal_accounts').select('student_id'),
+          REQUEST_TIMEOUT_MS,
+          'Loading existing portal accounts timed out.'
+        )) as any;
+
+      if (accountsError) throw accountsError;
+
+      const usedIds = new Set(
+        (existingAccounts || []).map((account: { student_id: string }) => account.student_id)
+      );
+
+      return (allStudents || []).filter((student) => !usedIds.has(student.id));
     },
   });
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      if (!selectedStudent || !loginId.trim() || !password.trim()) throw new Error('All fields required');
-      if (password.length < 6) throw new Error('Password must be at least 6 characters');
+      if (!selectedStudent || !loginId.trim() || !password.trim()) {
+        throw new Error('All fields required');
+      }
+
+      if (password.length < 6) {
+        throw new Error('Password must be at least 6 characters');
+      }
 
       // Create auth user via edge function
-      const { data, error } = await supabase.functions.invoke('create-student-account', {
-        body: { student_id: selectedStudent, login_id: loginId.trim(), password: password.trim() },
-      });
+      const { data, error } = await withTimeout(
+        supabase.functions.invoke('create-student-account', {
+          body: {
+            student_id: selectedStudent,
+            login_id: loginId.trim(),
+            password: password.trim(),
+          },
+        }),
+        REQUEST_TIMEOUT_MS,
+        'Creating student account timed out.'
+      );
+
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
     },
@@ -64,12 +121,18 @@ export default function StudentPortalManager() {
       setLoginId('');
       setPassword('');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (error: Error) => toast.error(getErrorMessage(error)),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (accountId: string) => {
-      const { error } = await supabase.from('student_portal_accounts').delete().eq('id', accountId) as any;
+      const { error } =
+        (await withTimeout(
+          supabase.from('student_portal_accounts').delete().eq('id', accountId),
+          REQUEST_TIMEOUT_MS,
+          'Deleting portal account timed out.'
+        )) as any;
+
       if (error) throw error;
     },
     onSuccess: () => {
@@ -77,47 +140,71 @@ export default function StudentPortalManager() {
       queryClient.invalidateQueries({ queryKey: ['students-without-portal'] });
       toast.success('Account removed.');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (error: Error) => toast.error(getErrorMessage(error)),
   });
 
-  const filtered = (accounts as any[]).filter((a: any) =>
-    a.students?.name?.toLowerCase().includes(search.toLowerCase()) ||
-    a.login_id?.toLowerCase().includes(search.toLowerCase())
+  const filtered = (accounts as any[]).filter(
+    (account: any) =>
+      account.students?.name?.toLowerCase().includes(search.toLowerCase()) ||
+      account.login_id?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h3 className="text-lg font-semibold text-foreground">Student Portal Accounts</h3>
-          <p className="text-sm text-muted-foreground">Manage student login credentials</p>
+          <h3 className="text-lg font-semibold text-foreground">
+            Student Portal Accounts
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Manage student login credentials
+          </p>
         </div>
-        <Button onClick={() => setCreateOpen(true)} size="sm" className="gap-1.5" disabled={availableStudents.length === 0}>
+        <Button
+          onClick={() => setCreateOpen(true)}
+          size="sm"
+          className="gap-1.5"
+          disabled={availableStudents.length === 0}
+        >
           <UserPlus className="w-4 h-4" /> Create Account
         </Button>
       </div>
 
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input placeholder="Search accounts..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+        <Input
+          placeholder="Search accounts..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-9"
+        />
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-8"><Spinner size={20} /></div>
+        <div className="flex justify-center py-8">
+          <Spinner size={20} />
+        </div>
       ) : filtered.length === 0 ? (
-        <p className="text-center text-sm text-muted-foreground py-8">No portal accounts created yet.</p>
+        <p className="text-center text-sm text-muted-foreground py-8">
+          No portal accounts created yet.
+        </p>
       ) : (
         <div className="space-y-2">
-          {filtered.map((a: any) => (
-            <Card key={a.id} className="border border-border">
+          {filtered.map((account: any) => (
+            <Card key={account.id} className="border border-border">
               <CardContent className="p-3 flex items-center justify-between gap-3">
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-foreground">{a.students?.name}</p>
+                  <p className="text-sm font-medium text-foreground">
+                    {account.students?.name}
+                  </p>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Key className="w-3 h-3" />
-                    <span className="font-mono">{a.login_id}</span>
+                    <span className="font-mono">{account.login_id}</span>
                     <button
-                      onClick={() => { navigator.clipboard.writeText(a.login_id); toast.success('Copied!'); }}
+                      onClick={() => {
+                        navigator.clipboard.writeText(account.login_id);
+                        toast.success('Copied!');
+                      }}
                       className="hover:text-foreground"
                     >
                       <Copy className="w-3 h-3" />
@@ -128,7 +215,11 @@ export default function StudentPortalManager() {
                   variant="destructive"
                   size="sm"
                   className="text-xs"
-                  onClick={() => { if (confirm('Remove this portal account?')) deleteMutation.mutate(a.id); }}
+                  onClick={() => {
+                    if (confirm('Remove this portal account?')) {
+                      deleteMutation.mutate(account.id);
+                    }
+                  }}
                 >
                   <Trash2 className="w-3 h-3" />
                 </Button>
@@ -143,32 +234,53 @@ export default function StudentPortalManager() {
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>Create Student Account</DialogTitle>
-            <DialogDescription>Create login credentials for a student.</DialogDescription>
+            <DialogDescription>
+              Create login credentials for a student.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
               <label className="text-sm font-medium">Select Student *</label>
               <select
                 value={selectedStudent}
-                onChange={e => setSelectedStudent(e.target.value)}
+                onChange={(e) => setSelectedStudent(e.target.value)}
                 className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm mt-1"
               >
                 <option value="">Choose a student...</option>
-                {availableStudents.map((s: any) => (
-                  <option key={s.id} value={s.id}>{s.name} — {s.program}</option>
+                {availableStudents.map((student: any) => (
+                  <option key={student.id} value={student.id}>
+                    {student.name} — {student.program}
+                  </option>
                 ))}
               </select>
             </div>
             <div>
               <label className="text-sm font-medium">Login ID *</label>
-              <Input value={loginId} onChange={e => setLoginId(e.target.value)} placeholder="e.g. STU001" className="mt-1" />
+              <Input
+                value={loginId}
+                onChange={(e) => setLoginId(e.target.value)}
+                placeholder="e.g. STU001"
+                className="mt-1"
+              />
             </div>
             <div>
               <label className="text-sm font-medium">Password *</label>
-              <Input type="text" value={password} onChange={e => setPassword(e.target.value)} placeholder="Min 6 characters" className="mt-1" />
-              <p className="text-xs text-muted-foreground mt-1">Share this password with the student.</p>
+              <Input
+                type="text"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Min 6 characters"
+                className="mt-1"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Share this password with the student.
+              </p>
             </div>
-            <Button onClick={() => createMutation.mutate()} disabled={createMutation.isPending} className="w-full">
+            <Button
+              onClick={() => createMutation.mutate()}
+              disabled={createMutation.isPending}
+              className="w-full"
+            >
               {createMutation.isPending ? <Spinner size={16} /> : 'Create Account'}
             </Button>
           </div>
