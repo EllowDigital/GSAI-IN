@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, Variants } from 'framer-motion';
-import { Sparkles, Zap, Target, Shield, ArrowRight } from 'lucide-react';
+import { Sparkles, Zap, Target, Shield, ArrowRight, ArrowLeftRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { programs } from '@/data/programsData';
 
