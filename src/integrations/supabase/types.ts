@@ -157,6 +157,152 @@ export type Database = {
         }
         Relationships: []
       }
+      competition_certificates: {
+        Row: {
+          certificate_url: string
+          competition_id: string
+          id: string
+          student_id: string
+          uploaded_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          certificate_url: string
+          competition_id: string
+          id?: string
+          student_id: string
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          certificate_url?: string
+          competition_id?: string
+          id?: string
+          student_id?: string
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competition_certificates_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competition_certificates_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competition_certificates_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students_masked"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competition_registrations: {
+        Row: {
+          competition_id: string
+          id: string
+          registered_at: string
+          status: string
+          student_id: string
+        }
+        Insert: {
+          competition_id: string
+          id?: string
+          registered_at?: string
+          status?: string
+          student_id: string
+        }
+        Update: {
+          competition_id?: string
+          id?: string
+          registered_at?: string
+          status?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competition_registrations_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competition_registrations_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competition_registrations_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students_masked"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competitions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          date: string
+          description: string | null
+          end_date: string | null
+          id: string
+          image_url: string | null
+          location_lat: number | null
+          location_lng: number | null
+          location_text: string | null
+          max_participants: number | null
+          name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          date: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          location_lat?: number | null
+          location_lng?: number | null
+          location_text?: string | null
+          max_participants?: number | null
+          name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          date?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          location_lat?: number | null
+          location_lng?: number | null
+          location_text?: string | null
+          max_participants?: number | null
+          name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       discipline_levels: {
         Row: {
           created_at: string
@@ -533,6 +679,45 @@ export type Database = {
             foreignKeyName: "student_discipline_progress_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
+            referencedRelation: "students_masked"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      student_portal_accounts: {
+        Row: {
+          auth_user_id: string
+          created_at: string
+          id: string
+          login_id: string
+          student_id: string
+        }
+        Insert: {
+          auth_user_id: string
+          created_at?: string
+          id?: string
+          login_id: string
+          student_id: string
+        }
+        Update: {
+          auth_user_id?: string
+          created_at?: string
+          id?: string
+          login_id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_portal_accounts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_portal_accounts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
             referencedRelation: "students_masked"
             referencedColumns: ["id"]
           },
