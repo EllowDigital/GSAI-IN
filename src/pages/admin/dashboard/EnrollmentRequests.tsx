@@ -21,6 +21,7 @@ interface EnrollmentRequest {
   parent_name: string;
   parent_phone: string;
   program: string;
+  aadhar_number: string | null;
   message: string | null;
   status: string;
   admin_notes: string | null;
