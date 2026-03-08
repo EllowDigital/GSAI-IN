@@ -289,8 +289,36 @@ export default function Competitions() {
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium">Image URL</label>
-              <Input value={form.image_url} onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))} placeholder="https://..." />
+              <label className="text-sm font-medium">Image</label>
+              {imagePreview ? (
+                <div className="relative mt-1 rounded-lg overflow-hidden border border-border">
+                  <img src={imagePreview} alt="Preview" className="w-full h-32 object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => { setImageFile(null); setImagePreview(null); setForm(f => ({ ...f, image_url: '' })); }}
+                    className="absolute top-2 right-2 p-1 rounded-full bg-background/80 hover:bg-background text-foreground"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <label className="mt-1 flex items-center justify-center gap-2 h-24 rounded-lg border-2 border-dashed border-border hover:border-primary/50 cursor-pointer transition-colors">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setImageFile(file);
+                        setImagePreview(URL.createObjectURL(file));
+                      }
+                    }}
+                  />
+                  <ImageIcon className="w-5 h-5 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Click to upload image</span>
+                </label>
+              )}
             </div>
             <Button type="submit" disabled={saveMutation.isPending} className="w-full">
               {saveMutation.isPending ? <Spinner size={16} /> : editing ? 'Update' : 'Create'}
