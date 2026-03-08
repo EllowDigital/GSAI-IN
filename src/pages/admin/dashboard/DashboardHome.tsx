@@ -153,18 +153,18 @@ export default function DashboardHome() {
       bg: 'bg-emerald-50 dark:bg-emerald-950/30',
     },
     {
-      label: 'Paid',
-      value: analytics.paidCount,
-      icon: TrendingUp,
-      color: 'text-violet-600 dark:text-violet-400',
-      bg: 'bg-violet-50 dark:bg-violet-950/30',
-    },
-    {
       label: 'Unpaid',
       value: analytics.unpaidCount,
       icon: Clock,
       color: 'text-amber-600 dark:text-amber-400',
       bg: 'bg-amber-50 dark:bg-amber-950/30',
+    },
+    {
+      label: 'New Enrollments',
+      value: analytics.pendingEnrollments,
+      icon: UserPlus,
+      color: 'text-orange-600 dark:text-orange-400',
+      bg: 'bg-orange-50 dark:bg-orange-950/30',
     },
   ];
 
