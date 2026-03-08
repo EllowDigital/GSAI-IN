@@ -13,6 +13,8 @@ import { programs } from '@/data/programsData';
 import Navbar from '@/components/Navbar';
 import FooterSection from '@/components/FooterSection';
 import InternalLinksBlock from '@/components/InternalLinksBlock';
+import ProgramEnquiryForm from '@/components/ProgramEnquiryForm';
+import ProgramTestimonials from '@/components/ProgramTestimonials';
 import Seo from '@/components/Seo';
 
 export default function ProgramDetail() {
@@ -215,12 +217,18 @@ export default function ProgramDetail() {
                   href="#contact"
                   className="mt-8 inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-yellow-500 to-red-600 text-white font-bold shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 transition-all hover:-translate-y-0.5 w-full md:w-auto text-center"
                 >
-                  Enrol Now — Free Trial Class
+                  Enquire Now — Free Trial Class
                 </a>
               </motion.div>
             </div>
           </div>
         </section>
+
+        {/* Testimonials */}
+        <ProgramTestimonials programSlug={program.slug} programTitle={program.title} />
+
+        {/* Enquiry Form */}
+        <ProgramEnquiryForm programTitle={program.title} />
 
         {/* Other Programs */}
         <section className="py-12 md:py-20 border-t border-white/5">

@@ -39,6 +39,7 @@ const EMPTY: Partial<EventRow> = {
   from_date: '',
   end_date: '',
   tag: '',
+  location: '',
 };
 
 // Helper component for date buttons — declared outside modal to avoid creating
@@ -182,7 +183,8 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
             from_date: form.from_date,
             end_date: form.end_date,
             tag: form.tag,
-          })
+            location: (form as any).location || null,
+          } as any)
           .eq('id', editingEvent.id);
         if (error) {
           toast.error('Failed to update event: ' + error.message);
@@ -200,6 +202,7 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
             from_date: form.from_date,
             end_date: form.end_date,
             tag: form.tag,
+            location: (form as any).location || null,
             date: form.from_date,
           },
         ]);
@@ -300,6 +303,18 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
                   value={form.tag ?? ''}
                   onChange={(e) => handleChange('tag', e.target.value)}
                   maxLength={32}
+                />
+              </div>
+              <div className="flex flex-col gap-3 sm:gap-4">
+                <label className="font-medium text-sm" htmlFor="event-location">
+                  Location <span className="text-xs text-gray-400">(optional)</span>
+                </label>
+                <Input
+                  id="event-location"
+                  placeholder="e.g. GSAI Campus, Lucknow"
+                  value={(form as any).location ?? ''}
+                  onChange={(e) => handleChange('location' as any, e.target.value)}
+                  maxLength={120}
                 />
               </div>
             </form>

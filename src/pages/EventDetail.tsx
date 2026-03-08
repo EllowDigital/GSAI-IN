@@ -21,6 +21,7 @@ interface Event {
   end_date: string | null;
   image_url: string | null;
   tag: string | null;
+  location: string | null;
 }
 
 export default function EventDetail() {
@@ -172,7 +173,7 @@ export default function EventDetail() {
     description: event.description,
     from_date: event.from_date || event.date,
     to_date: event.end_date,
-    location: 'Ghatak Sports Academy India, Lucknow',
+    location: (event as any).location || 'Ghatak Sports Academy India, Lucknow',
     image_url: event.image_url,
   });
 
@@ -249,7 +250,7 @@ export default function EventDetail() {
                 <div className="flex items-center gap-2">
                   <MapPin className="h-5 w-5 text-yellow-500" />
                   <span className="text-sm font-medium text-white">
-                    Ghatak Sports Academy India, Lucknow
+                    {event.location || 'Ghatak Sports Academy India, Lucknow'}
                   </span>
                 </div>
 

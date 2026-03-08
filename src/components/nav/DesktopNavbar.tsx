@@ -54,26 +54,35 @@ export function DesktopNavbar() {
           ))}
         </nav>
 
-        {/* CTA Button */}
-        <Link
-          to="/admin/login"
-          className="relative overflow-hidden group py-2 px-6 h-10 rounded-full flex items-center gap-2 flex-shrink-0 bg-gradient-to-r from-yellow-500 to-red-600 text-white shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all duration-300 hover:-translate-y-0.5"
-          aria-label="Access admin panel"
-        >
-          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer"></span>
-          <span className="font-bold text-sm tracking-wide">Admin</span>
-          <div className="relative h-5 w-5 rounded-full bg-white/20 flex items-center justify-center">
-            <img
-              src="/assets/img/logo.webp"
-              alt="GSAI Admin"
-              width={12}
-              height={12}
-              className="h-3 w-auto object-contain"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-        </Link>
+        {/* CTA Buttons */}
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <Link
+            to="/student/login"
+            className="py-2 px-5 h-10 rounded-full flex items-center gap-1.5 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 transition-all duration-300 text-sm font-medium"
+            aria-label="Student portal login"
+          >
+            Student Portal
+          </Link>
+          <Link
+            to="/admin/login"
+            className="relative overflow-hidden group py-2 px-6 h-10 rounded-full flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-red-600 text-white shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all duration-300 hover:-translate-y-0.5"
+            aria-label="Access admin panel"
+          >
+            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer"></span>
+            <span className="font-bold text-sm tracking-wide">Admin</span>
+            <div className="relative h-5 w-5 rounded-full bg-white/20 flex items-center justify-center">
+              <img
+                src="/assets/img/logo.webp"
+                alt="GSAI Admin"
+                width={12}
+                height={12}
+                className="h-3 w-auto object-contain"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </Link>
+        </div>
       </div>
     </>
   );
