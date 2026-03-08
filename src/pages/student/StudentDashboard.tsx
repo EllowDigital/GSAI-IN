@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { LogOut, Trophy, Download, Calendar, MapPin, UserCheck } from 'lucide-react';
+import ChangePasswordDialog from '@/components/student/ChangePasswordDialog';
 import { format } from 'date-fns';
 import { Navigate } from 'react-router-dom';
 import Spinner from '@/components/ui/spinner';
