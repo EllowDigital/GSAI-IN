@@ -102,6 +102,8 @@ export default function StudentModal({
       parent_name: '',
       parent_contact: '',
       profile_image_url: null,
+      default_monthly_fee: 2000,
+      discount_percent: 0,
     },
   });
 
