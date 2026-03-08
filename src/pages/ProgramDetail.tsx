@@ -216,7 +216,7 @@ export default function ProgramDetail() {
                   href="#contact"
                   className="mt-8 inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-yellow-500 to-red-600 text-white font-bold shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 transition-all hover:-translate-y-0.5 w-full md:w-auto text-center"
                 >
-                  Enrol Now — Free Trial Class
+                  Enquire Now — Free Trial Class
                 </a>
               </motion.div>
             </div>
