@@ -22,6 +22,8 @@ interface EnrollmentRequest {
   parent_phone: string;
   program: string;
   aadhar_number: string | null;
+  student_email: string | null;
+  student_phone: string | null;
   message: string | null;
   status: string;
   admin_notes: string | null;
@@ -65,22 +67,32 @@ export default function EnrollmentRequestsManager() {
     },
   });
 
-  // Send rejection email via formsubmit.co
-  const sendRejectionEmail = async (req: EnrollmentRequest, notes: string) => {
-    try {
-      const parentEmail = `${req.parent_phone}@student.gsai.app`; // fallback
-      // formsubmit.co uses phone-based WhatsApp as primary channel
-      // Build a rejection WhatsApp message
-      const message = `Dear ${req.parent_name},\n\nWe regret to inform you that the enrollment request for ${req.student_name} in the ${req.program} program has not been approved at this time.\n\n${notes ? `Reason: ${notes}\n\n` : ''}If you have questions, please contact us.\n\nGhatak Sports Academy India`;
-      
-      // Open WhatsApp with rejection message
-      window.open(
-        `https://wa.me/91${req.parent_phone}?text=${encodeURIComponent(message)}`,
-        '_blank'
-      );
+  // Send rejection notification via WhatsApp + email
+  const sendRejectionNotification = async (req: EnrollmentRequest, notes: string) => {
+    const message = `Dear ${req.parent_name},\n\nWe regret to inform you that the enrollment request for ${req.student_name} in the ${req.program} program has not been approved at this time.\n\n${notes ? `Reason: ${notes}\n\n` : ''}If you have questions, please contact us.\n\nGhatak Sports Academy India`;
+
+    // Open WhatsApp
+    window.open(
+      `https://wa.me/91${req.parent_phone}?text=${encodeURIComponent(message)}`,
+      '_blank'
+    );
+
+    // Also send email if student email exists
+    if (req.student_email) {
+      try {
+        const { sendFormSubmitEmail } = await import('@/utils/emailNotifications');
+        await sendFormSubmitEmail({
+          subject: `Enrollment Update - ${req.student_name}`,
+          message,
+          name: req.student_name,
+          replyTo: req.student_email,
+        });
+        toast.success('Rejection notification sent via WhatsApp & email');
+      } catch {
+        toast.success('WhatsApp opened (email notification failed)');
+      }
+    } else {
       toast.success('WhatsApp opened with rejection message');
-    } catch {
-      toast.error('Failed to open WhatsApp');
     }
   };
 
@@ -101,7 +113,7 @@ export default function EnrollmentRequestsManager() {
       if (data.status === 'rejected') {
         const req = requests.find(r => r.id === data.id);
         if (req) {
-          sendRejectionEmail(req, data.notes || '');
+          sendRejectionNotification(req, data.notes || '');
         }
       }
       setViewReq(null);
@@ -356,6 +368,8 @@ export default function EnrollmentRequestsManager() {
                 <div><p className="text-xs text-muted-foreground">Age / Gender</p><p className="font-medium">{viewReq.age} yrs • {viewReq.gender}</p></div>
                 <div><p className="text-xs text-muted-foreground">Parent</p><p className="font-medium">{viewReq.parent_name}</p></div>
                 <div><p className="text-xs text-muted-foreground">Phone</p><a href={`tel:${viewReq.parent_phone}`} className="font-medium text-primary hover:underline">{viewReq.parent_phone}</a></div>
+                {viewReq.student_email && <div><p className="text-xs text-muted-foreground">Student Email</p><a href={`mailto:${viewReq.student_email}`} className="font-medium text-primary hover:underline">{viewReq.student_email}</a></div>}
+                {viewReq.student_phone && <div><p className="text-xs text-muted-foreground">Student Phone</p><a href={`tel:${viewReq.student_phone}`} className="font-medium text-primary hover:underline">{viewReq.student_phone}</a></div>}
                 <div className="col-span-2"><p className="text-xs text-muted-foreground">Program</p><p className="font-medium">{viewReq.program}</p></div>
                 {viewReq.aadhar_number && <div className="col-span-2"><p className="text-xs text-muted-foreground">Aadhar Number</p><p className="font-medium font-mono">{viewReq.aadhar_number.replace(/(\d{4})(\d{4})(\d{4})/, '$1-$2-$3')}</p></div>}
                 {viewReq.message && <div className="col-span-2"><p className="text-xs text-muted-foreground">Message</p><p className="font-medium">{viewReq.message}</p></div>}

@@ -468,7 +468,9 @@ export type Database = {
           reviewed_at: string | null
           reviewed_by: string | null
           status: string
+          student_email: string | null
           student_name: string
+          student_phone: string | null
         }
         Insert: {
           aadhar_number?: string | null
@@ -484,7 +486,9 @@ export type Database = {
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: string
+          student_email?: string | null
           student_name: string
+          student_phone?: string | null
         }
         Update: {
           aadhar_number?: string | null
@@ -500,7 +504,9 @@ export type Database = {
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: string
+          student_email?: string | null
           student_name?: string
+          student_phone?: string | null
         }
         Relationships: []
       }
