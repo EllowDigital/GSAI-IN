@@ -18,6 +18,7 @@ import StudentProgressionTracker from '@/components/student/StudentProgressionTr
 import StudentEventsView from '@/components/student/StudentEventsView';
 import StudentAnnouncements from '@/components/student/StudentAnnouncements';
 import StudentAttendanceView from '@/components/student/StudentAttendanceView';
+import { downloadCertificateFile } from '@/utils/certificateDownload';
 
 export default function StudentDashboard() {
   const { profile, isAuthenticated, isLoading: authLoading, signOut } = useStudentAuth();

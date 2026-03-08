@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import Spinner from '@/components/ui/spinner';
 import { Upload, Download, Trash2, FileCheck, AlertCircle } from 'lucide-react';
+import { downloadCertificateFile } from '@/utils/certificateDownload';
 
 interface Props {
   competition: { id: string; name: string };
