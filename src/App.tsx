@@ -44,6 +44,8 @@ const AllGalleryPage = lazy(() => import('./pages/AllGalleryPage'));
 const LocationLucknow = lazy(() => import('./pages/LocationLucknow'));
 const ProgramDetail = lazy(() => import('./pages/ProgramDetail'));
 const AllProgramsPage = lazy(() => import('./pages/AllProgramsPage'));
+const AllCompetitionsPage = lazy(() => import('./pages/AllCompetitionsPage'));
+const EnrollPage = lazy(() => import('./pages/EnrollPage'));
 const StudentPortal = lazy(() => import('./pages/student/StudentPortal'));
 
 const AdminArea = lazy(() => import('./pages/admin/AdminArea'));
@@ -261,6 +263,10 @@ const App = () => {
                     <Route path="/news" element={<AllNewsPage />} />
                     <Route path="/blogs" element={<AllBlogsPage />} />
                     <Route path="/gallery" element={<AllGalleryPage />} />
+                    <Route
+                      path="/competitions"
+                      element={<AllCompetitionsPage />}
+                    />
 
                     {/* Section landing aliases to prevent direct-link 404s */}
                     <Route path="/contact" element={<HomePageWrapper />} />
@@ -281,6 +287,7 @@ const App = () => {
                     />
                     <Route path="/programs" element={<AllProgramsPage />} />
                     <Route path="/programs/:slug" element={<ProgramDetail />} />
+                    <Route path="/enroll" element={<EnrollPage />} />
 
                     <Route path="*" element={<NotFound />} />
                   </Routes>

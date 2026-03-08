@@ -15,11 +15,20 @@ import {
   X,
   Swords,
   GraduationCap,
+  Megaphone,
+  UserPlus,
+  CalendarCheck,
 } from 'lucide-react';
 import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 
 const navItems = [
   { title: 'Dashboard', url: '/admin/dashboard', icon: Home, category: 'main' },
+  {
+    title: 'Enrollments',
+    url: '/admin/dashboard/enrollments',
+    icon: UserPlus,
+    category: 'manage',
+  },
   {
     title: 'Students',
     url: '/admin/dashboard/students',
@@ -36,6 +45,12 @@ const navItems = [
     title: 'Progression',
     url: '/admin/dashboard/progression',
     icon: Trophy,
+    category: 'manage',
+  },
+  {
+    title: 'Attendance',
+    url: '/admin/dashboard/attendance',
+    icon: CalendarCheck,
     category: 'manage',
   },
   {
@@ -72,6 +87,12 @@ const navItems = [
     title: 'Testimonials',
     url: '/admin/dashboard/testimonials',
     icon: MessageSquare,
+    category: 'content',
+  },
+  {
+    title: 'Announcements',
+    url: '/admin/dashboard/announcements',
+    icon: Megaphone,
     category: 'content',
   },
 ];
@@ -175,13 +196,7 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
       {/* Footer */}
       <div className="p-3 border-t border-border space-y-2">
         <button
-          onClick={async () => {
-            try {
-              await signOut();
-            } catch {
-              navigate('/');
-            }
-          }}
+          onClick={() => window.open('/', '_blank')}
           className="w-full flex items-center justify-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground px-3 py-2 rounded-lg hover:bg-muted transition-colors"
         >
           <Globe className="w-3.5 h-3.5" />
@@ -194,6 +209,16 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
           <LogOut className="w-3.5 h-3.5" />
           Sign Out
         </button>
+        <div className="pt-2 border-t border-border/50 text-center">
+          <p className="text-[10px] text-muted-foreground/60 font-medium">
+            v1.0.0
+          </p>
+          <p className="text-[9px] text-muted-foreground/40 mt-0.5">
+            Built by{' '}
+            <span className="text-muted-foreground/60">Sarwan Yadav</span> ·{' '}
+            <span className="text-muted-foreground/60">EllowDigital</span>
+          </p>
+        </div>
       </div>
     </nav>
   );

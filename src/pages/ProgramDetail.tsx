@@ -225,7 +225,10 @@ export default function ProgramDetail() {
         </section>
 
         {/* Testimonials */}
-        <ProgramTestimonials programSlug={program.slug} programTitle={program.title} />
+        <ProgramTestimonials
+          programSlug={program.slug}
+          programTitle={program.title}
+        />
 
         {/* Enquiry Form */}
         <ProgramEnquiryForm programTitle={program.title} />

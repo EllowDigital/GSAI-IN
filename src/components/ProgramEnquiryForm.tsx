@@ -6,7 +6,9 @@ interface ProgramEnquiryFormProps {
   programTitle: string;
 }
 
-export default function ProgramEnquiryForm({ programTitle }: ProgramEnquiryFormProps) {
+export default function ProgramEnquiryForm({
+  programTitle,
+}: ProgramEnquiryFormProps) {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -14,7 +16,9 @@ export default function ProgramEnquiryForm({ programTitle }: ProgramEnquiryFormP
   });
   const [submitted, setSubmitted] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -56,8 +60,8 @@ export default function ProgramEnquiryForm({ programTitle }: ProgramEnquiryFormP
             </h2>
           </div>
           <p className="text-gray-400 mb-8">
-            Interested in joining? Fill in your details and we'll get back to you
-            via WhatsApp with batch timings and trial class information.
+            Interested in joining? Fill in your details and we'll get back to
+            you via WhatsApp with batch timings and trial class information.
           </p>
 
           {submitted ? (
@@ -67,12 +71,17 @@ export default function ProgramEnquiryForm({ programTitle }: ProgramEnquiryFormP
               className="flex items-center gap-3 bg-green-500/10 border border-green-500/20 rounded-2xl p-6 text-green-400"
             >
               <CheckCircle2 className="w-6 h-6 flex-shrink-0" />
-              <span className="font-medium">Message sent! We'll contact you shortly on WhatsApp.</span>
+              <span className="font-medium">
+                Message sent! We'll contact you shortly on WhatsApp.
+              </span>
             </motion.div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label htmlFor="enq-name" className="block text-sm text-gray-400 mb-1.5">
+                <label
+                  htmlFor="enq-name"
+                  className="block text-sm text-gray-400 mb-1.5"
+                >
                   Your Name *
                 </label>
                 <input
@@ -88,7 +97,10 @@ export default function ProgramEnquiryForm({ programTitle }: ProgramEnquiryFormP
                 />
               </div>
               <div>
-                <label htmlFor="enq-phone" className="block text-sm text-gray-400 mb-1.5">
+                <label
+                  htmlFor="enq-phone"
+                  className="block text-sm text-gray-400 mb-1.5"
+                >
                   Phone / WhatsApp *
                 </label>
                 <input
@@ -105,7 +117,10 @@ export default function ProgramEnquiryForm({ programTitle }: ProgramEnquiryFormP
                 />
               </div>
               <div>
-                <label htmlFor="enq-message" className="block text-sm text-gray-400 mb-1.5">
+                <label
+                  htmlFor="enq-message"
+                  className="block text-sm text-gray-400 mb-1.5"
+                >
                   Message (optional)
                 </label>
                 <textarea

@@ -1,4 +1,6 @@
 import Seo from '../components/Seo';
+import CompetitionResultsSection from '../components/CompetitionResultsSection';
+import UpcomingCompetitionsSection from '../components/UpcomingCompetitionsSection';
 import Navbar from '../components/Navbar';
 
 import HeroSection from '../components/HeroSection';
@@ -21,6 +23,7 @@ import LocationSection from '../components/LocationSection';
 
 import RecognitionAffiliationsSection from '../components/RecognitionAffiliationsSection';
 import FooterSection from '../components/FooterSection';
+import FloatingEnrollButton from '../components/FloatingEnrollButton';
 
 // Structured data for SEO rich snippets
 const orgStructuredData = {
@@ -597,10 +600,12 @@ export default function Index() {
       <main className="flex-1 flex flex-col gap-0" role="main">
         <HeroSection />
         <AboutSection />
+        <FounderSection />
         <ProgramsSection />
         {/* <CorporateSection /> */}
         <AchievementSection />
-        <FounderSection />
+        <CompetitionResultsSection />
+        <UpcomingCompetitionsSection />
         <GallerySection />
         <TestimonialSection />
         <EventsSection />
@@ -614,6 +619,7 @@ export default function Index() {
 
       {/* Footer */}
       <FooterSection />
+      <FloatingEnrollButton />
     </div>
   );
 }

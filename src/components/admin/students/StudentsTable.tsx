@@ -20,8 +20,10 @@ import {
   Award,
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import clsx from 'clsx';
 import { supabase } from '@/integrations/supabase/client';
+import { useAllStudentPrograms } from '@/hooks/useStudentPrograms';
 
 const BELT_COLORS: Record<string, string> = {
   white: 'bg-slate-100 text-slate-800 border-slate-300',
@@ -47,12 +49,11 @@ type StudentRow = {
   parent_contact: string;
   profile_image_url: string | null;
   created_at: string | null;
+  default_monthly_fee: number;
+  discount_percent: number;
 };
 
-type StudentWithBelt = StudentRow & {
-  belt_color?: string;
-  belt_rank?: number;
-};
+type StudentWithBelt = StudentRow & { belt_color?: string; belt_rank?: number };
 
 type Props = {
   students: StudentRow[];
@@ -84,11 +85,7 @@ const SortableHeader = ({
     <div className="flex items-center gap-2">
       {children}
       <ChevronsUpDown
-        className={`h-4 w-4 transition-all duration-200 ${
-          active
-            ? 'opacity-100 text-blue-600 scale-110'
-            : 'opacity-40 group-hover:opacity-60'
-        }`}
+        className={`h-4 w-4 transition-all duration-200 ${active ? 'opacity-100 text-blue-600 scale-110' : 'opacity-40'}`}
       />
     </div>
   </TableHead>
@@ -105,19 +102,15 @@ export default function StudentsTable({
   const [studentsWithBelts, setStudentsWithBelts] = useState<StudentWithBelt[]>(
     []
   );
+  const { data: programsMap = new Map<string, string[]>() } =
+    useAllStudentPrograms(students.map((s) => s.id));
 
   useEffect(() => {
     const fetchBelts = async () => {
       if (students.length === 0) return;
-
       const { data, error } = await supabase
         .from('student_progress')
-        .select(
-          `
-          student_id,
-          belt_levels:belt_levels(color, rank)
-        `
-        )
+        .select(`student_id, belt_levels:belt_levels(color, rank)`)
         .in(
           'student_id',
           students.map((s) => s.id)
@@ -127,18 +120,14 @@ export default function StudentsTable({
         const beltMap = new Map(
           data.map((item) => [
             item.student_id,
-            {
-              color: item.belt_levels?.color,
-              rank: item.belt_levels?.rank,
-            },
+            { color: item.belt_levels?.color, rank: item.belt_levels?.rank },
           ])
         );
-
         setStudentsWithBelts(
-          students.map((student) => ({
-            ...student,
-            belt_color: beltMap.get(student.id)?.color || 'White',
-            belt_rank: beltMap.get(student.id)?.rank || 1,
+          students.map((s) => ({
+            ...s,
+            belt_color: beltMap.get(s.id)?.color || 'White',
+            belt_rank: beltMap.get(s.id)?.rank || 1,
           }))
         );
       } else {
@@ -147,7 +136,6 @@ export default function StudentsTable({
         );
       }
     };
-
     fetchBelts();
   }, [students]);
 
@@ -155,10 +143,7 @@ export default function StudentsTable({
     return (
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200/50 overflow-hidden">
         <div className="py-16 flex flex-col items-center justify-center space-y-4">
-          <div className="relative">
-            <div className="animate-spin h-12 w-12 border-4 border-blue-200 border-t-blue-600 rounded-full"></div>
-            <div className="absolute inset-0 h-12 w-12 border-4 border-blue-100 rounded-full opacity-20"></div>
-          </div>
+          <div className="animate-spin h-12 w-12 border-4 border-blue-200 border-t-blue-600 rounded-full"></div>
           <p className="text-slate-600 font-medium">Loading students...</p>
         </div>
       </div>
@@ -205,7 +190,7 @@ export default function StudentsTable({
             <TableHead className="min-w-[140px]">
               <div className="flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-slate-500" />
-                Aadhar Number
+                Aadhar
               </div>
             </TableHead>
             <SortableHeader
@@ -214,7 +199,7 @@ export default function StudentsTable({
               onClick={() => requestSort('program')}
             >
               <GraduationCap className="w-4 h-4 text-slate-500" />
-              Program
+              Programs
             </SortableHeader>
             <TableHead className="min-w-[100px]">
               <div className="flex items-center gap-2">
@@ -233,7 +218,7 @@ export default function StudentsTable({
             <TableHead className="min-w-[140px]">
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4 text-slate-500" />
-                Parent Name
+                Parent
               </div>
             </TableHead>
             <TableHead className="min-w-[140px]">
@@ -246,65 +231,70 @@ export default function StudentsTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {studentsWithBelts.map((stu, index) => (
-            <TableRow
-              key={stu.id}
-              className={clsx(
-                'group transition-all duration-200',
-                'hover:bg-gradient-to-r hover:from-blue-50/30 hover:to-indigo-50/20',
-                index % 2 === 1 ? 'bg-slate-50/30' : 'bg-white'
-              )}
-            >
-              <TableCell>
-                <Avatar className="h-11 w-11 ring-2 ring-slate-200 group-hover:ring-blue-300 transition-all duration-200">
-                  {stu.profile_image_url ? (
-                    <AvatarImage
-                      src={stu.profile_image_url}
-                      alt={stu.name}
-                      className="object-cover"
-                    />
-                  ) : (
-                    <AvatarFallback className="bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 font-bold">
-                      {stu.name
-                        .split(' ')
-                        .map((n) => n[0])
-                        .join('')
-                        .toUpperCase()}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
-              </TableCell>
-              <TableCell>
-                <div className="space-y-1">
-                  <h3 className="font-bold text-slate-800 group-hover:text-blue-700 transition-colors duration-200">
+          {studentsWithBelts.map((stu, index) => {
+            const allPrograms = (programsMap as Map<string, string[]>).get(
+              stu.id
+            ) || [stu.program];
+            return (
+              <TableRow
+                key={stu.id}
+                className={clsx(
+                  'group transition-all duration-200',
+                  'hover:bg-gradient-to-r hover:from-blue-50/30 hover:to-indigo-50/20',
+                  index % 2 === 1 ? 'bg-slate-50/30' : 'bg-white'
+                )}
+              >
+                <TableCell>
+                  <Avatar className="h-11 w-11 ring-2 ring-slate-200 group-hover:ring-blue-300 transition-all duration-200">
+                    {stu.profile_image_url ? (
+                      <AvatarImage
+                        src={stu.profile_image_url}
+                        alt={stu.name}
+                        className="object-cover"
+                      />
+                    ) : (
+                      <AvatarFallback className="bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 font-bold">
+                        {stu.name
+                          .split(' ')
+                          .map((n) => n[0])
+                          .join('')
+                          .toUpperCase()}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                </TableCell>
+                <TableCell>
+                  <h3 className="font-bold text-slate-800 group-hover:text-blue-700 transition-colors">
                     {stu.name}
                   </h3>
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                </TableCell>
+                <TableCell>
                   <span className="font-mono text-sm text-slate-600">
                     {stu.aadhar_number}
                   </span>
-                </div>
-              </TableCell>
-              <TableCell>
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 border border-blue-200">
-                  {stu.program}
-                </span>
-              </TableCell>
-              <TableCell>
-                <div
-                  className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${getBeltColorClass(stu.belt_color ?? 'white')}`}
-                >
-                  <Award className="h-3 w-3" />
-                  {stu.belt_color}
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-1">
+                    {allPrograms.map((prog, i) => (
+                      <Badge
+                        key={prog}
+                        variant={i === 0 ? 'default' : 'secondary'}
+                        className="text-[10px] px-1.5 py-0"
+                      >
+                        {prog}
+                      </Badge>
+                    ))}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div
+                    className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${getBeltColorClass(stu.belt_color ?? 'white')}`}
+                  >
+                    <Award className="h-3 w-3" />
+                    {stu.belt_color}
+                  </div>
+                </TableCell>
+                <TableCell>
                   <span className="text-sm font-medium text-slate-600">
                     {stu.join_date
                       ? new Date(stu.join_date).toLocaleDateString('en-US', {
@@ -314,42 +304,40 @@ export default function StudentsTable({
                         })
                       : '--'}
                   </span>
-                </div>
-              </TableCell>
-              <TableCell>
-                <span className="text-sm font-medium text-slate-700 line-clamp-1">
-                  {stu.parent_name}
-                </span>
-              </TableCell>
-              <TableCell>
-                <span className="font-mono text-sm text-slate-600">
-                  {stu.parent_contact}
-                </span>
-              </TableCell>
-              <TableCell>
-                <div className="flex gap-2 justify-center">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => onEdit(stu)}
-                    className="h-9 w-9 rounded-xl border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 group/btn"
-                    aria-label="Edit student"
-                  >
-                    <Edit className="w-4 h-4 text-slate-600 group-hover/btn:text-blue-600" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => onDelete(stu)}
-                    className="h-9 w-9 rounded-xl border-red-200 hover:border-red-300 hover:bg-red-50 transition-all duration-200 group/btn"
-                    aria-label="Delete student"
-                  >
-                    <Trash2 className="w-4 h-4 text-red-500 group-hover/btn:text-red-600" />
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm font-medium text-slate-700 line-clamp-1">
+                    {stu.parent_name}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span className="font-mono text-sm text-slate-600">
+                    {stu.parent_contact}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-2 justify-center">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onEdit(stu)}
+                      className="h-9 w-9 rounded-xl border-slate-200 hover:border-blue-300 hover:bg-blue-50"
+                    >
+                      <Edit className="w-4 h-4 text-slate-600" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onDelete(stu)}
+                      className="h-9 w-9 rounded-xl border-red-200 hover:border-red-300 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4 text-red-500" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>

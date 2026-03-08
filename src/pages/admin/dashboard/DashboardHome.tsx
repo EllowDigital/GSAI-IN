@@ -37,19 +37,33 @@ export default function DashboardHome() {
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard-analytics'],
     queryFn: async () => {
-      const [studentsRes, feesRes, blogsRes, newsRes, eventsRes, galleryRes] =
-        await Promise.all([
-          supabase
-            .from('students')
-            .select('id, program, join_date, default_monthly_fee, fee_status'),
-          supabase
-            .from('fees')
-            .select('id, status, paid_amount, month, year, student_id'),
-          supabase.from('blogs').select('id, created_at'),
-          supabase.from('news').select('id, created_at, status'),
-          supabase.from('events').select('id, date'),
-          supabase.from('gallery_images').select('id'),
-        ]);
+      const [
+        studentsRes,
+        feesRes,
+        blogsRes,
+        newsRes,
+        eventsRes,
+        galleryRes,
+        enrollRes,
+        announcementsRes,
+        attendanceRes,
+      ] = await Promise.all([
+        supabase
+          .from('students')
+          .select('id, program, join_date, default_monthly_fee, fee_status'),
+        supabase
+          .from('fees')
+          .select(
+            'id, status, paid_amount, monthly_fee, month, year, student_id'
+          ),
+        supabase.from('blogs').select('id, created_at'),
+        supabase.from('news').select('id, created_at, status'),
+        supabase.from('events').select('id, date'),
+        supabase.from('gallery_images').select('id'),
+        supabase.from('enrollment_requests' as any).select('id, status') as any,
+        supabase.from('announcements').select('id, is_active'),
+        supabase.from('attendance').select('id, student_id, date, status'),
+      ]);
 
       return {
         students: studentsRes.data || [],
@@ -58,6 +72,9 @@ export default function DashboardHome() {
         news: newsRes.data || [],
         events: eventsRes.data || [],
         gallery: galleryRes.data || [],
+        enrollments: (enrollRes.data || []) as any[],
+        announcements: (announcementsRes.data || []) as any[],
+        attendance: attendanceRes.data || [],
       };
     },
     staleTime: 1000 * 60 * 5,
@@ -75,14 +92,52 @@ export default function DashboardHome() {
       0
     );
     const unpaidCount = data.fees.filter((f) => f.status === 'unpaid').length;
+    const partialCount = data.fees.filter((f) => f.status === 'partial').length;
+    const pendingEnrollments = data.enrollments.filter(
+      (e: any) => e.status === 'pending'
+    ).length;
+    const activeAnnouncements = data.announcements.filter(
+      (a: any) => a.is_active
+    ).length;
+
+    // Current month collection
+    const currentMonthFees = data.fees.filter(
+      (f) => f.year === now.getFullYear() && f.month === now.getMonth() + 1
+    );
+    const collectedThisMonth = currentMonthFees.reduce(
+      (sum, f) => sum + (f.paid_amount || 0),
+      0
+    );
+    const totalDueThisMonth = currentMonthFees.reduce(
+      (sum, f) => sum + (f.monthly_fee || 0),
+      0
+    );
+    const collectionRate =
+      totalDueThisMonth > 0
+        ? Math.round((collectedThisMonth / totalDueThisMonth) * 100)
+        : 0;
+
+    // Attendance this month
+    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+      .toISOString()
+      .split('T')[0];
+    const thisMonthAttendance = data.attendance.filter(
+      (a: any) => a.date >= thisMonthStart
+    );
+    const presentCount = thisMonthAttendance.filter(
+      (a: any) => a.status === 'present'
+    ).length;
+    const totalAttendanceRecords = thisMonthAttendance.length;
+    const attendanceRate =
+      totalAttendanceRecords > 0
+        ? Math.round((presentCount / totalAttendanceRecords) * 100)
+        : 0;
 
     // Revenue last 6 months
     const revenueChart = [];
     for (let i = 5; i >= 0; i--) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const monthKey = date.toLocaleDateString('en-US', {
-        month: 'short',
-      });
+      const monthKey = date.toLocaleDateString('en-US', { month: 'short' });
       const revenue = data.fees
         .filter(
           (f) =>
@@ -91,7 +146,15 @@ export default function DashboardHome() {
             f.status === 'paid'
         )
         .reduce((sum, f) => sum + (f.paid_amount || 0), 0);
-      revenueChart.push({ month: monthKey, revenue });
+
+      // Student count at that point
+      const studentCount = data.students.filter(
+        (s) =>
+          new Date(s.join_date) <=
+          new Date(date.getFullYear(), date.getMonth() + 1, 0)
+      ).length;
+
+      revenueChart.push({ month: monthKey, revenue, students: studentCount });
     }
 
     // Program distribution
@@ -105,6 +168,12 @@ export default function DashboardHome() {
       totalRevenue,
       paidCount: paidFees.length,
       unpaidCount,
+      partialCount,
+      pendingEnrollments,
+      activeAnnouncements,
+      collectedThisMonth,
+      collectionRate,
+      attendanceRate,
       totalBlogs: data.blogs.length,
       totalNews: data.news.length,
       totalEvents: data.events.length,
@@ -138,32 +207,65 @@ export default function DashboardHome() {
       bg: 'bg-blue-50 dark:bg-blue-950/30',
     },
     {
-      label: 'Revenue',
+      label: 'Total Revenue',
       value: `₹${analytics.totalRevenue.toLocaleString()}`,
       icon: DollarSign,
       color: 'text-emerald-600 dark:text-emerald-400',
       bg: 'bg-emerald-50 dark:bg-emerald-950/30',
     },
     {
-      label: 'Paid',
-      value: analytics.paidCount,
+      label: 'Collection Rate',
+      value: `${analytics.collectionRate}%`,
       icon: TrendingUp,
-      color: 'text-violet-600 dark:text-violet-400',
-      bg: 'bg-violet-50 dark:bg-violet-950/30',
+      color:
+        analytics.collectionRate >= 80
+          ? 'text-emerald-600 dark:text-emerald-400'
+          : 'text-amber-600 dark:text-amber-400',
+      bg:
+        analytics.collectionRate >= 80
+          ? 'bg-emerald-50 dark:bg-emerald-950/30'
+          : 'bg-amber-50 dark:bg-amber-950/30',
     },
     {
-      label: 'Unpaid',
+      label: 'Attendance Rate',
+      value: `${analytics.attendanceRate}%`,
+      icon: Activity,
+      color:
+        analytics.attendanceRate >= 80
+          ? 'text-blue-600 dark:text-blue-400'
+          : 'text-orange-600 dark:text-orange-400',
+      bg:
+        analytics.attendanceRate >= 80
+          ? 'bg-blue-50 dark:bg-blue-950/30'
+          : 'bg-orange-50 dark:bg-orange-950/30',
+    },
+    {
+      label: 'Unpaid Fees',
       value: analytics.unpaidCount,
       icon: Clock,
       color: 'text-amber-600 dark:text-amber-400',
       bg: 'bg-amber-50 dark:bg-amber-950/30',
     },
+    {
+      label: 'New Enrollments',
+      value: analytics.pendingEnrollments,
+      icon: UserPlus,
+      color: 'text-orange-600 dark:text-orange-400',
+      bg: 'bg-orange-50 dark:bg-orange-950/30',
+    },
   ];
 
   const quickActions = [
     {
-      title: 'Add Student',
+      title: 'Enrollments',
       icon: UserPlus,
+      path: '/admin/dashboard/enrollments',
+      color: 'text-orange-600 dark:text-orange-400',
+      bg: 'bg-orange-50 dark:bg-orange-950/30',
+    },
+    {
+      title: 'Add Student',
+      icon: Users,
       path: '/admin/dashboard/students',
       color: 'text-blue-600 dark:text-blue-400',
       bg: 'bg-blue-50 dark:bg-blue-950/30',
@@ -176,9 +278,9 @@ export default function DashboardHome() {
       bg: 'bg-emerald-50 dark:bg-emerald-950/30',
     },
     {
-      title: 'New Blog',
-      icon: FileText,
-      path: '/admin/dashboard/blogs',
+      title: 'Announce',
+      icon: MessageSquare,
+      path: '/admin/dashboard/announcements',
       color: 'text-purple-600 dark:text-purple-400',
       bg: 'bg-purple-50 dark:bg-purple-950/30',
     },
@@ -186,13 +288,6 @@ export default function DashboardHome() {
       title: 'Add Event',
       icon: CalendarPlus,
       path: '/admin/dashboard/events',
-      color: 'text-orange-600 dark:text-orange-400',
-      bg: 'bg-orange-50 dark:bg-orange-950/30',
-    },
-    {
-      title: 'Upload Photo',
-      icon: ImagePlus,
-      path: '/admin/dashboard/gallery',
       color: 'text-pink-600 dark:text-pink-400',
       bg: 'bg-pink-50 dark:bg-pink-950/30',
     },
@@ -235,7 +330,7 @@ export default function DashboardHome() {
   return (
     <div className="w-full min-h-full p-4 sm:p-5 lg:p-6 space-y-5">
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
         {stats.map((stat) => (
           <div
             key={stat.label}

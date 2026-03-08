@@ -1,6 +1,13 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from '@/hooks/use-toast';
@@ -45,12 +52,14 @@ export function FeeForm({
     paid_amount: number;
     notes: string;
     receipt_url: string | null;
+    status_override: string;
   }>({
     defaultValues: {
       monthly_fee: fee?.monthly_fee ?? student?.default_monthly_fee ?? 2000,
       paid_amount: fee?.paid_amount ?? 0,
       notes: fee?.notes ?? '',
       receipt_url: fee?.receipt_url || null,
+      status_override: fee?.status || 'auto',
     },
   });
 
@@ -60,6 +69,7 @@ export function FeeForm({
       paid_amount: fee?.paid_amount ?? 0,
       notes: fee?.notes ?? '',
       receipt_url: fee?.receipt_url || null,
+      status_override: fee?.status || 'auto',
     });
   }, [fee, student]);
 
@@ -89,6 +99,7 @@ export function FeeForm({
     paid_amount: number;
     notes: string;
     receipt_url?: string | null;
+    status_override: string;
   }) {
     // Validation
     if (!student || typeof student.id !== 'string') {
@@ -133,11 +144,14 @@ export function FeeForm({
         notes: values.notes?.trim() || null,
         receipt_url: values.receipt_url ?? null,
         updated_at: now,
-        status: getFeeStatus({
-          monthly_fee,
-          paid_amount,
-          balance_due: calcBalance(),
-        }),
+        status:
+          values.status_override === 'auto'
+            ? getFeeStatus({
+                monthly_fee,
+                paid_amount,
+                balance_due: calcBalance(),
+              })
+            : values.status_override,
       };
 
       const payload =
@@ -195,6 +209,11 @@ export function FeeForm({
         <span className="block font-bold text-sm">
           Student: {student?.name}
         </span>
+        {student?.discount_percent > 0 && (
+          <span className="text-xs text-green-600 font-medium">
+            🏷️ {student.discount_percent}% discount applied
+          </span>
+        )}
       </div>
       <div>
         <label className="text-xs font-semibold">Month</label>
@@ -234,6 +253,23 @@ export function FeeForm({
       <div>
         <label className="text-xs font-semibold">Notes</label>
         <Input {...form.register('notes')} />
+      </div>
+      <div>
+        <label className="text-xs font-semibold">Status Override</label>
+        <Select
+          value={form.watch('status_override')}
+          onValueChange={(v) => form.setValue('status_override', v)}
+        >
+          <SelectTrigger className="mt-1">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="auto">Auto (based on amounts)</SelectItem>
+            <SelectItem value="paid">✅ Paid</SelectItem>
+            <SelectItem value="partial">⚠️ Partial</SelectItem>
+            <SelectItem value="unpaid">❌ Unpaid</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <div>
         <label className="text-xs font-semibold">Receipt File</label>

@@ -11,18 +11,25 @@ export default function StudentLogin() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   if (isAuthenticated) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
     setError(null);
+    setSubmitting(true);
     try {
       await signIn(loginId.trim(), password);
     } catch (err: any) {
       setError(err.message || 'Login failed');
+    } finally {
+      setSubmitting(false);
     }
   };
+
+  const isDisabled = isLoading || submitting;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
@@ -33,34 +40,48 @@ export default function StudentLogin() {
             <GraduationCap className="w-8 h-8 text-primary" />
           </div>
           <h1 className="text-2xl font-bold text-foreground">Student Portal</h1>
-          <p className="text-sm text-muted-foreground">Sign in with your Student ID and password</p>
+          <p className="text-sm text-muted-foreground">
+            Sign in with your Student ID and password
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
-            <label htmlFor="login-id" className="text-sm font-medium text-foreground">Student ID</label>
+            <label
+              htmlFor="login-id"
+              className="text-sm font-medium text-foreground"
+            >
+              Student ID
+            </label>
             <Input
               id="login-id"
               value={loginId}
-              onChange={e => setLoginId(e.target.value)}
-              placeholder="e.g. STU001"
+              onChange={(e) => setLoginId(e.target.value)}
+              placeholder="e.g. GSAI-5549"
               required
               autoComplete="username"
+              disabled={isDisabled}
             />
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="password" className="text-sm font-medium text-foreground">Password</label>
+            <label
+              htmlFor="password"
+              className="text-sm font-medium text-foreground"
+            >
+              Password
+            </label>
             <div className="relative">
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
                 autoComplete="current-password"
                 className="pr-10"
+                disabled={isDisabled}
               />
               <button
                 type="button"
@@ -68,22 +89,42 @@ export default function StudentLogin() {
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 tabIndex={-1}
               >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
               </button>
             </div>
           </div>
 
           {error && (
-            <div className="text-sm text-destructive bg-destructive/10 rounded-lg p-3 text-center">{error}</div>
+            <div className="text-sm text-destructive bg-destructive/10 rounded-lg p-3 text-center">
+              {error}
+            </div>
           )}
 
-          <Button type="submit" disabled={isLoading} className="w-full h-11">
-            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sign In'}
+          <Button type="submit" disabled={isDisabled} className="w-full h-11">
+            {isDisabled ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              'Sign In'
+            )}
           </Button>
         </form>
 
+        <p className="text-center text-xs text-muted-foreground">
+          Default password:{' '}
+          <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">
+            GSAI-STUDENT-[year]
+          </code>
+        </p>
+
         <div className="text-center">
-          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <Link
+            to="/"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
             ← Back to Website
           </Link>
         </div>

@@ -339,7 +339,10 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
       }
 
       const signedInUserId = data.user?.id ?? null;
-      const isAdminUser = await checkAdminStatus(signedInUserId, data.user?.email ?? null);
+      const isAdminUser = await checkAdminStatus(
+        signedInUserId,
+        data.user?.email ?? null
+      );
 
       if (!isAdminUser) {
         await supabase.auth.signOut();

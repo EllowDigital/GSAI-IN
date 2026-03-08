@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
@@ -13,6 +13,14 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { toast } from '@/hooks/use-toast';
 import Spinner from '@/components/ui/spinner';
 import {
@@ -27,9 +35,14 @@ import {
   ImageIcon,
   X,
   ExternalLink,
+  Grid3X3,
+  Table2,
+  Trophy,
+  CheckCircle2,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import CompetitionCertificates from '@/components/admin/CompetitionCertificates';
+import CompetitionRegistrations from '@/components/admin/CompetitionRegistrations';
 import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
 
 interface Competition {
@@ -47,9 +60,13 @@ interface Competition {
   created_at: string;
 }
 
-const STATUS_OPTIONS = ['upcoming', 'ongoing', 'completed', 'cancelled'] as const;
+const STATUS_OPTIONS = [
+  'upcoming',
+  'ongoing',
+  'completed',
+  'cancelled',
+] as const;
 const REQUEST_TIMEOUT_MS = 15000;
-
 
 const statusColors: Record<string, string> = {
   upcoming: 'bg-primary/10 text-primary',
@@ -61,22 +78,15 @@ const statusColors: Record<string, string> = {
 const buildMapEmbedUrl = (locationText: string): string | null => {
   const query = locationText.trim();
   if (!query) return null;
-
   return `https://maps.google.com/maps?q=${encodeURIComponent(query)}&z=14&output=embed`;
 };
 
 const buildMapsOpenUrl = (locationText: string): string =>
-  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    locationText.trim()
-  )}`;
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locationText.trim())}`;
 
 const formatError = (error: unknown): string => {
-  if (isTimeoutError(error)) {
-    return 'Connection is slow. Please try again.';
-  }
-  if (error instanceof Error) {
-    return error.message;
-  }
+  if (isTimeoutError(error)) return 'Connection is slow. Please try again.';
+  if (error instanceof Error) return error.message;
   return 'Unexpected error occurred.';
 };
 
@@ -84,8 +94,10 @@ export default function Competitions() {
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [certOpen, setCertOpen] = useState<Competition | null>(null);
+  const [regsOpen, setRegsOpen] = useState<Competition | null>(null);
   const [editing, setEditing] = useState<Competition | null>(null);
   const [search, setSearch] = useState('');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const [form, setForm] = useState({
     name: '',
     description: '',
@@ -108,7 +120,10 @@ export default function Competitions() {
     queryKey: ['competitions'],
     queryFn: async () => {
       const { data, error } = await withTimeout(
-        supabase.from('competitions').select('*').order('date', { ascending: false }),
+        supabase
+          .from('competitions')
+          .select('*')
+          .order('date', { ascending: false }),
         REQUEST_TIMEOUT_MS,
         'Loading competitions timed out.'
       );
@@ -120,8 +135,6 @@ export default function Competitions() {
   const saveMutation = useMutation({
     mutationFn: async (values: typeof form & { id?: string }) => {
       let image_url = values.image_url;
-
-      // Upload image file if selected
       if (imageFile) {
         const safeFileName = imageFile.name.replace(/\s+/g, '-').toLowerCase();
         const filename = `competitions/${Date.now()}-${safeFileName}`;
@@ -132,14 +145,12 @@ export default function Competitions() {
           REQUEST_TIMEOUT_MS,
           'Image upload timed out.'
         );
-
         if (upErr) throw new Error('Image upload failed: ' + upErr.message);
         const { data: urlData } = supabase.storage
           .from('gallery')
           .getPublicUrl(filename);
         image_url = urlData.publicUrl;
       }
-
       const payload = {
         name: values.name,
         description: values.description || null,
@@ -152,7 +163,6 @@ export default function Competitions() {
         status: values.status,
         image_url: image_url || null,
       } as const;
-
       if (values.id) {
         const { error } = await withTimeout(
           supabase.from('competitions').update(payload).eq('id', values.id),
@@ -247,7 +257,6 @@ export default function Competitions() {
     c.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Registration counts query
   const { data: regCounts = {} } = useQuery({
     queryKey: ['competition-reg-counts'],
     queryFn: async () => {
@@ -266,27 +275,95 @@ export default function Competitions() {
   });
 
   return (
-    <div className="p-4 lg:p-6 space-y-6">
+    <div className="p-3 sm:p-4 lg:p-6 xl:p-8 space-y-6">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-foreground">Competitions</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2">
+            <Award className="w-6 h-6 text-primary" /> Competitions
+          </h2>
           <p className="text-sm text-muted-foreground">
-            Manage tournaments and competitions
+            Manage tournaments, registrations & certificates
           </p>
         </div>
-        <Button onClick={openNew} size="sm" className="gap-1.5">
+        <Button onClick={openNew} className="gap-1.5 shadow-sm">
           <Plus className="w-4 h-4" /> New Competition
         </Button>
       </div>
 
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input
-          placeholder="Search competitions..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-9"
-        />
+      {/* Stats Bar */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          {
+            label: 'Total',
+            value: competitions.length,
+            icon: Award,
+            color: 'text-primary',
+          },
+          {
+            label: 'Upcoming',
+            value: competitions.filter((c) => c.status === 'upcoming').length,
+            icon: Calendar,
+            color: 'text-blue-500',
+          },
+          {
+            label: 'Ongoing',
+            value: competitions.filter((c) => c.status === 'ongoing').length,
+            icon: Trophy,
+            color: 'text-amber-500',
+          },
+          {
+            label: 'Completed',
+            value: competitions.filter((c) => c.status === 'completed').length,
+            icon: CheckCircle2,
+            color: 'text-green-500',
+          },
+        ].map((stat) => (
+          <Card key={stat.label} className="border-border/50">
+            <CardContent className="p-3 flex items-center gap-3">
+              <stat.icon className={`w-5 h-5 ${stat.color} shrink-0`} />
+              <div>
+                <p className="text-lg font-bold text-foreground">
+                  {stat.value}
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  {stat.label}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Search + View Toggle */}
+      <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            placeholder="Search competitions..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <div className="flex gap-1 border rounded-lg p-1 bg-muted/30">
+          <Button
+            variant={viewMode === 'cards' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setViewMode('cards')}
+            className="h-7 px-2"
+          >
+            <Grid3X3 className="w-4 h-4" />
+          </Button>
+          <Button
+            variant={viewMode === 'table' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setViewMode('table')}
+            className="h-7 px-2"
+          >
+            <Table2 className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -297,102 +374,252 @@ export default function Competitions() {
         <div className="text-center py-12 text-muted-foreground">
           No competitions found.
         </div>
-      ) : (
+      ) : viewMode === 'cards' ? (
+        /* Card View */
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((c) => (
-            <Card key={c.id} className="flex flex-col border border-border">
-              {c.image_url && (
-                <div className="h-36 overflow-hidden rounded-t-lg">
+            <Card
+              key={c.id}
+              className="group flex flex-col border border-border/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300 overflow-hidden rounded-xl"
+            >
+              {c.image_url ? (
+                <div className="h-40 overflow-hidden relative">
                   <img
                     src={c.image_url}
                     alt={c.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
                   />
+                  <div className="absolute top-2 right-2">
+                    <Badge
+                      className={`${statusColors[c.status] || 'bg-muted text-muted-foreground'} text-[10px] shadow-sm`}
+                      variant="secondary"
+                    >
+                      {c.status}
+                    </Badge>
+                  </div>
+                </div>
+              ) : (
+                <div className="h-24 bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center relative">
+                  <Award className="w-10 h-10 text-primary/20" />
+                  <div className="absolute top-2 right-2">
+                    <Badge
+                      className={`${statusColors[c.status] || 'bg-muted text-muted-foreground'} text-[10px]`}
+                      variant="secondary"
+                    >
+                      {c.status}
+                    </Badge>
+                  </div>
                 </div>
               )}
-              <CardHeader className="pb-2">
-                <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-semibold text-foreground line-clamp-2">
-                    {c.name}
-                  </h3>
-                  <Badge
-                    className={statusColors[c.status] || 'bg-muted text-muted-foreground'}
-                    variant="secondary"
-                  >
-                    {c.status}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="flex-1 space-y-3">
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Calendar className="w-3.5 h-3.5" />
-                  {format(new Date(c.date), 'MMM d, yyyy')}
-                  {c.end_date && ` – ${format(new Date(c.end_date), 'MMM d, yyyy')}`}
-                </div>
-                {c.location_text && (
+              <CardContent className="flex-1 p-4 space-y-3">
+                <h3 className="font-bold text-foreground line-clamp-2 text-base">
+                  {c.name}
+                </h3>
+                <div className="space-y-1.5">
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <MapPin className="w-3.5 h-3.5" />{' '}
-                    <span className="truncate">{c.location_text}</span>
+                    <Calendar className="w-3.5 h-3.5 text-primary/60" />
+                    {format(new Date(c.date), 'MMM d, yyyy')}
+                    {c.end_date &&
+                      ` — ${format(new Date(c.end_date), 'MMM d, yyyy')}`}
                   </div>
-                )}
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Users className="w-3.5 h-3.5" /> {regCounts[c.id] || 0} registered
-                  {c.max_participants && ` / ${c.max_participants} max`}
+                  {c.location_text && (
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <MapPin className="w-3.5 h-3.5 text-primary/60" />{' '}
+                      <span className="truncate">{c.location_text}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Users className="w-3.5 h-3.5 text-primary/60" />{' '}
+                    {regCounts[c.id] || 0} registered
+                    {c.max_participants && ` / ${c.max_participants} max`}
+                  </div>
                 </div>
                 {c.description && (
                   <p className="text-xs text-muted-foreground line-clamp-2">
                     {c.description}
                   </p>
                 )}
-
-                <div className="flex gap-2 pt-2">
+                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-border/30">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 gap-1 text-xs"
-                    onClick={() => openEdit(c)}
+                    className="flex-1 gap-1 text-xs h-8"
+                    onClick={() => setRegsOpen(c)}
                   >
-                    <Pencil className="w-3 h-3" /> Edit
+                    <Users className="w-3 h-3" /> Registrations
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 gap-1 text-xs"
+                    className="gap-1 text-xs h-8"
                     onClick={() => setCertOpen(c)}
                   >
                     <Award className="w-3 h-3" /> Certs
                   </Button>
                   <Button
-                    variant="destructive"
-                    size="sm"
-                    className="gap-1 text-xs"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => openEdit(c)}
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-destructive hover:text-destructive"
                     onClick={() => {
-                      if (confirm('Delete this competition?')) deleteMutation.mutate(c.id);
+                      if (confirm('Delete this competition?'))
+                        deleteMutation.mutate(c.id);
                     }}
                   >
-                    <Trash2 className="w-3 h-3" />
+                    <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
+      ) : (
+        /* Table View */
+        <Card className="overflow-hidden border-border/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">
+              <Award className="w-5 h-5" /> Competitions Table
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Location</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Registered</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filtered.map((c) => (
+                    <TableRow key={c.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          {c.image_url && (
+                            <img
+                              src={c.image_url}
+                              alt=""
+                              className="w-10 h-10 rounded-lg object-cover"
+                            />
+                          )}
+                          <div>
+                            <p className="font-medium text-foreground text-sm">
+                              {c.name}
+                            </p>
+                            {c.description && (
+                              <p className="text-xs text-muted-foreground line-clamp-1">
+                                {c.description}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm whitespace-nowrap">
+                        {format(new Date(c.date), 'MMM d, yyyy')}
+                        {c.end_date && (
+                          <span className="text-muted-foreground">
+                            {' '}
+                            – {format(new Date(c.end_date), 'MMM d')}
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm max-w-[150px] truncate">
+                        {c.location_text || '—'}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          className={
+                            statusColors[c.status] ||
+                            'bg-muted text-muted-foreground'
+                          }
+                          variant="secondary"
+                        >
+                          {c.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {regCounts[c.id] || 0}
+                        {c.max_participants ? ` / ${c.max_participants}` : ''}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 px-2 text-xs"
+                            onClick={() => setRegsOpen(c)}
+                          >
+                            <Users className="w-3.5 h-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 px-2 text-xs"
+                            onClick={() => openEdit(c)}
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 px-2 text-xs"
+                            onClick={() => setCertOpen(c)}
+                          >
+                            <Award className="w-3.5 h-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 px-2 text-xs text-destructive hover:text-destructive"
+                            onClick={() => {
+                              if (confirm('Delete?'))
+                                deleteMutation.mutate(c.id);
+                            }}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Form Modal */}
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editing ? 'Edit Competition' : 'New Competition'}</DialogTitle>
-            <DialogDescription>Fill in the competition details.</DialogDescription>
+            <DialogTitle>
+              {editing ? 'Edit Competition' : 'New Competition'}
+            </DialogTitle>
+            <DialogDescription>
+              Fill in the competition details.
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="text-sm font-medium">Name *</label>
               <Input
                 value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, name: e.target.value }))
+                }
                 required
               />
             </div>
@@ -412,7 +639,9 @@ export default function Competitions() {
                 <Input
                   type="date"
                   value={form.date}
-                  onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, date: e.target.value }))
+                  }
                   required
                 />
               </div>
@@ -532,7 +761,11 @@ export default function Competitions() {
                 </label>
               )}
             </div>
-            <Button type="submit" disabled={saveMutation.isPending} className="w-full">
+            <Button
+              type="submit"
+              disabled={saveMutation.isPending}
+              className="w-full"
+            >
               {saveMutation.isPending ? (
                 <Spinner size={16} />
               ) : editing ? (
@@ -545,13 +778,21 @@ export default function Competitions() {
         </DialogContent>
       </Dialog>
 
-      {/* Certificates Modal */}
       {certOpen && (
         <CompetitionCertificates
           competition={certOpen}
           open={!!certOpen}
           onOpenChange={(open) => {
             if (!open) setCertOpen(null);
+          }}
+        />
+      )}
+      {regsOpen && (
+        <CompetitionRegistrations
+          competition={regsOpen}
+          open={!!regsOpen}
+          onOpenChange={(open) => {
+            if (!open) setRegsOpen(null);
           }}
         />
       )}

@@ -36,15 +36,24 @@ interface BeltOption {
   discipline?: string | null;
 }
 
+interface DisciplineLevelOption {
+  label: string;
+  value: string;
+  discipline: string;
+  order: number;
+}
+
 interface AssignStudentBeltDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   students: StudentOption[];
   belts: BeltOption[];
+  disciplineLevels?: DisciplineLevelOption[];
   onSubmit: (payload: {
     studentId: string;
     beltLevelId: string;
     status: ProgressStatus;
+    isLevelBased?: boolean;
   }) => Promise<void>;
   loading?: boolean;
 }
@@ -61,6 +70,7 @@ export default function AssignStudentBeltDialog({
   onOpenChange,
   students,
   belts,
+  disciplineLevels = [],
   onSubmit,
   loading,
 }: AssignStudentBeltDialogProps) {
@@ -98,11 +108,35 @@ export default function AssignStudentBeltDialog({
       });
     }
 
-    // For level-based disciplines, show general belts as fallback
+    // For level-based disciplines, use real discipline_levels from DB
+    if (isLevelBased) {
+      const matchingLevels = disciplineLevels.filter(
+        (dl) => dl.discipline.toLowerCase() === studentProgram.toLowerCase()
+      );
+      if (matchingLevels.length > 0) {
+        return matchingLevels
+          .sort((a, b) => a.order - b.order)
+          .map((dl) => ({
+            label: dl.label,
+            value: dl.value,
+            color: undefined,
+            discipline: dl.discipline,
+          }));
+      }
+    }
+
+    // Fallback: show general belts
     return belts.filter(
       (belt) => belt.discipline === 'general' || !belt.discipline
     );
-  }, [belts, studentId, studentProgram, isBeltBased]);
+  }, [
+    belts,
+    disciplineLevels,
+    studentId,
+    studentProgram,
+    isBeltBased,
+    isLevelBased,
+  ]);
 
   // Note: belt selection is reset when the student is changed in the handler below.
 
@@ -140,7 +174,7 @@ export default function AssignStudentBeltDialog({
     }
 
     setError(null);
-    await onSubmit({ studentId, beltLevelId: beltId, status });
+    await onSubmit({ studentId, beltLevelId: beltId, status, isLevelBased });
     resetForm();
     onOpenChange(false);
   };
