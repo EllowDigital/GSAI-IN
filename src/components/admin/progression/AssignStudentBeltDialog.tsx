@@ -36,15 +36,24 @@ interface BeltOption {
   discipline?: string | null;
 }
 
+interface DisciplineLevelOption {
+  label: string;
+  value: string;
+  discipline: string;
+  order: number;
+}
+
 interface AssignStudentBeltDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   students: StudentOption[];
   belts: BeltOption[];
+  disciplineLevels?: DisciplineLevelOption[];
   onSubmit: (payload: {
     studentId: string;
     beltLevelId: string;
     status: ProgressStatus;
+    isLevelBased?: boolean;
   }) => Promise<void>;
   loading?: boolean;
 }
