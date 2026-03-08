@@ -270,7 +270,7 @@ export default function AttendanceManager() {
                               <Badge variant="outline" className={`text-xs ${statusConfig?.color || ''}`}>
                                 {statusConfig?.icon} {statusConfig?.label}
                               </Badge>
-                              <Lock className="w-3 h-3 text-muted-foreground" title="Locked — cannot be changed" />
+                              <Lock className="w-3 h-3 text-muted-foreground" />
                             </div>
                           ) : (
                             <Badge variant="outline" className="text-xs text-muted-foreground">Unmarked</Badge>
