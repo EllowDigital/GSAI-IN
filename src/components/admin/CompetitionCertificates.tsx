@@ -142,11 +142,18 @@ export default function CompetitionCertificates({ competition, open, onOpenChang
                   {cert ? (
                     <div className="flex items-center gap-2">
                       <Badge variant="outline" className="text-[10px] border-green-500/30 text-green-600">Uploaded</Badge>
-                      <a href={(cert as any).certificate_url} target="_blank" rel="noopener noreferrer">
-                        <Button variant="outline" size="sm" className="gap-1 text-xs h-8">
-                          <Download className="w-3 h-3" /> View
-                        </Button>
-                      </a>
+                      <Button variant="outline" size="sm" className="gap-1 text-xs h-8" onClick={async () => {
+                        try {
+                          const url = (cert as any).certificate_url as string;
+                          const pathMatch = url.match(/certificates\/(.+)$/);
+                          if (!pathMatch) { window.open(url, '_blank'); return; }
+                          const { data, error } = await supabase.storage.from('certificates').createSignedUrl(pathMatch[1], 3600);
+                          if (error || !data?.signedUrl) { window.open(url, '_blank'); return; }
+                          window.open(data.signedUrl, '_blank');
+                        } catch { window.open((cert as any).certificate_url, '_blank'); }
+                      }}>
+                        <Download className="w-3 h-3" /> View
+                      </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDelete((cert as any).id)}>
                         <Trash2 className="w-3.5 h-3.5" />
                       </Button>

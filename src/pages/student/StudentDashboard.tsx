@@ -140,7 +140,28 @@ export default function StudentDashboard() {
                 <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
                   <Download className="w-4 h-4" /> My Certificates
                 </h3>
-                {(myCertificates as any[]).map((cert: any) => (
+                {(myCertificates as any[]).map((cert: any) => {
+                  const handleDownload = async () => {
+                    try {
+                      // Extract path from public URL
+                      const url = cert.certificate_url as string;
+                      const pathMatch = url.match(/certificates\/(.+)$/);
+                      if (!pathMatch) { window.open(url, '_blank'); return; }
+                      const { data, error } = await supabase.storage
+                        .from('certificates')
+                        .createSignedUrl(pathMatch[1], 3600);
+                      if (error || !data?.signedUrl) { window.open(url, '_blank'); return; }
+                      // Trigger download
+                      const a = document.createElement('a');
+                      a.href = data.signedUrl;
+                      a.download = `certificate-${cert.competitions?.name || 'file'}.pdf`;
+                      a.target = '_blank';
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    } catch { window.open(cert.certificate_url, '_blank'); }
+                  };
+                  return (
                   <Card key={cert.id} className="border border-border">
                     <CardContent className="p-4 flex items-center justify-between gap-3">
                       <div className="min-w-0">
@@ -149,14 +170,13 @@ export default function StudentDashboard() {
                           Uploaded {format(new Date(cert.uploaded_at), 'MMM d, yyyy')}
                         </p>
                       </div>
-                      <a href={cert.certificate_url} target="_blank" rel="noopener noreferrer">
-                        <Button variant="outline" size="sm" className="gap-1.5">
-                          <Download className="w-3.5 h-3.5" /> Download
-                        </Button>
-                      </a>
+                      <Button variant="outline" size="sm" className="gap-1.5" onClick={handleDownload}>
+                        <Download className="w-3.5 h-3.5" /> Download
+                      </Button>
                     </CardContent>
                   </Card>
-                ))}
+                  );
+                })}
               </div>
             )}
 
