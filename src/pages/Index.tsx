@@ -598,34 +598,23 @@ export default function Index() {
 
       {/* Main Content with improved semantic structure */}
       <main className="flex-1 flex flex-col gap-0" role="main">
-        {/* 1. Hook — cinematic first impression */}
         <HeroSection />
-
-        {/* 2. Who We Are — build trust immediately */}
         <AboutSection />
         <FounderSection />
-        <RecognitionAffiliationsSection />
-
-        {/* 3. What We Offer — programs & training */}
         <ProgramsSection />
         {/* <CorporateSection /> */}
-
-        {/* 4. Proof & Credibility — results speak */}
         <AchievementSection />
         <CompetitionResultsSection />
-        <TestimonialSection />
-        <GallerySection />
-
-        {/* 5. Engage — what's happening now */}
         <UpcomingCompetitionsSection />
+        <GallerySection />
+        <TestimonialSection />
         <EventsSection />
         <NewsSection />
         <BlogNewsSection />
-
-        {/* 6. Convert — FAQ, location, contact */}
         <FaqSection />
         <LocationSection />
         <ContactSection />
+        <RecognitionAffiliationsSection />
       </main>
 
       {/* Footer */}
