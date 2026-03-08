@@ -156,6 +156,35 @@ export default function EnrollmentRequestsManager() {
     }
     setApproving(true);
     try {
+      // Check Aadhar uniqueness before creating
+      const { data: existingStudent } = await supabase
+        .from('students')
+        .select('id, name')
+        .eq('aadhar_number', aadharNumber)
+        .maybeSingle();
+
+      if (existingStudent) {
+        toast.error(`A student with this Aadhar is already registered: ${existingStudent.name}`);
+        setApproving(false);
+        return;
+      }
+
+      // Check login ID uniqueness
+      const { data: existingLogin } = await supabase
+        .from('student_portal_accounts')
+        .select('id')
+        .eq('login_id', loginId)
+        .maybeSingle();
+
+      if (existingLogin) {
+        // Append random suffix to make unique
+        const suffix = Math.floor(Math.random() * 90 + 10);
+        setLoginId(`${loginId}-${suffix}`);
+        toast.error(`Login ID "${loginId}" already taken. Updated to "${loginId}-${suffix}". Please try again.`);
+        setApproving(false);
+        return;
+      }
+
       const { data: student, error } = await supabase.from('students').insert({
         name: approveReq.student_name,
         aadhar_number: aadharNumber,
