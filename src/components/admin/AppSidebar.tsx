@@ -17,6 +17,7 @@ import {
   GraduationCap,
   Megaphone,
   UserPlus,
+  CalendarCheck,
 } from 'lucide-react';
 import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 
