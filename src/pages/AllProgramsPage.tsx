@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, Variants } from 'framer-motion';
-import { ArrowLeft, Filter, Shield } from 'lucide-react';
+import { ArrowLeft, Filter, Shield, Search } from 'lucide-react';
 import { programs } from '@/data/programsData';
 import Navbar from '@/components/Navbar';
 import FooterSection from '@/components/FooterSection';

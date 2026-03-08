@@ -223,6 +223,9 @@ export default function ProgramDetail() {
           </div>
         </section>
 
+        {/* Enquiry Form */}
+        <ProgramEnquiryForm programTitle={program.title} />
+
         {/* Other Programs */}
         <section className="py-12 md:py-20 border-t border-white/5">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
