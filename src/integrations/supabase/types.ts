@@ -369,6 +369,54 @@ export type Database = {
         }
         Relationships: []
       }
+      enrollment_requests: {
+        Row: {
+          admin_notes: string | null
+          age: number
+          created_at: string
+          gender: string
+          id: string
+          message: string | null
+          parent_name: string
+          parent_phone: string
+          program: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          student_name: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          age: number
+          created_at?: string
+          gender: string
+          id?: string
+          message?: string | null
+          parent_name: string
+          parent_phone: string
+          program: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          student_name: string
+        }
+        Update: {
+          admin_notes?: string | null
+          age?: number
+          created_at?: string
+          gender?: string
+          id?: string
+          message?: string | null
+          parent_name?: string
+          parent_phone?: string
+          program?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          student_name?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           date: string

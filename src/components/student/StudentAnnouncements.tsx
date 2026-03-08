@@ -18,11 +18,11 @@ export default function StudentAnnouncements() {
     queryKey: ['student-announcements'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('announcements' as any)
+        .from('announcements')
         .select('*')
         .eq('is_active', true)
         .order('created_at', { ascending: false })
-        .limit(10) as any;
+        .limit(10);
       if (error) throw error;
       return data || [];
     },
@@ -33,7 +33,7 @@ export default function StudentAnnouncements() {
 
   return (
     <div className="space-y-3">
-      {(announcements as any[]).map((a: any) => {
+      {announcements.map((a) => {
         const config = PRIORITY_CONFIG[a.priority] || PRIORITY_CONFIG.normal;
         const Icon = config.icon;
         return (

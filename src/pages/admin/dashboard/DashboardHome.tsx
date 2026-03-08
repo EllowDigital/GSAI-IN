@@ -37,7 +37,7 @@ export default function DashboardHome() {
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard-analytics'],
     queryFn: async () => {
-      const [studentsRes, feesRes, blogsRes, newsRes, eventsRes, galleryRes] =
+      const [studentsRes, feesRes, blogsRes, newsRes, eventsRes, galleryRes, enrollRes, announcementsRes] =
         await Promise.all([
           supabase
             .from('students')
@@ -49,6 +49,8 @@ export default function DashboardHome() {
           supabase.from('news').select('id, created_at, status'),
           supabase.from('events').select('id, date'),
           supabase.from('gallery_images').select('id'),
+          supabase.from('enrollment_requests' as any).select('id, status') as any,
+          supabase.from('announcements').select('id, is_active'),
         ]);
 
       return {
@@ -58,6 +60,8 @@ export default function DashboardHome() {
         news: newsRes.data || [],
         events: eventsRes.data || [],
         gallery: galleryRes.data || [],
+        enrollments: (enrollRes.data || []) as any[],
+        announcements: (announcementsRes.data || []) as any[],
       };
     },
     staleTime: 1000 * 60 * 5,
@@ -75,6 +79,8 @@ export default function DashboardHome() {
       0
     );
     const unpaidCount = data.fees.filter((f) => f.status === 'unpaid').length;
+    const pendingEnrollments = data.enrollments.filter((e: any) => e.status === 'pending').length;
+    const activeAnnouncements = data.announcements.filter((a: any) => a.is_active).length;
 
     // Revenue last 6 months
     const revenueChart = [];
@@ -105,6 +111,8 @@ export default function DashboardHome() {
       totalRevenue,
       paidCount: paidFees.length,
       unpaidCount,
+      pendingEnrollments,
+      activeAnnouncements,
       totalBlogs: data.blogs.length,
       totalNews: data.news.length,
       totalEvents: data.events.length,
@@ -145,25 +153,32 @@ export default function DashboardHome() {
       bg: 'bg-emerald-50 dark:bg-emerald-950/30',
     },
     {
-      label: 'Paid',
-      value: analytics.paidCount,
-      icon: TrendingUp,
-      color: 'text-violet-600 dark:text-violet-400',
-      bg: 'bg-violet-50 dark:bg-violet-950/30',
-    },
-    {
       label: 'Unpaid',
       value: analytics.unpaidCount,
       icon: Clock,
       color: 'text-amber-600 dark:text-amber-400',
       bg: 'bg-amber-50 dark:bg-amber-950/30',
     },
+    {
+      label: 'New Enrollments',
+      value: analytics.pendingEnrollments,
+      icon: UserPlus,
+      color: 'text-orange-600 dark:text-orange-400',
+      bg: 'bg-orange-50 dark:bg-orange-950/30',
+    },
   ];
 
   const quickActions = [
     {
-      title: 'Add Student',
+      title: 'Enrollments',
       icon: UserPlus,
+      path: '/admin/dashboard/enrollments',
+      color: 'text-orange-600 dark:text-orange-400',
+      bg: 'bg-orange-50 dark:bg-orange-950/30',
+    },
+    {
+      title: 'Add Student',
+      icon: Users,
       path: '/admin/dashboard/students',
       color: 'text-blue-600 dark:text-blue-400',
       bg: 'bg-blue-50 dark:bg-blue-950/30',
@@ -176,9 +191,9 @@ export default function DashboardHome() {
       bg: 'bg-emerald-50 dark:bg-emerald-950/30',
     },
     {
-      title: 'New Blog',
-      icon: FileText,
-      path: '/admin/dashboard/blogs',
+      title: 'Announce',
+      icon: MessageSquare,
+      path: '/admin/dashboard/announcements',
       color: 'text-purple-600 dark:text-purple-400',
       bg: 'bg-purple-50 dark:bg-purple-950/30',
     },
@@ -186,13 +201,6 @@ export default function DashboardHome() {
       title: 'Add Event',
       icon: CalendarPlus,
       path: '/admin/dashboard/events',
-      color: 'text-orange-600 dark:text-orange-400',
-      bg: 'bg-orange-50 dark:bg-orange-950/30',
-    },
-    {
-      title: 'Upload Photo',
-      icon: ImagePlus,
-      path: '/admin/dashboard/gallery',
       color: 'text-pink-600 dark:text-pink-400',
       bg: 'bg-pink-50 dark:bg-pink-950/30',
     },

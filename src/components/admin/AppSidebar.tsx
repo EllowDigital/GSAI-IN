@@ -16,11 +16,18 @@ import {
   Swords,
   GraduationCap,
   Megaphone,
+  UserPlus,
 } from 'lucide-react';
 import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 
 const navItems = [
   { title: 'Dashboard', url: '/admin/dashboard', icon: Home, category: 'main' },
+  {
+    title: 'Enrollments',
+    url: '/admin/dashboard/enrollments',
+    icon: UserPlus,
+    category: 'manage',
+  },
   {
     title: 'Students',
     url: '/admin/dashboard/students',
