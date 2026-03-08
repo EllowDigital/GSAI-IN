@@ -1,23 +1,4 @@
-# ------------------------------------------------------------
-# robots.txt — Optimized for Full Crawl & SEO Performance
-# Place this file at: https://<your-domain>/robots.txt
-# ------------------------------------------------------------
-
 User-agent: *
-# Allow all crawlers full access to public pages
 Allow: /
 
-# Restrict access to non-public backend areas (best practice)
-Disallow: /admin/
-Disallow: /api/
-
-# Sitemap location
 Sitemap: https://ghataksportsacademy.com/sitemap.xml
-
-# ------------------------------------------------------------
-# Notes:
-# - Public assets (images, JS, CSS, manifest files) remain accessible.
-# - Do NOT block `.xml` files to ensure sitemap discovery.
-# - Netlify automatically serves static content; this file ensures
-#   modern crawler compatibility (Google, Bing, Yandex, DuckDuckBot, etc.)
-# ------------------------------------------------------------
