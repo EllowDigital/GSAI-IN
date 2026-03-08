@@ -107,6 +107,8 @@ export default function EnrollPage() {
         parent_phone: data.parentPhone,
         program: data.program,
         aadhar_number: data.aadharNumber,
+        student_email: data.studentEmail || null,
+        student_phone: data.studentPhone || null,
         message: data.message || null,
       } as any);
 
