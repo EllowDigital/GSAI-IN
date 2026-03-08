@@ -25,19 +25,12 @@ interface FeeReminderButtonProps {
 }
 
 const MONTH_NAMES = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
 ];
+
+// FormSubmit.co sends TO this verified email (academy inbox)
+const FORMSUBMIT_ACADEMY_EMAIL = 'ghataksportsacademy@gmail.com';
 
 export default function FeeReminderButton({
   studentName,
@@ -52,7 +45,6 @@ export default function FeeReminderButton({
   const [sending, setSending] = useState(false);
   const [email, setEmail] = useState(recipientEmail);
   const [message, setMessage] = useState('');
-  const formRef = useRef<HTMLFormElement>(null);
 
   const defaultMessage = `Dear ${parentName},
 
@@ -64,6 +56,7 @@ Thank you,
 Ghatak Sports Academy`;
 
   const handleOpenDialog = () => {
+    setEmail(recipientEmail);
     setMessage(defaultMessage);
     setDialogOpen(true);
   };
@@ -74,8 +67,8 @@ Ghatak Sports Academy`;
     if (!email || !email.includes('@')) {
       toast({
         title: 'Invalid Email',
-        description: 'Please enter a valid email address.',
-        variant: 'error',
+        description: 'Please enter a valid recipient email address.',
+        variant: 'error' as any,
       });
       return;
     }
@@ -83,45 +76,54 @@ Ghatak Sports Academy`;
     setSending(true);
 
     try {
-      // Use formsubmit.co - submit via hidden iframe to avoid redirect
-      const formData = new FormData();
-      formData.append(
-        '_subject',
-        `Fee Reminder: ${studentName} - ${MONTH_NAMES[month - 1]} ${year}`
-      );
-      formData.append('_template', 'box');
-      formData.append('Student Name', studentName);
-      formData.append('Parent Name', parentName);
-      formData.append('Parent Contact', parentContact);
-      formData.append('Amount Due', `₹${amount.toLocaleString()}`);
-      formData.append('Month/Year', `${MONTH_NAMES[month - 1]} ${year}`);
-      formData.append('Message', message);
-      formData.append('email', email);
-      formData.append('_captcha', 'false');
-
-      const response = await fetch(`https://formsubmit.co/ajax/${email}`, {
+      // FormSubmit.co sends the notification TO the academy email
+      // The parent/student email is included in the body for reference
+      const response = await fetch(`https://formsubmit.co/ajax/${FORMSUBMIT_ACADEMY_EMAIL}`, {
         method: 'POST',
-        headers: {
-          Accept: 'application/json',
-        },
-        body: formData,
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          _subject: `Fee Reminder: ${studentName} - ${MONTH_NAMES[month - 1]} ${year}`,
+          _template: 'table',
+          _captcha: 'false',
+          _replyto: email,
+          'Student Name': studentName,
+          'Parent Name': parentName,
+          'Parent Contact': parentContact,
+          'Recipient Email': email,
+          'Amount Due': `₹${amount.toLocaleString()}`,
+          'Month/Year': `${MONTH_NAMES[month - 1]} ${year}`,
+          'Message': message,
+        }),
       });
 
       if (response.ok) {
+        // Also open WhatsApp as secondary channel
+        const whatsappMsg = `Dear ${parentName},\n\nThis is a reminder that the fee of ₹${amount.toLocaleString()} for ${studentName}'s training for ${MONTH_NAMES[month - 1]} ${year} is pending.\n\nPlease clear the dues at your earliest convenience.\n\n- Ghatak Sports Academy`;
+        window.open(
+          `https://wa.me/91${parentContact}?text=${encodeURIComponent(whatsappMsg)}`,
+          '_blank'
+        );
+
         toast({
           title: 'Reminder Sent',
-          description: `Fee reminder email sent to ${email}`,
+          description: `Fee reminder sent. WhatsApp also opened for ${parentName}.`,
         });
         setDialogOpen(false);
       } else {
         throw new Error('Failed to send email');
       }
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
-        description: 'Failed to send email. Please try again.',
-        variant: 'error',
+        description: 'Failed to send email. Try WhatsApp instead.',
+        variant: 'error' as any,
       });
+      // Fallback: open WhatsApp
+      const whatsappMsg = `Dear ${parentName},\n\nThis is a reminder that the fee of ₹${amount.toLocaleString()} for ${studentName}'s training for ${MONTH_NAMES[month - 1]} ${year} is pending.\n\nPlease clear the dues.\n\n- Ghatak Sports Academy`;
+      window.open(
+        `https://wa.me/91${parentContact}?text=${encodeURIComponent(whatsappMsg)}`,
+        '_blank'
+      );
     } finally {
       setSending(false);
     }
@@ -148,13 +150,13 @@ Ghatak Sports Academy`;
             </DialogTitle>
             <DialogDescription>
               Send a payment reminder to {parentName} for {studentName}'s
-              pending fees.
+              pending fees via email + WhatsApp.
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Recipient Email *</Label>
+              <Label htmlFor="email">Parent/Student Email *</Label>
               <Input
                 id="email"
                 type="email"
@@ -163,6 +165,9 @@ Ghatak Sports Academy`;
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
+              <p className="text-[10px] text-muted-foreground">
+                Email notification is sent to the academy. WhatsApp message opens for the parent.
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -177,38 +182,20 @@ Ghatak Sports Academy`;
             </div>
 
             <div className="bg-muted/50 rounded-lg p-3 text-sm space-y-1">
-              <p>
-                <span className="font-medium">Student:</span> {studentName}
-              </p>
-              <p>
-                <span className="font-medium">Amount:</span> ₹
-                {amount.toLocaleString()}
-              </p>
-              <p>
-                <span className="font-medium">Period:</span>{' '}
-                {MONTH_NAMES[month - 1]} {year}
-              </p>
+              <p><span className="font-medium">Student:</span> {studentName}</p>
+              <p><span className="font-medium">Amount:</span> ₹{amount.toLocaleString()}</p>
+              <p><span className="font-medium">Period:</span> {MONTH_NAMES[month - 1]} {year}</p>
             </div>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setDialogOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={sending}>
                 {sending ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Sending...
-                  </>
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending...</>
                 ) : (
-                  <>
-                    <Send className="w-4 h-4 mr-2" />
-                    Send Reminder
-                  </>
+                  <><Send className="w-4 h-4 mr-2" /> Send Reminder</>
                 )}
               </Button>
             </DialogFooter>

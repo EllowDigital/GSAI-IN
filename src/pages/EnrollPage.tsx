@@ -90,11 +90,15 @@ export default function EnrollPage() {
         .from('enrollment_requests' as any)
         .select('id, student_name, status')
         .eq('aadhar_number', data.aadharNumber)
-        .in('status', ['pending', 'contacted']) as any);
+        .in('status', ['pending', 'contacted', 'approved']) as any);
 
       if (existingRequest && existingRequest.length > 0) {
-        toast.error(`An enrollment request with this Aadhar number is already pending.`);
-        setErrors(prev => ({ ...prev, aadharNumber: 'Enrollment already pending for this Aadhar' }));
+        const status = existingRequest[0].status;
+        const msg = status === 'approved'
+          ? 'This Aadhar number is already registered. Please log in to the Student Portal.'
+          : 'An enrollment request with this Aadhar number is already pending.';
+        toast.error(msg);
+        setErrors(prev => ({ ...prev, aadharNumber: msg }));
         setSaving(false);
         return;
       }
