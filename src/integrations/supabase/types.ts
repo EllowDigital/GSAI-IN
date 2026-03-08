@@ -897,6 +897,48 @@ export type Database = {
           },
         ]
       }
+      student_programs: {
+        Row: {
+          created_at: string
+          id: string
+          is_primary: boolean
+          joined_at: string
+          program_name: string
+          student_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          joined_at?: string
+          program_name: string
+          student_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          joined_at?: string
+          program_name?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_programs_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_programs_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students_masked"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       student_progress: {
         Row: {
           assessed_by: string | null
