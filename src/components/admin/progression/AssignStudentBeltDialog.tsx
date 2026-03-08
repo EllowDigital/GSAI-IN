@@ -167,7 +167,7 @@ export default function AssignStudentBeltDialog({
     }
 
     setError(null);
-    await onSubmit({ studentId, beltLevelId: beltId, status });
+    await onSubmit({ studentId, beltLevelId: beltId, status, isLevelBased });
     resetForm();
     onOpenChange(false);
   };
