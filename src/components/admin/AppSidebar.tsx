@@ -75,6 +75,12 @@ const navItems = [
     icon: MessageSquare,
     category: 'content',
   },
+  {
+    title: 'Announcements',
+    url: '/admin/dashboard/announcements',
+    icon: Megaphone,
+    category: 'content',
+  },
 ];
 
 interface AppSidebarProps {
