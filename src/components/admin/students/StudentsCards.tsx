@@ -273,5 +273,12 @@ export default function StudentsCards({
         </Card>
       ))}
     </div>
+
+    <CreatePortalAccountDialog
+      open={!!portalStudent}
+      onOpenChange={(val) => { if (!val) setPortalStudent(null); }}
+      student={portalStudent}
+    />
+    </>
   );
 }
