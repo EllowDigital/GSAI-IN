@@ -392,7 +392,48 @@ export default function StudentModal({
               )}
             />
 
-            <div className="flex justify-end gap-2">
+            <div className="grid grid-cols-2 gap-3">
+              <FormField
+                control={form.control}
+                name="default_monthly_fee"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Monthly Fee (₹)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        placeholder="2000"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="discount_percent"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Discount (%)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        max={100}
+                        placeholder="0"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
               <Button
                 type="button"
                 variant="outline"
