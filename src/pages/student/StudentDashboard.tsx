@@ -90,9 +90,12 @@ export default function StudentDashboard() {
             <h1 className="text-base font-semibold text-foreground">Student Portal</h1>
             <p className="text-xs text-muted-foreground">{profile?.studentName} • {profile?.program}</p>
           </div>
-          <Button variant="ghost" size="sm" onClick={signOut} className="gap-1.5 text-muted-foreground">
-            <LogOut className="w-4 h-4" /> Sign Out
-          </Button>
+          <div className="flex items-center gap-2">
+            <ChangePasswordDialog />
+            <Button variant="ghost" size="sm" onClick={signOut} className="gap-1.5 text-muted-foreground">
+              <LogOut className="w-4 h-4" /> Sign Out
+            </Button>
+          </div>
         </div>
       </header>
 
