@@ -83,7 +83,9 @@ Deno.serve(async (req) => {
 
     const email = `${sanitizedLoginId.toLowerCase()}@student.gsai.app`;
 
-    // Create auth user
+    // Try to create auth user; if email already exists, reuse the orphaned auth user
+    let authUserId: string;
+
     const { data: authData, error: authErr } = await supabaseAdmin.auth.admin.createUser({
       email,
       password: sanitizedPassword,
@@ -92,7 +94,25 @@ Deno.serve(async (req) => {
     });
 
     if (authErr) {
-      return new Response(JSON.stringify({ error: authErr.message }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      // Check if user already exists (orphaned auth user without portal account record)
+      if (authErr.message?.includes('already been registered')) {
+        const { data: listData } = await supabaseAdmin.auth.admin.listUsers();
+        const existingUser = listData?.users?.find((u: any) => u.email === email);
+        if (existingUser) {
+          // Update password and metadata for the existing orphaned user
+          await supabaseAdmin.auth.admin.updateUserById(existingUser.id, {
+            password: sanitizedPassword,
+            user_metadata: { role: 'student', login_id: sanitizedLoginId },
+          });
+          authUserId = existingUser.id;
+        } else {
+          return new Response(JSON.stringify({ error: 'User email conflict. Please try a different Login ID.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        }
+      } else {
+        return new Response(JSON.stringify({ error: authErr.message }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+    } else {
+      authUserId = authData.user.id;
     }
 
     // Create portal account record
