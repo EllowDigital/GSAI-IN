@@ -44,6 +44,7 @@ const AllGalleryPage = lazy(() => import('./pages/AllGalleryPage'));
 const LocationLucknow = lazy(() => import('./pages/LocationLucknow'));
 const ProgramDetail = lazy(() => import('./pages/ProgramDetail'));
 const AllProgramsPage = lazy(() => import('./pages/AllProgramsPage'));
+const AllCompetitionsPage = lazy(() => import('./pages/AllCompetitionsPage'));
 const EnrollPage = lazy(() => import('./pages/EnrollPage'));
 const StudentPortal = lazy(() => import('./pages/student/StudentPortal'));
 
