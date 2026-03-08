@@ -144,23 +144,14 @@ export default function StudentDashboard() {
                 {(myCertificates as any[]).map((cert: any) => {
                   const handleDownload = async () => {
                     try {
-                      // Extract path from public URL
-                      const url = cert.certificate_url as string;
-                      const pathMatch = url.match(/certificates\/(.+)$/);
-                      if (!pathMatch) { window.open(url, '_blank'); return; }
-                      const { data, error } = await supabase.storage
-                        .from('certificates')
-                        .createSignedUrl(pathMatch[1], 3600);
-                      if (error || !data?.signedUrl) { window.open(url, '_blank'); return; }
-                      // Trigger download
-                      const a = document.createElement('a');
-                      a.href = data.signedUrl;
-                      a.download = `certificate-${cert.competitions?.name || 'file'}.pdf`;
-                      a.target = '_blank';
-                      document.body.appendChild(a);
-                      a.click();
-                      document.body.removeChild(a);
-                    } catch { window.open(cert.certificate_url, '_blank'); }
+                      await downloadCertificateFile({
+                        certificateUrl: cert.certificate_url as string,
+                        fileName: `${cert.competitions?.name || 'competition'}-certificate.pdf`,
+                      });
+                    } catch (error) {
+                      console.error('Certificate download error:', error);
+                      toast.error('Unable to download certificate. Please try again.');
+                    }
                   };
                   return (
                   <Card key={cert.id} className="border border-border">

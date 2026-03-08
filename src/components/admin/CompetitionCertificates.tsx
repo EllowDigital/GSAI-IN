@@ -145,15 +145,16 @@ export default function CompetitionCertificates({ competition, open, onOpenChang
                       <Badge variant="outline" className="text-[10px] border-green-500/30 text-green-600">Uploaded</Badge>
                       <Button variant="outline" size="sm" className="gap-1 text-xs h-8" onClick={async () => {
                         try {
-                          const url = (cert as any).certificate_url as string;
-                          const pathMatch = url.match(/certificates\/(.+)$/);
-                          if (!pathMatch) { window.open(url, '_blank'); return; }
-                          const { data, error } = await supabase.storage.from('certificates').createSignedUrl(pathMatch[1], 3600);
-                          if (error || !data?.signedUrl) { window.open(url, '_blank'); return; }
-                          window.open(data.signedUrl, '_blank');
-                        } catch { window.open((cert as any).certificate_url, '_blank'); }
+                          await downloadCertificateFile({
+                            certificateUrl: (cert as any).certificate_url,
+                            fileName: `${reg.students?.name || 'student'}-${competition.name}-certificate.pdf`,
+                          });
+                        } catch (error) {
+                          console.error('Certificate download error:', error);
+                          toast.error('Unable to download certificate. Please try again.');
+                        }
                       }}>
-                        <Download className="w-3 h-3" /> View
+                        <Download className="w-3 h-3" /> Download
                       </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDelete((cert as any).id)}>
                         <Trash2 className="w-3.5 h-3.5" />
