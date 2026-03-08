@@ -258,10 +258,13 @@ export default function EnrollmentRequestsManager() {
                     <Button variant="outline" size="sm" className="text-xs h-8 gap-1" onClick={() => { setViewReq(req); setAdminNotes(req.admin_notes || ''); }}>
                       <Eye className="w-3 h-3" /> View
                     </Button>
-                    {(req.status === 'pending' || req.status === 'contacted') && (
+                    {req.status !== 'approved' && req.status !== 'rejected' && (
                       <Button size="sm" className="text-xs h-8 gap-1 bg-green-600 hover:bg-green-700" onClick={() => handleStartApprove(req)}>
                         <Check className="w-3 h-3" /> Approve & Add
                       </Button>
+                    )}
+                    {req.status === 'approved' && (
+                      <Badge variant="outline" className="text-[10px] h-7 px-2 border-green-500/30 text-green-600 bg-green-500/5">✓ Approved</Badge>
                     )}
                     {req.status === 'pending' && (
                       <>
@@ -272,6 +275,11 @@ export default function EnrollmentRequestsManager() {
                           <X className="w-3 h-3" />
                         </Button>
                       </>
+                    )}
+                    {req.status === 'contacted' && (
+                      <Button size="sm" variant="destructive" className="text-xs h-8 gap-1" onClick={() => updateMutation.mutate({ id: req.id, status: 'rejected' })}>
+                        <X className="w-3 h-3" /> Reject
+                      </Button>
                     )}
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
@@ -316,17 +324,31 @@ export default function EnrollmentRequestsManager() {
                 <label className="text-xs font-medium text-muted-foreground">Admin Notes</label>
                 <Textarea value={adminNotes} onChange={e => setAdminNotes(e.target.value)} placeholder="Add notes..." rows={2} className="mt-1" />
               </div>
-              <div className="flex flex-wrap gap-2">
-                <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={() => updateMutation.mutate({ id: viewReq.id, status: 'contacted', notes: adminNotes })}>
-                  <Phone className="w-3 h-3" /> Mark Contacted
-                </Button>
-                <Button size="sm" className="gap-1 text-xs bg-green-600 hover:bg-green-700" onClick={() => { setViewReq(null); handleStartApprove(viewReq); }}>
-                  <Check className="w-3 h-3" /> Approve & Add Student
-                </Button>
-                <Button size="sm" variant="destructive" className="gap-1 text-xs" onClick={() => updateMutation.mutate({ id: viewReq.id, status: 'rejected', notes: adminNotes })}>
-                  <X className="w-3 h-3" /> Reject
-                </Button>
-              </div>
+              {viewReq.status !== 'approved' && viewReq.status !== 'rejected' && (
+                <div className="flex flex-wrap gap-2">
+                  {viewReq.status === 'pending' && (
+                    <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={() => updateMutation.mutate({ id: viewReq.id, status: 'contacted', notes: adminNotes })}>
+                      <Phone className="w-3 h-3" /> Mark Contacted
+                    </Button>
+                  )}
+                  <Button size="sm" className="gap-1 text-xs bg-green-600 hover:bg-green-700" onClick={() => { setViewReq(null); handleStartApprove(viewReq); }}>
+                    <Check className="w-3 h-3" /> Approve & Add Student
+                  </Button>
+                  <Button size="sm" variant="destructive" className="gap-1 text-xs" onClick={() => updateMutation.mutate({ id: viewReq.id, status: 'rejected', notes: adminNotes })}>
+                    <X className="w-3 h-3" /> Reject
+                  </Button>
+                </div>
+              )}
+              {viewReq.status === 'approved' && (
+                <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-3 text-sm text-green-700 dark:text-green-400 font-medium">
+                  ✅ This enrollment has been approved. Student has been added.
+                </div>
+              )}
+              {viewReq.status === 'rejected' && (
+                <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive font-medium">
+                  ❌ This enrollment has been rejected.
+                </div>
+              )}
               <a href={`https://wa.me/91${viewReq.parent_phone}`} target="_blank" rel="noopener noreferrer" className="block w-full text-center py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors">
                 📱 WhatsApp Parent
               </a>

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import Spinner from '@/components/ui/spinner';
-import { Upload, Download, Trash2, UserCheck } from 'lucide-react';
+import { Upload, Download, Trash2, FileCheck, AlertCircle } from 'lucide-react';
 
 interface Props {
   competition: { id: string; name: string };
@@ -17,7 +18,6 @@ export default function CompetitionCertificates({ competition, open, onOpenChang
   const queryClient = useQueryClient();
   const [uploading, setUploading] = useState<string | null>(null);
 
-  // Get registered students for this competition
   const { data: registrations = [], isLoading } = useQuery({
     queryKey: ['competition-registrations', competition.id],
     queryFn: async () => {
@@ -30,7 +30,6 @@ export default function CompetitionCertificates({ competition, open, onOpenChang
     },
   });
 
-  // Get existing certificates
   const { data: certificates = [] } = useQuery({
     queryKey: ['competition-certificates', competition.id],
     queryFn: async () => {
@@ -44,28 +43,46 @@ export default function CompetitionCertificates({ competition, open, onOpenChang
   });
 
   const certMap = new Map((certificates as any[]).map((c: any) => [c.student_id, c]));
+  const certCount = certificates.length;
+  const totalStudents = registrations.length;
 
   const handleUploadCert = async (studentId: string, file: File) => {
     setUploading(studentId);
     try {
-      const filename = `${competition.id}/${studentId}-${Date.now()}.pdf`;
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'pdf';
+      const filename = `${competition.id}/${studentId}-${Date.now()}.${ext}`;
       const { error: uploadErr } = await supabase.storage.from('certificates').upload(filename, file, { upsert: true });
       if (uploadErr) throw uploadErr;
 
       const { data: urlData } = supabase.storage.from('certificates').getPublicUrl(filename);
+      const userEmail = (await supabase.auth.getUser()).data.user?.email || null;
 
-      // Upsert certificate record
-      const { error } = await supabase.from('competition_certificates').upsert({
-        competition_id: competition.id,
-        student_id: studentId,
-        certificate_url: urlData.publicUrl,
-        uploaded_by: (await supabase.auth.getUser()).data.user?.email || null,
-      } as any, { onConflict: 'competition_id,student_id' }) as any;
-      if (error) throw error;
+      // Check if certificate already exists for this student+competition
+      const existing = certMap.get(studentId);
+      if (existing) {
+        // Update existing
+        const { error } = await supabase
+          .from('competition_certificates')
+          .update({ certificate_url: urlData.publicUrl, uploaded_by: userEmail } as any)
+          .eq('id', (existing as any).id) as any;
+        if (error) throw error;
+      } else {
+        // Insert new
+        const { error } = await supabase
+          .from('competition_certificates')
+          .insert({
+            competition_id: competition.id,
+            student_id: studentId,
+            certificate_url: urlData.publicUrl,
+            uploaded_by: userEmail,
+          } as any) as any;
+        if (error) throw error;
+      }
 
       queryClient.invalidateQueries({ queryKey: ['competition-certificates', competition.id] });
-      toast.success('Certificate uploaded.');
+      toast.success('Certificate uploaded!');
     } catch (e: any) {
+      console.error('Certificate upload error:', e);
       toast.error('Upload failed: ' + e.message);
     } finally {
       setUploading(null);
@@ -83,20 +100,40 @@ export default function CompetitionCertificates({ competition, open, onOpenChang
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[95vw] max-w-2xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Certificates — {competition.name}</DialogTitle>
-          <DialogDescription>Upload certificates for registered students.</DialogDescription>
+          <DialogTitle className="flex items-center gap-2">
+            <FileCheck className="w-5 h-5 text-primary" />
+            Certificates — {competition.name}
+          </DialogTitle>
+          <DialogDescription>
+            Upload certificates for registered students. Supports PDF, JPG, PNG, WebP.
+          </DialogDescription>
         </DialogHeader>
+
+        {/* Stats */}
+        <div className="flex gap-2">
+          <Badge variant="outline" className="text-xs">
+            {certCount} / {totalStudents} uploaded
+          </Badge>
+          {certCount === totalStudents && totalStudents > 0 && (
+            <Badge variant="outline" className="text-xs border-green-500/30 text-green-600 bg-green-500/5">
+              ✓ All done
+            </Badge>
+          )}
+        </div>
 
         {isLoading ? (
           <div className="flex justify-center py-8"><Spinner size={20} /></div>
         ) : registrations.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-4">No students registered for this competition.</p>
+          <div className="flex flex-col items-center py-8 gap-2 text-muted-foreground">
+            <AlertCircle className="w-8 h-8" />
+            <p className="text-sm">No students registered for this competition.</p>
+          </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {(registrations as any[]).map((reg: any) => {
               const cert = certMap.get(reg.student_id);
               return (
-                <div key={reg.id} className="flex items-center justify-between gap-3 p-3 rounded-lg border border-border bg-card">
+                <div key={reg.id} className="flex items-center justify-between gap-3 p-3 rounded-xl border border-border bg-card hover:bg-muted/30 transition-colors">
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-foreground truncate">{reg.students?.name}</p>
                     <p className="text-xs text-muted-foreground">{reg.students?.program}</p>
@@ -104,27 +141,28 @@ export default function CompetitionCertificates({ competition, open, onOpenChang
 
                   {cert ? (
                     <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-[10px] border-green-500/30 text-green-600">Uploaded</Badge>
                       <a href={(cert as any).certificate_url} target="_blank" rel="noopener noreferrer">
-                        <Button variant="outline" size="sm" className="gap-1 text-xs">
+                        <Button variant="outline" size="sm" className="gap-1 text-xs h-8">
                           <Download className="w-3 h-3" /> View
                         </Button>
                       </a>
-                      <Button variant="destructive" size="sm" className="text-xs" onClick={() => handleDelete((cert as any).id)}>
-                        <Trash2 className="w-3 h-3" />
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleDelete((cert as any).id)}>
+                        <Trash2 className="w-3.5 h-3.5" />
                       </Button>
                     </div>
                   ) : (
                     <label className="cursor-pointer">
                       <input
                         type="file"
-                        accept=".pdf,.jpg,.png,.webp"
+                        accept=".pdf,.jpg,.jpeg,.png,.webp"
                         className="hidden"
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) handleUploadCert(reg.student_id, file);
                         }}
                       />
-                      <Button variant="outline" size="sm" className="gap-1 text-xs pointer-events-none" disabled={uploading === reg.student_id}>
+                      <Button variant="outline" size="sm" className="gap-1 text-xs h-8 pointer-events-none" disabled={uploading === reg.student_id}>
                         {uploading === reg.student_id ? <Spinner size={12} /> : <Upload className="w-3 h-3" />}
                         Upload
                       </Button>
