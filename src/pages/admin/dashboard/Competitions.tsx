@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
 import Spinner from '@/components/ui/spinner';
-import { Plus, Pencil, Trash2, MapPin, Calendar, Users, Award, Upload, Search } from 'lucide-react';
+import { Plus, Pencil, Trash2, MapPin, Calendar, Users, Award, Upload, Search, ImageIcon, X } from 'lucide-react';
 import { format } from 'date-fns';
 import CompetitionCertificates from '@/components/admin/CompetitionCertificates';
 
@@ -47,6 +47,8 @@ export default function Competitions() {
     name: '', description: '', date: '', end_date: '', location_text: '',
     max_participants: '', status: 'upcoming', image_url: '',
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const { data: competitions = [], isLoading } = useQuery({
     queryKey: ['competitions'],
@@ -62,6 +64,17 @@ export default function Competitions() {
 
   const saveMutation = useMutation({
     mutationFn: async (values: typeof form & { id?: string }) => {
+      let image_url = values.image_url;
+
+      // Upload image file if selected
+      if (imageFile) {
+        const filename = `competitions/${Date.now()}-${imageFile.name}`;
+        const { error: upErr } = await supabase.storage.from('gallery').upload(filename, imageFile, { upsert: true });
+        if (upErr) throw new Error('Image upload failed: ' + upErr.message);
+        const { data: urlData } = supabase.storage.from('gallery').getPublicUrl(filename);
+        image_url = urlData.publicUrl;
+      }
+
       const payload = {
         name: values.name,
         description: values.description || null,
@@ -70,7 +83,7 @@ export default function Competitions() {
         location_text: values.location_text || null,
         max_participants: values.max_participants ? parseInt(values.max_participants) : null,
         status: values.status,
-        image_url: values.image_url || null,
+        image_url: image_url || null,
       } as any;
 
       if (values.id) {
@@ -104,6 +117,8 @@ export default function Competitions() {
   const openNew = () => {
     setEditing(null);
     setForm({ name: '', description: '', date: '', end_date: '', location_text: '', max_participants: '', status: 'upcoming', image_url: '' });
+    setImageFile(null);
+    setImagePreview(null);
     setFormOpen(true);
   };
 
@@ -119,10 +134,12 @@ export default function Competitions() {
       status: c.status,
       image_url: c.image_url || '',
     });
+    setImageFile(null);
+    setImagePreview(c.image_url || null);
     setFormOpen(true);
   };
 
-  const closeForm = () => { setFormOpen(false); setEditing(null); };
+  const closeForm = () => { setFormOpen(false); setEditing(null); setImageFile(null); setImagePreview(null); };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -272,8 +289,36 @@ export default function Competitions() {
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium">Image URL</label>
-              <Input value={form.image_url} onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))} placeholder="https://..." />
+              <label className="text-sm font-medium">Image</label>
+              {imagePreview ? (
+                <div className="relative mt-1 rounded-lg overflow-hidden border border-border">
+                  <img src={imagePreview} alt="Preview" className="w-full h-32 object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => { setImageFile(null); setImagePreview(null); setForm(f => ({ ...f, image_url: '' })); }}
+                    className="absolute top-2 right-2 p-1 rounded-full bg-background/80 hover:bg-background text-foreground"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <label className="mt-1 flex items-center justify-center gap-2 h-24 rounded-lg border-2 border-dashed border-border hover:border-primary/50 cursor-pointer transition-colors">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setImageFile(file);
+                        setImagePreview(URL.createObjectURL(file));
+                      }
+                    }}
+                  />
+                  <ImageIcon className="w-5 h-5 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Click to upload image</span>
+                </label>
+              )}
             </div>
             <Button type="submit" disabled={saveMutation.isPending} className="w-full">
               {saveMutation.isPending ? <Spinner size={16} /> : editing ? 'Update' : 'Create'}
