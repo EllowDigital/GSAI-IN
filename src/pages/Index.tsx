@@ -21,6 +21,7 @@ import LocationSection from '../components/LocationSection';
 
 import RecognitionAffiliationsSection from '../components/RecognitionAffiliationsSection';
 import FooterSection from '../components/FooterSection';
+import FloatingEnrollButton from '../components/FloatingEnrollButton';
 
 // Structured data for SEO rich snippets
 const orgStructuredData = {
@@ -614,6 +615,7 @@ export default function Index() {
 
       {/* Footer */}
       <FooterSection />
+      <FloatingEnrollButton />
     </div>
   );
 }

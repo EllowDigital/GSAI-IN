@@ -15,6 +15,7 @@ import {
   X,
   Swords,
   GraduationCap,
+  Megaphone,
 } from 'lucide-react';
 import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 
@@ -72,6 +73,12 @@ const navItems = [
     title: 'Testimonials',
     url: '/admin/dashboard/testimonials',
     icon: MessageSquare,
+    category: 'content',
+  },
+  {
+    title: 'Announcements',
+    url: '/admin/dashboard/announcements',
+    icon: Megaphone,
     category: 'content',
   },
 ];

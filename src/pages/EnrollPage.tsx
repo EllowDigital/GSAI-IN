@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { z } from 'zod';
 import { ArrowLeft, Send, User, Phone, BookOpen, Calendar, Shield, CheckCircle2 } from 'lucide-react';
@@ -24,7 +24,9 @@ const enrollSchema = z.object({
 type EnrollForm = z.infer<typeof enrollSchema>;
 
 export default function EnrollPage() {
-  const [form, setForm] = useState<Partial<EnrollForm>>({});
+  const [searchParams] = useSearchParams();
+  const preselectedProgram = searchParams.get('program') || '';
+  const [form, setForm] = useState<Partial<EnrollForm>>({ program: preselectedProgram });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
 

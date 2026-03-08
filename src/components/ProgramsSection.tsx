@@ -148,13 +148,13 @@ export default function ProgramsSection() {
                   </span>
                 </div>
 
-                <div className="mt-auto">
+                <div className="mt-auto flex gap-2">
                   <Link
                     to={`/programs/${prog.slug}`}
                     aria-label={`Learn more about ${prog.title}`}
-                    className="btn-primary w-full justify-center gap-2 py-2.5 text-sm sm:text-base bg-gradient-to-r from-yellow-500 to-red-600 hover:from-yellow-400 hover:to-red-500 border-0 text-white"
+                    className="btn-primary flex-1 justify-center gap-2 py-2.5 text-sm sm:text-base bg-gradient-to-r from-yellow-500 to-red-600 hover:from-yellow-400 hover:to-red-500 border-0 text-white"
                   >
-                    <span>Learn more about {prog.title}</span>
+                    <span>Learn More</span>
                     <svg
                       className="w-4 h-4 transform group-hover:translate-x-1 transition-transform"
                       fill="none"
@@ -168,6 +168,13 @@ export default function ProgramsSection() {
                         d="M9 5l7 7-7 7"
                       />
                     </svg>
+                  </Link>
+                  <Link
+                    to={`/enroll?program=${encodeURIComponent(prog.title)}`}
+                    className="btn-primary justify-center py-2.5 px-4 text-sm bg-white/10 border border-white/20 hover:bg-white/20 hover:border-yellow-500/30 text-white transition-all"
+                    aria-label={`Enroll in ${prog.title}`}
+                  >
+                    Enroll
                   </Link>
                 </div>
               </div>
