@@ -1,4 +1,5 @@
 import Seo from '../components/Seo';
+import CompetitionResultsSection from '../components/CompetitionResultsSection';
 import Navbar from '../components/Navbar';
 
 import HeroSection from '../components/HeroSection';
