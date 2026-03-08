@@ -35,7 +35,7 @@ export default function TestimonialsManager() {
 
   const handleAdd = async () => {
     if (!form.program_slug || !form.student_name.trim() || !form.review.trim()) {
-      toast({ title: 'Missing fields', description: 'Fill all required fields.', variant: 'destructive' });
+      toast({ title: 'Missing fields', description: 'Fill all required fields.', variant: 'error' });
       return;
     }
     const { error } = await supabase.from('program_testimonials' as any).insert({
