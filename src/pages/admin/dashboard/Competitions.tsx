@@ -117,6 +117,8 @@ export default function Competitions() {
   const openNew = () => {
     setEditing(null);
     setForm({ name: '', description: '', date: '', end_date: '', location_text: '', max_participants: '', status: 'upcoming', image_url: '' });
+    setImageFile(null);
+    setImagePreview(null);
     setFormOpen(true);
   };
 
