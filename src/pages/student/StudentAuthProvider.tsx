@@ -155,7 +155,7 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
     await new Promise(r => setTimeout(r, 300));
     setAuthAnimation(null);
     isSigningOut.current = false;
-    navigate('/student/login', { replace: true });
+    navigate('/', { replace: true });
   };
 
   return (
