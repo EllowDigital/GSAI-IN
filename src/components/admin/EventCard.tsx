@@ -62,6 +62,12 @@ const EventCard: React.FC<Props> = ({ event, onEdit, onDelete }) => (
             {event.description}
           </div>
         )}
+        {(event as any).location && (
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <MapPin className="w-3 h-3 flex-shrink-0" />
+            <span className="truncate">{(event as any).location}</span>
+          </div>
+        )}
         {event.tag && (
           <span className="inline-block text-xs bg-primary/10 text-primary rounded-full px-3 py-1 font-medium">
             {event.tag}
