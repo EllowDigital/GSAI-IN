@@ -90,6 +90,25 @@ export default function AllProgramsPage() {
             </p>
           </motion.div>
 
+          {/* Search Bar */}
+          <motion.div
+            className="max-w-md mx-auto mb-8"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+          >
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search programs…"
+                className="w-full bg-white/5 border border-white/10 rounded-full pl-11 pr-4 py-2.5 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/30 transition-all"
+              />
+            </div>
+          </motion.div>
+
           {/* Category Filters */}
           <motion.div
             className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-12"
