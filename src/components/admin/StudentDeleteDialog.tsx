@@ -34,6 +34,7 @@ export default function StudentDeleteDialog({ student, onClose }: Props) {
         supabase.from('student_progress').delete().eq('student_id', sid),
         supabase.from('student_discipline_progress').delete().eq('student_id', sid),
         supabase.from('promotion_history').delete().eq('student_id', sid),
+        supabase.from('attendance').delete().eq('student_id', sid),
       ]);
 
       // Check for errors in related deletions
