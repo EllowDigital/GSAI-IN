@@ -6,10 +6,10 @@ import {
   Variants,
   useScroll,
   useTransform,
+  useMotionValueEvent,
 } from 'framer-motion';
 import { Volume2, VolumeX, Instagram, ChevronDown } from 'lucide-react';
 
-// Array of background images for the slider
 const bgImages = [
   '/assets/slider/slider.webp',
   '/assets/slider/slider0.webp',
@@ -24,11 +24,9 @@ const bgImages = [
   '/assets/slider/slider10.webp',
 ];
 
-// Path to your introductory video
 const videoSrc = '/assets/slider/intro.mp4';
 const IMAGE_DURATION = 4000;
 
-// Animated words for the headline
 const animatedWords = [
   { text: 'Fire', emoji: '🔥' },
   { text: 'Warrior', emoji: '🐯' },
@@ -36,7 +34,6 @@ const animatedWords = [
   { text: 'Discipline', emoji: '⚔️' },
 ];
 
-// --- Framer Motion Variants ---
 const fadeVariants: Variants = {
   initial: { opacity: 0, scale: 1.1 },
   animate: {
@@ -84,18 +81,16 @@ const wordVariants: Variants = {
   },
 };
 
-// Floating particle configuration
-const generateParticles = (count: number) => {
-  return Array.from({ length: count }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 3 + 1.5,
-    duration: Math.random() * 15 + 10,
-    delay: Math.random() * 5,
-    opacity: Math.random() * 0.3 + 0.1,
-  }));
-};
+// Reduced particle count for performance
+const PARTICLES = Array.from({ length: 8 }, (_, i) => ({
+  id: i,
+  x: Math.random() * 100,
+  y: Math.random() * 100,
+  size: Math.random() * 3 + 1.5,
+  duration: Math.random() * 15 + 10,
+  delay: Math.random() * 5,
+  opacity: Math.random() * 0.3 + 0.1,
+}));
 
 export default function HeroSection() {
   const [imgIndex, setImgIndex] = useState(0);
@@ -104,32 +99,36 @@ export default function HeroSection() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [wordIndex, setWordIndex] = useState(0);
   const [showSanskrit, setShowSanskrit] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
   const imageTimerRef = useRef<NodeJS.Timeout | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const heroImgRef = useRef<HTMLImageElement | null>(null);
   const heroRef = useRef<HTMLElement>(null);
   const isVideoActive = mediaMode === 'video';
 
-  // Memoize particles to prevent regeneration on each render
-  const particles = useMemo(() => generateParticles(15), []);
-
-  // Mouse-following spotlight
+  // Use CSS custom properties for mouse position instead of state (no re-renders)
   const handleMouseMove = useCallback((e: MouseEvent<HTMLElement>) => {
-    const rect = heroRef.current?.getBoundingClientRect();
-    if (!rect) return;
+    const el = heroRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setMousePos({ x, y });
+    el.style.setProperty('--mouse-x', `${x}%`);
+    el.style.setProperty('--mouse-y', `${y}%`);
   }, []);
 
-  // Parallax scroll effect
+  // Parallax — use will-change and GPU-friendly transforms only
   const { scrollY } = useScroll();
   const parallaxY = useTransform(scrollY, [0, 500], [0, 100]);
   const parallaxScale = useTransform(scrollY, [0, 500], [1.02, 1.1]);
   const contentOpacity = useTransform(scrollY, [0, 300], [1, 0]);
 
-  // Word animation cycle every 2.5s
+  // Sanskrit quote — use useMotionValueEvent instead of subscribing + setState on every frame
+  useMotionValueEvent(scrollY, 'change', (latest) => {
+    const shouldShow = latest >= 20;
+    // Only update state when value actually changes
+    setShowSanskrit((prev) => (prev !== shouldShow ? shouldShow : prev));
+  });
+
+  // Word animation cycle
   useEffect(() => {
     const wordTimer = setInterval(() => {
       setWordIndex((prev) => (prev + 1) % animatedWords.length);
@@ -137,65 +136,34 @@ export default function HeroSection() {
     return () => clearInterval(wordTimer);
   }, []);
 
-  // Sanskrit quote scroll fade effect
+  // Preload first 3 images only (rest load lazily)
   useEffect(() => {
-    const handleScrollChange = (value: number) => {
-      setShowSanskrit(value >= 20);
-    };
-
-    // Trigger handler with current value to initialize
-    handleScrollChange(scrollY.get());
-
-    const unsubscribe = scrollY.on('change', handleScrollChange);
-    return () => unsubscribe();
-  }, [scrollY]);
-
-  // Preload hero images
-  useEffect(() => {
-    bgImages.forEach((src) => {
+    bgImages.slice(0, 3).forEach((src) => {
       const img = new Image();
       img.src = src;
     });
   }, []);
 
-  // Set fetchpriority attribute via DOM
-  useEffect(() => {
-    if (heroImgRef.current && 'setAttribute' in heroImgRef.current) {
-      try {
-        heroImgRef.current.setAttribute('fetchpriority', 'high');
-      } catch (e) {
-        /* ignore */
-      }
-    }
-  }, []);
-
-  // --- Effect for Image Slider Logic ---
+  // Image Slider Logic
   useEffect(() => {
     if (mediaMode !== 'images') {
       if (imageTimerRef.current) {
         clearTimeout(imageTimerRef.current);
         imageTimerRef.current = null;
       }
-      if (imgIndex !== 0) {
-        setTimeout(() => setImgIndex(0), 0);
-      }
       return;
     }
 
-    const scheduleNextFrame = () => {
-      imageTimerRef.current = setTimeout(() => {
-        setImgIndex((prevIndex) => {
-          const nextIndex = prevIndex + 1;
-          if (nextIndex >= bgImages.length) {
-            setMediaMode('video');
-            return 0;
-          }
-          return nextIndex;
-        });
-      }, IMAGE_DURATION);
-    };
-
-    scheduleNextFrame();
+    imageTimerRef.current = setTimeout(() => {
+      setImgIndex((prevIndex) => {
+        const nextIndex = prevIndex + 1;
+        if (nextIndex >= bgImages.length) {
+          setMediaMode('video');
+          return 0;
+        }
+        return nextIndex;
+      });
+    }, IMAGE_DURATION);
 
     return () => {
       if (imageTimerRef.current) {
@@ -205,7 +173,7 @@ export default function HeroSection() {
     };
   }, [mediaMode, imgIndex]);
 
-  // --- Effect for Video Playback ---
+  // Video Playback
   useEffect(() => {
     const currentVideo = videoRef.current;
     if (!currentVideo) return;
@@ -214,34 +182,22 @@ export default function HeroSection() {
       currentVideo.currentTime = 0;
       const playPromise = currentVideo.play();
       if (playPromise) {
-        playPromise.catch((error) => {
-          console.warn(
-            'Video autoplay was blocked. Showing slideshow as fallback.',
-            error
-          );
-          setMediaMode('images');
-        });
+        playPromise.catch(() => setMediaMode('images'));
       }
       return;
     }
-
     currentVideo.pause();
   }, [isVideoActive]);
 
-  // --- Event Handlers ---
   const goToImage = useCallback(
     (index: number) => {
       setImgIndex(index);
-      if (mediaMode === 'video') {
-        setMediaMode('images');
-      }
+      if (mediaMode === 'video') setMediaMode('images');
     },
     [mediaMode]
   );
 
-  const handleVideoEnd = useCallback(() => {
-    setMediaMode('images');
-  }, []);
+  const handleVideoEnd = useCallback(() => setMediaMode('images'), []);
 
   const handleUserInteraction = useCallback(() => {
     if (!hasInteracted) {
@@ -254,18 +210,13 @@ export default function HeroSection() {
     (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
       setIsMuted((prev) => !prev);
-      if (!hasInteracted) {
-        setHasInteracted(true);
-      }
+      if (!hasInteracted) setHasInteracted(true);
     },
     [hasInteracted]
   );
 
   const scrollToAbout = useCallback(() => {
-    const aboutSection = document.getElementById('about');
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: 'smooth' });
-    }
+    document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
   return (
@@ -275,22 +226,28 @@ export default function HeroSection() {
       onClick={handleUserInteraction}
       onMouseMove={handleMouseMove}
       className="relative isolate flex min-h-[100dvh] items-center justify-center overflow-hidden bg-black text-white cursor-default"
+      style={
+        {
+          '--mouse-x': '50%',
+          '--mouse-y': '50%',
+        } as React.CSSProperties
+      }
     >
-      {/* Mouse-following spotlight */}
+      {/* Mouse-following spotlight — pure CSS, no re-renders */}
       <div
-        className="pointer-events-none absolute inset-0 z-[3] transition-opacity duration-300 hidden md:block"
+        className="pointer-events-none absolute inset-0 z-[3] hidden md:block"
         style={{
-          background: `radial-gradient(600px circle at ${mousePos.x}% ${mousePos.y}%, rgba(234,179,8,0.06), transparent 60%)`,
+          background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(234,179,8,0.06), transparent 60%)`,
         }}
       />
-      {/* Visually-hidden H1 for SEO */}
+
       <h1 className="sr-only">
         Martial Arts Training in Lucknow — Ghatak Sports Academy India
       </h1>
 
-      {/* Floating Particles Layer */}
+      {/* Floating Particles — reduced count, CSS animations where possible */}
       <div className="absolute inset-0 z-[5] pointer-events-none overflow-hidden">
-        {particles.map((particle) => (
+        {PARTICLES.map((particle) => (
           <motion.div
             key={particle.id}
             className="absolute rounded-full bg-gradient-to-br from-yellow-400/30 to-orange-500/20"
@@ -299,16 +256,15 @@ export default function HeroSection() {
               top: `${particle.y}%`,
               width: particle.size,
               height: particle.size,
+              willChange: 'transform, opacity',
             }}
             animate={{
               y: [-20, -80, -20],
-              x: [0, Math.sin(particle.id) * 20, 0],
               opacity: [
                 particle.opacity,
                 particle.opacity * 1.5,
                 particle.opacity,
               ],
-              scale: [1, 1.2, 1],
             }}
             transition={{
               duration: particle.duration,
@@ -320,19 +276,18 @@ export default function HeroSection() {
         ))}
       </div>
 
-      {/* Background Media Container with Parallax */}
+      {/* Background Media with Parallax */}
       <motion.div
         className="absolute inset-0 z-0 overflow-hidden"
-        style={{ y: parallaxY, scale: parallaxScale }}
+        style={{ y: parallaxY, scale: parallaxScale, willChange: 'transform' }}
       >
         <div className="relative h-full w-full">
-          {/* High-priority background image for LCP */}
           <img
-            ref={heroImgRef}
             src={bgImages[0]}
             alt=""
             aria-hidden="true"
             loading="eager"
+            fetchPriority="high"
             className="absolute inset-0 w-full h-full object-cover"
           />
           <AnimatePresence mode="wait">
@@ -355,9 +310,7 @@ export default function HeroSection() {
                   onEnded={handleVideoEnd}
                   className="h-full w-full object-cover"
                   src={videoSrc}
-                >
-                  Your browser does not support the video tag.
-                </video>
+                />
               </motion.div>
             ) : (
               <motion.div
@@ -372,7 +325,6 @@ export default function HeroSection() {
             )}
           </AnimatePresence>
 
-          {/* Mute Button */}
           {isVideoActive && (
             <motion.button
               onClick={toggleMute}
@@ -395,7 +347,6 @@ export default function HeroSection() {
       {/* Gradient Overlays */}
       <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-black/70 via-black/30 to-black/80" />
       <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-black/40 via-transparent to-black/40" />
-      {/* Vignette effect */}
       <div
         className="pointer-events-none absolute inset-0 z-[2]"
         style={{ boxShadow: 'inset 0 0 150px 50px rgba(0,0,0,0.5)' }}
@@ -426,7 +377,7 @@ export default function HeroSection() {
             </span>
           </motion.div>
 
-          {/* Heading with Word Highlight Animation */}
+          {/* Heading */}
           <motion.h2
             variants={textVariants}
             className="text-[1.5rem] leading-[1.2] sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-extrabold text-white tracking-tight px-2 sm:px-0"
@@ -500,7 +451,7 @@ export default function HeroSection() {
             </a>
           </motion.div>
 
-          {/* Sanskrit Quote - Scroll Fade */}
+          {/* Sanskrit Quote */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{
@@ -526,37 +477,29 @@ export default function HeroSection() {
       {/* Bottom Controls */}
       <div className="absolute left-0 right-0 bottom-4 sm:bottom-6 lg:bottom-8 flex flex-col items-center gap-4 sm:gap-6 z-20 px-4 pointer-events-none">
         {/* Desktop Slider Navigation */}
-        <AnimatePresence>
-          <motion.div
-            className="pointer-events-auto hidden lg:flex flex-wrap items-center justify-center gap-1.5 w-auto max-w-[90vw] mx-auto px-3 py-2 rounded-full border border-white/10 bg-black/40 backdrop-blur-md shadow-xl"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.5 }}
-          >
-            {bgImages.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => goToImage(idx)}
-                type="button"
-                className={`group relative inline-flex items-center justify-center p-1.5 rounded-full transition-all duration-300 focus:outline-none ${
-                  imgIndex === idx ? 'scale-105' : 'hover:scale-105'
+        <div className="pointer-events-auto hidden lg:flex flex-wrap items-center justify-center gap-1.5 w-auto max-w-[90vw] mx-auto px-3 py-2 rounded-full border border-white/10 bg-black/40 backdrop-blur-md shadow-xl">
+          {bgImages.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => goToImage(idx)}
+              type="button"
+              className={`group relative inline-flex items-center justify-center p-1.5 rounded-full transition-all duration-300 focus:outline-none ${
+                imgIndex === idx ? 'scale-105' : 'hover:scale-105'
+              }`}
+              aria-label={`Go to slide ${idx + 1}`}
+            >
+              <span
+                className={`inline-block rounded-full transition-all duration-300 w-2.5 h-2.5 ${
+                  imgIndex === idx
+                    ? 'bg-gradient-to-r from-yellow-400 to-red-500 opacity-100'
+                    : 'bg-white/30 group-hover:bg-white/60'
                 }`}
-                aria-label={`Go to slide ${idx + 1}`}
-              >
-                <span
-                  className={`inline-block rounded-full transition-all duration-300 w-2.5 h-2.5 ${
-                    imgIndex === idx
-                      ? 'bg-gradient-to-r from-yellow-400 to-red-500 opacity-100'
-                      : 'bg-white/30 group-hover:bg-white/60'
-                  }`}
-                />
-              </button>
-            ))}
-          </motion.div>
-        </AnimatePresence>
+              />
+            </button>
+          ))}
+        </div>
 
-        {/* Scroll Indicator */}
+        {/* Scroll Indicator — simplified, CSS animation instead of framer-motion */}
         <button
           type="button"
           onClick={scrollToAbout}
@@ -564,46 +507,7 @@ export default function HeroSection() {
           className="pointer-events-auto group"
         >
           <div className="relative h-12 sm:h-14 md:h-16 w-[2px] bg-white/20 rounded-full overflow-hidden group-hover:bg-yellow-500/30 transition-colors duration-300">
-            {/* Trail particles */}
-            {[0, 1, 2].map((i) => (
-              <motion.div
-                key={i}
-                className="absolute left-1/2 -translate-x-1/2 w-1 h-1 bg-yellow-400/40 rounded-full"
-                animate={{
-                  y: [0, 40, 0],
-                  opacity: [0, 0.6, 0],
-                  scale: [0.5, 0.8, 0.5],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                  delay: i * 0.15,
-                }}
-              />
-            ))}
-            {/* Main glowing dot */}
-            <motion.div
-              className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-full"
-              animate={{
-                y: [0, 40, 0],
-                boxShadow: [
-                  '0 0 6px 2px rgba(234, 179, 8, 0.5), 0 0 12px 4px rgba(249, 115, 22, 0.3)',
-                  '0 0 10px 3px rgba(234, 179, 8, 0.7), 0 0 20px 6px rgba(249, 115, 22, 0.4)',
-                  '0 0 6px 2px rgba(234, 179, 8, 0.5), 0 0 12px 4px rgba(249, 115, 22, 0.3)',
-                ],
-                scale: [1, 1.15, 1],
-              }}
-              transition={{
-                y: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
-                boxShadow: {
-                  duration: 1.5,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                },
-                scale: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
-              }}
-            />
+            <div className="absolute left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-full animate-bounce" />
           </div>
         </button>
       </div>
