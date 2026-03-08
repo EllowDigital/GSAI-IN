@@ -427,26 +427,22 @@ export default function HeroSection() {
             className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto px-4 sm:px-0"
           >
             <a
-              href="#programs"
-              className="group relative inline-flex items-center justify-center px-5 sm:px-6 md:px-8 py-3 sm:py-3.5 text-sm sm:text-base font-bold text-white transition-all duration-200 bg-gradient-to-r from-yellow-500 to-red-600 rounded-xl hover:shadow-lg hover:shadow-orange-500/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 overflow-hidden"
+              href="/enroll"
+              className="group relative inline-flex items-center justify-center px-5 sm:px-6 md:px-8 py-3 sm:py-3.5 text-sm sm:text-base font-bold text-white transition-all duration-200 bg-gradient-to-r from-yellow-500 to-red-600 rounded-xl hover:shadow-lg hover:shadow-orange-500/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 overflow-hidden hover:-translate-y-0.5"
             >
               <span className="absolute inset-0 w-full h-full -mt-1 rounded-xl opacity-30 bg-gradient-to-b from-transparent via-transparent to-black"></span>
               <span className="relative flex items-center gap-2">
-                Explore Programs
-                <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-y-1 transition-transform" />
+                🥋 Join GSAI Now
               </span>
             </a>
 
             <a
-              href="https://www.instagram.com/ghataksportsacademy/"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="#programs"
               className="group inline-flex items-center justify-center px-5 sm:px-6 md:px-8 py-3 sm:py-3.5 text-sm sm:text-base font-bold text-white transition-all duration-200 bg-white/10 border border-white/20 rounded-xl hover:bg-white/20 hover:border-white/40 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50"
             >
               <span className="flex items-center gap-2">
-                <Instagram className="w-4 h-4 sm:w-5 sm:h-5 text-pink-500 group-hover:scale-110 transition-transform" />
-                <span className="hidden sm:inline">Follow on Instagram</span>
-                <span className="sm:hidden">Instagram</span>
+                Explore Programs
+                <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-y-1 transition-transform" />
               </span>
             </a>
           </motion.div>

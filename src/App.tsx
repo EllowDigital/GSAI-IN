@@ -44,6 +44,7 @@ const AllGalleryPage = lazy(() => import('./pages/AllGalleryPage'));
 const LocationLucknow = lazy(() => import('./pages/LocationLucknow'));
 const ProgramDetail = lazy(() => import('./pages/ProgramDetail'));
 const AllProgramsPage = lazy(() => import('./pages/AllProgramsPage'));
+const EnrollPage = lazy(() => import('./pages/EnrollPage'));
 const StudentPortal = lazy(() => import('./pages/student/StudentPortal'));
 
 const AdminArea = lazy(() => import('./pages/admin/AdminArea'));
@@ -281,6 +282,7 @@ const App = () => {
                     />
                     <Route path="/programs" element={<AllProgramsPage />} />
                     <Route path="/programs/:slug" element={<ProgramDetail />} />
+                    <Route path="/enroll" element={<EnrollPage />} />
 
                     <Route path="*" element={<NotFound />} />
                   </Routes>

@@ -171,6 +171,16 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
 
                     <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-4" />
 
+                    {/* Enroll Now - Primary CTA */}
+                    <Link
+                      to="/enroll"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-gradient-to-r from-yellow-500 to-red-600 text-white text-base font-bold shadow-lg shadow-orange-500/20 active:scale-[0.98] transition-transform hover:shadow-orange-500/40"
+                      role="menuitem"
+                    >
+                      🥋 <span>Enroll Now</span>
+                    </Link>
+
                     <Link
                       to="/student/login"
                       onClick={() => setMobileOpen(false)}
@@ -179,17 +189,6 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                     >
                       <GraduationCap className="w-5 h-5" />
                       <span>Student Portal</span>
-                    </Link>
-
-                    {/* Admin Panel Button */}
-                    <Link
-                      to="/admin/login"
-                      onClick={() => setMobileOpen(false)}
-                      className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-gradient-to-r from-yellow-500 to-red-600 text-white text-base font-bold shadow-lg shadow-orange-500/20 active:scale-[0.98] transition-transform hover:shadow-orange-500/40"
-                      role="menuitem"
-                    >
-                      <LogIn className="w-5 h-5" />
-                      <span>Admin Login</span>
                     </Link>
 
                     {/* Contact Info */}
