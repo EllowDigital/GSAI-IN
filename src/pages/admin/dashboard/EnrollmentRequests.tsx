@@ -258,10 +258,13 @@ export default function EnrollmentRequestsManager() {
                     <Button variant="outline" size="sm" className="text-xs h-8 gap-1" onClick={() => { setViewReq(req); setAdminNotes(req.admin_notes || ''); }}>
                       <Eye className="w-3 h-3" /> View
                     </Button>
-                    {(req.status === 'pending' || req.status === 'contacted') && (
+                    {req.status !== 'approved' && req.status !== 'rejected' && (
                       <Button size="sm" className="text-xs h-8 gap-1 bg-green-600 hover:bg-green-700" onClick={() => handleStartApprove(req)}>
                         <Check className="w-3 h-3" /> Approve & Add
                       </Button>
+                    )}
+                    {req.status === 'approved' && (
+                      <Badge variant="outline" className="text-[10px] h-7 px-2 border-green-500/30 text-green-600 bg-green-500/5">✓ Approved</Badge>
                     )}
                     {req.status === 'pending' && (
                       <>
@@ -272,6 +275,11 @@ export default function EnrollmentRequestsManager() {
                           <X className="w-3 h-3" />
                         </Button>
                       </>
+                    )}
+                    {req.status === 'contacted' && (
+                      <Button size="sm" variant="destructive" className="text-xs h-8 gap-1" onClick={() => updateMutation.mutate({ id: req.id, status: 'rejected' })}>
+                        <X className="w-3 h-3" /> Reject
+                      </Button>
                     )}
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
