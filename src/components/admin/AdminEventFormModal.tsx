@@ -183,7 +183,8 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
             from_date: form.from_date,
             end_date: form.end_date,
             tag: form.tag,
-          })
+            location: (form as any).location || null,
+          } as any)
           .eq('id', editingEvent.id);
         if (error) {
           toast.error('Failed to update event: ' + error.message);
