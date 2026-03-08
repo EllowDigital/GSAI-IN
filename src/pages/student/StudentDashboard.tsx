@@ -106,7 +106,7 @@ export default function StudentDashboard() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto p-4 lg:p-6 space-y-6">
+      <main className="max-w-4xl mx-auto p-4 lg:p-6 space-y-6 pb-16">
         {/* Announcements Banner */}
         <StudentAnnouncements />
 
