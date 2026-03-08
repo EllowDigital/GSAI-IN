@@ -3,7 +3,8 @@
  * Docs: https://formsubmit.co/
  */
 
-const FORMSUBMIT_ENDPOINT = 'https://formsubmit.co/ajax/ghataksportsacademy@gmail.com';
+const ACADEMY_EMAIL = 'ghataksportsacademy@gmail.com';
+const FORMSUBMIT_ENDPOINT = `https://formsubmit.co/ajax/${ACADEMY_EMAIL}`;
 
 interface EmailPayload {
   to?: string;
