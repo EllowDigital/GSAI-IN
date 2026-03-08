@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import CompetitionCertificates from '@/components/admin/CompetitionCertificates';
+import CompetitionRegistrations from '@/components/admin/CompetitionRegistrations';
 import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
 
 interface Competition {
@@ -84,6 +85,7 @@ export default function Competitions() {
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [certOpen, setCertOpen] = useState<Competition | null>(null);
+  const [regsOpen, setRegsOpen] = useState<Competition | null>(null);
   const [editing, setEditing] = useState<Competition | null>(null);
   const [search, setSearch] = useState('');
   const [form, setForm] = useState({
@@ -346,31 +348,17 @@ export default function Competitions() {
                   </p>
                 )}
 
-                <div className="flex gap-2 pt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 gap-1 text-xs"
-                    onClick={() => openEdit(c)}
-                  >
+                <div className="flex flex-wrap gap-2 pt-2">
+                  <Button variant="outline" size="sm" className="flex-1 gap-1 text-xs" onClick={() => setRegsOpen(c)}>
+                    <Users className="w-3 h-3" /> Registrations
+                  </Button>
+                  <Button variant="outline" size="sm" className="flex-1 gap-1 text-xs" onClick={() => openEdit(c)}>
                     <Pencil className="w-3 h-3" /> Edit
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 gap-1 text-xs"
-                    onClick={() => setCertOpen(c)}
-                  >
+                  <Button variant="outline" size="sm" className="gap-1 text-xs" onClick={() => setCertOpen(c)}>
                     <Award className="w-3 h-3" /> Certs
                   </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="gap-1 text-xs"
-                    onClick={() => {
-                      if (confirm('Delete this competition?')) deleteMutation.mutate(c.id);
-                    }}
-                  >
+                  <Button variant="destructive" size="sm" className="gap-1 text-xs" onClick={() => { if (confirm('Delete this competition?')) deleteMutation.mutate(c.id); }}>
                     <Trash2 className="w-3 h-3" />
                   </Button>
                 </div>
@@ -550,9 +538,16 @@ export default function Competitions() {
         <CompetitionCertificates
           competition={certOpen}
           open={!!certOpen}
-          onOpenChange={(open) => {
-            if (!open) setCertOpen(null);
-          }}
+          onOpenChange={(open) => { if (!open) setCertOpen(null); }}
+        />
+      )}
+
+      {/* Registrations Modal */}
+      {regsOpen && (
+        <CompetitionRegistrations
+          competition={regsOpen}
+          open={!!regsOpen}
+          onOpenChange={(open) => { if (!open) setRegsOpen(null); }}
         />
       )}
     </div>
