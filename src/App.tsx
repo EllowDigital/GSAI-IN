@@ -282,6 +282,7 @@ const App = () => {
                     />
                     <Route path="/programs" element={<AllProgramsPage />} />
                     <Route path="/programs/:slug" element={<ProgramDetail />} />
+                    <Route path="/enroll" element={<EnrollPage />} />
 
                     <Route path="*" element={<NotFound />} />
                   </Routes>
