@@ -46,12 +46,14 @@ export function FeeForm({
     paid_amount: number;
     notes: string;
     receipt_url: string | null;
+    status_override: string;
   }>({
     defaultValues: {
       monthly_fee: fee?.monthly_fee ?? student?.default_monthly_fee ?? 2000,
       paid_amount: fee?.paid_amount ?? 0,
       notes: fee?.notes ?? '',
       receipt_url: fee?.receipt_url || null,
+      status_override: fee?.status || 'auto',
     },
   });
 
