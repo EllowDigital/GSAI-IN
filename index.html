@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-IN">
 
 <head>
   <!-- ============================== -->
@@ -31,7 +31,7 @@
   <!-- ============================== -->
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#000000" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="generator" content="Custom HTML" />
@@ -69,7 +69,7 @@
   <!-- ============================== -->
   <meta name="rating" content="general" />
   <meta name="distribution" content="global" />
-  <meta name="language" content="en" />
+  <meta name="language" content="en-IN" />
   <meta name="coverage" content="Worldwide" />
   <meta name="referrer" content="no-referrer-when-downgrade" />
   <meta name="copyright" content="© 2025 Ghatak Sports Academy™" />
@@ -109,6 +109,8 @@
   <link rel="icon" href="/favicon_io/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon_io/android-chrome-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/favicon_io/android-chrome-512x512.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png" />
 
   <!-- ============================== -->
@@ -208,6 +210,89 @@
           "item": "https://ghataksportsacademy.com/#programs"
         }
       ]
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SportsActivityLocation",
+      "name": "Ghatak Sports Academy India",
+      "image": "https://ghataksportsacademy.com/assets/img/social-preview.png",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Badshah Kheda, Takrohi Rd",
+        "addressLocality": "Lucknow",
+        "addressRegion": "Uttar Pradesh",
+        "postalCode": "226028",
+        "addressCountry": "IN"
+      },
+      "telephone": "+91 6394135988",
+      "url": "https://ghataksportsacademy.com"
+    }
+  </script>
+
+  <!-- 📊 Structured Data: FAQ -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Which martial arts programs are available at Ghatak Sports Academy India?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We offer karate, taekwondo, MMA, boxing, kickboxing, grappling, kalaripayattu, self-defense, and fitness programs for children and adults."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Where is Ghatak Sports Academy India located?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Our academy is located at Badshah Kheda, Takrohi Road, Indira Nagar, Lucknow, Uttar Pradesh, India 226028."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can I contact Ghatak Sports Academy India for admission?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You can call us at +91 6394135988 or email ghatakgsai@gmail.com to book a trial class and get admission details."
+          }
+        }
+      ]
+    }
+  </script>
+
+  <!-- 📊 Structured Data: Course -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Course",
+      "name": "Martial Arts and Self-Defense Training Program",
+      "description": "A structured training program in karate, taekwondo, MMA, boxing, kickboxing, grappling, and self-defense for all age groups.",
+      "provider": {
+        "@type": "Organization",
+        "name": "Ghatak Sports Academy India",
+        "sameAs": "https://ghataksportsacademy.com"
+      },
+      "hasCourseInstance": {
+        "@type": "CourseInstance",
+        "courseMode": "Onsite",
+        "location": {
+          "@type": "Place",
+          "name": "Ghatak Sports Academy India",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Badshah Kheda, Takrohi Rd",
+            "addressLocality": "Lucknow",
+            "addressRegion": "Uttar Pradesh",
+            "postalCode": "226028",
+            "addressCountry": "IN"
+          }
+        }
+      }
     }
   </script>
 </head>
@@ -346,7 +431,7 @@
   <script type="module" src="/src/main.tsx"></script>
   <!-- Auto-mark external links: adds rel="noopener noreferrer nofollow" and target="_blank" for external anchors -->
   <script>
-    (function markExternalLinks() {
+    function markExternalLinks() {
       try {
         const origin = location.origin;
         const anchors = Array.from(document.getElementsByTagName('a'));
@@ -374,8 +459,11 @@
       } catch (e) {
         // silent
       }
-    })();
+    }
+
+    // Run after full page load so links rendered by React are included.
+    window.addEventListener('load', markExternalLinks);
   </script>
-</body>
+  </body>
 
 </html>
