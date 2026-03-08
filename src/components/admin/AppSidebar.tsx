@@ -196,13 +196,7 @@ export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
       {/* Footer */}
       <div className="p-3 border-t border-border space-y-2">
         <button
-          onClick={async () => {
-            try {
-              await signOut();
-            } catch {
-              navigate('/');
-            }
-          }}
+          onClick={() => window.open('/', '_blank')}
           className="w-full flex items-center justify-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground px-3 py-2 rounded-lg hover:bg-muted transition-colors"
         >
           <Globe className="w-3.5 h-3.5" />
