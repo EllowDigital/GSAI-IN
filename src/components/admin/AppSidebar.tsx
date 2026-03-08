@@ -13,6 +13,8 @@ import {
   Trophy,
   MessageSquare,
   X,
+  Swords,
+  GraduationCap,
 } from 'lucide-react';
 import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 
