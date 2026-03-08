@@ -32,7 +32,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
 import StudentAvatarUploader from './StudentAvatarUploader';
 import {
-  handleSupabaseError,
   safeAsync,
   formatErrorForDisplay,
 } from '@/utils/errorHandling';
