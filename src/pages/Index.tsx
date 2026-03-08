@@ -604,6 +604,7 @@ export default function Index() {
         {/* <CorporateSection /> */}
         <AchievementSection />
         <CompetitionResultsSection />
+        <UpcomingCompetitionsSection />
         <FounderSection />
         <GallerySection />
         <TestimonialSection />
