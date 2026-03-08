@@ -173,7 +173,7 @@ export default function EventDetail() {
     description: event.description,
     from_date: event.from_date || event.date,
     to_date: event.end_date,
-    location: 'Ghatak Sports Academy India, Lucknow',
+    location: (event as any).location || 'Ghatak Sports Academy India, Lucknow',
     image_url: event.image_url,
   });
 
