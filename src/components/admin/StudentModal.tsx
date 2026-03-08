@@ -118,6 +118,8 @@ export default function StudentModal({
         parent_name: student.parent_name || '',
         parent_contact: student.parent_contact || '',
         profile_image_url: student.profile_image_url || null,
+        default_monthly_fee: student.default_monthly_fee ?? 2000,
+        discount_percent: student.discount_percent ?? 0,
       });
     } else {
       form.reset({
@@ -128,6 +130,8 @@ export default function StudentModal({
         parent_name: '',
         parent_contact: '',
         profile_image_url: null,
+        default_monthly_fee: 2000,
+        discount_percent: 0,
       });
     }
   }, [student, open]);
