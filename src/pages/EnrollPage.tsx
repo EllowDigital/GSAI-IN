@@ -357,6 +357,7 @@ export default function EnrollPage() {
                               <FieldError field="studentPhone" />
                             </div>
                           </div>
+                        </fieldset>
 
                         {/* Divider */}
                         <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
