@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   Dialog,
   DialogContent,
@@ -92,13 +93,27 @@ export default function StudentModal({
 }: StudentModalProps) {
   const { getWhiteBeltId } = useBeltLevels();
 
+  // Fetch global default fee for new students
+  const { data: globalFee } = useQuery({
+    queryKey: ['academy-settings', 'default_monthly_fee'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('academy_settings')
+        .select('value')
+        .eq('key', 'default_monthly_fee')
+        .maybeSingle();
+      return data?.value ? Number(data.value) : 2000;
+    },
+    enabled: !student, // only fetch for new students
+  });
+
   const form = useForm<StudentFormValues>({
     resolver: zodResolver(StudentSchema),
     defaultValues: {
       name: '',
       aadhar_number: '',
       program: '',
-      join_date: '',
+      join_date: new Date().toISOString().slice(0, 10),
       parent_name: '',
       parent_contact: '',
       profile_image_url: null,
@@ -107,7 +122,7 @@ export default function StudentModal({
     },
   });
 
-  // Set initial values if edit
+  // Set initial values if edit, or apply global fee for new
   useEffect(() => {
     if (student) {
       form.reset({
@@ -126,15 +141,15 @@ export default function StudentModal({
         name: '',
         aadhar_number: '',
         program: '',
-        join_date: '',
+        join_date: new Date().toISOString().slice(0, 10),
         parent_name: '',
         parent_contact: '',
         profile_image_url: null,
-        default_monthly_fee: 2000,
+        default_monthly_fee: globalFee ?? 2000,
         discount_percent: 0,
       });
     }
-  }, [student, open]);
+  }, [student, open, globalFee]);
 
   // Avatar Upload
   const handleAvatarUpload = (url: string) => {
