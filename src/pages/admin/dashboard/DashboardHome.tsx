@@ -297,7 +297,7 @@ export default function DashboardHome() {
   return (
     <div className="w-full min-h-full p-4 sm:p-5 lg:p-6 space-y-5">
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
         {stats.map((stat) => (
           <div
             key={stat.label}
