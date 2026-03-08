@@ -195,6 +195,11 @@ export function FeeForm({
         <span className="block font-bold text-sm">
           Student: {student?.name}
         </span>
+        {student?.discount_percent > 0 && (
+          <span className="text-xs text-green-600 font-medium">
+            🏷️ {student.discount_percent}% discount applied
+          </span>
+        )}
       </div>
       <div>
         <label className="text-xs font-semibold">Month</label>

@@ -57,7 +57,7 @@ export default function FeesManagerPanel() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('students')
-        .select('id, name, program, default_monthly_fee, profile_image_url');
+        .select('id, name, program, default_monthly_fee, profile_image_url, discount_percent');
       if (error) throw error;
       return data || [];
     },
