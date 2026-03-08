@@ -85,6 +85,7 @@ export default function Competitions() {
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [certOpen, setCertOpen] = useState<Competition | null>(null);
+  const [regsOpen, setRegsOpen] = useState<Competition | null>(null);
   const [editing, setEditing] = useState<Competition | null>(null);
   const [search, setSearch] = useState('');
   const [form, setForm] = useState({
