@@ -233,6 +233,7 @@ export default function ProgramDetail() {
                 <Link
                   key={p.slug}
                   to={`/programs/${p.slug}`}
+                  aria-label={`Learn more about ${p.title}`}
                   className="group bg-white/5 rounded-2xl p-6 border border-white/10 hover:border-yellow-500/30 transition-all hover:-translate-y-1"
                 >
                   <span className="text-4xl mb-3 block">{p.icon}</span>
@@ -241,7 +242,8 @@ export default function ProgramDetail() {
                   </h3>
                   <p className="text-gray-400 text-sm mb-3">{p.desc}</p>
                   <span className="inline-flex items-center text-yellow-500 text-sm font-medium">
-                    Learn more <ChevronRight className="w-4 h-4 ml-1" />
+                    Learn more about {p.title}{' '}
+                    <ChevronRight className="w-4 h-4 ml-1" />
                   </span>
                 </Link>
               ))}
