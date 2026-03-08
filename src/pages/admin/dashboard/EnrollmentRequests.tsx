@@ -21,6 +21,7 @@ interface EnrollmentRequest {
   parent_name: string;
   parent_phone: string;
   program: string;
+  aadhar_number: string | null;
   message: string | null;
   status: string;
   admin_notes: string | null;
@@ -98,9 +99,12 @@ export default function EnrollmentRequestsManager() {
   const handleStartApprove = (req: EnrollmentRequest) => {
     setApproveReq(req);
     setApproveStep('confirm');
-    setAadharNumber('');
+    setAadharNumber(req.aadhar_number || '');
     setJoinDate(new Date().toISOString().slice(0, 10));
-    setLoginId('');
+    // Auto-generate login ID from last 4 digits of Aadhar
+    const last4 = req.aadhar_number ? req.aadhar_number.slice(-4) : '';
+    const namePrefix = req.student_name.replace(/\s+/g, '').slice(0, 4).toUpperCase();
+    setLoginId(`GSAI-${namePrefix}${last4}`);
     setPassword('');
     setCreatedStudentId(null);
     setCreatedCreds(null);
@@ -300,6 +304,7 @@ export default function EnrollmentRequestsManager() {
                 <div><p className="text-xs text-muted-foreground">Parent</p><p className="font-medium">{viewReq.parent_name}</p></div>
                 <div><p className="text-xs text-muted-foreground">Phone</p><a href={`tel:${viewReq.parent_phone}`} className="font-medium text-primary hover:underline">{viewReq.parent_phone}</a></div>
                 <div className="col-span-2"><p className="text-xs text-muted-foreground">Program</p><p className="font-medium">{viewReq.program}</p></div>
+                {viewReq.aadhar_number && <div className="col-span-2"><p className="text-xs text-muted-foreground">Aadhar Number</p><p className="font-medium font-mono">{viewReq.aadhar_number.replace(/(\d{4})(\d{4})(\d{4})/, '$1-$2-$3')}</p></div>}
                 {viewReq.message && <div className="col-span-2"><p className="text-xs text-muted-foreground">Message</p><p className="font-medium">{viewReq.message}</p></div>}
                 <div className="col-span-2"><p className="text-xs text-muted-foreground">Submitted</p><p className="font-medium">{format(new Date(viewReq.created_at), 'PPp')}</p></div>
               </div>

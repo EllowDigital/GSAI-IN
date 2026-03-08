@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { z } from 'zod';
-import { ArrowLeft, Send, User, Phone, BookOpen, Shield, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Send, User, Phone, BookOpen, Shield, CheckCircle2, CreditCard } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,7 @@ const enrollSchema = z.object({
   parentName: z.string().trim().min(2, 'Parent name is required').max(100),
   parentPhone: z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian phone number'),
   program: z.string().min(1, 'Select a program'),
+  aadharNumber: z.string().regex(/^\d{12}$/, 'Enter a valid 12-digit Aadhar number'),
   message: z.string().max(500).optional(),
 });
 
@@ -55,6 +56,34 @@ export default function EnrollPage() {
     setSaving(true);
 
     try {
+      // Check if Aadhar already exists in students table
+      const { data: existingStudent } = await supabase
+        .from('students')
+        .select('id, name')
+        .eq('aadhar_number', data.aadharNumber)
+        .maybeSingle();
+
+      if (existingStudent) {
+        toast.error(`A student with this Aadhar number is already registered (${existingStudent.name}).`);
+        setErrors(prev => ({ ...prev, aadharNumber: 'This Aadhar number is already registered' }));
+        setSaving(false);
+        return;
+      }
+
+      // Check if Aadhar already exists in pending enrollment requests
+      const { data: existingRequest } = await (supabase
+        .from('enrollment_requests' as any)
+        .select('id, student_name, status')
+        .eq('aadhar_number', data.aadharNumber)
+        .in('status', ['pending', 'contacted']) as any);
+
+      if (existingRequest && existingRequest.length > 0) {
+        toast.error(`An enrollment request with this Aadhar number is already pending.`);
+        setErrors(prev => ({ ...prev, aadharNumber: 'Enrollment already pending for this Aadhar' }));
+        setSaving(false);
+        return;
+      }
+
       // Save to database
       const { error } = await supabase.from('enrollment_requests' as any).insert({
         student_name: data.studentName,
@@ -63,6 +92,7 @@ export default function EnrollPage() {
         parent_name: data.parentName,
         parent_phone: data.parentPhone,
         program: data.program,
+        aadhar_number: data.aadharNumber,
         message: data.message || null,
       } as any);
 
@@ -150,7 +180,7 @@ export default function EnrollPage() {
               <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                 <User className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" /> Student Details
               </h2>
-              <p className="text-[11px] sm:text-xs text-gray-500">All fields marked are required</p>
+              <p className="text-[11px] sm:text-xs text-gray-500">All fields marked * are required</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
@@ -195,6 +225,26 @@ export default function EnrollPage() {
                   {errors.gender && <p className="text-red-400 text-xs mt-1">{errors.gender}</p>}
                 </div>
               </div>
+            </div>
+
+            {/* Aadhar Card */}
+            <div className="space-y-1 pt-2">
+              <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" /> Identity Verification
+              </h2>
+            </div>
+            <div>
+              <Label htmlFor="aadharNumber" className="text-gray-300 text-xs sm:text-sm">Aadhar Card Number *</Label>
+              <Input
+                id="aadharNumber"
+                placeholder="12-digit Aadhar number"
+                value={form.aadharNumber || ''}
+                onChange={e => handleChange('aadharNumber', e.target.value.replace(/\D/g, '').slice(0, 12))}
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus-visible:ring-yellow-500/30 focus-visible:border-yellow-500/50 h-10 sm:h-11"
+                maxLength={12}
+              />
+              <p className="text-[10px] text-gray-500 mt-1">Used to uniquely identify the student and generate Student ID (last 4 digits)</p>
+              {errors.aadharNumber && <p className="text-red-400 text-xs mt-1">{errors.aadharNumber}</p>}
             </div>
 
             {/* Parent Info */}

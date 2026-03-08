@@ -65,6 +65,60 @@ export type Database = {
         }
         Relationships: []
       }
+      attendance: {
+        Row: {
+          check_in_time: string | null
+          check_out_time: string | null
+          created_at: string
+          date: string
+          id: string
+          marked_by: string | null
+          notes: string | null
+          status: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          check_in_time?: string | null
+          check_out_time?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          marked_by?: string | null
+          notes?: string | null
+          status?: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          check_in_time?: string | null
+          check_out_time?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          marked_by?: string | null
+          notes?: string | null
+          status?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attendance_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students_masked"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           created_at: string | null
@@ -377,6 +431,7 @@ export type Database = {
       }
       enrollment_requests: {
         Row: {
+          aadhar_number: string | null
           admin_notes: string | null
           age: number
           created_at: string
@@ -392,6 +447,7 @@ export type Database = {
           student_name: string
         }
         Insert: {
+          aadhar_number?: string | null
           admin_notes?: string | null
           age: number
           created_at?: string
@@ -407,6 +463,7 @@ export type Database = {
           student_name: string
         }
         Update: {
+          aadhar_number?: string | null
           admin_notes?: string | null
           age?: number
           created_at?: string

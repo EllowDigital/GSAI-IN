@@ -17,6 +17,7 @@ import {
   GraduationCap,
   Megaphone,
   UserPlus,
+  CalendarCheck,
 } from 'lucide-react';
 import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 
@@ -44,6 +45,12 @@ const navItems = [
     title: 'Progression',
     url: '/admin/dashboard/progression',
     icon: Trophy,
+    category: 'manage',
+  },
+  {
+    title: 'Attendance',
+    url: '/admin/dashboard/attendance',
+    icon: CalendarCheck,
     category: 'manage',
   },
   {
