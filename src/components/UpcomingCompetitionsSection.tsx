@@ -214,13 +214,13 @@ export default function UpcomingCompetitionsSection() {
           className="text-center mt-12 md:mt-16"
         >
           <div className="inline-flex flex-col sm:flex-row items-center gap-4 bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10 shadow-sm">
-            <Link to="/student/login">
+            <Link to="/competitions">
               <button className="btn-primary w-full sm:w-auto justify-center px-8 py-3 text-base sm:text-lg shadow-lg shadow-yellow-500/20 bg-gradient-to-r from-yellow-500 to-red-600 border-0 text-white gap-2">
-                Register via Student Portal <ArrowRight className="w-4 h-4" />
+                View All Competitions <ArrowRight className="w-4 h-4" />
               </button>
             </Link>
             <span className="text-gray-400 text-sm sm:text-base font-medium">
-              Login to register for upcoming competitions
+              Browse all tournaments & register via Student Portal
             </span>
           </div>
         </motion.div>

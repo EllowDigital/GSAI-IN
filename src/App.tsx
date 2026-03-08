@@ -263,6 +263,7 @@ const App = () => {
                     <Route path="/news" element={<AllNewsPage />} />
                     <Route path="/blogs" element={<AllBlogsPage />} />
                     <Route path="/gallery" element={<AllGalleryPage />} />
+                    <Route path="/competitions" element={<AllCompetitionsPage />} />
 
                     {/* Section landing aliases to prevent direct-link 404s */}
                     <Route path="/contact" element={<HomePageWrapper />} />
