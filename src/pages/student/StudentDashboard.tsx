@@ -136,6 +136,19 @@ export default function StudentDashboard() {
                           )}
                         </div>
                         {c.description && <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{c.description}</p>}
+                        {c.location_text && (
+                          <div className="mt-2 rounded-lg overflow-hidden border border-border">
+                            <iframe
+                              title={`Map: ${c.location_text}`}
+                              src={`https://maps.google.com/maps?q=${encodeURIComponent(c.location_text)}&z=14&output=embed`}
+                              width="100%"
+                              height="150"
+                              style={{ border: 0 }}
+                              loading="lazy"
+                              referrerPolicy="no-referrer-when-downgrade"
+                            />
+                          </div>
+                        )}
                       </div>
                       {registered ? (
                         <Badge variant="secondary" className="gap-1 bg-green-500/10 text-green-600 shrink-0">
