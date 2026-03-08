@@ -63,6 +63,7 @@ export function FeeForm({
       paid_amount: fee?.paid_amount ?? 0,
       notes: fee?.notes ?? '',
       receipt_url: fee?.receipt_url || null,
+      status_override: fee?.status || 'auto',
     });
   }, [fee, student]);
 
