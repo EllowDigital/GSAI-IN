@@ -114,18 +114,21 @@ export default function StudentDashboard() {
 
         {/* Main Tabs */}
         <Tabs defaultValue="competitions" className="w-full">
-          <TabsList className="w-full grid grid-cols-4 h-auto">
+          <TabsList className="w-full grid grid-cols-5 h-auto">
             <TabsTrigger value="competitions" className="gap-1 text-xs sm:text-sm py-2">
               <Trophy className="w-3.5 h-3.5 hidden sm:block" /> Competitions
             </TabsTrigger>
             <TabsTrigger value="progression" className="gap-1 text-xs sm:text-sm py-2">
               <Award className="w-3.5 h-3.5 hidden sm:block" /> Progression
             </TabsTrigger>
+            <TabsTrigger value="attendance" className="gap-1 text-xs sm:text-sm py-2">
+              <CalendarDays className="w-3.5 h-3.5 hidden sm:block" /> Attendance
+            </TabsTrigger>
             <TabsTrigger value="fees" className="gap-1 text-xs sm:text-sm py-2">
               <IndianRupee className="w-3.5 h-3.5 hidden sm:block" /> Fees
             </TabsTrigger>
             <TabsTrigger value="events" className="gap-1 text-xs sm:text-sm py-2">
-              <CalendarDays className="w-3.5 h-3.5 hidden sm:block" /> Events
+              <Calendar className="w-3.5 h-3.5 hidden sm:block" /> Events
             </TabsTrigger>
           </TabsList>
 
