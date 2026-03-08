@@ -69,7 +69,7 @@ export function useStudentPrograms(studentId?: string) {
 // Bulk fetch all student programs for list views
 export function useAllStudentPrograms(studentIds: string[]) {
   return useQuery({
-    queryKey: ['all-student-programs', studentIds.sort().join(',')],
+    queryKey: ['all-student-programs', [...studentIds].sort().join(',')],
     queryFn: async () => {
       if (studentIds.length === 0) return new Map<string, string[]>();
       const { data, error } = await supabase
