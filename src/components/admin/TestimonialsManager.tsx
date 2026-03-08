@@ -45,7 +45,7 @@ export default function TestimonialsManager() {
       rating: form.rating,
     } as any);
     if (error) {
-      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      toast({ title: 'Error', description: error.message, variant: 'error' });
     } else {
       toast({ title: 'Added', description: 'Testimonial added successfully.' });
       setForm({ program_slug: '', student_name: '', review: '', rating: 5 });
