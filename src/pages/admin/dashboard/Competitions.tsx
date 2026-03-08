@@ -134,10 +134,12 @@ export default function Competitions() {
       status: c.status,
       image_url: c.image_url || '',
     });
+    setImageFile(null);
+    setImagePreview(c.image_url || null);
     setFormOpen(true);
   };
 
-  const closeForm = () => { setFormOpen(false); setEditing(null); };
+  const closeForm = () => { setFormOpen(false); setEditing(null); setImageFile(null); setImagePreview(null); };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
