@@ -391,6 +391,21 @@ export default function FeesManagerPanel() {
               >
                 Export CSV
               </Button>
+
+              <Button
+                onClick={() => batchGenerateMutation.mutate()}
+                disabled={batchGenerateMutation.isPending}
+                variant="outline"
+                size="sm"
+                className="h-9 gap-1.5"
+              >
+                {batchGenerateMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Zap className="w-4 h-4" />
+                )}
+                <span className="hidden sm:inline">Generate All</span>
+              </Button>
             </div>
           </div>
 
