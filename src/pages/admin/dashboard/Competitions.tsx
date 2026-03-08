@@ -236,16 +236,38 @@ export default function Competitions() {
   });
 
   return (
-    <div className="p-3 sm:p-4 lg:p-6 space-y-6">
+    <div className="p-3 sm:p-4 lg:p-6 xl:p-8 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-foreground">Competitions</h2>
-          <p className="text-sm text-muted-foreground">Manage tournaments and competitions</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2">
+            <Award className="w-6 h-6 text-primary" /> Competitions
+          </h2>
+          <p className="text-sm text-muted-foreground">Manage tournaments, registrations & certificates</p>
         </div>
-        <Button onClick={openNew} size="sm" className="gap-1.5">
+        <Button onClick={openNew} className="gap-1.5 shadow-sm">
           <Plus className="w-4 h-4" /> New Competition
         </Button>
+      </div>
+
+      {/* Stats Bar */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { label: 'Total', value: competitions.length, icon: Award, color: 'text-primary' },
+          { label: 'Upcoming', value: competitions.filter(c => c.status === 'upcoming').length, icon: Calendar, color: 'text-blue-500' },
+          { label: 'Ongoing', value: competitions.filter(c => c.status === 'ongoing').length, icon: Trophy, color: 'text-amber-500' },
+          { label: 'Completed', value: competitions.filter(c => c.status === 'completed').length, icon: CheckCircle2, color: 'text-green-500' },
+        ].map(stat => (
+          <Card key={stat.label} className="border-border/50">
+            <CardContent className="p-3 flex items-center gap-3">
+              <stat.icon className={`w-5 h-5 ${stat.color} shrink-0`} />
+              <div>
+                <p className="text-lg font-bold text-foreground">{stat.value}</p>
+                <p className="text-[11px] text-muted-foreground">{stat.label}</p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* Search + View Toggle */}
