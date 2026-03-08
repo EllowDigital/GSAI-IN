@@ -13,6 +13,7 @@ import FeesManager from './dashboard/FeesManager';
 import Events from './dashboard/Events';
 import Progression from './dashboard/Progression';
 import Testimonials from './dashboard/Testimonials';
+import Competitions from './dashboard/Competitions';
 
 const AdminArea = () => {
   return (
@@ -29,6 +30,7 @@ const AdminArea = () => {
           <Route path="events" element={<Events />} />
           <Route path="progression" element={<Progression />} />
           <Route path="testimonials" element={<Testimonials />} />
+          <Route path="competitions" element={<Competitions />} />
           <Route path="*" element={<NotFoundAdmin />} />
         </Route>
         <Route path="*" element={<NotFoundAdmin />} />

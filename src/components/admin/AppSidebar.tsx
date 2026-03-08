@@ -13,6 +13,8 @@ import {
   Trophy,
   MessageSquare,
   X,
+  Swords,
+  GraduationCap,
 } from 'lucide-react';
 import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 
@@ -40,6 +42,12 @@ const navItems = [
     title: 'Events',
     url: '/admin/dashboard/events',
     icon: Calendar,
+    category: 'content',
+  },
+  {
+    title: 'Competitions',
+    url: '/admin/dashboard/competitions',
+    icon: Swords,
     category: 'content',
   },
   {
