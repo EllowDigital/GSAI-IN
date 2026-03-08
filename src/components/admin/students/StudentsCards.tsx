@@ -9,9 +9,13 @@ import {
   Calendar,
   Phone,
   Users,
+  KeyRound,
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
+import CreatePortalAccountDialog from '../CreatePortalAccountDialog';
 
 type StudentRow = {
   id: string;
