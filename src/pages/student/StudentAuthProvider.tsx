@@ -110,9 +110,11 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
         throw new Error('No student account found for this ID.');
       }
       setProfile(prof);
-      triggerAnimation('login', `Welcome back, ${prof.studentName}!`);
-      await delay(1200);
+      triggerAnimation('login', `Welcome back, ${prof.studentName}!`, 2200);
+      await delay(1500);
       navigate('/student/dashboard', { replace: true });
+      // Clear animation shortly after navigation
+      setTimeout(() => setAuthAnimation(null), 800);
     } catch (e: any) {
       throw e;
     } finally {
