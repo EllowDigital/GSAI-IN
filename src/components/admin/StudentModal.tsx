@@ -212,6 +212,8 @@ export default function StudentModal({
         parent_name: sanitizedValues.parent_name,
         parent_contact: phoneValidation.sanitized,
         profile_image_url: sanitizedValues.profile_image_url || null,
+        default_monthly_fee: values.default_monthly_fee,
+        discount_percent: values.discount_percent,
       };
 
       if (student) {

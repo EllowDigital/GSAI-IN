@@ -68,7 +68,7 @@ export default function StudentDeleteDialog({ student, onClose }: Props) {
             This will permanently remove{' '}
             <span className="font-semibold">{student.name}</span> and{' '}
             <span className="text-destructive font-medium">all related data</span> including:
-            fees, progress, belt promotions, competition registrations, certificates, and portal account.
+            fees, attendance, progress, belt promotions, competition registrations, certificates, and portal account.
             <br /><br />
             <span className="font-semibold text-destructive">This action cannot be undone.</span>
           </AlertDialogDescription>
