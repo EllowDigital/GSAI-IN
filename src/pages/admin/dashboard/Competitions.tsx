@@ -49,7 +49,7 @@ interface Competition {
 
 const STATUS_OPTIONS = ['upcoming', 'ongoing', 'completed', 'cancelled'] as const;
 const REQUEST_TIMEOUT_MS = 15000;
-const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY?.trim() || '';
+
 
 const statusColors: Record<string, string> = {
   upcoming: 'bg-primary/10 text-primary',
@@ -61,10 +61,6 @@ const statusColors: Record<string, string> = {
 const buildMapEmbedUrl = (locationText: string): string | null => {
   const query = locationText.trim();
   if (!query) return null;
-
-  if (GOOGLE_MAPS_API_KEY) {
-    return `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(query)}`;
-  }
 
   return `https://maps.google.com/maps?q=${encodeURIComponent(query)}&z=14&output=embed`;
 };
@@ -441,11 +437,7 @@ export default function Competitions() {
                 placeholder="e.g. GSAI Campus, Lucknow"
               />
               <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
-                <span>
-                  {GOOGLE_MAPS_API_KEY
-                    ? 'Google Maps API preview enabled.'
-                    : 'Google Maps API key missing: using fallback preview.'}
-                </span>
+                <span>Free Google Maps embed preview</span>
                 {mapOpenUrl && (
                   <a
                     href={mapOpenUrl}
