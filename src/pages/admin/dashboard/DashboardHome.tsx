@@ -37,7 +37,7 @@ export default function DashboardHome() {
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard-analytics'],
     queryFn: async () => {
-      const [studentsRes, feesRes, blogsRes, newsRes, eventsRes, galleryRes] =
+      const [studentsRes, feesRes, blogsRes, newsRes, eventsRes, galleryRes, enrollRes, announcementsRes] =
         await Promise.all([
           supabase
             .from('students')
@@ -49,6 +49,8 @@ export default function DashboardHome() {
           supabase.from('news').select('id, created_at, status'),
           supabase.from('events').select('id, date'),
           supabase.from('gallery_images').select('id'),
+          supabase.from('enrollment_requests' as any).select('id, status') as any,
+          supabase.from('announcements').select('id, is_active'),
         ]);
 
       return {
@@ -58,6 +60,8 @@ export default function DashboardHome() {
         news: newsRes.data || [],
         events: eventsRes.data || [],
         gallery: galleryRes.data || [],
+        enrollments: (enrollRes.data || []) as any[],
+        announcements: (announcementsRes.data || []) as any[],
       };
     },
     staleTime: 1000 * 60 * 5,
