@@ -14,7 +14,7 @@ import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Grid, List, DollarSign, CheckSquare, X } from 'lucide-react';
+import { Grid, List, DollarSign, CheckSquare, X, Zap, Loader2 } from 'lucide-react';
 
 export default function FeesManagerPanel() {
   const now = new Date();
@@ -129,6 +129,44 @@ export default function FeesManagerPanel() {
         title: 'Success',
         description: 'Selected students marked as paid',
       });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message, variant: 'error' });
+    },
+  });
+
+  // Batch fee generation mutation
+  const batchGenerateMutation = useMutation({
+    mutationFn: async () => {
+      if (!students || students.length === 0) throw new Error('No students found');
+      
+      const existingStudentIds = new Set((fees || []).map(f => f.student_id));
+      const studentsWithoutFee = students.filter(s => !existingStudentIds.has(s.id));
+      
+      if (studentsWithoutFee.length === 0) throw new Error('All students already have fee records for this month');
+
+      const records = studentsWithoutFee.map(s => {
+        const discountedFee = s.discount_percent > 0
+          ? Math.round(s.default_monthly_fee * (1 - s.discount_percent / 100))
+          : s.default_monthly_fee || 2000;
+        return {
+          student_id: s.id,
+          month: filterMonth,
+          year: filterYear,
+          monthly_fee: discountedFee,
+          paid_amount: 0,
+          balance_due: discountedFee,
+          status: 'unpaid',
+        };
+      });
+
+      const { error } = await supabase.from('fees').insert(records);
+      if (error) throw error;
+      return studentsWithoutFee.length;
+    },
+    onSuccess: (count) => {
+      queryClient.invalidateQueries({ queryKey: ['fees'] });
+      toast({ title: 'Batch Generated', description: `Created fee records for ${count} students` });
     },
     onError: (error: any) => {
       toast({ title: 'Error', description: error.message, variant: 'error' });
@@ -352,6 +390,21 @@ export default function FeesManagerPanel() {
                 className="h-9"
               >
                 Export CSV
+              </Button>
+
+              <Button
+                onClick={() => batchGenerateMutation.mutate()}
+                disabled={batchGenerateMutation.isPending}
+                variant="outline"
+                size="sm"
+                className="h-9 gap-1.5"
+              >
+                {batchGenerateMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Zap className="w-4 h-4" />
+                )}
+                <span className="hidden sm:inline">Generate All</span>
               </Button>
             </div>
           </div>
