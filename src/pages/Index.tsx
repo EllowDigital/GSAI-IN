@@ -1,5 +1,6 @@
 import Seo from '../components/Seo';
 import CompetitionResultsSection from '../components/CompetitionResultsSection';
+import UpcomingCompetitionsSection from '../components/UpcomingCompetitionsSection';
 import Navbar from '../components/Navbar';
 
 import HeroSection from '../components/HeroSection';
@@ -603,6 +604,7 @@ export default function Index() {
         {/* <CorporateSection /> */}
         <AchievementSection />
         <CompetitionResultsSection />
+        <UpcomingCompetitionsSection />
         <FounderSection />
         <GallerySection />
         <TestimonialSection />
