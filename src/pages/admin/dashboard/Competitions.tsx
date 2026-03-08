@@ -37,6 +37,8 @@ import {
   ExternalLink,
   Grid3X3,
   Table2,
+  Trophy,
+  CheckCircle2,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import CompetitionCertificates from '@/components/admin/CompetitionCertificates';
