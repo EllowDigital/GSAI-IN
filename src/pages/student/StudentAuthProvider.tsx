@@ -38,10 +38,10 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
 
   const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-  const triggerAnimation = (type: 'login' | 'logout', message: string) => {
+  const triggerAnimation = (type: 'login' | 'logout', message: string, duration = 1800) => {
     if (authTimeoutRef.current) clearTimeout(authTimeoutRef.current);
     setAuthAnimation({ type, message });
-    authTimeoutRef.current = setTimeout(() => setAuthAnimation(null), 2000);
+    authTimeoutRef.current = setTimeout(() => setAuthAnimation(null), duration);
   };
 
   const loadProfile = useCallback(async (userId: string) => {
@@ -110,9 +110,11 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
         throw new Error('No student account found for this ID.');
       }
       setProfile(prof);
-      triggerAnimation('login', `Welcome back, ${prof.studentName}!`);
-      await delay(1200);
+      triggerAnimation('login', `Welcome back, ${prof.studentName}!`, 2200);
+      await delay(1500);
       navigate('/student/dashboard', { replace: true });
+      // Clear animation shortly after navigation
+      setTimeout(() => setAuthAnimation(null), 800);
     } catch (e: any) {
       throw e;
     } finally {
@@ -121,8 +123,9 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    triggerAnimation('logout', 'You have been signed out successfully.');
+    triggerAnimation('logout', 'You have been signed out successfully.', 1800);
     await delay(1200);
+    setAuthAnimation(null);
     await supabase.auth.signOut();
     setSession(null);
     setProfile(null);
