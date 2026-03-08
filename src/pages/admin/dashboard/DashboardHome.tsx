@@ -170,8 +170,15 @@ export default function DashboardHome() {
 
   const quickActions = [
     {
-      title: 'Add Student',
+      title: 'Enrollments',
       icon: UserPlus,
+      path: '/admin/dashboard/enrollments',
+      color: 'text-orange-600 dark:text-orange-400',
+      bg: 'bg-orange-50 dark:bg-orange-950/30',
+    },
+    {
+      title: 'Add Student',
+      icon: Users,
       path: '/admin/dashboard/students',
       color: 'text-blue-600 dark:text-blue-400',
       bg: 'bg-blue-50 dark:bg-blue-950/30',
@@ -184,9 +191,9 @@ export default function DashboardHome() {
       bg: 'bg-emerald-50 dark:bg-emerald-950/30',
     },
     {
-      title: 'New Blog',
-      icon: FileText,
-      path: '/admin/dashboard/blogs',
+      title: 'Announce',
+      icon: MessageSquare,
+      path: '/admin/dashboard/announcements',
       color: 'text-purple-600 dark:text-purple-400',
       bg: 'bg-purple-50 dark:bg-purple-950/30',
     },
@@ -194,13 +201,6 @@ export default function DashboardHome() {
       title: 'Add Event',
       icon: CalendarPlus,
       path: '/admin/dashboard/events',
-      color: 'text-orange-600 dark:text-orange-400',
-      bg: 'bg-orange-50 dark:bg-orange-950/30',
-    },
-    {
-      title: 'Upload Photo',
-      icon: ImagePlus,
-      path: '/admin/dashboard/gallery',
       color: 'text-pink-600 dark:text-pink-400',
       bg: 'bg-pink-50 dark:bg-pink-950/30',
     },
