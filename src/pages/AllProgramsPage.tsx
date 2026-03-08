@@ -150,9 +150,10 @@ export default function AllProgramsPage() {
                   </div>
                   <Link
                     to={`/programs/${prog.slug}`}
+                    aria-label={`Learn more about ${prog.title}`}
                     className="btn-primary w-full justify-center gap-2 py-2.5 text-sm bg-gradient-to-r from-yellow-500 to-red-600 hover:from-yellow-400 hover:to-red-500 border-0 text-white"
                   >
-                    Learn more →
+                    Learn more about {prog.title} →
                   </Link>
                 </div>
               </motion.div>

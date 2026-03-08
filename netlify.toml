@@ -1,8 +1,9 @@
 [build]
 command = "npm run build"
 publish = "dist"
-# Netlify automatically caches node_modules when the Node version is pinned.
-environment = { NODE_VERSION = "20.17.0" }
+
+[build.environment]
+NODE_VERSION = "20.17.0"
 
 [dev]
 command = "npm run dev"
@@ -10,18 +11,12 @@ port = 8888
 targetPort = 5173
 framework = "vite"
 
-# Allow sitemap + clients to know the canonical URL during production builds.
 [context.production.environment]
 SITE_URL = "https://ghataksportsacademy.com"
-# Note: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, and VITE_SUPABASE_PROJECT_ID
-# should be set in Netlify Dashboard > Site settings > Environment variables
-# These are NOT defined here for security reasons
 
-# Preview deploys get their own unique URL, so fall back to DEPLOY_PRIME_URL.
 [context.deploy-preview.environment]
 SITE_URL = "${DEPLOY_PRIME_URL}"
 
-# Lovable.dev uses its own dev server flag so we can enable the tagging plugin.
 [template.environment]
 LOVABLE_DEV_SERVER = "true"
 
@@ -32,10 +27,11 @@ status = 200
 
 [[headers]]
 for = "/*"
+
 [headers.values]
 X-Frame-Options = "SAMEORIGIN"
 X-Content-Type-Options = "nosniff"
 Referrer-Policy = "strict-origin-when-cross-origin"
 X-Robots-Tag = "all"
 Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-Content-Security-Policy = "default-src 'self'; script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://stats.g.doubleclick.net; frame-src https://www.googletagmanager.com;"
+Content-Security-Policy = "default-src 'self'; script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://jddeuhrocglnisujixdt.supabase.co https://*.supabase.co wss://*.supabase.co https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net; frame-src https://www.googletagmanager.com;"
