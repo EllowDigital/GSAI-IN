@@ -1,17 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useStudentAuth } from './StudentAuthProvider';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
-import { LogOut, Trophy, Download, Calendar, MapPin, UserCheck } from 'lucide-react';
-import ChangePasswordDialog from '@/components/student/ChangePasswordDialog';
+import { LogOut, Trophy, Download, Calendar, MapPin, UserCheck, User, IndianRupee, Award, Megaphone, CalendarDays } from 'lucide-react';
 import { format } from 'date-fns';
 import { Navigate } from 'react-router-dom';
 import Spinner from '@/components/ui/spinner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import ChangePasswordDialog from '@/components/student/ChangePasswordDialog';
+import StudentProfileCard from '@/components/student/StudentProfileCard';
+import StudentFeeHistory from '@/components/student/StudentFeeHistory';
+import StudentProgressionTracker from '@/components/student/StudentProgressionTracker';
+import StudentEventsView from '@/components/student/StudentEventsView';
+import StudentAnnouncements from '@/components/student/StudentAnnouncements';
 
 export default function StudentDashboard() {
   const { profile, isAuthenticated, isLoading: authLoading, signOut } = useStudentAuth();
@@ -100,22 +105,59 @@ export default function StudentDashboard() {
       </header>
 
       <main className="max-w-4xl mx-auto p-4 lg:p-6 space-y-6">
-        {/* Welcome */}
-        <div className="rounded-xl bg-primary/5 border border-primary/10 p-5">
-          <h2 className="text-lg font-semibold text-foreground">Welcome, {profile?.studentName}!</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Student ID: <span className="font-mono text-foreground">{profile?.loginId}</span>
-          </p>
-        </div>
+        {/* Announcements Banner */}
+        <StudentAnnouncements />
 
+        {/* Profile Card */}
+        <StudentProfileCard />
+
+        {/* Main Tabs */}
         <Tabs defaultValue="competitions" className="w-full">
-          <TabsList className="w-full grid grid-cols-2">
-            <TabsTrigger value="competitions" className="gap-1.5"><Trophy className="w-4 h-4" /> Competitions</TabsTrigger>
-            <TabsTrigger value="certificates" className="gap-1.5"><Download className="w-4 h-4" /> Certificates</TabsTrigger>
+          <TabsList className="w-full grid grid-cols-4 h-auto">
+            <TabsTrigger value="competitions" className="gap-1 text-xs sm:text-sm py-2">
+              <Trophy className="w-3.5 h-3.5 hidden sm:block" /> Competitions
+            </TabsTrigger>
+            <TabsTrigger value="progression" className="gap-1 text-xs sm:text-sm py-2">
+              <Award className="w-3.5 h-3.5 hidden sm:block" /> Progression
+            </TabsTrigger>
+            <TabsTrigger value="fees" className="gap-1 text-xs sm:text-sm py-2">
+              <IndianRupee className="w-3.5 h-3.5 hidden sm:block" /> Fees
+            </TabsTrigger>
+            <TabsTrigger value="events" className="gap-1 text-xs sm:text-sm py-2">
+              <CalendarDays className="w-3.5 h-3.5 hidden sm:block" /> Events
+            </TabsTrigger>
           </TabsList>
 
           {/* Competitions Tab */}
           <TabsContent value="competitions" className="space-y-4 mt-4">
+            {/* Certificates section */}
+            {(myCertificates as any[]).length > 0 && (
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                  <Download className="w-4 h-4" /> My Certificates
+                </h3>
+                {(myCertificates as any[]).map((cert: any) => (
+                  <Card key={cert.id} className="border border-border">
+                    <CardContent className="p-4 flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-foreground">{cert.competitions?.name || 'Competition'}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Uploaded {format(new Date(cert.uploaded_at), 'MMM d, yyyy')}
+                        </p>
+                      </div>
+                      <a href={cert.certificate_url} target="_blank" rel="noopener noreferrer">
+                        <Button variant="outline" size="sm" className="gap-1.5">
+                          <Download className="w-3.5 h-3.5" /> Download
+                        </Button>
+                      </a>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+
+            {/* Upcoming competitions */}
+            <h3 className="text-sm font-semibold text-foreground">Upcoming Competitions</h3>
             {compLoading ? (
               <div className="flex justify-center py-8"><Spinner size={20} /></div>
             ) : upcomingComps.length === 0 ? (
@@ -175,29 +217,19 @@ export default function StudentDashboard() {
             )}
           </TabsContent>
 
-          {/* Certificates Tab */}
-          <TabsContent value="certificates" className="space-y-4 mt-4">
-            {(myCertificates as any[]).length === 0 ? (
-              <p className="text-center text-sm text-muted-foreground py-8">No certificates available yet.</p>
-            ) : (
-              (myCertificates as any[]).map((cert: any) => (
-                <Card key={cert.id} className="border border-border">
-                  <CardContent className="p-4 flex items-center justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-foreground">{cert.competitions?.name || 'Competition'}</p>
-                      <p className="text-xs text-muted-foreground">
-                        Uploaded {format(new Date(cert.uploaded_at), 'MMM d, yyyy')}
-                      </p>
-                    </div>
-                    <a href={cert.certificate_url} target="_blank" rel="noopener noreferrer">
-                      <Button variant="outline" size="sm" className="gap-1.5">
-                        <Download className="w-3.5 h-3.5" /> Download
-                      </Button>
-                    </a>
-                  </CardContent>
-                </Card>
-              ))
-            )}
+          {/* Progression Tab */}
+          <TabsContent value="progression" className="mt-4">
+            <StudentProgressionTracker />
+          </TabsContent>
+
+          {/* Fees Tab */}
+          <TabsContent value="fees" className="mt-4">
+            <StudentFeeHistory />
+          </TabsContent>
+
+          {/* Events Tab */}
+          <TabsContent value="events" className="mt-4">
+            <StudentEventsView />
           </TabsContent>
         </Tabs>
       </main>
