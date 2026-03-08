@@ -16,6 +16,7 @@ import {
   Swords,
   GraduationCap,
   Megaphone,
+  UserPlus,
 } from 'lucide-react';
 import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 
