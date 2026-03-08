@@ -137,11 +137,9 @@ export function FeeForm({
         notes: values.notes?.trim() || null,
         receipt_url: values.receipt_url ?? null,
         updated_at: now,
-        status: getFeeStatus({
-          monthly_fee,
-          paid_amount,
-          balance_due: calcBalance(),
-        }),
+        status: values.status_override === 'auto' 
+          ? getFeeStatus({ monthly_fee, paid_amount, balance_due: calcBalance() })
+          : values.status_override,
       };
 
       const payload =
