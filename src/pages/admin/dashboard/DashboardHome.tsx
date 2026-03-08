@@ -79,6 +79,8 @@ export default function DashboardHome() {
       0
     );
     const unpaidCount = data.fees.filter((f) => f.status === 'unpaid').length;
+    const pendingEnrollments = data.enrollments.filter((e: any) => e.status === 'pending').length;
+    const activeAnnouncements = data.announcements.filter((a: any) => a.is_active).length;
 
     // Revenue last 6 months
     const revenueChart = [];
@@ -109,6 +111,8 @@ export default function DashboardHome() {
       totalRevenue,
       paidCount: paidFees.length,
       unpaidCount,
+      pendingEnrollments,
+      activeAnnouncements,
       totalBlogs: data.blogs.length,
       totalNews: data.news.length,
       totalEvents: data.events.length,

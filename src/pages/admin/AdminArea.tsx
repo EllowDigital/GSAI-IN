@@ -15,6 +15,7 @@ import Progression from './dashboard/Progression';
 import Testimonials from './dashboard/Testimonials';
 import Competitions from './dashboard/Competitions';
 import Announcements from './dashboard/Announcements';
+import EnrollmentRequests from './dashboard/EnrollmentRequests';
 
 const AdminArea = () => {
   return (
@@ -23,6 +24,7 @@ const AdminArea = () => {
         <Route path="login" element={<AdminLogin />} />
         <Route path="dashboard" element={<AdminLayout />}>
           <Route index element={<DashboardHome />} />
+          <Route path="enrollments" element={<EnrollmentRequests />} />
           <Route path="fees" element={<FeesManager />} />
           <Route path="blogs" element={<Blogs />} />
           <Route path="news" element={<News />} />
