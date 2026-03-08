@@ -45,6 +45,12 @@ const navItems = [
     category: 'content',
   },
   {
+    title: 'Competitions',
+    url: '/admin/dashboard/competitions',
+    icon: Swords,
+    category: 'content',
+  },
+  {
     title: 'Blogs',
     url: '/admin/dashboard/blogs',
     icon: BookOpen,
