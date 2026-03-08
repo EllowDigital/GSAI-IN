@@ -178,14 +178,36 @@ export default function DashboardHome() {
       bg: 'bg-blue-50 dark:bg-blue-950/30',
     },
     {
-      label: 'Revenue',
+      label: 'Total Revenue',
       value: `₹${analytics.totalRevenue.toLocaleString()}`,
       icon: DollarSign,
       color: 'text-emerald-600 dark:text-emerald-400',
       bg: 'bg-emerald-50 dark:bg-emerald-950/30',
     },
     {
-      label: 'Unpaid',
+      label: 'Collection Rate',
+      value: `${analytics.collectionRate}%`,
+      icon: TrendingUp,
+      color: analytics.collectionRate >= 80 
+        ? 'text-emerald-600 dark:text-emerald-400' 
+        : 'text-amber-600 dark:text-amber-400',
+      bg: analytics.collectionRate >= 80 
+        ? 'bg-emerald-50 dark:bg-emerald-950/30'
+        : 'bg-amber-50 dark:bg-amber-950/30',
+    },
+    {
+      label: 'Attendance Rate',
+      value: `${analytics.attendanceRate}%`,
+      icon: Activity,
+      color: analytics.attendanceRate >= 80
+        ? 'text-blue-600 dark:text-blue-400'
+        : 'text-orange-600 dark:text-orange-400',
+      bg: analytics.attendanceRate >= 80
+        ? 'bg-blue-50 dark:bg-blue-950/30'
+        : 'bg-orange-50 dark:bg-orange-950/30',
+    },
+    {
+      label: 'Unpaid Fees',
       value: analytics.unpaidCount,
       icon: Clock,
       color: 'text-amber-600 dark:text-amber-400',
