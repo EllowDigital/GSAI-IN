@@ -68,15 +68,8 @@ export default function EnrollPage() {
 
       if (error) throw error;
 
-      // Also send via WhatsApp
-      const msg = `🥋 *New GSAI Enrollment Request*%0A%0A👤 Student: ${encodeURIComponent(data.studentName)}%0A📅 Age: ${data.age}%0A⚧ Gender: ${data.gender}%0A👨‍👩‍👦 Parent: ${encodeURIComponent(data.parentName)}%0A📱 Phone: ${data.parentPhone}%0A🏋️ Program: ${encodeURIComponent(data.program)}${data.message ? `%0A💬 Message: ${encodeURIComponent(data.message)}` : ''}`;
-      const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-      const waUrl = isMobile
-        ? `https://wa.me/916394135988?text=${msg}`
-        : `https://web.whatsapp.com/send?phone=916394135988&text=${msg}`;
-      window.open(waUrl, '_blank', 'noopener,noreferrer');
-
       setSubmitted(true);
+      toast.success('Enrollment request submitted successfully!');
     } catch (err: any) {
       toast.error(err.message || 'Failed to submit. Please try again.');
     } finally {
