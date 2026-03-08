@@ -99,9 +99,12 @@ export default function EnrollmentRequestsManager() {
   const handleStartApprove = (req: EnrollmentRequest) => {
     setApproveReq(req);
     setApproveStep('confirm');
-    setAadharNumber('');
+    setAadharNumber(req.aadhar_number || '');
     setJoinDate(new Date().toISOString().slice(0, 10));
-    setLoginId('');
+    // Auto-generate login ID from last 4 digits of Aadhar
+    const last4 = req.aadhar_number ? req.aadhar_number.slice(-4) : '';
+    const namePrefix = req.student_name.replace(/\s+/g, '').slice(0, 4).toUpperCase();
+    setLoginId(`GSAI-${namePrefix}${last4}`);
     setPassword('');
     setCreatedStudentId(null);
     setCreatedCreds(null);
