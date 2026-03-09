@@ -44,6 +44,7 @@ import {
   ChevronRight,
   Trash2,
   RotateCcw,
+  Pencil,
 } from 'lucide-react';
 import {
   exportProgressionToCsv,
