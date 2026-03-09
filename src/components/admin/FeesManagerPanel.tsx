@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import FeeSummaryCard from './FeeSummaryCard';
@@ -7,6 +7,7 @@ import FeeEditModal from './FeeEditModal';
 import FeeHistoryDrawer from './FeeHistoryDrawer';
 import FeesFilterBar from './FeesFilterBar';
 import { exportFeesToCsv } from '@/utils/exportToCsv';
+const FeeAnalyticsChart = lazy(() => import('./FeeAnalyticsChart'));
 import { useIsMobile } from '@/hooks/use-mobile';
 import FeesCards from './FeesCards';
 import RefreshButton from './RefreshButton';
@@ -351,6 +352,11 @@ export default function FeesManagerPanel() {
         </div>
 
         <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+          {/* Analytics Chart */}
+          <Suspense fallback={<div className="h-[400px] flex items-center justify-center"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>}>
+            <FeeAnalyticsChart />
+          </Suspense>
+
           {/* Summary Card */}
           <FeeSummaryCard fees={fees || []} loading={loadingFees} />
 
