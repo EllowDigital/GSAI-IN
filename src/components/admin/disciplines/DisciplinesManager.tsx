@@ -88,6 +88,7 @@ export default function DisciplinesManager() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['disciplines-admin'] });
+      queryClient.invalidateQueries({ queryKey: ['disciplines'] });
       toast.success(editing ? 'Discipline updated' : 'Discipline added');
       closeForm();
     },
@@ -101,6 +102,7 @@ export default function DisciplinesManager() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['disciplines-admin'] });
+      queryClient.invalidateQueries({ queryKey: ['disciplines'] });
       toast.success('Discipline deleted');
       setDeleteTarget(null);
     },
@@ -114,6 +116,7 @@ export default function DisciplinesManager() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['disciplines-admin'] });
+      queryClient.invalidateQueries({ queryKey: ['disciplines'] });
     },
     onError: (err) => toast.error(err instanceof Error ? err.message : 'Update failed'),
   });

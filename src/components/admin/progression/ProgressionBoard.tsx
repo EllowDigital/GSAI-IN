@@ -72,12 +72,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from '@/components/ui/sonner';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  isBeltDiscipline,
-  isLevelDiscipline,
-  getDisciplineConfig,
-  hasStripeSupport,
-} from '@/config/disciplineConfig';
+import { useDisciplines } from '@/hooks/useDisciplines';
 
 const STATUS_CONFIG: Record<
   ProgressStatus,
@@ -209,11 +204,13 @@ function StudentCard({
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [notes, setNotes] = useState(record.coach_notes ?? '');
+  const { isBeltBased: checkBelt, hasStripes: checkStripes, getDiscipline } = useDisciplines();
   const student = record.students;
   const belt = record.belt_levels;
-  const program = student?.program ?? '';
-  const isBeltBased = isBeltDiscipline(program);
-  const showStripes = hasStripeSupport(program);
+  // Use belt's discipline (not comma-separated student.program) for type detection
+  const beltDiscipline = belt?.discipline ?? '';
+  const isBeltBased = beltDiscipline ? checkBelt(beltDiscipline) : true;
+  const showStripes = beltDiscipline ? checkStripes(beltDiscipline) : false;
   const beltStyle = getBeltStyle(belt?.color ?? 'white');
 
   const handleSaveNotes = () => {
@@ -237,17 +234,20 @@ function StudentCard({
               <span className="ml-1">• {stripeCount} stripes</span>
             )}
           </div>
+          {beltDiscipline && (
+            <span className="text-[10px] text-muted-foreground capitalize">{beltDiscipline}</span>
+          )}
         </div>
       );
     } else {
-      const config = getDisciplineConfig(program);
+      const disc = getDiscipline(beltDiscipline);
       return (
         <div className="flex items-center gap-2 mt-1.5">
           <div
-            className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-primary/10 to-primary/5 text-primary border border-primary/20`}
+            className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-primary/10 to-primary/5 text-primary border border-primary/20"
           >
             <Layers className="h-3 w-3" />
-            {config?.type === 'level' ? 'Level-based' : 'Training'}
+            {disc?.type === 'level' ? 'Level-based' : 'Training'}
           </div>
         </div>
       );
@@ -281,7 +281,7 @@ function StudentCard({
                 {student?.name ?? 'Unassigned'}
               </h3>
               <p className="text-sm text-muted-foreground truncate">
-                {program || 'N/A'}
+                {student?.program || 'N/A'}
               </p>
               {getProgressionDisplay()}
             </div>

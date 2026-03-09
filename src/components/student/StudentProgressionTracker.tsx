@@ -8,10 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import { Award, ArrowRight, Star, Layers, ChevronRight } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
-import {
-  isBeltDiscipline,
-  getDisciplineConfig,
-} from '@/config/disciplineConfig';
+import { useDisciplines } from '@/hooks/useDisciplines';
 
 const BELT_COLORS: Record<string, string> = {
   white: '#e5e7eb',
@@ -171,8 +168,9 @@ function ProgramProgressionView({
   levelProgress: any[];
   promotions: any[];
 }) {
-  const isBeltBased = isBeltDiscipline(program);
-  const config = getDisciplineConfig(program);
+  const { isBeltBased: checkBelt, getDiscipline } = useDisciplines();
+  const isBeltBased = checkBelt(program);
+  const disc = getDiscipline(program);
 
   if (isBeltBased) {
     // Filter belt progress for this program's discipline
@@ -292,7 +290,11 @@ function ProgramProgressionView({
     (lp: any) => lp.discipline_levels?.discipline?.toLowerCase() === program.toLowerCase()
   );
 
-  const configLevels = config?.levels || [];
+  // Get unique level names from DB records, ordered
+  const configLevels = programLevels
+    .map((pl: any) => pl.discipline_levels?.level_name)
+    .filter(Boolean)
+    .filter((v: string, i: number, a: string[]) => a.indexOf(v) === i);
 
   return (
     <div className="space-y-4">

@@ -39,20 +39,9 @@ import {
 } from '@/utils/inputValidation';
 import { useBeltLevels } from '@/hooks/useBeltLevels';
 import { useStudentPrograms } from '@/hooks/useStudentPrograms';
+import { useDisciplines } from '@/hooks/useDisciplines';
 import { X, Plus } from 'lucide-react';
 
-// List of valid programs
-const programOptions = [
-  { value: 'Karate', label: '🥋 Karate' },
-  { value: 'Taekwondo', label: '🦵 Taekwondo' },
-  { value: 'Boxing', label: '🥊 Boxing' },
-  { value: 'Kickboxing', label: '🥋 Kickboxing' },
-  { value: 'Grappling', label: '🤼 Grappling' },
-  { value: 'MMA', label: '🥋 MMA' },
-  { value: 'Kalaripayattu', label: '🕉️ Kalaripayattu' },
-  { value: 'Self-Defense', label: '🛡️ Self-Defense' },
-  { value: 'Fat Loss', label: '🏋️ Fat Loss' },
-];
 
 const StudentSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -80,6 +69,7 @@ export default function StudentModal({
   student,
 }: StudentModalProps) {
   const { getWhiteBeltId } = useBeltLevels();
+  const { disciplineOptions } = useDisciplines();
   const {
     programs: existingPrograms,
     addProgram,
@@ -88,6 +78,12 @@ export default function StudentModal({
   const [additionalPrograms, setAdditionalPrograms] = useState<string[]>([]);
   const [addingProgram, setAddingProgram] = useState('');
   const queryClient = useQueryClient();
+
+  // DB-driven program options
+  const programOptions = disciplineOptions.map((d) => ({
+    value: d.value,
+    label: d.value,
+  }));
 
   const { data: globalFee } = useQuery({
     queryKey: ['academy-settings', 'default_monthly_fee'],
