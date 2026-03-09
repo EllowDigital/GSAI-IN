@@ -71,7 +71,7 @@ export default function StudentManager() {
 
   return (
     <>
-      <div className="w-full p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1600px] mx-auto">
+      <div className="w-full p-0 max-w-full">
         <Card className="bg-card border border-border/50 shadow-sm rounded-xl sm:rounded-2xl">
           <CardHeader className="border-b border-border/50 p-4 sm:p-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>

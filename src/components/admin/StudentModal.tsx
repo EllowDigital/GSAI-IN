@@ -113,12 +113,24 @@ export default function StudentModal({
     },
   });
 
+  // Derive primary program from student_programs table when editing
+  const primaryFromDB = student
+    ? existingPrograms.find((p) => p.is_primary)?.program_name
+    : undefined;
+
   useEffect(() => {
     if (student) {
+      // Use primary from junction table if available, else fallback to student.program (first entry)
+      const primaryProgram =
+        primaryFromDB ||
+        (student.program?.includes(',')
+          ? student.program.split(',')[0].trim()
+          : student.program || '');
+
       form.reset({
         name: student.name || '',
         aadhar_number: student.aadhar_number || '',
-        program: student.program || '',
+        program: primaryProgram,
         join_date: student.join_date ? student.join_date.slice(0, 10) : '',
         parent_name: student.parent_name || '',
         parent_contact: student.parent_contact || '',
@@ -140,7 +152,7 @@ export default function StudentModal({
       });
       setAdditionalPrograms([]);
     }
-  }, [student, open, globalFee]);
+  }, [student, open, globalFee, primaryFromDB]);
 
   const handleAvatarUpload = (url: string) =>
     form.setValue('profile_image_url', url);
