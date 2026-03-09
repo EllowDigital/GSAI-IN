@@ -383,6 +383,21 @@ function StudentCard({
               <FileText className="h-4 w-4 mr-1.5" />
               Notes
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-9"
+              onClick={() => {
+                setEditBeltId(record.belt_levels?.id ?? '');
+                setEditStripes(String(record.stripe_count ?? 0));
+                setEditStatus(record.status);
+                setEditNotes(record.coach_notes ?? '');
+                setEditDialogOpen(true);
+              }}
+              title="Edit progression"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
             {record.status === 'passed' && nextBelt && (
               <Button
                 size="sm"
