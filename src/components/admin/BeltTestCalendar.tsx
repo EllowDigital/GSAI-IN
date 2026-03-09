@@ -128,7 +128,7 @@ export default function BeltTestCalendar() {
       toast({ title: 'Deleted', description: 'Belt test removed from calendar' });
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      toast({ title: 'Error', description: error.message, variant: 'error' });
     },
   });
 
