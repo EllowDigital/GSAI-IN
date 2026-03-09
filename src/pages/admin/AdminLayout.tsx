@@ -44,7 +44,7 @@ const AdminLayout: React.FC = () => {
 
   if (isLoading || !isAdmin) {
     return (
-      <div className="flex items-center justify-center h-screen w-screen bg-background">
+      <div className="flex items-center justify-center h-dvh w-screen bg-background">
         <div className="flex flex-col items-center gap-4">
           <div className="animate-spin h-8 w-8 border-3 border-primary border-t-transparent rounded-full" />
           <p className="text-sm text-muted-foreground">Loading…</p>
@@ -54,7 +54,7 @@ const AdminLayout: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen w-full flex bg-background">
+    <div className="h-dvh w-full flex bg-background overflow-hidden">
       <AppSidebar open={sidebarOpen} setOpen={setSidebarOpen} />
 
       {/* Mobile overlay */}
@@ -67,11 +67,11 @@ const AdminLayout: React.FC = () => {
         onClick={() => setSidebarOpen(false)}
       />
 
-      <div className="flex-1 flex flex-col h-screen w-full min-w-0">
+      <div className="flex-1 flex flex-col h-dvh min-w-0">
         {/* Header */}
         <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border flex-shrink-0">
-          <div className="flex items-center justify-between px-4 lg:px-6 h-14">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between px-3 sm:px-4 lg:px-6 h-12">
+            <div className="flex items-center gap-2">
               <button
                 className="lg:hidden p-2 rounded-lg hover:bg-muted transition-colors"
                 onClick={() => setSidebarOpen(true)}
@@ -79,12 +79,12 @@ const AdminLayout: React.FC = () => {
               >
                 <Menu className="w-5 h-5 text-foreground" />
               </button>
-              <h1 className="text-base sm:text-lg font-semibold text-foreground">
+              <h1 className="text-sm sm:text-base font-semibold text-foreground">
                 GSAI Admin
               </h1>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               {isDashboardHome && (
                 <button
                   onClick={handleRefresh}
@@ -108,7 +108,7 @@ const AdminLayout: React.FC = () => {
           </div>
         </header>
 
-        <main className="flex-1 w-full min-w-0 overflow-y-auto h-0 overscroll-contain">
+        <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
           <Outlet />
         </main>
       </div>
