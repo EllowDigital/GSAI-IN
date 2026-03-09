@@ -132,8 +132,7 @@ export default function Blogs() {
 
   return (
     <div className="w-full p-4 sm:p-5 lg:p-6 space-y-4 max-w-[1600px] mx-auto">
-      {/* Header Card */}
-      <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 shadow-sm rounded-none sm:rounded-2xl">
+      <div className="bg-card border border-border shadow-sm rounded-xl">
         <div className="border-b border-slate-200/60 dark:border-slate-700/60 p-4 sm:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
