@@ -357,6 +357,7 @@ export default function StudentModal({
       queryClient.invalidateQueries({ queryKey: ['students'] });
       queryClient.invalidateQueries({ queryKey: ['students-portal-status'] });
       queryClient.invalidateQueries({ queryKey: ['portal-accounts'] });
+      queryClient.invalidateQueries({ queryKey: ['fees'] });
       onOpenChange(false);
     }
   };
