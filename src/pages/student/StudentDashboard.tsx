@@ -32,6 +32,7 @@ import StudentProgressionTracker from '@/components/student/StudentProgressionTr
 import StudentEventsView from '@/components/student/StudentEventsView';
 import StudentAnnouncements from '@/components/student/StudentAnnouncements';
 import StudentAttendanceView from '@/components/student/StudentAttendanceView';
+import StudentBeltExamNotifications from '@/components/student/StudentBeltExamNotifications';
 import { downloadCertificateFile } from '@/utils/certificateDownload';
 
 export default function StudentDashboard() {
