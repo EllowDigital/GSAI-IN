@@ -882,7 +882,7 @@ export default function ProgressionBoard() {
             </DialogTitle>
             <DialogDescription>
               Recent belt promotions across all programs. Promotion history is preserved even when progression records are deleted.
-            </AlertDescription>
+            </DialogDescription>
           </DialogHeader>
           <ProgressionTimeline history={history} isLoading={historyLoading} />
         </DialogContent>
