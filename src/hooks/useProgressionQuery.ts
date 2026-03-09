@@ -502,5 +502,7 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
     promotingStudent: promoteMutation.isPending,
     updateStripeCount: stripeMutation.mutate,
     updatingStripeCount: stripeMutation.isPending,
+    deleteProgress: deleteMutation.mutateAsync,
+    deletingProgress: deleteMutation.isPending,
   };
 }
