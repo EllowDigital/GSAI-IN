@@ -792,6 +792,8 @@ export default function ProgressionBoard() {
     updateStripeCount,
     deleteProgress,
     deletingProgress,
+    editProgress,
+    editingProgress,
   } = useProgressionQuery({
     search,
     program,
