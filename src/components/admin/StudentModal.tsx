@@ -226,7 +226,7 @@ export default function StudentModal({
       const payload = {
         name: sanitizedValues.name,
         aadhar_number: aadharValidation.sanitized,
-        program: sanitizedValues.program,
+        program: sanitizedValues.program, // Will be updated below with all programs
         join_date: sanitizedValues.join_date,
         parent_name: sanitizedValues.parent_name,
         parent_contact: phoneValidation.sanitized,
@@ -236,18 +236,7 @@ export default function StudentModal({
       };
 
       if (student) {
-        const { data, error } = await supabase
-          .from('students')
-          .update(payload)
-          .eq('id', student.id)
-          .select()
-          .single();
-        if (error) throw error;
-
-        // Note: Discount changes only apply to future/new fee records.
-        // Existing fee records remain unchanged (real-world billing behavior).
-
-        // Update primary program in junction table
+        // First update primary program in junction table
         await supabase
           .from('student_programs')
           .update({ is_primary: false })
@@ -261,6 +250,24 @@ export default function StudentModal({
           },
           { onConflict: 'student_id,program_name' }
         );
+
+        // Fetch all programs from junction table to sync students.program field
+        const { data: allProgs } = await supabase
+          .from('student_programs')
+          .select('program_name')
+          .eq('student_id', student.id)
+          .order('is_primary', { ascending: false });
+
+        const allProgramNames = allProgs?.map((p) => p.program_name) || [sanitizedValues.program];
+        payload.program = allProgramNames.join(', ');
+
+        const { data, error } = await supabase
+          .from('students')
+          .update(payload)
+          .eq('id', student.id)
+          .select()
+          .single();
+        if (error) throw error;
 
         return data;
       } else {

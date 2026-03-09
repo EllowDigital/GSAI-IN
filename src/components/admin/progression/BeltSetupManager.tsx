@@ -361,9 +361,9 @@ export default function BeltSetupManager() {
       {/* Header Actions */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Belt & Level Setup</h2>
+          <h2 className="text-2xl font-bold">Belt Setup</h2>
           <p className="text-sm text-muted-foreground">
-            Manage progression hierarchies for all disciplines
+            Manage belt hierarchies for belt-based disciplines (Karate, Taekwondo, BJJ, etc.)
           </p>
         </div>
         <div className="flex gap-2">
@@ -403,16 +403,16 @@ export default function BeltSetupManager() {
         </AlertDescription>
       </Alert>
 
-      {/* Belt-Based Disciplines */}
+      {/* Belt-Based Disciplines Only */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Award className="h-5 w-5" />
-            Belt-Based Disciplines
+            Belt Hierarchies
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ScrollArea className="h-[400px]">
+          <ScrollArea className="h-[500px]">
             <div className="space-y-6">
               {Object.entries(groupedBelts).map(([discipline, disciplineBelts]) => (
                 <div key={discipline} className="space-y-2">
@@ -471,45 +471,6 @@ export default function BeltSetupManager() {
                 <p className="text-center text-muted-foreground py-8">
                   No belt hierarchies configured. Use Auto Setup to create
                   standard belts.
-                </p>
-              )}
-            </div>
-          </ScrollArea>
-        </CardContent>
-      </Card>
-
-      {/* Level-Based Disciplines */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Layers className="h-5 w-5" />
-            Level-Based Disciplines
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ScrollArea className="h-[300px]">
-            <div className="space-y-6">
-              {Object.entries(groupedLevels).map(([discipline, disciplineLevels]) => (
-                <div key={discipline} className="space-y-2">
-                  <h3 className="font-semibold text-lg capitalize flex items-center gap-2">
-                    {discipline}
-                    <Badge variant="outline">{disciplineLevels.length} levels</Badge>
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {disciplineLevels
-                      .sort((a, b) => a.level_order - b.level_order)
-                      .map((level) => (
-                        <Badge key={level.id} variant="secondary">
-                          {level.level_order}. {level.level_name}
-                        </Badge>
-                      ))}
-                  </div>
-                </div>
-              ))}
-              {Object.keys(groupedLevels).length === 0 && (
-                <p className="text-center text-muted-foreground py-8">
-                  No level hierarchies configured. Use Auto Setup to create
-                  standard levels.
                 </p>
               )}
             </div>
