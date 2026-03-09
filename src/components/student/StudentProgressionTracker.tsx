@@ -168,8 +168,9 @@ function ProgramProgressionView({
   levelProgress: any[];
   promotions: any[];
 }) {
-  const isBeltBased = isBeltDiscipline(program);
-  const config = getDisciplineConfig(program);
+  const { isBeltBased: checkBelt, getDiscipline } = useDisciplines();
+  const isBeltBased = checkBelt(program);
+  const disc = getDiscipline(program);
 
   if (isBeltBased) {
     // Filter belt progress for this program's discipline
