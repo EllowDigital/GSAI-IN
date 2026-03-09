@@ -7,40 +7,31 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from '@/components/ui/dialog';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Label } from '@/components/ui/label';
 import {
-  Plus,
-  Pencil,
-  Trash2,
-  Layers,
-  GripVertical,
-  Loader2,
-  Search,
+  Plus, Pencil, Trash2, Layers, GripVertical, Loader2, Search, Wand2, Info,
 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { LEVEL_DISCIPLINES } from '@/config/disciplineConfig';
+
+const LEVEL_PRESETS: Record<string, string[]> = {
+  Boxing: ['Beginner', 'Novice', 'Intermediate', 'Advanced', 'Elite'],
+  MMA: ['Foundation', 'Fighter', 'Competitor', 'Professional'],
+  'Self-Defense': ['Basic', 'Intermediate', 'Advanced', 'Expert'],
+  Kalaripayattu: ['Beginner', 'Intermediate', 'Advanced', 'Master'],
+  Fitness: ['Level 1', 'Level 2', 'Level 3', 'Level 4'],
+  'Fat Loss': ['Starter', 'Progressive', 'Advanced', 'Elite'],
+};
 
 interface DisciplineLevel {
   id: string;
