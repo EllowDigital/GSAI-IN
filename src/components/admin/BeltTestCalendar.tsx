@@ -113,7 +113,7 @@ export default function BeltTestCalendar() {
       handleCloseDialog();
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      toast({ title: 'Error', description: error.message, variant: 'error' });
     },
   });
 
