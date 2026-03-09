@@ -281,7 +281,7 @@ function StudentCard({
                 {student?.name ?? 'Unassigned'}
               </h3>
               <p className="text-sm text-muted-foreground truncate">
-                {program || 'N/A'}
+                {student?.program || 'N/A'}
               </p>
               {getProgressionDisplay()}
             </div>
