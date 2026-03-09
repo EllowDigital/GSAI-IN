@@ -8,10 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import { Award, ArrowRight, Star, Layers, ChevronRight } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
-import {
-  isBeltDiscipline,
-  getDisciplineConfig,
-} from '@/config/disciplineConfig';
+import { useDisciplines } from '@/hooks/useDisciplines';
 
 const BELT_COLORS: Record<string, string> = {
   white: '#e5e7eb',
