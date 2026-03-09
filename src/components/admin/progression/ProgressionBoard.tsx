@@ -72,12 +72,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from '@/components/ui/sonner';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  isBeltDiscipline,
-  isLevelDiscipline,
-  getDisciplineConfig,
-  hasStripeSupport,
-} from '@/config/disciplineConfig';
+import { useDisciplines } from '@/hooks/useDisciplines';
 
 const STATUS_CONFIG: Record<
   ProgressStatus,
