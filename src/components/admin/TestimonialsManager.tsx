@@ -37,7 +37,7 @@ export default function TestimonialsManager() {
         .select('*')
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return ((data as any as Testimonial[]) ?? []);
+      return (data as any as Testimonial[]) ?? [];
     },
   });
 

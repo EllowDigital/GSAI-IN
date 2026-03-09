@@ -7,7 +7,7 @@
 // ---------------------------------------------------------
 
 import dotenv from 'dotenv';
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, readdirSync, writeFileSync } from 'fs';
 import { SitemapStream, streamToPromise } from 'sitemap';
 import { createClient } from '@supabase/supabase-js';
 import { performance } from 'perf_hooks';
@@ -102,12 +102,13 @@ const marketingPages = [
   { url: '/news', changefreq: 'daily', priority: 0.7 },
   { url: '/blogs', changefreq: 'daily', priority: 0.7 },
   { url: '/gallery', changefreq: 'weekly', priority: 0.6 },
+  { url: '/competitions', changefreq: 'weekly', priority: 0.7 },
   { url: '/contact', changefreq: 'monthly', priority: 0.6 },
   { url: '/corporate', changefreq: 'monthly', priority: 0.6 },
   { url: '/locations/lucknow', changefreq: 'monthly', priority: 0.5 },
+  { url: '/enroll', changefreq: 'monthly', priority: 0.8 },
   { url: '/privacy', changefreq: 'yearly', priority: 0.3 },
   { url: '/terms', changefreq: 'yearly', priority: 0.3 },
-  { url: '/pages/success.html', changefreq: 'yearly', priority: 0.2 },
 ];
 
 const defaultImageMeta = [{
@@ -170,12 +171,13 @@ const staticRouteOverrides = {
   '/news': { changefreq: 'daily', priority: 0.7 },
   '/blogs': { changefreq: 'daily', priority: 0.7 },
   '/gallery': { changefreq: 'weekly', priority: 0.6 },
+  '/competitions': { changefreq: 'weekly', priority: 0.7 },
   '/contact': { changefreq: 'monthly', priority: 0.6 },
   '/corporate': { changefreq: 'monthly', priority: 0.6 },
   '/locations/lucknow': { changefreq: 'monthly', priority: 0.5 },
+  '/enroll': { changefreq: 'monthly', priority: 0.8 },
   '/privacy': { changefreq: 'yearly', priority: 0.3 },
   '/terms': { changefreq: 'yearly', priority: 0.3 },
-  '/pages/success.html': { changefreq: 'yearly', priority: 0.2 },
 };
 
 const shouldIncludeStaticRoute = (url) => {
@@ -207,6 +209,27 @@ const getAppStaticRouteEntries = () => {
     }));
   } catch (err) {
     Logger.warn(`Could not auto-discover routes from ${appRoutesPath}: ${err.message}`);
+    return [];
+  }
+};
+
+const getPublicHtmlPageEntries = () => {
+  const publicPagesPath = './public/pages';
+
+  try {
+    const pages = readdirSync(publicPagesPath, { withFileTypes: true })
+      .filter((entry) => entry.isFile() && entry.name.toLowerCase().endsWith('.html'))
+      .map((entry) => `/pages/${entry.name}`)
+      .filter((url) => url !== '/pages/privacy.html' && url !== '/pages/terms.html');
+
+    const uniquePages = [...new Set(pages)];
+    return uniquePages.map((url) => ({
+      url,
+      changefreq: 'yearly',
+      priority: url === '/pages/success.html' ? 0.2 : 0.3,
+    }));
+  } catch (err) {
+    Logger.warn(`Could not auto-discover public HTML pages from ${publicPagesPath}: ${err.message}`);
     return [];
   }
 };
@@ -300,9 +323,11 @@ async function generateSitemap() {
     const sitemap = new SitemapStream({ hostname });
 
     const appStaticPages = getAppStaticRouteEntries();
+    const publicHtmlPages = getPublicHtmlPageEntries();
     const staticPages = [
       ...marketingPages,
       ...appStaticPages,
+      ...publicHtmlPages,
     ].filter((page, index, arr) => index === arr.findIndex((p) => p.url === page.url));
 
     // 2. Static Pages
