@@ -112,7 +112,7 @@ const Events = () => {
   }
 
   return (
-    <div className="w-full p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1400px] mx-auto space-y-6">
+    <div className="w-full p-2 sm:p-3 lg:p-4 space-y-4">
       {/* Header Card */}
       <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 shadow-sm rounded-none sm:rounded-2xl">
         <div className="border-b border-slate-200/60 dark:border-slate-700/60 p-4 sm:p-6">
