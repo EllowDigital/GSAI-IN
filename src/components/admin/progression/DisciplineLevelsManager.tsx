@@ -500,6 +500,45 @@ export default function DisciplineLevelsManager() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Auto Setup Dialog */}
+      <Dialog open={autoSetupOpen} onOpenChange={setAutoSetupOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Auto Setup Levels</DialogTitle>
+            <DialogDescription>
+              Select a level-based discipline to auto-create standard levels. Existing levels for this discipline will be replaced.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label>Discipline</Label>
+              <Select value={autoSetupDiscipline} onValueChange={setAutoSetupDiscipline}>
+                <SelectTrigger><SelectValue placeholder="Select discipline" /></SelectTrigger>
+                <SelectContent>
+                  {Object.keys(LEVEL_PRESETS).map((d) => (
+                    <SelectItem key={d} value={d}>{d} ({LEVEL_PRESETS[d].length} levels)</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {autoSetupDiscipline && (
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  This will replace existing levels for {autoSetupDiscipline} with: {LEVEL_PRESETS[autoSetupDiscipline]?.join(' → ')}
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setAutoSetupOpen(false); setAutoSetupDiscipline(''); }}>Cancel</Button>
+            <Button onClick={() => autoSetupDiscipline && autoSetupMutation.mutate(autoSetupDiscipline)} disabled={!autoSetupDiscipline || autoSetupMutation.isPending}>
+              {autoSetupMutation.isPending ? 'Creating...' : 'Create Levels'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
