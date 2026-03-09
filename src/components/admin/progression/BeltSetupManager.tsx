@@ -505,16 +505,6 @@ export default function BeltSetupManager() {
                   <SelectItem value="BJJ">BJJ (5 belts)</SelectItem>
                   <SelectItem value="Grappling">Grappling (5 belts)</SelectItem>
                   <SelectItem value="Kickboxing">Kickboxing (7 belts)</SelectItem>
-                  <SelectItem value="Boxing">Boxing (5 levels)</SelectItem>
-                  <SelectItem value="MMA">MMA (4 levels)</SelectItem>
-                  <SelectItem value="Self-Defense">
-                    Self-Defense (4 levels)
-                  </SelectItem>
-                  <SelectItem value="Kalaripayattu">
-                    Kalaripayattu (4 levels)
-                  </SelectItem>
-                  <SelectItem value="Fitness">Fitness (4 levels)</SelectItem>
-                  <SelectItem value="Fat Loss">Fat Loss (4 levels)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
