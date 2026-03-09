@@ -18,6 +18,7 @@ import {
   Megaphone,
   UserPlus,
   CalendarCheck,
+  Dumbbell,
 } from 'lucide-react';
 import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 
