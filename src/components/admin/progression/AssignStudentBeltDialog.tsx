@@ -110,7 +110,7 @@ export default function AssignStudentBeltDialog({
   const isLevelBased = isLevelDiscipline(studentProgram);
   const disciplineConfig = getDisciplineConfig(studentProgram);
 
-  // Filter belts by student's discipline
+  // Filter belts by student's SELECTED program
   const filteredBelts = useMemo(() => {
     if (!studentId || !studentProgram) return belts;
 
