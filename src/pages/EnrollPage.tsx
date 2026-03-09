@@ -99,6 +99,7 @@ export default function EnrollPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
+  const { disciplineOptions } = useDisciplines();
 
   const handleChange = (field: keyof EnrollFormData, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
