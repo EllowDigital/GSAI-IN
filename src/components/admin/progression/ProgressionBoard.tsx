@@ -902,6 +902,7 @@ export default function ProgressionBoard() {
               if (error) throw error;
             }
             toast.success('Student assigned to level');
+            queryClient.invalidateQueries({ queryKey: ['discipline-progress-admin'] });
           } else {
             await assignStudent(payload);
           }
