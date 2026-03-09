@@ -173,7 +173,7 @@ export default function StudentModal({
       const prog = existingPrograms.find(
         (p) => p.program_name === programName && !p.is_primary
       );
-      if (prog) await removeProgram(prog.id);
+      if (prog) await removeProgram(prog.id, student.id);
     } else {
       setAdditionalPrograms((prev) => prev.filter((p) => p !== programName));
     }
