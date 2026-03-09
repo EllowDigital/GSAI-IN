@@ -6,7 +6,7 @@ import { Award, CalendarDays } from 'lucide-react';
 
 export default function Progression() {
   return (
-    <div className="w-full min-h-full p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1600px] mx-auto">
+    <div className="w-full p-2 sm:p-3 lg:p-4">
       <Tabs defaultValue="progression" className="space-y-6">
         <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="progression" className="gap-2">

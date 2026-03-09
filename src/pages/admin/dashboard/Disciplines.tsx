@@ -7,7 +7,7 @@ import DisciplineLevelsManager from '@/components/admin/progression/DisciplineLe
 
 export default function Disciplines() {
   return (
-    <div className="w-full min-h-full p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1600px] mx-auto">
+    <div className="w-full p-2 sm:p-3 lg:p-4">
       <Tabs defaultValue="disciplines" className="space-y-6">
         <TabsList className="grid w-full max-w-2xl grid-cols-3">
           <TabsTrigger value="disciplines" className="gap-2">
