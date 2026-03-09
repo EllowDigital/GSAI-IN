@@ -117,8 +117,8 @@ const Events = () => {
         <div className="border-b border-border p-4 sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800 dark:text-white">
-                <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-500" />
+              <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2 text-foreground">
+                <Calendar className="w-5 h-5 text-primary" />
                 <span>Event Management</span>
               </h2>
               <p className="mt-1 text-sm sm:text-base text-muted-foreground">
