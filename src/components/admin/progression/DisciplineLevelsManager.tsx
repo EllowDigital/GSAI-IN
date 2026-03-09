@@ -130,6 +130,36 @@ export default function DisciplineLevelsManager() {
       toast.error(err instanceof Error ? err.message : 'Delete failed'),
   });
 
+  const autoSetupMutation = useMutation({
+    mutationFn: async (disc: string) => {
+      const preset = LEVEL_PRESETS[disc];
+      if (!preset) throw new Error('No preset for this discipline');
+      const { error: delErr } = await supabase
+        .from('discipline_levels')
+        .delete()
+        .eq('discipline', disc.toLowerCase());
+      if (delErr) throw delErr;
+      const { error: insErr } = await supabase.from('discipline_levels').insert(
+        preset.map((name, i) => ({
+          discipline: disc.toLowerCase(),
+          level_name: name,
+          level_order: i + 1,
+          description: null,
+          requirements: [],
+        }))
+      );
+      if (insErr) throw insErr;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['discipline-levels-admin'] });
+      queryClient.invalidateQueries({ queryKey: ['discipline-levels'] });
+      toast.success('Levels auto-created');
+      setAutoSetupOpen(false);
+      setAutoSetupDiscipline('');
+    },
+    onError: (err) => toast.error(err instanceof Error ? err.message : 'Auto setup failed'),
+  });
+
   const closeForm = () => {
     setFormOpen(false);
     setEditingLevel(null);
