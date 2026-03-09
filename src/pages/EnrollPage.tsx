@@ -35,6 +35,7 @@ import { supabase } from '@/integrations/supabase/client';
 import Seo from '@/components/Seo';
 import { toast } from '@/hooks/use-toast';
 import Navbar from '@/components/Navbar';
+import { useDisciplines } from '@/hooks/useDisciplines';
 
 const enrollSchema = z.object({
   studentName: z
