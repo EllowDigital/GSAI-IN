@@ -4,10 +4,8 @@ import FeeSettingsCard from '@/components/admin/FeeSettingsCard';
 
 export default function FeesManager() {
   return (
-    <div className="h-full space-y-4">
-      <div className="px-3 sm:px-4 lg:px-6 xl:px-8 pt-3 sm:pt-4 lg:pt-6 max-w-[1600px] mx-auto">
-        <FeeSettingsCard />
-      </div>
+    <div className="w-full p-4 sm:p-5 lg:p-6 space-y-4 max-w-[1600px] mx-auto">
+      <FeeSettingsCard />
       <FeesManagerPanel />
     </div>
   );

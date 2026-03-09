@@ -6,8 +6,8 @@ import { Award, CalendarDays } from 'lucide-react';
 
 export default function Progression() {
   return (
-    <div className="w-full p-2 sm:p-3 lg:p-4">
-      <Tabs defaultValue="progression" className="space-y-6">
+    <div className="w-full p-4 sm:p-5 lg:p-6 max-w-[1600px] mx-auto">
+      <Tabs defaultValue="progression" className="space-y-4">
         <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="progression" className="gap-2">
             <Award className="w-4 h-4" />
@@ -18,11 +18,9 @@ export default function Progression() {
             <span className="hidden sm:inline">Belt Exams</span>
           </TabsTrigger>
         </TabsList>
-
         <TabsContent value="progression">
           <ProgressionBoard />
         </TabsContent>
-
         <TabsContent value="calendar">
           <BeltTestCalendar />
         </TabsContent>
