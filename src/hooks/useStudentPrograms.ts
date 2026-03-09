@@ -30,6 +30,24 @@ export function useStudentPrograms(studentId?: string) {
     enabled: !!studentId,
   });
 
+  const syncStudentProgramField = useCallback(
+    async (studentId: string) => {
+      const { data: allProgs } = await supabase
+        .from('student_programs')
+        .select('program_name')
+        .eq('student_id', studentId)
+        .order('is_primary', { ascending: false });
+      if (allProgs && allProgs.length > 0) {
+        const programStr = allProgs.map((p) => p.program_name).join(', ');
+        await supabase
+          .from('students')
+          .update({ program: programStr })
+          .eq('id', studentId);
+      }
+    },
+    []
+  );
+
   const addProgram = useCallback(
     async (studentId: string, programName: string, joinDate?: string) => {
       const { error } = await supabase.from('student_programs').insert({
@@ -46,16 +64,17 @@ export function useStudentPrograms(studentId?: string) {
         }
         return false;
       }
+      await syncStudentProgramField(studentId);
       queryClient.invalidateQueries({ queryKey: ['student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
       toast.success(`Added ${programName} program`);
       return true;
     },
-    [queryClient]
+    [queryClient, syncStudentProgramField]
   );
 
   const removeProgram = useCallback(
-    async (programId: string) => {
+    async (programId: string, studentId?: string) => {
       const { error } = await supabase
         .from('student_programs')
         .delete()
@@ -64,12 +83,15 @@ export function useStudentPrograms(studentId?: string) {
         toast.error('Failed to remove program: ' + error.message);
         return false;
       }
+      if (studentId) {
+        await syncStudentProgramField(studentId);
+      }
       queryClient.invalidateQueries({ queryKey: ['student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
       toast.success('Program removed');
       return true;
     },
-    [queryClient]
+    [queryClient, syncStudentProgramField]
   );
 
   return { programs, isLoading, addProgram, removeProgram };

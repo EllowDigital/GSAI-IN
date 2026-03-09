@@ -7,40 +7,31 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from '@/components/ui/dialog';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Label } from '@/components/ui/label';
 import {
-  Plus,
-  Pencil,
-  Trash2,
-  Layers,
-  GripVertical,
-  Loader2,
-  Search,
+  Plus, Pencil, Trash2, Layers, GripVertical, Loader2, Search, Wand2, Info,
 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { LEVEL_DISCIPLINES } from '@/config/disciplineConfig';
+
+const LEVEL_PRESETS: Record<string, string[]> = {
+  Boxing: ['Beginner', 'Novice', 'Intermediate', 'Advanced', 'Elite'],
+  MMA: ['Foundation', 'Fighter', 'Competitor', 'Professional'],
+  'Self-Defense': ['Basic', 'Intermediate', 'Advanced', 'Expert'],
+  Kalaripayattu: ['Beginner', 'Intermediate', 'Advanced', 'Master'],
+  Fitness: ['Level 1', 'Level 2', 'Level 3', 'Level 4'],
+  'Fat Loss': ['Starter', 'Progressive', 'Advanced', 'Elite'],
+};
 
 interface DisciplineLevel {
   id: string;
@@ -58,6 +49,8 @@ export default function DisciplineLevelsManager() {
   const [formOpen, setFormOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<DisciplineLevel | null>(null);
   const [editingLevel, setEditingLevel] = useState<DisciplineLevel | null>(null);
+  const [autoSetupOpen, setAutoSetupOpen] = useState(false);
+  const [autoSetupDiscipline, setAutoSetupDiscipline] = useState('');
 
   // Form state
   const [discipline, setDiscipline] = useState('');
@@ -135,6 +128,36 @@ export default function DisciplineLevelsManager() {
     },
     onError: (err) =>
       toast.error(err instanceof Error ? err.message : 'Delete failed'),
+  });
+
+  const autoSetupMutation = useMutation({
+    mutationFn: async (disc: string) => {
+      const preset = LEVEL_PRESETS[disc];
+      if (!preset) throw new Error('No preset for this discipline');
+      const { error: delErr } = await supabase
+        .from('discipline_levels')
+        .delete()
+        .eq('discipline', disc.toLowerCase());
+      if (delErr) throw delErr;
+      const { error: insErr } = await supabase.from('discipline_levels').insert(
+        preset.map((name, i) => ({
+          discipline: disc.toLowerCase(),
+          level_name: name,
+          level_order: i + 1,
+          description: null,
+          requirements: [],
+        }))
+      );
+      if (insErr) throw insErr;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['discipline-levels-admin'] });
+      queryClient.invalidateQueries({ queryKey: ['discipline-levels'] });
+      toast.success('Levels auto-created');
+      setAutoSetupOpen(false);
+      setAutoSetupDiscipline('');
+    },
+    onError: (err) => toast.error(err instanceof Error ? err.message : 'Auto setup failed'),
   });
 
   const closeForm = () => {
@@ -219,10 +242,16 @@ export default function DisciplineLevelsManager() {
             disciplines
           </p>
         </div>
-        <Button size="sm" onClick={openCreate} className="h-9">
-          <Plus className="h-4 w-4 sm:mr-2" />
-          <span className="hidden sm:inline">Add Level</span>
-        </Button>
+        <div className="flex gap-2">
+          <Button size="sm" variant="default" onClick={() => setAutoSetupOpen(true)} className="h-9 gap-2">
+            <Wand2 className="h-4 w-4" />
+            <span className="hidden sm:inline">Auto Setup</span>
+          </Button>
+          <Button size="sm" onClick={openCreate} className="h-9">
+            <Plus className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Add Level</span>
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -471,6 +500,45 @@ export default function DisciplineLevelsManager() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Auto Setup Dialog */}
+      <Dialog open={autoSetupOpen} onOpenChange={setAutoSetupOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Auto Setup Levels</DialogTitle>
+            <DialogDescription>
+              Select a level-based discipline to auto-create standard levels. Existing levels for this discipline will be replaced.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label>Discipline</Label>
+              <Select value={autoSetupDiscipline} onValueChange={setAutoSetupDiscipline}>
+                <SelectTrigger><SelectValue placeholder="Select discipline" /></SelectTrigger>
+                <SelectContent>
+                  {Object.keys(LEVEL_PRESETS).map((d) => (
+                    <SelectItem key={d} value={d}>{d} ({LEVEL_PRESETS[d].length} levels)</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {autoSetupDiscipline && (
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  This will replace existing levels for {autoSetupDiscipline} with: {LEVEL_PRESETS[autoSetupDiscipline]?.join(' → ')}
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setAutoSetupOpen(false); setAutoSetupDiscipline(''); }}>Cancel</Button>
+            <Button onClick={() => autoSetupDiscipline && autoSetupMutation.mutate(autoSetupDiscipline)} disabled={!autoSetupDiscipline || autoSetupMutation.isPending}>
+              {autoSetupMutation.isPending ? 'Creating...' : 'Create Levels'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
