@@ -69,6 +69,7 @@ export default function StudentModal({
   student,
 }: StudentModalProps) {
   const { getWhiteBeltId } = useBeltLevels();
+  const { disciplineOptions } = useDisciplines();
   const {
     programs: existingPrograms,
     addProgram,
@@ -77,6 +78,12 @@ export default function StudentModal({
   const [additionalPrograms, setAdditionalPrograms] = useState<string[]>([]);
   const [addingProgram, setAddingProgram] = useState('');
   const queryClient = useQueryClient();
+
+  // DB-driven program options
+  const programOptions = disciplineOptions.map((d) => ({
+    value: d.value,
+    label: d.value,
+  }));
 
   const { data: globalFee } = useQuery({
     queryKey: ['academy-settings', 'default_monthly_fee'],
