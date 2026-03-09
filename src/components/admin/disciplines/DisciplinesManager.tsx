@@ -102,6 +102,7 @@ export default function DisciplinesManager() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['disciplines-admin'] });
+      queryClient.invalidateQueries({ queryKey: ['disciplines'] });
       toast.success('Discipline deleted');
       setDeleteTarget(null);
     },
