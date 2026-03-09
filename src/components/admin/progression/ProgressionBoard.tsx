@@ -179,18 +179,23 @@ function StudentCard({
   onNotesUpdate,
   onPromote,
   onStripeUpdate,
+  onDelete,
   nextBelt,
   promoting,
+  deleting,
 }: {
   record: ProgressionRecord;
   onStatusChange: (status: ProgressStatus) => void;
   onNotesUpdate: (notes: string) => void;
   onPromote: () => void;
   onStripeUpdate: (newCount: number) => void;
+  onDelete: () => void;
   nextBelt: { id: string; color: string; rank: number } | null;
   promoting: boolean;
+  deleting: boolean;
 }) {
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [notes, setNotes] = useState(record.coach_notes ?? '');
   const student = record.students;
   const belt = record.belt_levels;
@@ -206,7 +211,6 @@ function StudentCard({
 
   const StatusIcon = STATUS_CONFIG[record.status].icon;
 
-  // Get progression display based on discipline type
   const getProgressionDisplay = () => {
     if (isBeltBased) {
       const stripeCount = record.stripe_count ?? 0;
@@ -224,7 +228,6 @@ function StudentCard({
         </div>
       );
     } else {
-      // Level-based discipline
       const config = getDisciplineConfig(program);
       return (
         <div className="flex items-center gap-2 mt-1.5">
@@ -242,7 +245,6 @@ function StudentCard({
   return (
     <>
       <Card className="group hover:shadow-md transition-all duration-300 overflow-hidden">
-        {/* Belt/Level color indicator */}
         <div
           className={`h-1.5 ${isBeltBased ? beltStyle.bg : 'bg-gradient-to-r from-primary/30 to-primary/10'} ${isBeltBased ? beltStyle.border : ''} border-b`}
         />
@@ -271,6 +273,16 @@ function StudentCard({
               </p>
               {getProgressionDisplay()}
             </div>
+            {/* Delete button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={() => setDeleteDialogOpen(true)}
+              title="Delete progression"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
 
           {/* Current Status */}
@@ -374,7 +386,7 @@ function StudentCard({
           <DialogHeader>
             <DialogTitle>Coach Notes</DialogTitle>
             <DialogDescription>
-              {student?.name} - {belt?.color} Belt
+              {student?.name} - {belt?.color ?? 'N/A'} Belt
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -396,6 +408,32 @@ function StudentCard({
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Progression Record</AlertDialogTitle>
+            <AlertDialogDescription>
+              Remove {student?.name}'s {belt?.color ?? ''} belt progression record? This resets their progress for this belt/level. Promotion history will be preserved.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                onDelete();
+                setDeleteDialogOpen(false);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleting}
+            >
+              {deleting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
