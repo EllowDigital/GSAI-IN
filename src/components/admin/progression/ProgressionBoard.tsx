@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -30,6 +31,7 @@ import {
   Filter,
   Layers,
   Download,
+  ChevronRight,
 } from 'lucide-react';
 import {
   exportProgressionToCsv,
