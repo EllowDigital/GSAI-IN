@@ -368,6 +368,7 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: ['promotion-history'] });
     },
     onSuccess: () => {
       toast.success('Student promoted to next belt');
@@ -461,6 +462,8 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: ['promotion-history'] });
+      queryClient.invalidateQueries({ queryKey: ['discipline-progress-admin'] });
     },
     onSuccess: () => {
       toast.success('Progression record deleted');
