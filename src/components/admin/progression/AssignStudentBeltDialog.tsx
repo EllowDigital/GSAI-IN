@@ -311,7 +311,7 @@ export default function AssignStudentBeltDialog({
             <Select
               value={beltId}
               onValueChange={setBeltId}
-              disabled={!studentId || filteredBelts.length === 0}
+              disabled={!studentId || !selectedProgram || filteredBelts.length === 0}
             >
               <SelectTrigger>
                 <SelectValue placeholder={beltPlaceholder} />

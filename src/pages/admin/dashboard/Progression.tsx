@@ -33,6 +33,10 @@ export default function Progression() {
           <ProgressionBoard />
         </TabsContent>
 
+        <TabsContent value="setup">
+          <BeltSetupManager />
+        </TabsContent>
+
         <TabsContent value="levels">
           <DisciplineLevelsManager />
         </TabsContent>
