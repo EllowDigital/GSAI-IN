@@ -857,59 +857,15 @@ export default function ProgressionBoard() {
                 const student = students.find((s) => s.id === lp.student_id);
                 if (!student) return null;
                 return (
-                  <Card key={lp.id} className="group hover:shadow-md transition-all duration-300 overflow-hidden">
-                    <div className="h-1.5 bg-gradient-to-r from-primary/30 to-primary/10 border-b" />
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3 mb-3">
-                        <Avatar className="h-10 w-10 ring-2 ring-offset-2 ring-primary/10">
-                          {student.profile_image_url ? (
-                            <AvatarImage src={student.profile_image_url} alt={student.name} />
-                          ) : (
-                            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-bold text-sm">
-                              {student.name?.slice(0, 2).toUpperCase()}
-                            </AvatarFallback>
-                          )}
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-sm text-foreground truncate">{student.name}</h3>
-                          <p className="text-xs text-muted-foreground">{student.program}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 mb-3">
-                        <Layers className="h-4 w-4 text-primary flex-shrink-0" />
-                        <span className="text-sm font-medium text-foreground">{lp.discipline_levels?.level_name}</span>
-                        <Badge
-                          variant={lp.status === 'completed' ? 'default' : 'secondary'}
-                          className={`ml-auto text-[10px] ${lp.status === 'completed' ? 'bg-green-600' : ''}`}
-                        >
-                          {lp.status === 'completed' ? '✓ Done' : '⏳ Active'}
-                        </Badge>
-                      </div>
-                      {lp.coach_notes && (
-                        <p className="text-xs text-muted-foreground mb-3 line-clamp-2 p-2 bg-muted/30 rounded-md border border-border/50">
-                          {lp.coach_notes}
-                        </p>
-                      )}
-                      <div className="flex gap-1.5">
-                        <Button
-                          variant={lp.status === 'in_progress' ? 'default' : 'ghost'}
-                          size="sm"
-                          className="flex-1 h-8 text-xs"
-                          onClick={() => updateLevelProgressMutation.mutate({ id: lp.id, status: 'in_progress' })}
-                        >
-                          In Progress
-                        </Button>
-                        <Button
-                          variant={lp.status === 'completed' ? 'default' : 'ghost'}
-                          size="sm"
-                          className="flex-1 h-8 text-xs"
-                          onClick={() => updateLevelProgressMutation.mutate({ id: lp.id, status: 'completed' })}
-                        >
-                          Complete
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <LevelProgressCard
+                    key={lp.id}
+                    lp={lp}
+                    student={student}
+                    onUpdate={(status) => updateLevelProgressMutation.mutate({ id: lp.id, status })}
+                    onDelete={() => deleteLevelProgressMutation.mutate(lp.id)}
+                    updating={updateLevelProgressMutation.isPending}
+                    deleting={deleteLevelProgressMutation.isPending}
+                  />
                 );
               })}
           </div>
@@ -924,7 +880,9 @@ export default function ProgressionBoard() {
               <History className="h-5 w-5" />
               Promotion History
             </DialogTitle>
-            <DialogDescription>Recent belt promotions</DialogDescription>
+            <DialogDescription>
+              Recent belt promotions across all programs. Promotion history is preserved even when progression records are deleted.
+            </AlertDescription>
           </DialogHeader>
           <ProgressionTimeline history={history} isLoading={historyLoading} />
         </DialogContent>
