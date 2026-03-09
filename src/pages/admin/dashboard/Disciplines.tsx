@@ -23,9 +23,15 @@ export default function Disciplines() {
             <span className="hidden sm:inline">Levels</span>
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="disciplines"><DisciplinesManager /></TabsContent>
-        <TabsContent value="belts"><BeltSetupManager /></TabsContent>
-        <TabsContent value="levels"><DisciplineLevelsManager /></TabsContent>
+        <TabsContent value="disciplines">
+          <DisciplinesManager />
+        </TabsContent>
+        <TabsContent value="belts">
+          <BeltSetupManager />
+        </TabsContent>
+        <TabsContent value="levels">
+          <DisciplineLevelsManager />
+        </TabsContent>
       </Tabs>
     </div>
   );

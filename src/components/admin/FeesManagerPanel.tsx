@@ -164,7 +164,8 @@ export default function FeesManagerPanel() {
 
       const records = studentsWithoutFee.map((s) => {
         // Use program-specific fee if available, otherwise student default
-        const programFee = programFees?.[s.program] ?? s.default_monthly_fee ?? 2000;
+        const programFee =
+          programFees?.[s.program] ?? s.default_monthly_fee ?? 2000;
         const baseFee = s.default_monthly_fee ?? programFee;
         const discountedFee =
           s.discount_percent > 0
@@ -353,7 +354,13 @@ export default function FeesManagerPanel() {
 
         <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Analytics Chart */}
-          <Suspense fallback={<div className="h-[400px] flex items-center justify-center"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>}>
+          <Suspense
+            fallback={
+              <div className="h-[400px] flex items-center justify-center">
+                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+              </div>
+            }
+          >
             <FeeAnalyticsChart />
           </Suspense>
 

@@ -18,7 +18,11 @@ interface BeltExamNotification {
   created_at: string;
 }
 
-export default function StudentBeltExamNotifications({ studentId }: { studentId: string }) {
+export default function StudentBeltExamNotifications({
+  studentId,
+}: {
+  studentId: string;
+}) {
   const queryClient = useQueryClient();
 
   const { data: notifications = [], isLoading } = useQuery({
@@ -45,13 +49,17 @@ export default function StudentBeltExamNotifications({ studentId }: { studentId:
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['belt-exam-notifications', studentId] });
+      queryClient.invalidateQueries({
+        queryKey: ['belt-exam-notifications', studentId],
+      });
     },
   });
 
   const markAllReadMutation = useMutation({
     mutationFn: async () => {
-      const unreadIds = notifications.filter((n) => !n.is_read).map((n) => n.id);
+      const unreadIds = notifications
+        .filter((n) => !n.is_read)
+        .map((n) => n.id);
       if (unreadIds.length === 0) return;
       const { error } = await supabase
         .from('belt_exam_notifications')
@@ -60,11 +68,18 @@ export default function StudentBeltExamNotifications({ studentId }: { studentId:
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['belt-exam-notifications', studentId] });
+      queryClient.invalidateQueries({
+        queryKey: ['belt-exam-notifications', studentId],
+      });
     },
   });
 
-  if (isLoading) return <div className="flex justify-center py-4"><Spinner size={20} /></div>;
+  if (isLoading)
+    return (
+      <div className="flex justify-center py-4">
+        <Spinner size={20} />
+      </div>
+    );
 
   const unreadCount = notifications.filter((n) => !n.is_read).length;
   if (notifications.length === 0) return null;
@@ -76,7 +91,9 @@ export default function StudentBeltExamNotifications({ studentId }: { studentId:
           <Bell className="h-4 w-4 text-primary" />
           Belt Exam Notifications
           {unreadCount > 0 && (
-            <Badge variant="destructive" className="text-[10px] px-1.5">{unreadCount}</Badge>
+            <Badge variant="destructive" className="text-[10px] px-1.5">
+              {unreadCount}
+            </Badge>
           )}
         </h3>
         {unreadCount > 0 && (
@@ -100,17 +117,27 @@ export default function StudentBeltExamNotifications({ studentId }: { studentId:
         >
           <CardContent className="p-3">
             <div className="flex items-start gap-3">
-              <div className={`p-2 rounded-lg shrink-0 ${n.is_read ? 'bg-muted' : 'bg-primary/10'}`}>
-                <Award className={`w-4 h-4 ${n.is_read ? 'text-muted-foreground' : 'text-primary'}`} />
+              <div
+                className={`p-2 rounded-lg shrink-0 ${n.is_read ? 'bg-muted' : 'bg-primary/10'}`}
+              >
+                <Award
+                  className={`w-4 h-4 ${n.is_read ? 'text-muted-foreground' : 'text-primary'}`}
+                />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <h4 className="text-sm font-semibold text-foreground">{n.title}</h4>
+                  <h4 className="text-sm font-semibold text-foreground">
+                    {n.title}
+                  </h4>
                   {n.discipline && (
-                    <Badge variant="outline" className="text-[10px]">{n.discipline}</Badge>
+                    <Badge variant="outline" className="text-[10px]">
+                      {n.discipline}
+                    </Badge>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">{n.message}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {n.message}
+                </p>
                 <div className="flex items-center gap-3 mt-2">
                   <span className="text-xs text-muted-foreground/60 flex items-center gap-1">
                     <Calendar className="h-3 w-3" />

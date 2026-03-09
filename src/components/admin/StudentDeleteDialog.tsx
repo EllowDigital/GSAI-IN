@@ -43,14 +43,18 @@ export default function StudentDeleteDialog({ student, onClose }: Props) {
       queryClient.invalidateQueries({ queryKey: ['student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['student-progress'] });
-      queryClient.invalidateQueries({ queryKey: ['discipline-progress-admin'] });
+      queryClient.invalidateQueries({
+        queryKey: ['discipline-progress-admin'],
+      });
       queryClient.invalidateQueries({ queryKey: ['fees'] });
       queryClient.invalidateQueries({ queryKey: ['attendance'] });
       queryClient.invalidateQueries({ queryKey: ['promotion-history'] });
       queryClient.invalidateQueries({ queryKey: ['students-portal-status'] });
       queryClient.invalidateQueries({ queryKey: ['portal-accounts'] });
       queryClient.invalidateQueries({ queryKey: ['belt-exam-notifications'] });
-      queryClient.invalidateQueries({ queryKey: ['competition-registrations'] });
+      queryClient.invalidateQueries({
+        queryKey: ['competition-registrations'],
+      });
       queryClient.invalidateQueries({ queryKey: ['competition-certificates'] });
 
       onClose();

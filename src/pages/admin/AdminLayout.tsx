@@ -39,7 +39,9 @@ const AdminLayout: React.FC = () => {
     if (window.innerWidth < 1024) {
       document.body.style.overflow = sidebarOpen ? 'hidden' : '';
     }
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [sidebarOpen]);
 
   const handleRefresh = async () => {
@@ -49,7 +51,11 @@ const AdminLayout: React.FC = () => {
       await queryClient.refetchQueries();
       toast({ title: 'Refreshed', description: 'All data updated.' });
     } catch {
-      toast({ title: 'Refresh Failed', description: 'Please try again.', variant: 'error' as any });
+      toast({
+        title: 'Refresh Failed',
+        description: 'Please try again.',
+        variant: 'error' as any,
+      });
     } finally {
       setTimeout(() => setIsRefreshing(false), 500);
     }
@@ -62,7 +68,9 @@ const AdminLayout: React.FC = () => {
           <div className="relative">
             <div className="animate-spin h-10 w-10 border-[3px] border-primary/20 border-t-primary rounded-full" />
           </div>
-          <p className="text-sm text-muted-foreground animate-pulse">Loading admin portal…</p>
+          <p className="text-sm text-muted-foreground animate-pulse">
+            Loading admin portal…
+          </p>
         </div>
       </div>
     );
@@ -81,7 +89,9 @@ const AdminLayout: React.FC = () => {
       <div
         className={cn(
           'fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px] lg:hidden transition-opacity duration-200',
-          sidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          sidebarOpen
+            ? 'opacity-100 pointer-events-auto'
+            : 'opacity-0 pointer-events-none'
         )}
         onClick={() => setSidebarOpen(false)}
       />
@@ -100,7 +110,9 @@ const AdminLayout: React.FC = () => {
                 <Menu className="w-5 h-5 text-muted-foreground" />
               </button>
               <div>
-                <h1 className="text-sm font-semibold text-foreground leading-none">{pageTitle}</h1>
+                <h1 className="text-sm font-semibold text-foreground leading-none">
+                  {pageTitle}
+                </h1>
                 <p className="text-[11px] text-muted-foreground mt-0.5 hidden sm:block">
                   GSAI Management Portal
                 </p>
@@ -115,7 +127,9 @@ const AdminLayout: React.FC = () => {
                 className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
                 title="Refresh data"
               >
-                <RefreshCw className={cn('w-4 h-4', isRefreshing && 'animate-spin')} />
+                <RefreshCw
+                  className={cn('w-4 h-4', isRefreshing && 'animate-spin')}
+                />
               </button>
             </div>
           </div>

@@ -36,19 +36,84 @@ import {
 
 const navItems = [
   { title: 'Dashboard', url: '/admin/dashboard', icon: Home, category: 'main' },
-  { title: 'Enrollments', url: '/admin/dashboard/enrollments', icon: UserPlus, category: 'manage' },
-  { title: 'Students', url: '/admin/dashboard/students', icon: Users, category: 'manage' },
-  { title: 'Fees', url: '/admin/dashboard/fees', icon: BadgeDollarSign, category: 'manage' },
-  { title: 'Progression', url: '/admin/dashboard/progression', icon: Trophy, category: 'manage' },
-  { title: 'Disciplines', url: '/admin/dashboard/disciplines', icon: Dumbbell, category: 'manage' },
-  { title: 'Attendance', url: '/admin/dashboard/attendance', icon: CalendarCheck, category: 'manage' },
-  { title: 'Events', url: '/admin/dashboard/events', icon: Calendar, category: 'content' },
-  { title: 'Competitions', url: '/admin/dashboard/competitions', icon: Swords, category: 'content' },
-  { title: 'Blogs', url: '/admin/dashboard/blogs', icon: BookOpen, category: 'content' },
-  { title: 'News', url: '/admin/dashboard/news', icon: Newspaper, category: 'content' },
-  { title: 'Gallery', url: '/admin/dashboard/gallery', icon: GalleryIcon, category: 'content' },
-  { title: 'Testimonials', url: '/admin/dashboard/testimonials', icon: MessageSquare, category: 'content' },
-  { title: 'Announcements', url: '/admin/dashboard/announcements', icon: Megaphone, category: 'content' },
+  {
+    title: 'Enrollments',
+    url: '/admin/dashboard/enrollments',
+    icon: UserPlus,
+    category: 'manage',
+  },
+  {
+    title: 'Students',
+    url: '/admin/dashboard/students',
+    icon: Users,
+    category: 'manage',
+  },
+  {
+    title: 'Fees',
+    url: '/admin/dashboard/fees',
+    icon: BadgeDollarSign,
+    category: 'manage',
+  },
+  {
+    title: 'Progression',
+    url: '/admin/dashboard/progression',
+    icon: Trophy,
+    category: 'manage',
+  },
+  {
+    title: 'Disciplines',
+    url: '/admin/dashboard/disciplines',
+    icon: Dumbbell,
+    category: 'manage',
+  },
+  {
+    title: 'Attendance',
+    url: '/admin/dashboard/attendance',
+    icon: CalendarCheck,
+    category: 'manage',
+  },
+  {
+    title: 'Events',
+    url: '/admin/dashboard/events',
+    icon: Calendar,
+    category: 'content',
+  },
+  {
+    title: 'Competitions',
+    url: '/admin/dashboard/competitions',
+    icon: Swords,
+    category: 'content',
+  },
+  {
+    title: 'Blogs',
+    url: '/admin/dashboard/blogs',
+    icon: BookOpen,
+    category: 'content',
+  },
+  {
+    title: 'News',
+    url: '/admin/dashboard/news',
+    icon: Newspaper,
+    category: 'content',
+  },
+  {
+    title: 'Gallery',
+    url: '/admin/dashboard/gallery',
+    icon: GalleryIcon,
+    category: 'content',
+  },
+  {
+    title: 'Testimonials',
+    url: '/admin/dashboard/testimonials',
+    icon: MessageSquare,
+    category: 'content',
+  },
+  {
+    title: 'Announcements',
+    url: '/admin/dashboard/announcements',
+    icon: Megaphone,
+    category: 'content',
+  },
 ];
 
 interface AppSidebarProps {
@@ -76,7 +141,9 @@ function NavSection({
           {label}
         </p>
       )}
-      {collapsed && <div className="mx-auto my-1.5 w-6 border-t border-sidebar-border/30" />}
+      {collapsed && (
+        <div className="mx-auto my-1.5 w-6 border-t border-sidebar-border/30" />
+      )}
       <ul className="space-y-0.5 px-2">
         {items.map(({ title, url, icon: Icon }) => {
           const link = (
@@ -96,7 +163,12 @@ function NavSection({
                 )
               }
             >
-              <Icon className={cn('flex-shrink-0', collapsed ? 'w-[18px] h-[18px]' : 'w-4 h-4')} />
+              <Icon
+                className={cn(
+                  'flex-shrink-0',
+                  collapsed ? 'w-[18px] h-[18px]' : 'w-4 h-4'
+                )}
+              />
               {!collapsed && <span className="truncate">{title}</span>}
             </NavLink>
           );
@@ -120,7 +192,12 @@ function NavSection({
   );
 }
 
-export function AppSidebar({ open = false, setOpen, collapsed = false, setCollapsed }: AppSidebarProps) {
+export function AppSidebar({
+  open = false,
+  setOpen,
+  collapsed = false,
+  setCollapsed,
+}: AppSidebarProps) {
   const { signOut } = useAdminAuth();
 
   return (
@@ -133,7 +210,7 @@ export function AppSidebar({ open = false, setOpen, collapsed = false, setCollap
           // Desktop behavior
           'lg:translate-x-0 lg:static',
           // Width
-          collapsed ? 'w-[60px]' : 'w-[240px]',
+          collapsed ? 'w-[60px]' : 'w-[240px]'
         )}
         aria-label="Sidebar"
       >
@@ -149,10 +226,12 @@ export function AppSidebar({ open = false, setOpen, collapsed = false, setCollap
         )}
 
         {/* Logo */}
-        <div className={cn(
-          'flex items-center border-b border-sidebar-border flex-shrink-0 h-14',
-          collapsed ? 'justify-center px-2' : 'gap-3 px-4'
-        )}>
+        <div
+          className={cn(
+            'flex items-center border-b border-sidebar-border flex-shrink-0 h-14',
+            collapsed ? 'justify-center px-2' : 'gap-3 px-4'
+          )}
+        >
           <img
             src="/assets/img/logo.webp"
             alt="Logo"
@@ -160,8 +239,12 @@ export function AppSidebar({ open = false, setOpen, collapsed = false, setCollap
           />
           {!collapsed && (
             <div className="min-w-0">
-              <span className="text-sm font-bold text-sidebar-foreground tracking-tight">GSAI Admin</span>
-              <p className="text-[10px] text-sidebar-foreground/40 leading-none">Management Portal</p>
+              <span className="text-sm font-bold text-sidebar-foreground tracking-tight">
+                GSAI Admin
+              </span>
+              <p className="text-[10px] text-sidebar-foreground/40 leading-none">
+                Management Portal
+              </p>
             </div>
           )}
         </div>
@@ -191,10 +274,12 @@ export function AppSidebar({ open = false, setOpen, collapsed = false, setCollap
         </ScrollArea>
 
         {/* Footer */}
-        <div className={cn(
-          'border-t border-sidebar-border flex-shrink-0',
-          collapsed ? 'p-1.5 space-y-1' : 'p-3 space-y-1.5'
-        )}>
+        <div
+          className={cn(
+            'border-t border-sidebar-border flex-shrink-0',
+            collapsed ? 'p-1.5 space-y-1' : 'p-3 space-y-1.5'
+          )}
+        >
           {/* Collapse toggle - desktop only */}
           {setCollapsed && (
             <Tooltip delayDuration={0}>
@@ -203,7 +288,9 @@ export function AppSidebar({ open = false, setOpen, collapsed = false, setCollap
                   onClick={() => setCollapsed(!collapsed)}
                   className={cn(
                     'hidden lg:flex items-center gap-2 text-[12px] font-medium text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-colors',
-                    collapsed ? 'justify-center p-2.5 w-full' : 'px-3 py-2 w-full'
+                    collapsed
+                      ? 'justify-center p-2.5 w-full'
+                      : 'px-3 py-2 w-full'
                   )}
                 >
                   {collapsed ? (
@@ -217,7 +304,9 @@ export function AppSidebar({ open = false, setOpen, collapsed = false, setCollap
                 </button>
               </TooltipTrigger>
               {collapsed && (
-                <TooltipContent side="right" className="text-xs">Expand sidebar</TooltipContent>
+                <TooltipContent side="right" className="text-xs">
+                  Expand sidebar
+                </TooltipContent>
               )}
             </Tooltip>
           )}
@@ -237,7 +326,9 @@ export function AppSidebar({ open = false, setOpen, collapsed = false, setCollap
               </button>
             </TooltipTrigger>
             {collapsed && (
-              <TooltipContent side="right" className="text-xs">View Website</TooltipContent>
+              <TooltipContent side="right" className="text-xs">
+                View Website
+              </TooltipContent>
             )}
           </Tooltip>
 
@@ -256,7 +347,9 @@ export function AppSidebar({ open = false, setOpen, collapsed = false, setCollap
               </button>
             </TooltipTrigger>
             {collapsed && (
-              <TooltipContent side="right" className="text-xs">Sign Out</TooltipContent>
+              <TooltipContent side="right" className="text-xs">
+                Sign Out
+              </TooltipContent>
             )}
           </Tooltip>
 

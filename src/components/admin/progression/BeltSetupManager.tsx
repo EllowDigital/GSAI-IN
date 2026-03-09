@@ -280,7 +280,10 @@ export default function BeltSetupManager() {
   // Delete belt mutation
   const deleteBeltMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('belt_levels').delete().eq('id', id);
+      const { error } = await supabase
+        .from('belt_levels')
+        .delete()
+        .eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -350,7 +353,9 @@ export default function BeltSetupManager() {
       <div className="flex items-center justify-center p-8">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading belt configurations...</p>
+          <p className="text-muted-foreground">
+            Loading belt configurations...
+          </p>
         </div>
       </div>
     );
@@ -363,7 +368,8 @@ export default function BeltSetupManager() {
         <div>
           <h2 className="text-2xl font-bold">Belt Setup</h2>
           <p className="text-sm text-muted-foreground">
-            Manage belt hierarchies for belt-based disciplines (Karate, Taekwondo, BJJ, etc.)
+            Manage belt hierarchies for belt-based disciplines (Karate,
+            Taekwondo, BJJ, etc.)
           </p>
         </div>
         <div className="flex gap-2">
@@ -414,59 +420,63 @@ export default function BeltSetupManager() {
         <CardContent>
           <ScrollArea className="h-[500px]">
             <div className="space-y-6">
-              {Object.entries(groupedBelts).map(([discipline, disciplineBelts]) => (
-                <div key={discipline} className="space-y-2">
-                  <h3 className="font-semibold text-lg capitalize flex items-center gap-2">
-                    {discipline}
-                    <Badge variant="outline">{disciplineBelts.length} belts</Badge>
-                  </h3>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Rank</TableHead>
-                        <TableHead>Color</TableHead>
-                        <TableHead>Min Sessions</TableHead>
-                        <TableHead>Min Age</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {disciplineBelts
-                        .sort((a, b) => a.rank - b.rank)
-                        .map((belt) => (
-                          <TableRow key={belt.id}>
-                            <TableCell className="font-medium">
-                              {belt.rank}
-                            </TableCell>
-                            <TableCell>
-                              <Badge>{belt.color}</Badge>
-                            </TableCell>
-                            <TableCell>{belt.min_sessions || '—'}</TableCell>
-                            <TableCell>{belt.min_age || '—'}</TableCell>
-                            <TableCell className="text-right">
-                              <div className="flex gap-1 justify-end">
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => handleEdit(belt)}
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => handleDelete(belt.id)}
-                                >
-                                  <Trash2 className="h-4 w-4 text-destructive" />
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              ))}
+              {Object.entries(groupedBelts).map(
+                ([discipline, disciplineBelts]) => (
+                  <div key={discipline} className="space-y-2">
+                    <h3 className="font-semibold text-lg capitalize flex items-center gap-2">
+                      {discipline}
+                      <Badge variant="outline">
+                        {disciplineBelts.length} belts
+                      </Badge>
+                    </h3>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Rank</TableHead>
+                          <TableHead>Color</TableHead>
+                          <TableHead>Min Sessions</TableHead>
+                          <TableHead>Min Age</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {disciplineBelts
+                          .sort((a, b) => a.rank - b.rank)
+                          .map((belt) => (
+                            <TableRow key={belt.id}>
+                              <TableCell className="font-medium">
+                                {belt.rank}
+                              </TableCell>
+                              <TableCell>
+                                <Badge>{belt.color}</Badge>
+                              </TableCell>
+                              <TableCell>{belt.min_sessions || '—'}</TableCell>
+                              <TableCell>{belt.min_age || '—'}</TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex gap-1 justify-end">
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => handleEdit(belt)}
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => handleDelete(belt.id)}
+                                  >
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )
+              )}
               {Object.keys(groupedBelts).length === 0 && (
                 <p className="text-center text-muted-foreground py-8">
                   No belt hierarchies configured. Use Auto Setup to create
@@ -504,7 +514,9 @@ export default function BeltSetupManager() {
                   <SelectItem value="Taekwondo">Taekwondo (6 belts)</SelectItem>
                   <SelectItem value="BJJ">BJJ (5 belts)</SelectItem>
                   <SelectItem value="Grappling">Grappling (5 belts)</SelectItem>
-                  <SelectItem value="Kickboxing">Kickboxing (7 belts)</SelectItem>
+                  <SelectItem value="Kickboxing">
+                    Kickboxing (7 belts)
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -660,7 +672,9 @@ export default function BeltSetupManager() {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteTarget && deleteBeltMutation.mutate(deleteTarget)}
+              onClick={() =>
+                deleteTarget && deleteBeltMutation.mutate(deleteTarget)
+              }
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Delete

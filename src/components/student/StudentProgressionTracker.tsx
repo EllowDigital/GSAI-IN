@@ -61,7 +61,9 @@ export default function StudentProgressionTracker() {
     queryFn: async () => {
       const { data, error } = (await supabase
         .from('student_progress')
-        .select('id, stripe_count, status, belt_levels(id, color, rank, discipline)')
+        .select(
+          'id, stripe_count, status, belt_levels(id, color, rank, discipline)'
+        )
         .eq('student_id', profile!.studentId)
         .order('created_at', { ascending: false })) as any;
       if (error) throw error;
@@ -76,7 +78,9 @@ export default function StudentProgressionTracker() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('student_discipline_progress')
-        .select('id, status, started_at, completed_at, coach_notes, discipline_levels(id, discipline, level_name, level_order)')
+        .select(
+          'id, status, started_at, completed_at, coach_notes, discipline_levels(id, discipline, level_name, level_order)'
+        )
         .eq('student_id', profile!.studentId)
         .order('created_at', { ascending: false });
       if (error) throw error;
@@ -138,7 +142,11 @@ export default function StudentProgressionTracker() {
     <Tabs defaultValue={programs[0]} className="w-full">
       <TabsList className="w-full flex flex-wrap h-auto gap-1">
         {programs.map((prog: string) => (
-          <TabsTrigger key={prog} value={prog} className="text-xs sm:text-sm py-1.5 px-3">
+          <TabsTrigger
+            key={prog}
+            value={prog}
+            className="text-xs sm:text-sm py-1.5 px-3"
+          >
             {prog}
           </TabsTrigger>
         ))}
@@ -211,15 +219,22 @@ function ProgramProgressionView({
             <div className="flex items-center gap-4">
               <div
                 className="w-16 h-6 rounded-sm border border-border shadow-sm"
-                style={{ backgroundColor: BELT_COLORS[beltColor] || BELT_COLORS.white }}
+                style={{
+                  backgroundColor: BELT_COLORS[beltColor] || BELT_COLORS.white,
+                }}
               />
               <div>
-                <h3 className="font-semibold text-foreground capitalize">{beltColor} Belt</h3>
+                <h3 className="font-semibold text-foreground capitalize">
+                  {beltColor} Belt
+                </h3>
                 <p className="text-xs text-muted-foreground">{program}</p>
                 {stripes > 0 && (
                   <div className="flex items-center gap-1 mt-1">
                     {Array.from({ length: stripes }).map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                      <Star
+                        key={i}
+                        className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400"
+                      />
                     ))}
                     <span className="text-xs text-muted-foreground ml-1">
                       {stripes} stripe{stripes > 1 ? 's' : ''}
@@ -228,10 +243,7 @@ function ProgramProgressionView({
                 )}
               </div>
               {currentBelt && (
-                <Badge
-                  variant="outline"
-                  className="ml-auto text-xs capitalize"
-                >
+                <Badge variant="outline" className="ml-auto text-xs capitalize">
                   {currentBelt.status?.replace('_', ' ') || 'In Progress'}
                 </Badge>
               )}
@@ -256,7 +268,11 @@ function ProgramProgressionView({
                       <Badge variant="outline" className="capitalize text-xs">
                         <span
                           className="w-2.5 h-2.5 rounded-full mr-1.5 inline-block"
-                          style={{ backgroundColor: BELT_COLORS[p.from_belt?.color?.toLowerCase()] || '#ccc' }}
+                          style={{
+                            backgroundColor:
+                              BELT_COLORS[p.from_belt?.color?.toLowerCase()] ||
+                              '#ccc',
+                          }}
                         />
                         {p.from_belt?.color || '—'}
                       </Badge>
@@ -264,7 +280,11 @@ function ProgramProgressionView({
                       <Badge variant="outline" className="capitalize text-xs">
                         <span
                           className="w-2.5 h-2.5 rounded-full mr-1.5 inline-block"
-                          style={{ backgroundColor: BELT_COLORS[p.to_belt?.color?.toLowerCase()] || '#ccc' }}
+                          style={{
+                            backgroundColor:
+                              BELT_COLORS[p.to_belt?.color?.toLowerCase()] ||
+                              '#ccc',
+                          }}
                         />
                         {p.to_belt?.color || '—'}
                       </Badge>
@@ -273,7 +293,9 @@ function ProgramProgressionView({
                       {format(new Date(p.promoted_at), 'MMM d, yyyy')}
                     </p>
                     {p.notes && (
-                      <p className="text-xs text-muted-foreground mt-1 italic">"{p.notes}"</p>
+                      <p className="text-xs text-muted-foreground mt-1 italic">
+                        "{p.notes}"
+                      </p>
                     )}
                   </CardContent>
                 </Card>
@@ -287,7 +309,8 @@ function ProgramProgressionView({
 
   // Level-based progression
   const programLevels = levelProgress.filter(
-    (lp: any) => lp.discipline_levels?.discipline?.toLowerCase() === program.toLowerCase()
+    (lp: any) =>
+      lp.discipline_levels?.discipline?.toLowerCase() === program.toLowerCase()
   );
 
   // Get unique level names from DB records, ordered
@@ -305,7 +328,9 @@ function ProgramProgressionView({
             <Layers className="w-5 h-5 text-primary" />
             <div>
               <h3 className="font-semibold text-foreground">{program}</h3>
-              <p className="text-xs text-muted-foreground">Level-based progression</p>
+              <p className="text-xs text-muted-foreground">
+                Level-based progression
+              </p>
             </div>
           </div>
 
@@ -321,7 +346,13 @@ function ProgramProgressionView({
               return (
                 <React.Fragment key={level}>
                   <Badge
-                    variant={isCompleted ? 'default' : isActive ? 'secondary' : 'outline'}
+                    variant={
+                      isCompleted
+                        ? 'default'
+                        : isActive
+                          ? 'secondary'
+                          : 'outline'
+                    }
                     className={`text-xs px-2.5 py-1 ${
                       isCompleted
                         ? 'bg-green-600 text-white'
@@ -351,7 +382,11 @@ function ProgramProgressionView({
       ) : (
         <div className="space-y-2">
           {programLevels
-            .sort((a: any, b: any) => (a.discipline_levels?.level_order ?? 0) - (b.discipline_levels?.level_order ?? 0))
+            .sort(
+              (a: any, b: any) =>
+                (a.discipline_levels?.level_order ?? 0) -
+                (b.discipline_levels?.level_order ?? 0)
+            )
             .map((lp: any) => (
               <Card key={lp.id} className="border border-border">
                 <CardContent className="p-3">
@@ -362,18 +397,25 @@ function ProgramProgressionView({
                       </p>
                       <p className="text-xs text-muted-foreground">
                         Started {format(new Date(lp.started_at), 'MMM d, yyyy')}
-                        {lp.completed_at && ` • Completed ${format(new Date(lp.completed_at), 'MMM d, yyyy')}`}
+                        {lp.completed_at &&
+                          ` • Completed ${format(new Date(lp.completed_at), 'MMM d, yyyy')}`}
                       </p>
                     </div>
                     <Badge
-                      variant={lp.status === 'completed' ? 'default' : 'secondary'}
+                      variant={
+                        lp.status === 'completed' ? 'default' : 'secondary'
+                      }
                       className={`text-xs ${lp.status === 'completed' ? 'bg-green-600' : ''}`}
                     >
-                      {lp.status === 'completed' ? '✓ Completed' : 'In Progress'}
+                      {lp.status === 'completed'
+                        ? '✓ Completed'
+                        : 'In Progress'}
                     </Badge>
                   </div>
                   {lp.coach_notes && (
-                    <p className="text-xs text-muted-foreground mt-2 italic">"{lp.coach_notes}"</p>
+                    <p className="text-xs text-muted-foreground mt-2 italic">
+                      "{lp.coach_notes}"
+                    </p>
                   )}
                 </CardContent>
               </Card>

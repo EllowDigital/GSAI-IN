@@ -31,7 +31,20 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/hooks/use-toast';
 import FeeEditModal from './FeeEditModal';
 
-const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTH_NAMES = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 
 export default function FeeHistoryDrawer({
   open,
@@ -72,7 +85,10 @@ export default function FeeHistoryDrawer({
       const { error } = await supabase.from('fees').delete().eq('id', deleteId);
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['fees'] });
-      toast({ title: 'Deleted', description: 'Fee record removed successfully.' });
+      toast({
+        title: 'Deleted',
+        description: 'Fee record removed successfully.',
+      });
     } catch (err: any) {
       toast({ title: 'Error', description: err.message, variant: 'error' });
     } finally {
@@ -111,7 +127,10 @@ export default function FeeHistoryDrawer({
               <TableBody>
                 {rows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
+                    <TableCell
+                      colSpan={8}
+                      className="text-center text-muted-foreground py-8"
+                    >
                       No payment history found.
                     </TableCell>
                   </TableRow>
@@ -121,33 +140,54 @@ export default function FeeHistoryDrawer({
                       <TableCell className="text-xs font-medium">
                         {MONTH_NAMES[fee.month - 1]} {fee.year}
                       </TableCell>
-                      <TableCell className="text-xs">₹{fee.monthly_fee?.toLocaleString('en-IN')}</TableCell>
-                      <TableCell className="text-xs font-medium text-green-700">₹{fee.paid_amount?.toLocaleString('en-IN')}</TableCell>
-                      <TableCell className={`text-xs font-medium ${fee.balance_due > 0 ? 'text-destructive' : 'text-green-700'}`}>
+                      <TableCell className="text-xs">
+                        ₹{fee.monthly_fee?.toLocaleString('en-IN')}
+                      </TableCell>
+                      <TableCell className="text-xs font-medium text-green-700">
+                        ₹{fee.paid_amount?.toLocaleString('en-IN')}
+                      </TableCell>
+                      <TableCell
+                        className={`text-xs font-medium ${fee.balance_due > 0 ? 'text-destructive' : 'text-green-700'}`}
+                      >
                         ₹{fee.balance_due?.toLocaleString('en-IN')}
                       </TableCell>
                       <TableCell>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
-                          fee.status === 'paid'
-                            ? 'bg-green-100 text-green-700 border-green-200'
-                            : fee.status === 'partial'
-                              ? 'bg-yellow-100 text-yellow-700 border-yellow-200'
-                              : 'bg-red-100 text-red-700 border-red-200'
-                        }`}>
-                          {fee.status === 'paid' && '✅ '}{fee.status === 'partial' && '⚠️ '}{fee.status === 'unpaid' && '❌ '}
-                          {fee.status?.charAt(0).toUpperCase() + fee.status?.slice(1)}
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                            fee.status === 'paid'
+                              ? 'bg-green-100 text-green-700 border-green-200'
+                              : fee.status === 'partial'
+                                ? 'bg-yellow-100 text-yellow-700 border-yellow-200'
+                                : 'bg-red-100 text-red-700 border-red-200'
+                          }`}
+                        >
+                          {fee.status === 'paid' && '✅ '}
+                          {fee.status === 'partial' && '⚠️ '}
+                          {fee.status === 'unpaid' && '❌ '}
+                          {fee.status?.charAt(0).toUpperCase() +
+                            fee.status?.slice(1)}
                         </span>
                       </TableCell>
                       <TableCell>
                         {fee.receipt_url ? (
-                          <a href={fee.receipt_url} target="_blank" rel="noopener noreferrer" className="text-primary underline text-xs hover:text-primary/80">
+                          <a
+                            href={fee.receipt_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary underline text-xs hover:text-primary/80"
+                          >
                             View
                           </a>
                         ) : (
-                          <span className="text-muted-foreground text-xs">—</span>
+                          <span className="text-muted-foreground text-xs">
+                            —
+                          </span>
                         )}
                       </TableCell>
-                      <TableCell className="max-w-[120px] truncate text-xs text-muted-foreground" title={fee.notes ?? ''}>
+                      <TableCell
+                        className="max-w-[120px] truncate text-xs text-muted-foreground"
+                        title={fee.notes ?? ''}
+                      >
                         {fee.notes || '—'}
                       </TableCell>
                       <TableCell className="text-right">
@@ -181,9 +221,14 @@ export default function FeeHistoryDrawer({
 
           {rows.length > 0 && (
             <div className="flex items-center justify-between pt-2 text-xs text-muted-foreground">
-              <span>{rows.length} record{rows.length !== 1 ? 's' : ''}</span>
               <span>
-                Total paid: ₹{rows.reduce((sum, f) => sum + (f.paid_amount || 0), 0).toLocaleString('en-IN')}
+                {rows.length} record{rows.length !== 1 ? 's' : ''}
+              </span>
+              <span>
+                Total paid: ₹
+                {rows
+                  .reduce((sum, f) => sum + (f.paid_amount || 0), 0)
+                  .toLocaleString('en-IN')}
               </span>
             </div>
           )}
@@ -203,12 +248,16 @@ export default function FeeHistoryDrawer({
       )}
 
       {/* Delete Confirmation */}
-      <AlertDialog open={!!deleteId} onOpenChange={(o) => !o && setDeleteId(null)}>
+      <AlertDialog
+        open={!!deleteId}
+        onOpenChange={(o) => !o && setDeleteId(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Fee Record?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently remove this fee record. This action cannot be undone.
+              This will permanently remove this fee record. This action cannot
+              be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -218,7 +267,9 @@ export default function FeeHistoryDrawer({
               disabled={deleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {deleting ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}
+              {deleting ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-1" />
+              ) : null}
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

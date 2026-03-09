@@ -201,7 +201,12 @@ function StudentCard({
   onPromote: () => void;
   onStripeUpdate: (newCount: number) => void;
   onDelete: () => void;
-  onEdit: (data: { belt_level_id?: string; stripe_count?: number; status?: ProgressStatus; coach_notes?: string | null }) => void;
+  onEdit: (data: {
+    belt_level_id?: string;
+    stripe_count?: number;
+    status?: ProgressStatus;
+    coach_notes?: string | null;
+  }) => void;
   nextBelt: { id: string; color: string; rank: number } | null;
   promoting: boolean;
   deleting: boolean;
@@ -213,10 +218,16 @@ function StudentCard({
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [notes, setNotes] = useState(record.coach_notes ?? '');
   const [editBeltId, setEditBeltId] = useState(record.belt_levels?.id ?? '');
-  const [editStripes, setEditStripes] = useState(String(record.stripe_count ?? 0));
+  const [editStripes, setEditStripes] = useState(
+    String(record.stripe_count ?? 0)
+  );
   const [editStatus, setEditStatus] = useState<ProgressStatus>(record.status);
   const [editNotes, setEditNotes] = useState(record.coach_notes ?? '');
-  const { isBeltBased: checkBelt, hasStripes: checkStripes, getDiscipline } = useDisciplines();
+  const {
+    isBeltBased: checkBelt,
+    hasStripes: checkStripes,
+    getDiscipline,
+  } = useDisciplines();
   const student = record.students;
   const belt = record.belt_levels;
   // Use belt's discipline (not comma-separated student.program) for type detection
@@ -247,7 +258,9 @@ function StudentCard({
             )}
           </div>
           {beltDiscipline && (
-            <span className="text-[10px] text-muted-foreground capitalize">{beltDiscipline}</span>
+            <span className="text-[10px] text-muted-foreground capitalize">
+              {beltDiscipline}
+            </span>
           )}
         </div>
       );
@@ -255,9 +268,7 @@ function StudentCard({
       const disc = getDiscipline(beltDiscipline);
       return (
         <div className="flex items-center gap-2 mt-1.5">
-          <div
-            className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-primary/10 to-primary/5 text-primary border border-primary/20"
-          >
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-primary/10 to-primary/5 text-primary border border-primary/20">
             <Layers className="h-3 w-3" />
             {disc?.type === 'level' ? 'Level-based' : 'Training'}
           </div>
@@ -454,7 +465,8 @@ function StudentCard({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Progression Record</AlertDialogTitle>
             <AlertDialogDescription>
-              Remove {student?.name}'s {belt?.color ?? ''} belt progression record and its related promotion history? This cannot be undone.
+              Remove {student?.name}'s {belt?.color ?? ''} belt progression
+              record and its related promotion history? This cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -467,7 +479,9 @@ function StudentCard({
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={deleting}
             >
-              {deleting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              {deleting ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : null}
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -486,7 +500,9 @@ function StudentCard({
           <div className="space-y-4">
             {isBeltBased && (
               <div>
-                <label className="text-sm font-medium text-foreground mb-1.5 block">Belt Level</label>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">
+                  Belt Level
+                </label>
                 <Select value={editBeltId} onValueChange={setEditBeltId}>
                   <SelectTrigger className="h-9">
                     <SelectValue placeholder="Select belt" />
@@ -498,15 +514,22 @@ function StudentCard({
                         return true; // belt options are already filtered by caller if needed
                       })
                       .map((b) => (
-                        <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>
+                        <SelectItem key={b.value} value={b.value}>
+                          {b.label}
+                        </SelectItem>
                       ))}
                   </SelectContent>
                 </Select>
               </div>
             )}
             <div>
-              <label className="text-sm font-medium text-foreground mb-1.5 block">Status</label>
-              <Select value={editStatus} onValueChange={(v) => setEditStatus(v as ProgressStatus)}>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">
+                Status
+              </label>
+              <Select
+                value={editStatus}
+                onValueChange={(v) => setEditStatus(v as ProgressStatus)}
+              >
                 <SelectTrigger className="h-9">
                   <SelectValue />
                 </SelectTrigger>
@@ -520,21 +543,27 @@ function StudentCard({
             </div>
             {showStripes && isBeltBased && (
               <div>
-                <label className="text-sm font-medium text-foreground mb-1.5 block">Stripe Count</label>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">
+                  Stripe Count
+                </label>
                 <Select value={editStripes} onValueChange={setEditStripes}>
                   <SelectTrigger className="h-9">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {[0, 1, 2, 3, 4].map((n) => (
-                      <SelectItem key={n} value={String(n)}>{n} stripe{n !== 1 ? 's' : ''}</SelectItem>
+                      <SelectItem key={n} value={String(n)}>
+                        {n} stripe{n !== 1 ? 's' : ''}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             )}
             <div>
-              <label className="text-sm font-medium text-foreground mb-1.5 block">Coach Notes</label>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">
+                Coach Notes
+              </label>
               <Textarea
                 value={editNotes}
                 onChange={(e) => setEditNotes(e.target.value)}
@@ -543,20 +572,37 @@ function StudentCard({
               />
             </div>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setEditDialogOpen(false)}>Cancel</Button>
+              <Button
+                variant="outline"
+                onClick={() => setEditDialogOpen(false)}
+              >
+                Cancel
+              </Button>
               <Button
                 onClick={() => {
                   onEdit({
-                    belt_level_id: editBeltId !== record.belt_levels?.id ? editBeltId : undefined,
-                    stripe_count: Number(editStripes) !== (record.stripe_count ?? 0) ? Number(editStripes) : undefined,
-                    status: editStatus !== record.status ? editStatus : undefined,
-                    coach_notes: editNotes !== (record.coach_notes ?? '') ? editNotes : undefined,
+                    belt_level_id:
+                      editBeltId !== record.belt_levels?.id
+                        ? editBeltId
+                        : undefined,
+                    stripe_count:
+                      Number(editStripes) !== (record.stripe_count ?? 0)
+                        ? Number(editStripes)
+                        : undefined,
+                    status:
+                      editStatus !== record.status ? editStatus : undefined,
+                    coach_notes:
+                      editNotes !== (record.coach_notes ?? '')
+                        ? editNotes
+                        : undefined,
                   });
                   setEditDialogOpen(false);
                 }}
                 disabled={editing}
               >
-                {editing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                {editing ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : null}
                 Save Changes
               </Button>
             </div>
@@ -602,7 +648,12 @@ function LevelProgressCard({
   deleting,
 }: {
   lp: any;
-  student: { id: string; name: string; program: string; profile_image_url: string | null };
+  student: {
+    id: string;
+    name: string;
+    program: string;
+    profile_image_url: string | null;
+  };
   onUpdate: (status: string) => void;
   onDelete: () => void;
   updating: boolean;
@@ -618,7 +669,10 @@ function LevelProgressCard({
           <div className="flex items-start gap-3 mb-3">
             <Avatar className="h-10 w-10 ring-2 ring-offset-2 ring-primary/10">
               {student.profile_image_url ? (
-                <AvatarImage src={student.profile_image_url} alt={student.name} />
+                <AvatarImage
+                  src={student.profile_image_url}
+                  alt={student.name}
+                />
               ) : (
                 <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-bold text-sm">
                   {student.name?.slice(0, 2).toUpperCase()}
@@ -626,7 +680,9 @@ function LevelProgressCard({
               )}
             </Avatar>
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-sm text-foreground truncate">{student.name}</h3>
+              <h3 className="font-semibold text-sm text-foreground truncate">
+                {student.name}
+              </h3>
               <p className="text-xs text-muted-foreground">{student.program}</p>
             </div>
             <Button
@@ -641,7 +697,9 @@ function LevelProgressCard({
           </div>
           <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 mb-3">
             <Layers className="h-4 w-4 text-primary flex-shrink-0" />
-            <span className="text-sm font-medium text-foreground">{lp.discipline_levels?.level_name}</span>
+            <span className="text-sm font-medium text-foreground">
+              {lp.discipline_levels?.level_name}
+            </span>
             <Badge
               variant={lp.status === 'completed' ? 'default' : 'secondary'}
               className={`ml-auto text-[10px] ${lp.status === 'completed' ? 'bg-green-600' : ''}`}
@@ -682,7 +740,8 @@ function LevelProgressCard({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Level Progress</AlertDialogTitle>
             <AlertDialogDescription>
-              Remove {student.name}'s {lp.discipline_levels?.level_name} level progress? This will reset their progress for this level.
+              Remove {student.name}'s {lp.discipline_levels?.level_name} level
+              progress? This will reset their progress for this level.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -695,7 +754,9 @@ function LevelProgressCard({
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={deleting}
             >
-              {deleting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              {deleting ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : null}
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -714,7 +775,8 @@ export default function ProgressionBoard() {
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
 
   const { beltOptions, beltMap } = useBeltLevels();
-  const { levelOptions: disciplineLevelOptions, levelsByDiscipline } = useDisciplineLevels();
+  const { levelOptions: disciplineLevelOptions, levelsByDiscipline } =
+    useDisciplineLevels();
   const { students } = useStudents();
   const {
     history,
@@ -724,43 +786,70 @@ export default function ProgressionBoard() {
 
   // Fetch level-based discipline progress
   const queryClient = useQueryClient();
-  const { data: levelProgressRecords = [], isLoading: levelProgressLoading } = useQuery({
-    queryKey: ['discipline-progress-admin'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('student_discipline_progress')
-        .select('id, student_id, status, started_at, completed_at, coach_notes, discipline_levels(id, discipline, level_name, level_order)')
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      return (data || []) as any[];
-    },
-  });
+  const { data: levelProgressRecords = [], isLoading: levelProgressLoading } =
+    useQuery({
+      queryKey: ['discipline-progress-admin'],
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from('student_discipline_progress')
+          .select(
+            'id, student_id, status, started_at, completed_at, coach_notes, discipline_levels(id, discipline, level_name, level_order)'
+          )
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        return (data || []) as any[];
+      },
+    });
 
   const updateLevelProgressMutation = useMutation({
-    mutationFn: async ({ id, status, coach_notes }: { id: string; status: string; coach_notes?: string | null }) => {
-      const payload: Record<string, unknown> = { status, updated_at: new Date().toISOString() };
-      if (status === 'completed') payload.completed_at = new Date().toISOString();
+    mutationFn: async ({
+      id,
+      status,
+      coach_notes,
+    }: {
+      id: string;
+      status: string;
+      coach_notes?: string | null;
+    }) => {
+      const payload: Record<string, unknown> = {
+        status,
+        updated_at: new Date().toISOString(),
+      };
+      if (status === 'completed')
+        payload.completed_at = new Date().toISOString();
       if (coach_notes !== undefined) payload.coach_notes = coach_notes;
-      const { error } = await supabase.from('student_discipline_progress').update(payload).eq('id', id);
+      const { error } = await supabase
+        .from('student_discipline_progress')
+        .update(payload)
+        .eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['discipline-progress-admin'] });
+      queryClient.invalidateQueries({
+        queryKey: ['discipline-progress-admin'],
+      });
       toast.success('Level progress updated');
     },
-    onError: (err) => toast.error(err instanceof Error ? err.message : 'Update failed'),
+    onError: (err) =>
+      toast.error(err instanceof Error ? err.message : 'Update failed'),
   });
 
   const deleteLevelProgressMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('student_discipline_progress').delete().eq('id', id);
+      const { error } = await supabase
+        .from('student_discipline_progress')
+        .delete()
+        .eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['discipline-progress-admin'] });
+      queryClient.invalidateQueries({
+        queryKey: ['discipline-progress-admin'],
+      });
       toast.success('Level progress deleted');
     },
-    onError: (err) => toast.error(err instanceof Error ? err.message : 'Delete failed'),
+    onError: (err) =>
+      toast.error(err instanceof Error ? err.message : 'Delete failed'),
   });
 
   // Fetch actual programs from junction table for each student
@@ -791,9 +880,10 @@ export default function ProgressionBoard() {
     () =>
       students.map((student) => {
         const programs = studentProgramMap.get(student.id);
-        const programLabel = programs && programs.length > 0
-          ? programs.join(', ')
-          : student.program;
+        const programLabel =
+          programs && programs.length > 0
+            ? programs.join(', ')
+            : student.program;
         return {
           label: `${student.name} • ${programLabel}`,
           value: student.id,
@@ -809,12 +899,15 @@ export default function ProgressionBoard() {
     students.forEach((s) => {
       const progs = studentProgramMap.get(s.id);
       if (progs) progs.forEach((p) => allProgs.add(p));
-      else if (s.program) s.program.split(',').forEach((p) => allProgs.add(p.trim()));
+      else if (s.program)
+        s.program.split(',').forEach((p) => allProgs.add(p.trim()));
     });
-    return Array.from(allProgs).filter(Boolean).map((p) => ({
-      label: p,
-      value: p,
-    }));
+    return Array.from(allProgs)
+      .filter(Boolean)
+      .map((p) => ({
+        label: p,
+        value: p,
+      }));
   }, [students, studentProgramMap]);
 
   const {
@@ -1108,19 +1201,27 @@ export default function ProgressionBoard() {
         <div className="space-y-4 mt-6">
           <div className="flex items-center gap-2">
             <Layers className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-bold text-foreground">Level-Based Progression</h2>
-            <Badge variant="secondary" className="text-xs">{levelProgressRecords.length} records</Badge>
+            <h2 className="text-lg font-bold text-foreground">
+              Level-Based Progression
+            </h2>
+            <Badge variant="secondary" className="text-xs">
+              {levelProgressRecords.length} records
+            </Badge>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
             {levelProgressRecords
               .filter((lp: any) => {
                 if (program) {
                   const student = students.find((s) => s.id === lp.student_id);
-                  if (student?.program?.toLowerCase() !== program.toLowerCase()) return false;
+                  if (student?.program?.toLowerCase() !== program.toLowerCase())
+                    return false;
                 }
                 if (search) {
                   const student = students.find((s) => s.id === lp.student_id);
-                  if (!student?.name.toLowerCase().includes(search.toLowerCase())) return false;
+                  if (
+                    !student?.name.toLowerCase().includes(search.toLowerCase())
+                  )
+                    return false;
                 }
                 return true;
               })
@@ -1132,7 +1233,9 @@ export default function ProgressionBoard() {
                     key={lp.id}
                     lp={lp}
                     student={student}
-                    onUpdate={(status) => updateLevelProgressMutation.mutate({ id: lp.id, status })}
+                    onUpdate={(status) =>
+                      updateLevelProgressMutation.mutate({ id: lp.id, status })
+                    }
                     onDelete={() => deleteLevelProgressMutation.mutate(lp.id)}
                     updating={updateLevelProgressMutation.isPending}
                     deleting={deleteLevelProgressMutation.isPending}
@@ -1143,7 +1246,6 @@ export default function ProgressionBoard() {
         </div>
       )}
 
-
       <Dialog open={historyDialogOpen} onOpenChange={setHistoryDialogOpen}>
         <DialogContent className="max-w-lg max-h-[85vh] mx-4 sm:mx-auto">
           <DialogHeader>
@@ -1152,7 +1254,8 @@ export default function ProgressionBoard() {
               Promotion History
             </DialogTitle>
             <DialogDescription>
-              Recent belt promotions across all programs. Promotion history is preserved even when progression records are deleted.
+              Recent belt promotions across all programs. Promotion history is
+              preserved even when progression records are deleted.
             </DialogDescription>
           </DialogHeader>
           <ProgressionTimeline history={history} isLoading={historyLoading} />
@@ -1197,7 +1300,9 @@ export default function ProgressionBoard() {
               if (error) throw error;
             }
             toast.success('Student assigned to level');
-            queryClient.invalidateQueries({ queryKey: ['discipline-progress-admin'] });
+            queryClient.invalidateQueries({
+              queryKey: ['discipline-progress-admin'],
+            });
           } else {
             await assignStudent(payload);
           }

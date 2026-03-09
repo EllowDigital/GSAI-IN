@@ -42,7 +42,6 @@ import { useStudentPrograms } from '@/hooks/useStudentPrograms';
 import { useDisciplines } from '@/hooks/useDisciplines';
 import { X, Plus } from 'lucide-react';
 
-
 const StudentSchema = z.object({
   name: z.string().min(2, 'Name is required'),
   aadhar_number: z.string().length(12, 'Aadhar Number must be 12 digits'),
@@ -266,7 +265,9 @@ export default function StudentModal({
           .eq('student_id', student.id)
           .order('is_primary', { ascending: false });
 
-        const allProgramNames = allProgs?.map((p) => p.program_name) || [sanitizedValues.program];
+        const allProgramNames = allProgs?.map((p) => p.program_name) || [
+          sanitizedValues.program,
+        ];
         payload.program = allProgramNames.join(', ');
 
         const { data, error } = await supabase

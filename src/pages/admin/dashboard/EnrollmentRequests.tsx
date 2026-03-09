@@ -391,7 +391,9 @@ export default function EnrollmentRequestsManager() {
           variant="outline"
           size="sm"
           className="h-9 gap-2"
-          onClick={() => queryClient.invalidateQueries({ queryKey: ['enrollment-requests'] })}
+          onClick={() =>
+            queryClient.invalidateQueries({ queryKey: ['enrollment-requests'] })
+          }
         >
           <RefreshCw className="w-4 h-4" />
           <span className="hidden sm:inline">Refresh</span>

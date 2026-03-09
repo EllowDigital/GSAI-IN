@@ -92,7 +92,10 @@ export default function FeeSettingsCard() {
       if (error) throw error;
 
       queryClient.invalidateQueries({ queryKey: ['academy-settings'] });
-      toast({ title: 'Program fees updated', description: 'All program fees have been saved.' });
+      toast({
+        title: 'Program fees updated',
+        description: 'All program fees have been saved.',
+      });
       setEditing(false);
     } catch (err: any) {
       toast({ title: 'Error', description: err.message, variant: 'error' });
@@ -111,8 +114,12 @@ export default function FeeSettingsCard() {
                 <Settings className="w-4 h-4 text-primary" />
               </div>
               <div>
-                <p className="font-semibold text-sm text-foreground">Program Fee Settings</p>
-                <p className="text-xs text-muted-foreground">Set different fees for each program</p>
+                <p className="font-semibold text-sm text-foreground">
+                  Program Fee Settings
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Set different fees for each program
+                </p>
               </div>
             </div>
             <Button
@@ -135,8 +142,12 @@ export default function FeeSettingsCard() {
                 >
                   <span className="text-sm">{p.label.split(' ')[0]}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-muted-foreground truncate">{p.value}</p>
-                    <p className="text-sm font-bold text-foreground">₹{fee.toLocaleString('en-IN')}</p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {p.value}
+                    </p>
+                    <p className="text-sm font-bold text-foreground">
+                      ₹{fee.toLocaleString('en-IN')}
+                    </p>
                   </div>
                 </div>
               );
@@ -156,12 +167,21 @@ export default function FeeSettingsCard() {
               <IndianRupee className="w-4 h-4 text-primary" />
             </div>
             <div>
-              <p className="font-semibold text-sm text-foreground">Edit Program Fees</p>
-              <p className="text-xs text-muted-foreground">Set monthly fee for each program</p>
+              <p className="font-semibold text-sm text-foreground">
+                Edit Program Fees
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Set monthly fee for each program
+              </p>
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="ghost" size="sm" onClick={() => setEditing(false)} disabled={saving}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setEditing(false)}
+              disabled={saving}
+            >
               <X className="w-4 h-4" />
             </Button>
           </div>
@@ -169,10 +189,17 @@ export default function FeeSettingsCard() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {PROGRAMS.map((p) => (
-            <div key={p.value} className="flex items-center gap-2 p-2 rounded-lg border border-border/50 bg-background">
-              <span className="text-lg w-8 text-center">{p.label.split(' ')[0]}</span>
+            <div
+              key={p.value}
+              className="flex items-center gap-2 p-2 rounded-lg border border-border/50 bg-background"
+            >
+              <span className="text-lg w-8 text-center">
+                {p.label.split(' ')[0]}
+              </span>
               <div className="flex-1 min-w-0">
-                <label className="text-xs font-medium text-muted-foreground">{p.value}</label>
+                <label className="text-xs font-medium text-muted-foreground">
+                  {p.value}
+                </label>
                 <div className="flex items-center gap-1 mt-0.5">
                   <span className="text-xs text-muted-foreground">₹</span>
                   <Input
@@ -194,11 +221,25 @@ export default function FeeSettingsCard() {
         </div>
 
         <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-border/50">
-          <Button variant="outline" size="sm" onClick={() => setEditing(false)} disabled={saving}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setEditing(false)}
+            disabled={saving}
+          >
             Cancel
           </Button>
-          <Button size="sm" onClick={handleSave} disabled={saving} className="gap-1.5">
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+          <Button
+            size="sm"
+            onClick={handleSave}
+            disabled={saving}
+            className="gap-1.5"
+          >
+            {saving ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
             Save All
           </Button>
         </div>

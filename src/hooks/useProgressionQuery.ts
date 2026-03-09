@@ -73,11 +73,18 @@ function filterRecords(
 
     if (filters.program) {
       // student.program may be comma-separated (multi-program)
-      const studentPrograms = (record.students?.program ?? '').split(',').map(p => p.trim().toLowerCase());
-      const beltDiscipline = (record.belt_levels?.discipline ?? '').toLowerCase();
+      const studentPrograms = (record.students?.program ?? '')
+        .split(',')
+        .map((p) => p.trim().toLowerCase());
+      const beltDiscipline = (
+        record.belt_levels?.discipline ?? ''
+      ).toLowerCase();
       const filterProg = filters.program.toLowerCase();
       // Match if the filter matches any of the student's programs OR the belt's discipline
-      if (!studentPrograms.includes(filterProg) && beltDiscipline !== filterProg) {
+      if (
+        !studentPrograms.includes(filterProg) &&
+        beltDiscipline !== filterProg
+      ) {
         return false;
       }
     }
@@ -454,7 +461,8 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
     }) => {
       const payload: Record<string, unknown> = {};
       if (belt_level_id !== undefined) payload.belt_level_id = belt_level_id;
-      if (stripe_count !== undefined) payload.stripe_count = Math.max(0, Math.min(4, stripe_count));
+      if (stripe_count !== undefined)
+        payload.stripe_count = Math.max(0, Math.min(4, stripe_count));
       if (status !== undefined) payload.status = status;
       if (coach_notes !== undefined) payload.coach_notes = coach_notes;
 
@@ -481,7 +489,8 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       // Find the record to get student_id and belt_level_id for history cleanup
-      const current = queryClient.getQueryData<ProgressionRecord[]>(queryKey) ?? [];
+      const current =
+        queryClient.getQueryData<ProgressionRecord[]>(queryKey) ?? [];
       const target = current.find((r) => r.id === id);
 
       // Delete promotion history linked to this student + belt
@@ -490,7 +499,9 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
           .from('promotion_history')
           .delete()
           .eq('student_id', target.students.id)
-          .or(`from_belt_id.eq.${target.belt_levels.id},to_belt_id.eq.${target.belt_levels.id}`);
+          .or(
+            `from_belt_id.eq.${target.belt_levels.id},to_belt_id.eq.${target.belt_levels.id}`
+          );
       }
 
       const { error } = await supabase
@@ -523,7 +534,9 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
       queryClient.invalidateQueries({ queryKey: ['promotion-history'] });
-      queryClient.invalidateQueries({ queryKey: ['discipline-progress-admin'] });
+      queryClient.invalidateQueries({
+        queryKey: ['discipline-progress-admin'],
+      });
     },
     onSuccess: () => {
       toast.success('Progression record deleted');
