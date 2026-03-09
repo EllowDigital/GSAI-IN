@@ -788,8 +788,10 @@ export default function ProgressionBoard() {
                 onStripeUpdate={(newCount) =>
                   updateStripeCount({ id: record.id, stripeCount: newCount })
                 }
+                onDelete={() => deleteProgress(record.id)}
                 nextBelt={nextBelt}
                 promoting={promotingStudent}
+                deleting={deletingProgress}
               />
             );
           })}
