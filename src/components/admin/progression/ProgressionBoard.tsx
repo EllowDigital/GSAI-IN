@@ -569,10 +569,10 @@ export default function ProgressionBoard() {
         <div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground flex items-center gap-2">
             <Trophy className="h-6 w-6 sm:h-7 sm:w-7 text-yellow-500" />
-            Belt Progression
+            Student Progression
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Track and manage student belt assessments
+            Track belt & level-based assessments across all programs
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
