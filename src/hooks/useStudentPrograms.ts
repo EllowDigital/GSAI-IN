@@ -74,7 +74,7 @@ export function useStudentPrograms(studentId?: string) {
   );
 
   const removeProgram = useCallback(
-    async (programId: string) => {
+    async (programId: string, studentId?: string) => {
       const { error } = await supabase
         .from('student_programs')
         .delete()
@@ -83,12 +83,15 @@ export function useStudentPrograms(studentId?: string) {
         toast.error('Failed to remove program: ' + error.message);
         return false;
       }
+      if (studentId) {
+        await syncStudentProgramField(studentId);
+      }
       queryClient.invalidateQueries({ queryKey: ['student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
       toast.success('Program removed');
       return true;
     },
-    [queryClient]
+    [queryClient, syncStudentProgramField]
   );
 
   return { programs, isLoading, addProgram, removeProgram };
