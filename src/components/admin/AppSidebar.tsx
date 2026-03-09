@@ -18,6 +18,7 @@ import {
   Megaphone,
   UserPlus,
   CalendarCheck,
+  Dumbbell,
 } from 'lucide-react';
 import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 
@@ -45,6 +46,12 @@ const navItems = [
     title: 'Progression',
     url: '/admin/dashboard/progression',
     icon: Trophy,
+    category: 'manage',
+  },
+  {
+    title: 'Disciplines',
+    url: '/admin/dashboard/disciplines',
+    icon: Dumbbell,
     category: 'manage',
   },
   {
