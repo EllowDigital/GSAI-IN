@@ -188,9 +188,12 @@ function StudentCard({
   onPromote,
   onStripeUpdate,
   onDelete,
+  onEdit,
   nextBelt,
   promoting,
   deleting,
+  editing,
+  beltOptions,
 }: {
   record: ProgressionRecord;
   onStatusChange: (status: ProgressStatus) => void;
@@ -198,13 +201,21 @@ function StudentCard({
   onPromote: () => void;
   onStripeUpdate: (newCount: number) => void;
   onDelete: () => void;
+  onEdit: (data: { belt_level_id?: string; stripe_count?: number; status?: ProgressStatus; coach_notes?: string | null }) => void;
   nextBelt: { id: string; color: string; rank: number } | null;
   promoting: boolean;
   deleting: boolean;
+  editing: boolean;
+  beltOptions: { value: string; label: string }[];
 }) {
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [notes, setNotes] = useState(record.coach_notes ?? '');
+  const [editBeltId, setEditBeltId] = useState(record.belt_levels?.id ?? '');
+  const [editStripes, setEditStripes] = useState(String(record.stripe_count ?? 0));
+  const [editStatus, setEditStatus] = useState<ProgressStatus>(record.status);
+  const [editNotes, setEditNotes] = useState(record.coach_notes ?? '');
   const { isBeltBased: checkBelt, hasStripes: checkStripes, getDiscipline } = useDisciplines();
   const student = record.students;
   const belt = record.belt_levels;
