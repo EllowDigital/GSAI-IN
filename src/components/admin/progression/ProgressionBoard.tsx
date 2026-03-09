@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -30,6 +31,7 @@ import {
   Filter,
   Layers,
   Download,
+  ChevronRight,
 } from 'lucide-react';
 import {
   exportProgressionToCsv,
@@ -433,13 +435,42 @@ export default function ProgressionBoard() {
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
 
   const { beltOptions, beltMap } = useBeltLevels();
-  const { levelOptions: disciplineLevelOptions } = useDisciplineLevels();
+  const { levelOptions: disciplineLevelOptions, levelsByDiscipline } = useDisciplineLevels();
   const { students } = useStudents();
   const {
     history,
     addPromotion,
     isLoading: historyLoading,
   } = usePromotionHistory();
+
+  // Fetch level-based discipline progress
+  const queryClient = useQueryClient();
+  const { data: levelProgressRecords = [], isLoading: levelProgressLoading } = useQuery({
+    queryKey: ['discipline-progress-admin'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('student_discipline_progress')
+        .select('id, student_id, status, started_at, completed_at, coach_notes, discipline_levels(id, discipline, level_name, level_order)')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return (data || []) as any[];
+    },
+  });
+
+  const updateLevelProgressMutation = useMutation({
+    mutationFn: async ({ id, status, coach_notes }: { id: string; status: string; coach_notes?: string | null }) => {
+      const payload: Record<string, unknown> = { status, updated_at: new Date().toISOString() };
+      if (status === 'completed') payload.completed_at = new Date().toISOString();
+      if (coach_notes !== undefined) payload.coach_notes = coach_notes;
+      const { error } = await supabase.from('student_discipline_progress').update(payload).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['discipline-progress-admin'] });
+      toast.success('Level progress updated');
+    },
+    onError: (err) => toast.error(err instanceof Error ? err.message : 'Update failed'),
+  });
 
   const studentOptions = useMemo(
     () =>
@@ -538,10 +569,10 @@ export default function ProgressionBoard() {
         <div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground flex items-center gap-2">
             <Trophy className="h-6 w-6 sm:h-7 sm:w-7 text-yellow-500" />
-            Belt Progression
+            Student Progression
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Track and manage student belt assessments
+            Track belt & level-based assessments across all programs
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -735,7 +766,91 @@ export default function ProgressionBoard() {
         </Card>
       )}
 
-      {/* Promotion History Dialog */}
+      {/* Level-Based Discipline Progress Section */}
+      {levelProgressRecords.length > 0 && (
+        <div className="space-y-4 mt-6">
+          <div className="flex items-center gap-2">
+            <Layers className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-bold text-foreground">Level-Based Progression</h2>
+            <Badge variant="secondary" className="text-xs">{levelProgressRecords.length} records</Badge>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+            {levelProgressRecords
+              .filter((lp: any) => {
+                if (program) {
+                  const student = students.find((s) => s.id === lp.student_id);
+                  if (student?.program?.toLowerCase() !== program.toLowerCase()) return false;
+                }
+                if (search) {
+                  const student = students.find((s) => s.id === lp.student_id);
+                  if (!student?.name.toLowerCase().includes(search.toLowerCase())) return false;
+                }
+                return true;
+              })
+              .map((lp: any) => {
+                const student = students.find((s) => s.id === lp.student_id);
+                if (!student) return null;
+                return (
+                  <Card key={lp.id} className="group hover:shadow-md transition-all duration-300 overflow-hidden">
+                    <div className="h-1.5 bg-gradient-to-r from-primary/30 to-primary/10 border-b" />
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3 mb-3">
+                        <Avatar className="h-10 w-10 ring-2 ring-offset-2 ring-primary/10">
+                          {student.profile_image_url ? (
+                            <AvatarImage src={student.profile_image_url} alt={student.name} />
+                          ) : (
+                            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-bold text-sm">
+                              {student.name?.slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          )}
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-sm text-foreground truncate">{student.name}</h3>
+                          <p className="text-xs text-muted-foreground">{student.program}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 mb-3">
+                        <Layers className="h-4 w-4 text-primary flex-shrink-0" />
+                        <span className="text-sm font-medium text-foreground">{lp.discipline_levels?.level_name}</span>
+                        <Badge
+                          variant={lp.status === 'completed' ? 'default' : 'secondary'}
+                          className={`ml-auto text-[10px] ${lp.status === 'completed' ? 'bg-green-600' : ''}`}
+                        >
+                          {lp.status === 'completed' ? '✓ Done' : '⏳ Active'}
+                        </Badge>
+                      </div>
+                      {lp.coach_notes && (
+                        <p className="text-xs text-muted-foreground mb-3 line-clamp-2 p-2 bg-muted/30 rounded-md border border-border/50">
+                          {lp.coach_notes}
+                        </p>
+                      )}
+                      <div className="flex gap-1.5">
+                        <Button
+                          variant={lp.status === 'in_progress' ? 'default' : 'ghost'}
+                          size="sm"
+                          className="flex-1 h-8 text-xs"
+                          onClick={() => updateLevelProgressMutation.mutate({ id: lp.id, status: 'in_progress' })}
+                        >
+                          In Progress
+                        </Button>
+                        <Button
+                          variant={lp.status === 'completed' ? 'default' : 'ghost'}
+                          size="sm"
+                          className="flex-1 h-8 text-xs"
+                          onClick={() => updateLevelProgressMutation.mutate({ id: lp.id, status: 'completed' })}
+                        >
+                          Complete
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+          </div>
+        </div>
+      )}
+
+
       <Dialog open={historyDialogOpen} onOpenChange={setHistoryDialogOpen}>
         <DialogContent className="max-w-lg max-h-[85vh] mx-4 sm:mx-auto">
           <DialogHeader>
@@ -787,6 +902,7 @@ export default function ProgressionBoard() {
               if (error) throw error;
             }
             toast.success('Student assigned to level');
+            queryClient.invalidateQueries({ queryKey: ['discipline-progress-admin'] });
           } else {
             await assignStudent(payload);
           }
