@@ -40,6 +40,7 @@ import {
   CheckCircle,
   KeyRound,
   Mail,
+  RefreshCw,
 } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 
