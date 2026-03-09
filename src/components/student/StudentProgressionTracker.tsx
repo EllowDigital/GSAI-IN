@@ -290,7 +290,11 @@ function ProgramProgressionView({
     (lp: any) => lp.discipline_levels?.discipline?.toLowerCase() === program.toLowerCase()
   );
 
-  const configLevels = config?.levels || [];
+  // Get unique level names from DB records, ordered
+  const configLevels = programLevels
+    .map((pl: any) => pl.discipline_levels?.level_name)
+    .filter(Boolean)
+    .filter((v: string, i: number, a: string[]) => a.indexOf(v) === i);
 
   return (
     <div className="space-y-4">
