@@ -227,6 +227,7 @@ export default function AssignStudentBeltDialog({
               onValueChange={(v) => {
                 setStudentId(v);
                 setBeltId('');
+                setSelectedProgram(''); // Reset program selection
               }}
             >
               <SelectTrigger disabled={students.length === 0}>
