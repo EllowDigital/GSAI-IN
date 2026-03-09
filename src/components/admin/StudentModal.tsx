@@ -236,6 +236,11 @@ export default function StudentModal({
       };
 
       if (student) {
+        const oldDiscount = student.discount_percent ?? 0;
+        const oldFee = student.default_monthly_fee ?? 2000;
+        const newDiscount = values.discount_percent;
+        const newBaseFee = values.default_monthly_fee;
+
         const { data, error } = await supabase
           .from('students')
           .update(payload)
@@ -243,6 +248,36 @@ export default function StudentModal({
           .select()
           .single();
         if (error) throw error;
+
+        // If discount or base fee changed, recalculate all unpaid/partial fees
+        if (oldDiscount !== newDiscount || oldFee !== newBaseFee) {
+          const newMonthlyFee = newDiscount > 0
+            ? Math.round(newBaseFee * (1 - newDiscount / 100))
+            : newBaseFee;
+
+          // Fetch unpaid/partial fees for this student
+          const { data: unpaidFees } = await supabase
+            .from('fees')
+            .select('id, paid_amount')
+            .eq('student_id', student.id)
+            .in('status', ['unpaid', 'partial']);
+
+          if (unpaidFees && unpaidFees.length > 0) {
+            const feeUpdates = unpaidFees.map((f) => {
+              const newBalance = Math.max(0, newMonthlyFee - (f.paid_amount || 0));
+              const newStatus = f.paid_amount >= newMonthlyFee ? 'paid' : f.paid_amount > 0 ? 'partial' : 'unpaid';
+              return supabase
+                .from('fees')
+                .update({
+                  monthly_fee: newMonthlyFee,
+                  balance_due: newBalance,
+                  status: newStatus,
+                })
+                .eq('id', f.id);
+            });
+            await Promise.all(feeUpdates);
+          }
+        }
 
         // Update primary program in junction table
         await supabase
@@ -322,6 +357,7 @@ export default function StudentModal({
       queryClient.invalidateQueries({ queryKey: ['students'] });
       queryClient.invalidateQueries({ queryKey: ['students-portal-status'] });
       queryClient.invalidateQueries({ queryKey: ['portal-accounts'] });
+      queryClient.invalidateQueries({ queryKey: ['fees'] });
       onOpenChange(false);
     }
   };
