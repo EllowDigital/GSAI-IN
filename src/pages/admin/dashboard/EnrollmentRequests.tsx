@@ -371,7 +371,7 @@ export default function EnrollmentRequestsManager() {
   const pendingCount = requests.filter((r) => r.status === 'pending').length;
 
   return (
-    <div className="w-full p-2 sm:p-3 lg:p-4 space-y-4">
+    <div className="w-full p-4 sm:p-5 lg:p-6 space-y-4 max-w-[1600px] mx-auto">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
