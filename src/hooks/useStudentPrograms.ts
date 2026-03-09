@@ -67,6 +67,7 @@ export function useStudentPrograms(studentId?: string) {
       await syncStudentProgramField(studentId);
       queryClient.invalidateQueries({ queryKey: ['student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['students'] });
       toast.success(`Added ${programName} program`);
       return true;
     },
