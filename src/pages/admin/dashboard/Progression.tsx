@@ -2,8 +2,9 @@ import React from 'react';
 import ProgressionBoard from '@/components/admin/progression/ProgressionBoard';
 import BeltTestCalendar from '@/components/admin/BeltTestCalendar';
 import DisciplineLevelsManager from '@/components/admin/progression/DisciplineLevelsManager';
+import BeltSetupManager from '@/components/admin/progression/BeltSetupManager';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Award, CalendarDays, Layers } from 'lucide-react';
+import { Award, CalendarDays, Layers, Settings } from 'lucide-react';
 
 export default function Progression() {
   return (
