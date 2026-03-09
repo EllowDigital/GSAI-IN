@@ -243,8 +243,35 @@ export default function AssignStudentBeltDialog({
             </Select>
           </div>
 
+          {/* Program Selection for Multi-Program Students */}
+          {studentId && hasMultiplePrograms && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
+                Select Program
+              </label>
+              <Select value={selectedProgram} onValueChange={(v) => {
+                setSelectedProgram(v);
+                setBeltId(''); // Reset belt when program changes
+              }}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose program" />
+                </SelectTrigger>
+                <SelectContent>
+                  {studentPrograms.map((prog) => (
+                    <SelectItem key={prog} value={prog}>
+                      {prog}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                This student is enrolled in multiple programs. Select one to assign progression.
+              </p>
+            </div>
+          )}
+
           {/* Discipline info when student is selected */}
-          {studentId && disciplineConfig && (
+          {studentId && selectedProgram && disciplineConfig && (
             <Alert className="bg-muted/50 border-primary/20">
               <Info className="h-4 w-4 text-primary" />
               <AlertDescription className="text-sm">
