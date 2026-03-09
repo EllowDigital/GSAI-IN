@@ -71,8 +71,15 @@ function filterRecords(
       return false;
     }
 
-    if (filters.program && record.students?.program !== filters.program) {
-      return false;
+    if (filters.program) {
+      // student.program may be comma-separated (multi-program)
+      const studentPrograms = (record.students?.program ?? '').split(',').map(p => p.trim().toLowerCase());
+      const beltDiscipline = (record.belt_levels?.discipline ?? '').toLowerCase();
+      const filterProg = filters.program.toLowerCase();
+      // Match if the filter matches any of the student's programs OR the belt's discipline
+      if (!studentPrograms.includes(filterProg) && beltDiscipline !== filterProg) {
+        return false;
+      }
     }
 
     if (filters.beltLevelId && record.belt_levels?.id !== filters.beltLevelId) {
