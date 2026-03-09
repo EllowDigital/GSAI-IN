@@ -49,6 +49,8 @@ export default function DisciplineLevelsManager() {
   const [formOpen, setFormOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<DisciplineLevel | null>(null);
   const [editingLevel, setEditingLevel] = useState<DisciplineLevel | null>(null);
+  const [autoSetupOpen, setAutoSetupOpen] = useState(false);
+  const [autoSetupDiscipline, setAutoSetupDiscipline] = useState('');
 
   // Form state
   const [discipline, setDiscipline] = useState('');
