@@ -154,7 +154,7 @@ export default function BeltTestCalendar() {
       setNotifyTest(null);
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      toast({ title: 'Error', description: error.message, variant: 'error' });
     },
   });
 
