@@ -763,22 +763,59 @@ export default function ProgressionBoard() {
     onError: (err) => toast.error(err instanceof Error ? err.message : 'Delete failed'),
   });
 
+  // Fetch actual programs from junction table for each student
+  const { data: allStudentPrograms = [] } = useQuery({
+    queryKey: ['student-programs-all'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('student_programs')
+        .select('student_id, program_name');
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+
+  // Build a map: student_id → comma-separated program names from junction table
+  const studentProgramMap = useMemo(() => {
+    const map = new Map<string, string[]>();
+    allStudentPrograms.forEach((sp: any) => {
+      const existing = map.get(sp.student_id) || [];
+      existing.push(sp.program_name);
+      map.set(sp.student_id, existing);
+    });
+    return map;
+  }, [allStudentPrograms]);
+
   const studentOptions = useMemo(
     () =>
-      students.map((student) => ({
-        label: `${student.name} • ${student.program}`,
-        value: student.id,
-        program: student.program,
-      })),
-    [students]
+      students.map((student) => {
+        const programs = studentProgramMap.get(student.id);
+        const programLabel = programs && programs.length > 0
+          ? programs.join(', ')
+          : student.program;
+        return {
+          label: `${student.name} • ${programLabel}`,
+          value: student.id,
+          program: programLabel,
+        };
+      }),
+    [students, studentProgramMap]
   );
 
   const programOptions = useMemo(() => {
-    return Array.from(new Set(students.map((s) => s.program))).map((p) => ({
+    // Collect all unique programs from junction table + students table
+    const allProgs = new Set<string>();
+    students.forEach((s) => {
+      const progs = studentProgramMap.get(s.id);
+      if (progs) progs.forEach((p) => allProgs.add(p));
+      else if (s.program) s.program.split(',').forEach((p) => allProgs.add(p.trim()));
+    });
+    return Array.from(allProgs).filter(Boolean).map((p) => ({
       label: p,
       value: p,
     }));
-  }, [students]);
+  }, [students, studentProgramMap]);
 
   const {
     grouped,
