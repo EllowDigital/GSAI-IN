@@ -292,7 +292,7 @@ export default function AssignStudentBeltDialog({
           )}
 
           {/* Level-based discipline warning */}
-          {studentId && isLevelBased && (
+          {studentId && selectedProgram && isLevelBased && (
             <Alert className="bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900">
               <Layers className="h-4 w-4 text-amber-600" />
               <AlertDescription className="text-sm text-amber-700 dark:text-amber-400">
