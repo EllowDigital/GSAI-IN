@@ -89,6 +89,7 @@ export function useStudentPrograms(studentId?: string) {
       }
       queryClient.invalidateQueries({ queryKey: ['student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['students'] });
       toast.success('Program removed');
       return true;
     },
