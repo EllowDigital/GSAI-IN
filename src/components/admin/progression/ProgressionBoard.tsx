@@ -476,7 +476,119 @@ function StatCard({
   );
 }
 
-export default function ProgressionBoard() {
+function LevelProgressCard({
+  lp,
+  student,
+  onUpdate,
+  onDelete,
+  updating,
+  deleting,
+}: {
+  lp: any;
+  student: { id: string; name: string; program: string; profile_image_url: string | null };
+  onUpdate: (status: string) => void;
+  onDelete: () => void;
+  updating: boolean;
+  deleting: boolean;
+}) {
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
+  return (
+    <>
+      <Card className="group hover:shadow-md transition-all duration-300 overflow-hidden">
+        <div className="h-1.5 bg-gradient-to-r from-primary/30 to-primary/10 border-b" />
+        <CardContent className="p-4">
+          <div className="flex items-start gap-3 mb-3">
+            <Avatar className="h-10 w-10 ring-2 ring-offset-2 ring-primary/10">
+              {student.profile_image_url ? (
+                <AvatarImage src={student.profile_image_url} alt={student.name} />
+              ) : (
+                <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-bold text-sm">
+                  {student.name?.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              )}
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-sm text-foreground truncate">{student.name}</h3>
+              <p className="text-xs text-muted-foreground">{student.program}</p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={() => setDeleteOpen(true)}
+              title="Delete level progression"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 mb-3">
+            <Layers className="h-4 w-4 text-primary flex-shrink-0" />
+            <span className="text-sm font-medium text-foreground">{lp.discipline_levels?.level_name}</span>
+            <Badge
+              variant={lp.status === 'completed' ? 'default' : 'secondary'}
+              className={`ml-auto text-[10px] ${lp.status === 'completed' ? 'bg-green-600' : ''}`}
+            >
+              {lp.status === 'completed' ? '✓ Done' : '⏳ Active'}
+            </Badge>
+          </div>
+          {lp.coach_notes && (
+            <p className="text-xs text-muted-foreground mb-3 line-clamp-2 p-2 bg-muted/30 rounded-md border border-border/50">
+              {lp.coach_notes}
+            </p>
+          )}
+          <div className="flex gap-1.5">
+            <Button
+              variant={lp.status === 'in_progress' ? 'default' : 'ghost'}
+              size="sm"
+              className="flex-1 h-8 text-xs"
+              onClick={() => onUpdate('in_progress')}
+              disabled={updating}
+            >
+              In Progress
+            </Button>
+            <Button
+              variant={lp.status === 'completed' ? 'default' : 'ghost'}
+              size="sm"
+              className="flex-1 h-8 text-xs"
+              onClick={() => onUpdate('completed')}
+              disabled={updating}
+            >
+              Complete
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Level Progress</AlertDialogTitle>
+            <AlertDialogDescription>
+              Remove {student.name}'s {lp.discipline_levels?.level_name} level progress? This will reset their progress for this level.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                onDelete();
+                setDeleteOpen(false);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleting}
+            >
+              {deleting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
+
+
   const [search, setSearch] = useState('');
   const [program, setProgram] = useState<string>();
   const [beltLevelId, setBeltLevelId] = useState<string>();
