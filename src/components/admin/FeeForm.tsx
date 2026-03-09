@@ -1,4 +1,5 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -48,8 +49,24 @@ export function FeeForm({
   setLoading,
   onClose,
 }: Props) {
-  // Calculate discounted fee
-  const baseFee = student?.default_monthly_fee ?? 2000;
+  // Fetch program-specific fee from academy_settings
+  const { data: programFeeValue } = useQuery({
+    queryKey: ['academy-settings', `program_fee_${student?.program}`],
+    queryFn: async () => {
+      if (!student?.program) return null;
+      const { data } = await supabase
+        .from('academy_settings')
+        .select('value')
+        .eq('key', `program_fee_${student.program}`)
+        .maybeSingle();
+      return data?.value ? Number(data.value) : null;
+    },
+    enabled: !!student?.program,
+  });
+
+  // Priority: student's own default_monthly_fee > program fee from settings > 2000
+  const baseFee = student?.default_monthly_fee ?? programFeeValue ?? 2000;
+  const programBaseFee = programFeeValue ?? 2000;
   const discountPercent = student?.discount_percent ?? 0;
   const discountedFee = discountPercent > 0
     ? Math.round(baseFee * (1 - discountPercent / 100))
@@ -71,15 +88,23 @@ export function FeeForm({
     },
   });
 
+  // Reset form when fee/student/programFee changes
   React.useEffect(() => {
+    const effectiveFee = fee?.monthly_fee ?? discountedFee;
     form.reset({
-      monthly_fee: fee?.monthly_fee ?? discountedFee,
+      monthly_fee: effectiveFee,
       paid_amount: fee?.paid_amount ?? 0,
       notes: fee?.notes ?? '',
       receipt_url: fee?.receipt_url || null,
       status_override: fee?.status || 'auto',
     });
-  }, [fee, student]);
+  }, [fee, student, discountedFee]);
+
+  const receiptUrlWatched = useWatch({
+    control: form.control,
+    name: 'receipt_url',
+    defaultValue: form.getValues('receipt_url'),
+  });
 
   const monthlyFeeWatched = useWatch({
     control: form.control,
@@ -207,15 +232,25 @@ export function FeeForm({
         </div>
       </div>
 
-      {/* Discount Info */}
-      {discountPercent > 0 && (
-        <div className="flex items-center gap-2 p-2.5 rounded-lg bg-green-50 border border-green-200 text-xs">
-          <Tag className="w-3.5 h-3.5 text-green-600 flex-shrink-0" />
-          <span className="text-green-800">
-            Base fee ₹{baseFee.toLocaleString('en-IN')} → <strong>₹{discountedFee.toLocaleString('en-IN')}</strong> after {discountPercent}% discount
-          </span>
-        </div>
-      )}
+      {/* Fee Breakdown Info */}
+      <div className="space-y-2">
+        {programFeeValue && (
+          <div className="flex items-center gap-2 p-2.5 rounded-lg bg-blue-50 border border-blue-200 text-xs">
+            <IndianRupee className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
+            <span className="text-blue-800">
+              {student?.program} program fee: <strong>₹{programBaseFee.toLocaleString('en-IN')}/month</strong>
+            </span>
+          </div>
+        )}
+        {discountPercent > 0 && (
+          <div className="flex items-center gap-2 p-2.5 rounded-lg bg-green-50 border border-green-200 text-xs">
+            <Tag className="w-3.5 h-3.5 text-green-600 flex-shrink-0" />
+            <span className="text-green-800">
+              Base ₹{baseFee.toLocaleString('en-IN')} → <strong>₹{discountedFee.toLocaleString('en-IN')}</strong> after {discountPercent}% discount
+            </span>
+          </div>
+        )}
+      </div>
 
       {/* Fee Amounts */}
       <div className="grid grid-cols-2 gap-3">
@@ -254,7 +289,7 @@ export function FeeForm({
       <div className="grid grid-cols-2 gap-3">
         <div className="p-3 rounded-xl bg-muted/50 border border-border/50 text-center">
           <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Balance Due</p>
-          <p className={`text-xl font-bold mt-1 ${calcBalance() > 0 ? 'text-red-600' : 'text-green-600'}`}>
+          <p className={`text-xl font-bold mt-1 ${calcBalance() > 0 ? 'text-destructive' : 'text-green-600'}`}>
             ₹{calcBalance().toLocaleString('en-IN')}
           </p>
         </div>
@@ -262,7 +297,7 @@ export function FeeForm({
           <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Status</p>
           <div className="mt-1.5 flex justify-center">
             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${statusColor}`}>
-              {effectiveStatus === 'paid' && '✅'} {effectiveStatus === 'partial' && '⚠️'} {effectiveStatus === 'unpaid' && '❌'} {effectiveStatus.charAt(0).toUpperCase() + effectiveStatus.slice(1)}
+              {effectiveStatus === 'paid' && '✅ '}{effectiveStatus === 'partial' && '⚠️ '}{effectiveStatus === 'unpaid' && '❌ '}{effectiveStatus.charAt(0).toUpperCase() + effectiveStatus.slice(1)}
             </span>
           </div>
         </div>
@@ -304,11 +339,7 @@ export function FeeForm({
         </label>
         <FeeReceiptUploader
           feeId={fee?.id || 'temp'}
-          initialUrl={useWatch({
-            control: form.control,
-            name: 'receipt_url',
-            defaultValue: form.getValues('receipt_url'),
-          })}
+          initialUrl={receiptUrlWatched}
           onUploaded={handleReceiptUploaded}
         />
       </div>
