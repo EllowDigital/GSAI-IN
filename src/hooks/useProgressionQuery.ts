@@ -429,6 +429,44 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
     },
   });
 
+  // Delete progression record mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('student_progress')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      return id;
+    },
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData<ProgressionRecord[]>(queryKey);
+
+      if (previous) {
+        queryClient.setQueryData<ProgressionRecord[]>(
+          queryKey,
+          (old) => old?.filter((record) => record.id !== id) ?? []
+        );
+      }
+
+      return { previous };
+    },
+    onError: (error, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(queryKey, context.previous);
+      }
+      toast.error(error instanceof Error ? error.message : 'Delete failed');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onSuccess: () => {
+      toast.success('Progression record deleted');
+    },
+  });
+
   const filteredRecords = useMemo(
     () => filterRecords(query.data, filters),
     [query.data, filters]
@@ -464,5 +502,7 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
     promotingStudent: promoteMutation.isPending,
     updateStripeCount: stripeMutation.mutate,
     updatingStripeCount: stripeMutation.isPending,
+    deleteProgress: deleteMutation.mutateAsync,
+    deletingProgress: deleteMutation.isPending,
   };
 }
