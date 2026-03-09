@@ -133,7 +133,7 @@ export default function Blogs() {
   return (
     <div className="w-full p-4 sm:p-5 lg:p-6 space-y-4 max-w-[1600px] mx-auto">
       <div className="bg-card border border-border shadow-sm rounded-xl">
-        <div className="border-b border-slate-200/60 dark:border-slate-700/60 p-4 sm:p-6">
+        <div className="border-b border-border p-4 sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800 dark:text-white">
