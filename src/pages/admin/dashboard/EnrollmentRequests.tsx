@@ -387,6 +387,15 @@ export default function EnrollmentRequestsManager() {
             credentials
           </p>
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-9 gap-2"
+          onClick={() => queryClient.invalidateQueries({ queryKey: ['enrollment-requests'] })}
+        >
+          <RefreshCw className="w-4 h-4" />
+          <span className="hidden sm:inline">Refresh</span>
+        </Button>
       </div>
 
       {/* Filters */}
