@@ -84,7 +84,28 @@ export default function AssignStudentBeltDialog({
     return students.find((s) => s.value === studentId);
   }, [students, studentId]);
 
-  const studentProgram = selectedStudent?.program ?? '';
+  // Parse program field to get all programs
+  const studentPrograms = useMemo(() => {
+    if (!selectedStudent?.program) return [];
+    // Handle both comma-separated and single program
+    return selectedStudent.program.split(',').map((p) => p.trim());
+  }, [selectedStudent]);
+
+  const hasMultiplePrograms = studentPrograms.length > 1;
+
+  // Selected program for progression (defaults to first program)
+  const [selectedProgram, setSelectedProgram] = useState('');
+
+  // Auto-select first program when student changes
+  React.useEffect(() => {
+    if (studentId && studentPrograms.length > 0) {
+      setSelectedProgram(studentPrograms[0]);
+    } else {
+      setSelectedProgram('');
+    }
+  }, [studentId, studentPrograms]);
+
+  const studentProgram = selectedProgram || studentPrograms[0] || '';
   const isBeltBased = isBeltDiscipline(studentProgram);
   const isLevelBased = isLevelDiscipline(studentProgram);
   const disciplineConfig = getDisciplineConfig(studentProgram);
