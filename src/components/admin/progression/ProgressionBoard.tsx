@@ -435,13 +435,42 @@ export default function ProgressionBoard() {
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
 
   const { beltOptions, beltMap } = useBeltLevels();
-  const { levelOptions: disciplineLevelOptions } = useDisciplineLevels();
+  const { levelOptions: disciplineLevelOptions, levelsByDiscipline } = useDisciplineLevels();
   const { students } = useStudents();
   const {
     history,
     addPromotion,
     isLoading: historyLoading,
   } = usePromotionHistory();
+
+  // Fetch level-based discipline progress
+  const queryClient = useQueryClient();
+  const { data: levelProgressRecords = [], isLoading: levelProgressLoading } = useQuery({
+    queryKey: ['discipline-progress-admin'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('student_discipline_progress')
+        .select('id, student_id, status, started_at, completed_at, coach_notes, discipline_levels(id, discipline, level_name, level_order)')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return (data || []) as any[];
+    },
+  });
+
+  const updateLevelProgressMutation = useMutation({
+    mutationFn: async ({ id, status, coach_notes }: { id: string; status: string; coach_notes?: string | null }) => {
+      const payload: Record<string, unknown> = { status, updated_at: new Date().toISOString() };
+      if (status === 'completed') payload.completed_at = new Date().toISOString();
+      if (coach_notes !== undefined) payload.coach_notes = coach_notes;
+      const { error } = await supabase.from('student_discipline_progress').update(payload).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['discipline-progress-admin'] });
+      toast.success('Level progress updated');
+    },
+    onError: (err) => toast.error(err instanceof Error ? err.message : 'Update failed'),
+  });
 
   const studentOptions = useMemo(
     () =>
