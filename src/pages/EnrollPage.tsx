@@ -622,11 +622,19 @@ export default function EnrollPage() {
                                 <SelectValue placeholder="Select a martial arts program" />
                               </SelectTrigger>
                               <SelectContent>
-                                {programs.map((p) => (
-                                  <SelectItem key={p.slug} value={p.title}>
-                                    {p.icon} {p.title}
-                                  </SelectItem>
-                                ))}
+                                {disciplineOptions.length > 0 ? (
+                                  disciplineOptions.map((d) => (
+                                    <SelectItem key={d.value} value={d.value}>
+                                      {d.label}
+                                    </SelectItem>
+                                  ))
+                                ) : (
+                                  programs.map((p) => (
+                                    <SelectItem key={p.slug} value={p.title}>
+                                      {p.icon} {p.title}
+                                    </SelectItem>
+                                  ))
+                                )}
                               </SelectContent>
                             </Select>
                             <FieldError field="program" />
