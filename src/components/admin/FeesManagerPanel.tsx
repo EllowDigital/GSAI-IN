@@ -7,6 +7,7 @@ import FeeEditModal from './FeeEditModal';
 import FeeHistoryDrawer from './FeeHistoryDrawer';
 import FeesFilterBar from './FeesFilterBar';
 import { exportFeesToCsv } from '@/utils/exportToCsv';
+const FeeAnalyticsChart = lazy(() => import('./FeeAnalyticsChart'));
 import { useIsMobile } from '@/hooks/use-mobile';
 import FeesCards from './FeesCards';
 import RefreshButton from './RefreshButton';
