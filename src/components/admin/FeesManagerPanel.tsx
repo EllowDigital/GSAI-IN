@@ -352,6 +352,11 @@ export default function FeesManagerPanel() {
         </div>
 
         <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+          {/* Analytics Chart */}
+          <Suspense fallback={<div className="h-[400px] flex items-center justify-center"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>}>
+            <FeeAnalyticsChart />
+          </Suspense>
+
           {/* Summary Card */}
           <FeeSummaryCard fees={fees || []} loading={loadingFees} />
 
