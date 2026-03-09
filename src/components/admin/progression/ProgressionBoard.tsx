@@ -522,6 +522,18 @@ export default function ProgressionBoard() {
     onError: (err) => toast.error(err instanceof Error ? err.message : 'Update failed'),
   });
 
+  const deleteLevelProgressMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('student_discipline_progress').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['discipline-progress-admin'] });
+      toast.success('Level progress deleted');
+    },
+    onError: (err) => toast.error(err instanceof Error ? err.message : 'Delete failed'),
+  });
+
   const studentOptions = useMemo(
     () =>
       students.map((student) => ({
