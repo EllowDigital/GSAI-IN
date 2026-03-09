@@ -391,7 +391,7 @@ export function FeeForm({
           Status Override
         </label>
         <Select
-          value={form.watch('status_override')}
+          value={statusOverrideWatched}
           onValueChange={(v) => form.setValue('status_override', v)}
         >
           <SelectTrigger>

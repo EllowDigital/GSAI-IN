@@ -229,7 +229,7 @@ export default function AttendanceManager() {
     end: endOfMonth(currentMonth),
   });
 
-  const monthlyStats = useMemo(() => {
+  const monthlyStats = (() => {
     const stats: Record<
       string,
       { present: number; absent: number; late: number; total: number }
@@ -250,9 +250,9 @@ export default function AttendanceManager() {
       }
     });
     return stats;
-  }, [students, monthAttendance]);
+  })();
 
-  const todayStats = useMemo(() => {
+  const todayStats = (() => {
     const present = (dayAttendance as any[]).filter(
       (a: any) => a.status === 'present' || a.status === 'late'
     ).length;
@@ -261,7 +261,7 @@ export default function AttendanceManager() {
     ).length;
     const unmarked = students.length - (dayAttendance as any[]).length;
     return { present, absent, unmarked };
-  }, [dayAttendance, students]);
+  })();
 
   return (
     <div className="w-full p-4 sm:p-5 lg:p-6 space-y-4 max-w-[1600px] mx-auto">

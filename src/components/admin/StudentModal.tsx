@@ -149,7 +149,6 @@ export default function StudentModal({
         default_monthly_fee: globalFee ?? 2000,
         discount_percent: 0,
       });
-      setAdditionalPrograms([]);
     }
   }, [student, open, globalFee, primaryFromDB]);
 
@@ -346,8 +345,16 @@ export default function StudentModal({
     }
   };
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      setAdditionalPrograms([]);
+      setAddingProgram('');
+    }
+    onOpenChange(nextOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{student ? 'Edit Student' : 'Add Student'}</DialogTitle>
