@@ -44,6 +44,7 @@ import {
   ChevronRight,
   Trash2,
   RotateCcw,
+  Pencil,
 } from 'lucide-react';
 import {
   exportProgressionToCsv,
@@ -187,9 +188,12 @@ function StudentCard({
   onPromote,
   onStripeUpdate,
   onDelete,
+  onEdit,
   nextBelt,
   promoting,
   deleting,
+  editing,
+  beltOptions,
 }: {
   record: ProgressionRecord;
   onStatusChange: (status: ProgressStatus) => void;
@@ -197,13 +201,21 @@ function StudentCard({
   onPromote: () => void;
   onStripeUpdate: (newCount: number) => void;
   onDelete: () => void;
+  onEdit: (data: { belt_level_id?: string; stripe_count?: number; status?: ProgressStatus; coach_notes?: string | null }) => void;
   nextBelt: { id: string; color: string; rank: number } | null;
   promoting: boolean;
   deleting: boolean;
+  editing: boolean;
+  beltOptions: { value: string; label: string }[];
 }) {
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [notes, setNotes] = useState(record.coach_notes ?? '');
+  const [editBeltId, setEditBeltId] = useState(record.belt_levels?.id ?? '');
+  const [editStripes, setEditStripes] = useState(String(record.stripe_count ?? 0));
+  const [editStatus, setEditStatus] = useState<ProgressStatus>(record.status);
+  const [editNotes, setEditNotes] = useState(record.coach_notes ?? '');
   const { isBeltBased: checkBelt, hasStripes: checkStripes, getDiscipline } = useDisciplines();
   const student = record.students;
   const belt = record.belt_levels;
@@ -371,6 +383,21 @@ function StudentCard({
               <FileText className="h-4 w-4 mr-1.5" />
               Notes
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-9"
+              onClick={() => {
+                setEditBeltId(record.belt_levels?.id ?? '');
+                setEditStripes(String(record.stripe_count ?? 0));
+                setEditStatus(record.status);
+                setEditNotes(record.coach_notes ?? '');
+                setEditDialogOpen(true);
+              }}
+              title="Edit progression"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
             {record.status === 'passed' && nextBelt && (
               <Button
                 size="sm"
@@ -427,7 +454,7 @@ function StudentCard({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Progression Record</AlertDialogTitle>
             <AlertDialogDescription>
-              Remove {student?.name}'s {belt?.color ?? ''} belt progression record? This resets their progress for this belt/level. Promotion history will be preserved.
+              Remove {student?.name}'s {belt?.color ?? ''} belt progression record and its related promotion history? This cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -446,6 +473,96 @@ function StudentCard({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Edit Progression Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Progression</DialogTitle>
+            <DialogDescription>
+              {student?.name} — Update belt, status, stripes, or notes.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {isBeltBased && (
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">Belt Level</label>
+                <Select value={editBeltId} onValueChange={setEditBeltId}>
+                  <SelectTrigger className="h-9">
+                    <SelectValue placeholder="Select belt" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {beltOptions
+                      .filter((b) => {
+                        // Only show belts for same discipline
+                        return true; // belt options are already filtered by caller if needed
+                      })
+                      .map((b) => (
+                        <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">Status</label>
+              <Select value={editStatus} onValueChange={(v) => setEditStatus(v as ProgressStatus)}>
+                <SelectTrigger className="h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="needs_work">Needs Work</SelectItem>
+                  <SelectItem value="ready">Ready</SelectItem>
+                  <SelectItem value="passed">Passed</SelectItem>
+                  <SelectItem value="deferred">Deferred</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {showStripes && isBeltBased && (
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">Stripe Count</label>
+                <Select value={editStripes} onValueChange={setEditStripes}>
+                  <SelectTrigger className="h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[0, 1, 2, 3, 4].map((n) => (
+                      <SelectItem key={n} value={String(n)}>{n} stripe{n !== 1 ? 's' : ''}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">Coach Notes</label>
+              <Textarea
+                value={editNotes}
+                onChange={(e) => setEditNotes(e.target.value)}
+                placeholder="Assessment notes..."
+                rows={3}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setEditDialogOpen(false)}>Cancel</Button>
+              <Button
+                onClick={() => {
+                  onEdit({
+                    belt_level_id: editBeltId !== record.belt_levels?.id ? editBeltId : undefined,
+                    stripe_count: Number(editStripes) !== (record.stripe_count ?? 0) ? Number(editStripes) : undefined,
+                    status: editStatus !== record.status ? editStatus : undefined,
+                    coach_notes: editNotes !== (record.coach_notes ?? '') ? editNotes : undefined,
+                  });
+                  setEditDialogOpen(false);
+                }}
+                disabled={editing}
+              >
+                {editing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                Save Changes
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
@@ -675,6 +792,8 @@ export default function ProgressionBoard() {
     updateStripeCount,
     deleteProgress,
     deletingProgress,
+    editProgress,
+    editingProgress,
   } = useProgressionQuery({
     search,
     program,
@@ -913,9 +1032,12 @@ export default function ProgressionBoard() {
                   updateStripeCount({ id: record.id, stripeCount: newCount })
                 }
                 onDelete={() => deleteProgress(record.id)}
+                onEdit={(data) => editProgress({ id: record.id, ...data })}
                 nextBelt={nextBelt}
                 promoting={promotingStudent}
                 deleting={deletingProgress}
+                editing={editingProgress}
+                beltOptions={beltOptions}
               />
             );
           })}

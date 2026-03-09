@@ -430,9 +430,62 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
     },
   });
 
-  // Delete progression record mutation
+  // Edit progression record mutation (change belt/level, stripe, notes)
+  const editMutation = useMutation({
+    mutationFn: async ({
+      id,
+      belt_level_id,
+      stripe_count,
+      status,
+      coach_notes,
+    }: {
+      id: string;
+      belt_level_id?: string;
+      stripe_count?: number;
+      status?: ProgressStatus;
+      coach_notes?: string | null;
+    }) => {
+      const payload: Record<string, unknown> = {};
+      if (belt_level_id !== undefined) payload.belt_level_id = belt_level_id;
+      if (stripe_count !== undefined) payload.stripe_count = Math.max(0, Math.min(4, stripe_count));
+      if (status !== undefined) payload.status = status;
+      if (coach_notes !== undefined) payload.coach_notes = coach_notes;
+
+      const { error } = await supabase
+        .from('student_progress')
+        .update(payload)
+        .eq('id', id);
+
+      if (error) throw error;
+      return { id, ...payload };
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onSuccess: () => {
+      toast.success('Progression record updated');
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : 'Edit failed');
+    },
+  });
+
+  // Delete progression record mutation — also removes related promotion history
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
+      // Find the record to get student_id and belt_level_id for history cleanup
+      const current = queryClient.getQueryData<ProgressionRecord[]>(queryKey) ?? [];
+      const target = current.find((r) => r.id === id);
+
+      // Delete promotion history linked to this student + belt
+      if (target?.students?.id && target?.belt_levels?.id) {
+        await supabase
+          .from('promotion_history')
+          .delete()
+          .eq('student_id', target.students.id)
+          .or(`from_belt_id.eq.${target.belt_levels.id},to_belt_id.eq.${target.belt_levels.id}`);
+      }
+
       const { error } = await supabase
         .from('student_progress')
         .delete()
@@ -507,5 +560,7 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
     updatingStripeCount: stripeMutation.isPending,
     deleteProgress: deleteMutation.mutateAsync,
     deletingProgress: deleteMutation.isPending,
+    editProgress: editMutation.mutateAsync,
+    editingProgress: editMutation.isPending,
   };
 }
