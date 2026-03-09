@@ -50,13 +50,14 @@ export function useStudentPrograms(studentId?: string) {
 
   const addProgram = useCallback(
     async (studentId: string, programName: string, joinDate?: string) => {
-      const { error } = await supabase.from('student_programs').insert({
+      const { data, error } = await supabase.from('student_programs').insert({
         student_id: studentId,
         program_name: programName,
         joined_at: joinDate || new Date().toISOString().slice(0, 10),
         is_primary: false,
-      });
+      }).select();
       if (error) {
+        console.error('addProgram insert error:', error);
         if (error.code === '23505') {
           toast.error(`Student is already enrolled in ${programName}`);
         } else {
@@ -64,6 +65,7 @@ export function useStudentPrograms(studentId?: string) {
         }
         return false;
       }
+      console.log('addProgram insert success:', data);
       await syncStudentProgramField(studentId);
       queryClient.invalidateQueries({ queryKey: ['student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
