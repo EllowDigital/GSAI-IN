@@ -242,10 +242,16 @@ export default function DisciplineLevelsManager() {
             disciplines
           </p>
         </div>
-        <Button size="sm" onClick={openCreate} className="h-9">
-          <Plus className="h-4 w-4 sm:mr-2" />
-          <span className="hidden sm:inline">Add Level</span>
-        </Button>
+        <div className="flex gap-2">
+          <Button size="sm" variant="default" onClick={() => setAutoSetupOpen(true)} className="h-9 gap-2">
+            <Wand2 className="h-4 w-4" />
+            <span className="hidden sm:inline">Auto Setup</span>
+          </Button>
+          <Button size="sm" onClick={openCreate} className="h-9">
+            <Plus className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Add Level</span>
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
