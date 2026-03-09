@@ -162,10 +162,13 @@ export default function FeesManagerPanel() {
         throw new Error('All students already have fee records for this month');
 
       const records = studentsWithoutFee.map((s) => {
+        // Use program-specific fee if available, otherwise student default
+        const programFee = programFees?.[s.program] ?? s.default_monthly_fee ?? 2000;
+        const baseFee = s.default_monthly_fee ?? programFee;
         const discountedFee =
           s.discount_percent > 0
-            ? Math.round(s.default_monthly_fee * (1 - s.discount_percent / 100))
-            : s.default_monthly_fee || 2000;
+            ? Math.round(baseFee * (1 - s.discount_percent / 100))
+            : baseFee;
         return {
           student_id: s.id,
           month: filterMonth,
