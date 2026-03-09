@@ -588,7 +588,7 @@ function LevelProgressCard({
   );
 }
 
-
+export default function ProgressionBoard() {
   const [search, setSearch] = useState('');
   const [program, setProgram] = useState<string>();
   const [beltLevelId, setBeltLevelId] = useState<string>();
