@@ -56,12 +56,13 @@ export default function FeeEditModal({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{fee ? 'Edit Payment' : 'Add Payment'}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            {fee ? '✏️ Edit Payment' : '➕ Add Payment'}
+          </DialogTitle>
           <DialogDescription>
-            Capture the monthly fee amount, payment status, and any balance or
-            carry-forward adjustments for {student?.name || 'this student'}.
+            Record fee payment for {student?.name || 'this student'}.
           </DialogDescription>
         </DialogHeader>
 
