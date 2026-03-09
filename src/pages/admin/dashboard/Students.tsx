@@ -6,9 +6,9 @@ import { Users, GraduationCap } from 'lucide-react';
 
 export default function Students() {
   return (
-    <div className="w-full min-h-full p-3 sm:p-4 lg:p-6 xl:p-8 space-y-6">
+    <div className="w-full p-4 sm:p-5 lg:p-6 max-w-[1600px] mx-auto">
       <Tabs defaultValue="students" className="w-full">
-        <TabsList className="grid grid-cols-2 max-w-xs">
+        <TabsList className="grid grid-cols-2 max-w-xs mb-4">
           <TabsTrigger value="students" className="gap-1.5 text-xs sm:text-sm">
             <Users className="w-3.5 h-3.5" /> Students
           </TabsTrigger>
@@ -16,10 +16,10 @@ export default function Students() {
             <GraduationCap className="w-3.5 h-3.5" /> Portal
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="students" className="mt-4">
+        <TabsContent value="students">
           <StudentManager />
         </TabsContent>
-        <TabsContent value="portal" className="mt-4">
+        <TabsContent value="portal">
           <StudentPortalManager />
         </TabsContent>
       </Tabs>

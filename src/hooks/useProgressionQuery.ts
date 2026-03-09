@@ -71,8 +71,22 @@ function filterRecords(
       return false;
     }
 
-    if (filters.program && record.students?.program !== filters.program) {
-      return false;
+    if (filters.program) {
+      // student.program may be comma-separated (multi-program)
+      const studentPrograms = (record.students?.program ?? '')
+        .split(',')
+        .map((p) => p.trim().toLowerCase());
+      const beltDiscipline = (
+        record.belt_levels?.discipline ?? ''
+      ).toLowerCase();
+      const filterProg = filters.program.toLowerCase();
+      // Match if the filter matches any of the student's programs OR the belt's discipline
+      if (
+        !studentPrograms.includes(filterProg) &&
+        beltDiscipline !== filterProg
+      ) {
+        return false;
+      }
     }
 
     if (filters.beltLevelId && record.belt_levels?.id !== filters.beltLevelId) {
@@ -258,38 +272,36 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
       beltLevelId: string;
       status?: ProgressStatus;
     }) => {
-      // Check if student already has a progress record for any belt
-      const { data: existingProgress, error: checkError } = await supabase
+      // Check if student already has a progress record for THIS specific belt level
+      const { data: existingForBelt, error: checkBeltErr } = await supabase
         .from('student_progress')
-        .select('id, belt_level_id')
+        .select('id')
         .eq('student_id', studentId)
+        .eq('belt_level_id', beltLevelId)
         .maybeSingle();
 
-      if (checkError && checkError.code !== 'PGRST116') {
-        throw checkError;
+      if (checkBeltErr && checkBeltErr.code !== 'PGRST116') {
+        throw checkBeltErr;
       }
 
-      if (existingProgress) {
-        // Update existing record to new belt
+      if (existingForBelt) {
+        // Update existing record for this belt
         const { error } = await supabase
           .from('student_progress')
           .update({
-            belt_level_id: beltLevelId,
             status,
             assessment_date: null,
             coach_notes: null,
           })
-          .eq('id', existingProgress.id);
-
+          .eq('id', existingForBelt.id);
         if (error) throw error;
       } else {
-        // Insert new record
+        // Insert new record — allows multiple records per student (one per program/belt)
         const { error } = await supabase.from('student_progress').insert({
           student_id: studentId,
           belt_level_id: beltLevelId,
           status,
         });
-
         if (error) throw error;
       }
     },
@@ -370,6 +382,7 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: ['promotion-history'] });
     },
     onSuccess: () => {
       toast.success('Student promoted to next belt');
@@ -431,6 +444,105 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
     },
   });
 
+  // Edit progression record mutation (change belt/level, stripe, notes)
+  const editMutation = useMutation({
+    mutationFn: async ({
+      id,
+      belt_level_id,
+      stripe_count,
+      status,
+      coach_notes,
+    }: {
+      id: string;
+      belt_level_id?: string;
+      stripe_count?: number;
+      status?: ProgressStatus;
+      coach_notes?: string | null;
+    }) => {
+      const payload: Record<string, unknown> = {};
+      if (belt_level_id !== undefined) payload.belt_level_id = belt_level_id;
+      if (stripe_count !== undefined)
+        payload.stripe_count = Math.max(0, Math.min(4, stripe_count));
+      if (status !== undefined) payload.status = status;
+      if (coach_notes !== undefined) payload.coach_notes = coach_notes;
+
+      const { error } = await supabase
+        .from('student_progress')
+        .update(payload)
+        .eq('id', id);
+
+      if (error) throw error;
+      return { id, ...payload };
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onSuccess: () => {
+      toast.success('Progression record updated');
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : 'Edit failed');
+    },
+  });
+
+  // Delete progression record mutation — also removes related promotion history
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      // Find the record to get student_id and belt_level_id for history cleanup
+      const current =
+        queryClient.getQueryData<ProgressionRecord[]>(queryKey) ?? [];
+      const target = current.find((r) => r.id === id);
+
+      // Delete promotion history linked to this student + belt
+      if (target?.students?.id && target?.belt_levels?.id) {
+        await supabase
+          .from('promotion_history')
+          .delete()
+          .eq('student_id', target.students.id)
+          .or(
+            `from_belt_id.eq.${target.belt_levels.id},to_belt_id.eq.${target.belt_levels.id}`
+          );
+      }
+
+      const { error } = await supabase
+        .from('student_progress')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      return id;
+    },
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData<ProgressionRecord[]>(queryKey);
+
+      if (previous) {
+        queryClient.setQueryData<ProgressionRecord[]>(
+          queryKey,
+          (old) => old?.filter((record) => record.id !== id) ?? []
+        );
+      }
+
+      return { previous };
+    },
+    onError: (error, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(queryKey, context.previous);
+      }
+      toast.error(error instanceof Error ? error.message : 'Delete failed');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: ['promotion-history'] });
+      queryClient.invalidateQueries({
+        queryKey: ['discipline-progress-admin'],
+      });
+    },
+    onSuccess: () => {
+      toast.success('Progression record deleted');
+    },
+  });
+
   const filteredRecords = useMemo(
     () => filterRecords(query.data, filters),
     [query.data, filters]
@@ -466,5 +578,9 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
     promotingStudent: promoteMutation.isPending,
     updateStripeCount: stripeMutation.mutate,
     updatingStripeCount: stripeMutation.isPending,
+    deleteProgress: deleteMutation.mutateAsync,
+    deletingProgress: deleteMutation.isPending,
+    editProgress: editMutation.mutateAsync,
+    editingProgress: editMutation.isPending,
   };
 }

@@ -185,6 +185,64 @@ export type Database = {
         };
         Relationships: [];
       };
+      belt_exam_notifications: {
+        Row: {
+          created_at: string;
+          discipline: string | null;
+          event_id: string | null;
+          exam_date: string;
+          id: string;
+          is_read: boolean;
+          message: string;
+          student_id: string;
+          title: string;
+        };
+        Insert: {
+          created_at?: string;
+          discipline?: string | null;
+          event_id?: string | null;
+          exam_date: string;
+          id?: string;
+          is_read?: boolean;
+          message: string;
+          student_id: string;
+          title: string;
+        };
+        Update: {
+          created_at?: string;
+          discipline?: string | null;
+          event_id?: string | null;
+          exam_date?: string;
+          id?: string;
+          is_read?: boolean;
+          message?: string;
+          student_id?: string;
+          title?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'belt_exam_notifications_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'belt_exam_notifications_student_id_fkey';
+            columns: ['student_id'];
+            isOneToOne: false;
+            referencedRelation: 'students';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'belt_exam_notifications_student_id_fkey';
+            columns: ['student_id'];
+            isOneToOne: false;
+            referencedRelation: 'students_masked';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       belt_levels: {
         Row: {
           color: string;
@@ -449,6 +507,42 @@ export type Database = {
           level_name?: string;
           level_order?: number;
           requirements?: Json | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      disciplines: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          display_order: number;
+          has_stripes: boolean;
+          id: string;
+          is_active: boolean;
+          name: string;
+          type: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string | null;
+          display_order?: number;
+          has_stripes?: boolean;
+          id?: string;
+          is_active?: boolean;
+          name: string;
+          type?: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string | null;
+          display_order?: number;
+          has_stripes?: boolean;
+          id?: string;
+          is_active?: boolean;
+          name?: string;
+          type?: string;
           updated_at?: string;
         };
         Relationships: [];

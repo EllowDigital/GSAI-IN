@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import FeeSummaryCard from './FeeSummaryCard';
@@ -7,6 +7,7 @@ import FeeEditModal from './FeeEditModal';
 import FeeHistoryDrawer from './FeeHistoryDrawer';
 import FeesFilterBar from './FeesFilterBar';
 import { exportFeesToCsv } from '@/utils/exportToCsv';
+const FeeAnalyticsChart = lazy(() => import('./FeeAnalyticsChart'));
 import { useIsMobile } from '@/hooks/use-mobile';
 import FeesCards from './FeesCards';
 import RefreshButton from './RefreshButton';
@@ -14,6 +15,7 @@ import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useProgramFees } from './FeeSettingsCard';
 import {
   Grid,
   List,
@@ -43,6 +45,7 @@ export default function FeesManagerPanel() {
   const [bulkMode, setBulkMode] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
+  const { data: programFees } = useProgramFees();
 
   useEffect(() => {
     const channel = supabase
@@ -160,10 +163,14 @@ export default function FeesManagerPanel() {
         throw new Error('All students already have fee records for this month');
 
       const records = studentsWithoutFee.map((s) => {
+        // Use program-specific fee if available, otherwise student default
+        const programFee =
+          programFees?.[s.program] ?? s.default_monthly_fee ?? 2000;
+        const baseFee = s.default_monthly_fee ?? programFee;
         const discountedFee =
           s.discount_percent > 0
-            ? Math.round(s.default_monthly_fee * (1 - s.discount_percent / 100))
-            : s.default_monthly_fee || 2000;
+            ? Math.round(baseFee * (1 - s.discount_percent / 100))
+            : baseFee;
         return {
           student_id: s.id,
           month: filterMonth,
@@ -346,6 +353,17 @@ export default function FeesManagerPanel() {
         </div>
 
         <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+          {/* Analytics Chart */}
+          <Suspense
+            fallback={
+              <div className="h-[400px] flex items-center justify-center">
+                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+              </div>
+            }
+          >
+            <FeeAnalyticsChart />
+          </Suspense>
+
           {/* Summary Card */}
           <FeeSummaryCard fees={fees || []} loading={loadingFees} />
 

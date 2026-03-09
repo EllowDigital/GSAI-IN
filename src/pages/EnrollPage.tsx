@@ -35,6 +35,7 @@ import { supabase } from '@/integrations/supabase/client';
 import Seo from '@/components/Seo';
 import { toast } from '@/hooks/use-toast';
 import Navbar from '@/components/Navbar';
+import { useDisciplines } from '@/hooks/useDisciplines';
 
 const enrollSchema = z.object({
   studentName: z
@@ -98,6 +99,7 @@ export default function EnrollPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
+  const { disciplineOptions } = useDisciplines();
 
   const handleChange = (field: keyof EnrollFormData, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -620,11 +622,17 @@ export default function EnrollPage() {
                                 <SelectValue placeholder="Select a martial arts program" />
                               </SelectTrigger>
                               <SelectContent>
-                                {programs.map((p) => (
-                                  <SelectItem key={p.slug} value={p.title}>
-                                    {p.icon} {p.title}
-                                  </SelectItem>
-                                ))}
+                                {disciplineOptions.length > 0
+                                  ? disciplineOptions.map((d) => (
+                                      <SelectItem key={d.value} value={d.value}>
+                                        {d.label}
+                                      </SelectItem>
+                                    ))
+                                  : programs.map((p) => (
+                                      <SelectItem key={p.slug} value={p.title}>
+                                        {p.icon} {p.title}
+                                      </SelectItem>
+                                    ))}
                               </SelectContent>
                             </Select>
                             <FieldError field="program" />

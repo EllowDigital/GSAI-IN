@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +13,16 @@ import {
   SelectItem,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import {
   Search,
   UserPlus,
@@ -30,6 +41,10 @@ import {
   Filter,
   Layers,
   Download,
+  ChevronRight,
+  Trash2,
+  RotateCcw,
+  Pencil,
 } from 'lucide-react';
 import {
   exportProgressionToCsv,
@@ -58,12 +73,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from '@/components/ui/sonner';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  isBeltDiscipline,
-  isLevelDiscipline,
-  getDisciplineConfig,
-  hasStripeSupport,
-} from '@/config/disciplineConfig';
+import { useDisciplines } from '@/hooks/useDisciplines';
 
 const STATUS_CONFIG: Record<
   ProgressStatus,
@@ -177,24 +187,53 @@ function StudentCard({
   onNotesUpdate,
   onPromote,
   onStripeUpdate,
+  onDelete,
+  onEdit,
   nextBelt,
   promoting,
+  deleting,
+  editing,
+  beltOptions,
 }: {
   record: ProgressionRecord;
   onStatusChange: (status: ProgressStatus) => void;
   onNotesUpdate: (notes: string) => void;
   onPromote: () => void;
   onStripeUpdate: (newCount: number) => void;
+  onDelete: () => void;
+  onEdit: (data: {
+    belt_level_id?: string;
+    stripe_count?: number;
+    status?: ProgressStatus;
+    coach_notes?: string | null;
+  }) => void;
   nextBelt: { id: string; color: string; rank: number } | null;
   promoting: boolean;
+  deleting: boolean;
+  editing: boolean;
+  beltOptions: { value: string; label: string }[];
 }) {
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [notes, setNotes] = useState(record.coach_notes ?? '');
+  const [editBeltId, setEditBeltId] = useState(record.belt_levels?.id ?? '');
+  const [editStripes, setEditStripes] = useState(
+    String(record.stripe_count ?? 0)
+  );
+  const [editStatus, setEditStatus] = useState<ProgressStatus>(record.status);
+  const [editNotes, setEditNotes] = useState(record.coach_notes ?? '');
+  const {
+    isBeltBased: checkBelt,
+    hasStripes: checkStripes,
+    getDiscipline,
+  } = useDisciplines();
   const student = record.students;
   const belt = record.belt_levels;
-  const program = student?.program ?? '';
-  const isBeltBased = isBeltDiscipline(program);
-  const showStripes = hasStripeSupport(program);
+  // Use belt's discipline (not comma-separated student.program) for type detection
+  const beltDiscipline = belt?.discipline ?? '';
+  const isBeltBased = beltDiscipline ? checkBelt(beltDiscipline) : true;
+  const showStripes = beltDiscipline ? checkStripes(beltDiscipline) : false;
   const beltStyle = getBeltStyle(belt?.color ?? 'white');
 
   const handleSaveNotes = () => {
@@ -204,7 +243,6 @@ function StudentCard({
 
   const StatusIcon = STATUS_CONFIG[record.status].icon;
 
-  // Get progression display based on discipline type
   const getProgressionDisplay = () => {
     if (isBeltBased) {
       const stripeCount = record.stripe_count ?? 0;
@@ -219,18 +257,20 @@ function StudentCard({
               <span className="ml-1">• {stripeCount} stripes</span>
             )}
           </div>
+          {beltDiscipline && (
+            <span className="text-[10px] text-muted-foreground capitalize">
+              {beltDiscipline}
+            </span>
+          )}
         </div>
       );
     } else {
-      // Level-based discipline
-      const config = getDisciplineConfig(program);
+      const disc = getDiscipline(beltDiscipline);
       return (
         <div className="flex items-center gap-2 mt-1.5">
-          <div
-            className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-primary/10 to-primary/5 text-primary border border-primary/20`}
-          >
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-primary/10 to-primary/5 text-primary border border-primary/20">
             <Layers className="h-3 w-3" />
-            {config?.type === 'level' ? 'Level-based' : 'Training'}
+            {disc?.type === 'level' ? 'Level-based' : 'Training'}
           </div>
         </div>
       );
@@ -240,7 +280,6 @@ function StudentCard({
   return (
     <>
       <Card className="group hover:shadow-md transition-all duration-300 overflow-hidden">
-        {/* Belt/Level color indicator */}
         <div
           className={`h-1.5 ${isBeltBased ? beltStyle.bg : 'bg-gradient-to-r from-primary/30 to-primary/10'} ${isBeltBased ? beltStyle.border : ''} border-b`}
         />
@@ -265,10 +304,20 @@ function StudentCard({
                 {student?.name ?? 'Unassigned'}
               </h3>
               <p className="text-sm text-muted-foreground truncate">
-                {program || 'N/A'}
+                {student?.program || 'N/A'}
               </p>
               {getProgressionDisplay()}
             </div>
+            {/* Delete button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={() => setDeleteDialogOpen(true)}
+              title="Delete progression"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
 
           {/* Current Status */}
@@ -345,6 +394,21 @@ function StudentCard({
               <FileText className="h-4 w-4 mr-1.5" />
               Notes
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-9"
+              onClick={() => {
+                setEditBeltId(record.belt_levels?.id ?? '');
+                setEditStripes(String(record.stripe_count ?? 0));
+                setEditStatus(record.status);
+                setEditNotes(record.coach_notes ?? '');
+                setEditDialogOpen(true);
+              }}
+              title="Edit progression"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
             {record.status === 'passed' && nextBelt && (
               <Button
                 size="sm"
@@ -372,7 +436,7 @@ function StudentCard({
           <DialogHeader>
             <DialogTitle>Coach Notes</DialogTitle>
             <DialogDescription>
-              {student?.name} - {belt?.color} Belt
+              {student?.name} - {belt?.color ?? 'N/A'} Belt
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -390,6 +454,157 @@ function StudentCard({
                 Cancel
               </Button>
               <Button onClick={handleSaveNotes}>Save Notes</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Progression Record</AlertDialogTitle>
+            <AlertDialogDescription>
+              Remove {student?.name}'s {belt?.color ?? ''} belt progression
+              record and its related promotion history? This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                onDelete();
+                setDeleteDialogOpen(false);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleting}
+            >
+              {deleting ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : null}
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Edit Progression Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Progression</DialogTitle>
+            <DialogDescription>
+              {student?.name} — Update belt, status, stripes, or notes.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {isBeltBased && (
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">
+                  Belt Level
+                </label>
+                <Select value={editBeltId} onValueChange={setEditBeltId}>
+                  <SelectTrigger className="h-9">
+                    <SelectValue placeholder="Select belt" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {beltOptions
+                      .filter((b) => {
+                        // Only show belts for same discipline
+                        return true; // belt options are already filtered by caller if needed
+                      })
+                      .map((b) => (
+                        <SelectItem key={b.value} value={b.value}>
+                          {b.label}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">
+                Status
+              </label>
+              <Select
+                value={editStatus}
+                onValueChange={(v) => setEditStatus(v as ProgressStatus)}
+              >
+                <SelectTrigger className="h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="needs_work">Needs Work</SelectItem>
+                  <SelectItem value="ready">Ready</SelectItem>
+                  <SelectItem value="passed">Passed</SelectItem>
+                  <SelectItem value="deferred">Deferred</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {showStripes && isBeltBased && (
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">
+                  Stripe Count
+                </label>
+                <Select value={editStripes} onValueChange={setEditStripes}>
+                  <SelectTrigger className="h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[0, 1, 2, 3, 4].map((n) => (
+                      <SelectItem key={n} value={String(n)}>
+                        {n} stripe{n !== 1 ? 's' : ''}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">
+                Coach Notes
+              </label>
+              <Textarea
+                value={editNotes}
+                onChange={(e) => setEditNotes(e.target.value)}
+                placeholder="Assessment notes..."
+                rows={3}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setEditDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  onEdit({
+                    belt_level_id:
+                      editBeltId !== record.belt_levels?.id
+                        ? editBeltId
+                        : undefined,
+                    stripe_count:
+                      Number(editStripes) !== (record.stripe_count ?? 0)
+                        ? Number(editStripes)
+                        : undefined,
+                    status:
+                      editStatus !== record.status ? editStatus : undefined,
+                    coach_notes:
+                      editNotes !== (record.coach_notes ?? '')
+                        ? editNotes
+                        : undefined,
+                  });
+                  setEditDialogOpen(false);
+                }}
+                disabled={editing}
+              >
+                {editing ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : null}
+                Save Changes
+              </Button>
             </div>
           </div>
         </DialogContent>
@@ -424,6 +639,133 @@ function StatCard({
   );
 }
 
+function LevelProgressCard({
+  lp,
+  student,
+  onUpdate,
+  onDelete,
+  updating,
+  deleting,
+}: {
+  lp: any;
+  student: {
+    id: string;
+    name: string;
+    program: string;
+    profile_image_url: string | null;
+  };
+  onUpdate: (status: string) => void;
+  onDelete: () => void;
+  updating: boolean;
+  deleting: boolean;
+}) {
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
+  return (
+    <>
+      <Card className="group hover:shadow-md transition-all duration-300 overflow-hidden">
+        <div className="h-1.5 bg-gradient-to-r from-primary/30 to-primary/10 border-b" />
+        <CardContent className="p-4">
+          <div className="flex items-start gap-3 mb-3">
+            <Avatar className="h-10 w-10 ring-2 ring-offset-2 ring-primary/10">
+              {student.profile_image_url ? (
+                <AvatarImage
+                  src={student.profile_image_url}
+                  alt={student.name}
+                />
+              ) : (
+                <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-bold text-sm">
+                  {student.name?.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              )}
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-sm text-foreground truncate">
+                {student.name}
+              </h3>
+              <p className="text-xs text-muted-foreground">{student.program}</p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={() => setDeleteOpen(true)}
+              title="Delete level progression"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 mb-3">
+            <Layers className="h-4 w-4 text-primary flex-shrink-0" />
+            <span className="text-sm font-medium text-foreground">
+              {lp.discipline_levels?.level_name}
+            </span>
+            <Badge
+              variant={lp.status === 'completed' ? 'default' : 'secondary'}
+              className={`ml-auto text-[10px] ${lp.status === 'completed' ? 'bg-green-600' : ''}`}
+            >
+              {lp.status === 'completed' ? '✓ Done' : '⏳ Active'}
+            </Badge>
+          </div>
+          {lp.coach_notes && (
+            <p className="text-xs text-muted-foreground mb-3 line-clamp-2 p-2 bg-muted/30 rounded-md border border-border/50">
+              {lp.coach_notes}
+            </p>
+          )}
+          <div className="flex gap-1.5">
+            <Button
+              variant={lp.status === 'in_progress' ? 'default' : 'ghost'}
+              size="sm"
+              className="flex-1 h-8 text-xs"
+              onClick={() => onUpdate('in_progress')}
+              disabled={updating}
+            >
+              In Progress
+            </Button>
+            <Button
+              variant={lp.status === 'completed' ? 'default' : 'ghost'}
+              size="sm"
+              className="flex-1 h-8 text-xs"
+              onClick={() => onUpdate('completed')}
+              disabled={updating}
+            >
+              Complete
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Level Progress</AlertDialogTitle>
+            <AlertDialogDescription>
+              Remove {student.name}'s {lp.discipline_levels?.level_name} level
+              progress? This will reset their progress for this level.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                onDelete();
+                setDeleteOpen(false);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleting}
+            >
+              {deleting ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : null}
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
+
 export default function ProgressionBoard() {
   const [search, setSearch] = useState('');
   const [program, setProgram] = useState<string>();
@@ -433,7 +775,8 @@ export default function ProgressionBoard() {
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
 
   const { beltOptions, beltMap } = useBeltLevels();
-  const { levelOptions: disciplineLevelOptions } = useDisciplineLevels();
+  const { levelOptions: disciplineLevelOptions, levelsByDiscipline } =
+    useDisciplineLevels();
   const { students } = useStudents();
   const {
     history,
@@ -441,22 +784,131 @@ export default function ProgressionBoard() {
     isLoading: historyLoading,
   } = usePromotionHistory();
 
+  // Fetch level-based discipline progress
+  const queryClient = useQueryClient();
+  const { data: levelProgressRecords = [], isLoading: levelProgressLoading } =
+    useQuery({
+      queryKey: ['discipline-progress-admin'],
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from('student_discipline_progress')
+          .select(
+            'id, student_id, status, started_at, completed_at, coach_notes, discipline_levels(id, discipline, level_name, level_order)'
+          )
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        return (data || []) as any[];
+      },
+    });
+
+  const updateLevelProgressMutation = useMutation({
+    mutationFn: async ({
+      id,
+      status,
+      coach_notes,
+    }: {
+      id: string;
+      status: string;
+      coach_notes?: string | null;
+    }) => {
+      const payload: Record<string, unknown> = {
+        status,
+        updated_at: new Date().toISOString(),
+      };
+      if (status === 'completed')
+        payload.completed_at = new Date().toISOString();
+      if (coach_notes !== undefined) payload.coach_notes = coach_notes;
+      const { error } = await supabase
+        .from('student_discipline_progress')
+        .update(payload)
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['discipline-progress-admin'],
+      });
+      toast.success('Level progress updated');
+    },
+    onError: (err) =>
+      toast.error(err instanceof Error ? err.message : 'Update failed'),
+  });
+
+  const deleteLevelProgressMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('student_discipline_progress')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['discipline-progress-admin'],
+      });
+      toast.success('Level progress deleted');
+    },
+    onError: (err) =>
+      toast.error(err instanceof Error ? err.message : 'Delete failed'),
+  });
+
+  // Fetch actual programs from junction table for each student
+  const { data: allStudentPrograms = [] } = useQuery({
+    queryKey: ['student-programs-all'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('student_programs')
+        .select('student_id, program_name');
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+
+  // Build a map: student_id → comma-separated program names from junction table
+  const studentProgramMap = useMemo(() => {
+    const map = new Map<string, string[]>();
+    allStudentPrograms.forEach((sp: any) => {
+      const existing = map.get(sp.student_id) || [];
+      existing.push(sp.program_name);
+      map.set(sp.student_id, existing);
+    });
+    return map;
+  }, [allStudentPrograms]);
+
   const studentOptions = useMemo(
     () =>
-      students.map((student) => ({
-        label: `${student.name} • ${student.program}`,
-        value: student.id,
-        program: student.program,
-      })),
-    [students]
+      students.map((student) => {
+        const programs = studentProgramMap.get(student.id);
+        const programLabel =
+          programs && programs.length > 0
+            ? programs.join(', ')
+            : student.program;
+        return {
+          label: `${student.name} • ${programLabel}`,
+          value: student.id,
+          program: programLabel,
+        };
+      }),
+    [students, studentProgramMap]
   );
 
   const programOptions = useMemo(() => {
-    return Array.from(new Set(students.map((s) => s.program))).map((p) => ({
-      label: p,
-      value: p,
-    }));
-  }, [students]);
+    // Collect all unique programs from junction table + students table
+    const allProgs = new Set<string>();
+    students.forEach((s) => {
+      const progs = studentProgramMap.get(s.id);
+      if (progs) progs.forEach((p) => allProgs.add(p));
+      else if (s.program)
+        s.program.split(',').forEach((p) => allProgs.add(p.trim()));
+    });
+    return Array.from(allProgs)
+      .filter(Boolean)
+      .map((p) => ({
+        label: p,
+        value: p,
+      }));
+  }, [students, studentProgramMap]);
 
   const {
     grouped,
@@ -468,6 +920,10 @@ export default function ProgressionBoard() {
     isLoading,
     records,
     updateStripeCount,
+    deleteProgress,
+    deletingProgress,
+    editProgress,
+    editingProgress,
   } = useProgressionQuery({
     search,
     program,
@@ -538,10 +994,10 @@ export default function ProgressionBoard() {
         <div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground flex items-center gap-2">
             <Trophy className="h-6 w-6 sm:h-7 sm:w-7 text-yellow-500" />
-            Belt Progression
+            Student Progression
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Track and manage student belt assessments
+            Track belt & level-based assessments across all programs
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -705,8 +1161,13 @@ export default function ProgressionBoard() {
                 onStripeUpdate={(newCount) =>
                   updateStripeCount({ id: record.id, stripeCount: newCount })
                 }
+                onDelete={() => deleteProgress(record.id)}
+                onEdit={(data) => editProgress({ id: record.id, ...data })}
                 nextBelt={nextBelt}
                 promoting={promotingStudent}
+                deleting={deletingProgress}
+                editing={editingProgress}
+                beltOptions={beltOptions}
               />
             );
           })}
@@ -735,7 +1196,56 @@ export default function ProgressionBoard() {
         </Card>
       )}
 
-      {/* Promotion History Dialog */}
+      {/* Level-Based Discipline Progress Section */}
+      {levelProgressRecords.length > 0 && (
+        <div className="space-y-4 mt-6">
+          <div className="flex items-center gap-2">
+            <Layers className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-bold text-foreground">
+              Level-Based Progression
+            </h2>
+            <Badge variant="secondary" className="text-xs">
+              {levelProgressRecords.length} records
+            </Badge>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+            {levelProgressRecords
+              .filter((lp: any) => {
+                if (program) {
+                  const student = students.find((s) => s.id === lp.student_id);
+                  if (student?.program?.toLowerCase() !== program.toLowerCase())
+                    return false;
+                }
+                if (search) {
+                  const student = students.find((s) => s.id === lp.student_id);
+                  if (
+                    !student?.name.toLowerCase().includes(search.toLowerCase())
+                  )
+                    return false;
+                }
+                return true;
+              })
+              .map((lp: any) => {
+                const student = students.find((s) => s.id === lp.student_id);
+                if (!student) return null;
+                return (
+                  <LevelProgressCard
+                    key={lp.id}
+                    lp={lp}
+                    student={student}
+                    onUpdate={(status) =>
+                      updateLevelProgressMutation.mutate({ id: lp.id, status })
+                    }
+                    onDelete={() => deleteLevelProgressMutation.mutate(lp.id)}
+                    updating={updateLevelProgressMutation.isPending}
+                    deleting={deleteLevelProgressMutation.isPending}
+                  />
+                );
+              })}
+          </div>
+        </div>
+      )}
+
       <Dialog open={historyDialogOpen} onOpenChange={setHistoryDialogOpen}>
         <DialogContent className="max-w-lg max-h-[85vh] mx-4 sm:mx-auto">
           <DialogHeader>
@@ -743,7 +1253,10 @@ export default function ProgressionBoard() {
               <History className="h-5 w-5" />
               Promotion History
             </DialogTitle>
-            <DialogDescription>Recent belt promotions</DialogDescription>
+            <DialogDescription>
+              Recent belt promotions across all programs. Promotion history is
+              preserved even when progression records are deleted.
+            </DialogDescription>
           </DialogHeader>
           <ProgressionTimeline history={history} isLoading={historyLoading} />
         </DialogContent>
@@ -787,6 +1300,9 @@ export default function ProgressionBoard() {
               if (error) throw error;
             }
             toast.success('Student assigned to level');
+            queryClient.invalidateQueries({
+              queryKey: ['discipline-progress-admin'],
+            });
           } else {
             await assignStudent(payload);
           }

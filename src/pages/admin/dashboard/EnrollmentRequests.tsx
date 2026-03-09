@@ -40,6 +40,7 @@ import {
   CheckCircle,
   KeyRound,
   Mail,
+  RefreshCw,
 } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 
@@ -370,7 +371,7 @@ export default function EnrollmentRequestsManager() {
   const pendingCount = requests.filter((r) => r.status === 'pending').length;
 
   return (
-    <div className="w-full min-h-full p-3 sm:p-4 lg:p-6 xl:p-8 space-y-5">
+    <div className="w-full p-4 sm:p-5 lg:p-6 space-y-4 max-w-[1600px] mx-auto">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
@@ -386,6 +387,17 @@ export default function EnrollmentRequestsManager() {
             credentials
           </p>
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-9 gap-2"
+          onClick={() =>
+            queryClient.invalidateQueries({ queryKey: ['enrollment-requests'] })
+          }
+        >
+          <RefreshCw className="w-4 h-4" />
+          <span className="hidden sm:inline">Refresh</span>
+        </Button>
       </div>
 
       {/* Filters */}

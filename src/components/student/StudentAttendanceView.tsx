@@ -62,10 +62,10 @@ export default function StudentAttendanceView() {
   });
 
   const stats = useMemo(() => {
-    let present = 0,
-      absent = 0,
-      late = 0,
-      total = (attendance as any[]).length;
+    let present = 0;
+    let absent = 0;
+    let late = 0;
+    const total = (attendance as any[]).length;
     (attendance as any[]).forEach((a: any) => {
       if (a.status === 'present' || a.status === 'half_day') present++;
       if (a.status === 'absent') absent++;

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { programs } from '@/data/programsData';
@@ -15,8 +16,6 @@ interface Testimonial {
 }
 
 export default function TestimonialsManager() {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
     program_slug: '',
@@ -26,19 +25,21 @@ export default function TestimonialsManager() {
   });
   const { toast } = useToast();
 
-  const fetchAll = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from('program_testimonials' as any)
-      .select('*')
-      .order('created_at', { ascending: false });
-    if (!error) setTestimonials((data as any as Testimonial[]) ?? []);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchAll();
-  }, []);
+  const {
+    data: testimonials = [],
+    isLoading: loading,
+    refetch,
+  } = useQuery({
+    queryKey: ['admin-program-testimonials'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('program_testimonials' as any)
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return ((data as any as Testimonial[]) ?? []);
+    },
+  });
 
   const handleAdd = async () => {
     if (
@@ -67,7 +68,7 @@ export default function TestimonialsManager() {
       toast({ title: 'Added', description: 'Testimonial added successfully.' });
       setForm({ program_slug: '', student_name: '', review: '', rating: 5 });
       setShowForm(false);
-      fetchAll();
+      refetch();
     }
   };
 
@@ -76,7 +77,7 @@ export default function TestimonialsManager() {
       .from('program_testimonials' as any)
       .update({ is_published: !current } as any)
       .eq('id', id);
-    fetchAll();
+    refetch();
   };
 
   const handleDelete = async (id: string) => {
@@ -85,7 +86,7 @@ export default function TestimonialsManager() {
       .from('program_testimonials' as any)
       .delete()
       .eq('id', id);
-    fetchAll();
+    refetch();
   };
 
   return (

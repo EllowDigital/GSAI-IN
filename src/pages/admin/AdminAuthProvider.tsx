@@ -95,14 +95,8 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     PerformanceNavigationTiming['type'] | undefined
   >(getNavigationType());
 
-  useEffect(() => {
-    if (
-      navigationTypeRef.current &&
-      HARD_RELOAD_TYPES.includes(navigationTypeRef.current)
-    ) {
-      clearPersistedSupabaseSession();
-    }
-  }, []);
+  // Don't clear session on page refresh — let Supabase handle session persistence naturally.
+  // Only clear on explicit sign-out.
 
   const clearState = (options?: { keepLoading?: boolean }) => {
     setSession(null);

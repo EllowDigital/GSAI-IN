@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   Home,
@@ -14,12 +14,25 @@ import {
   MessageSquare,
   X,
   Swords,
-  GraduationCap,
   Megaphone,
   UserPlus,
   CalendarCheck,
+  Dumbbell,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  PanelLeftClose,
+  PanelLeft,
 } from 'lucide-react';
 import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const navItems = [
   { title: 'Dashboard', url: '/admin/dashboard', icon: Home, category: 'main' },
@@ -45,6 +58,12 @@ const navItems = [
     title: 'Progression',
     url: '/admin/dashboard/progression',
     icon: Trophy,
+    category: 'manage',
+  },
+  {
+    title: 'Disciplines',
+    url: '/admin/dashboard/disciplines',
+    icon: Dumbbell,
     category: 'manage',
   },
   {
@@ -100,25 +119,34 @@ const navItems = [
 interface AppSidebarProps {
   open?: boolean;
   setOpen?: (open: boolean) => void;
+  collapsed?: boolean;
+  setCollapsed?: (collapsed: boolean) => void;
 }
 
 function NavSection({
   label,
   items,
   setOpen,
+  collapsed,
 }: {
   label: string;
   items: typeof navItems;
   setOpen?: (open: boolean) => void;
+  collapsed?: boolean;
 }) {
   return (
-    <div>
-      <p className="px-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">
-        {label}
-      </p>
-      <ul className="space-y-0.5">
-        {items.map(({ title, url, icon: Icon }) => (
-          <li key={title}>
+    <div className="mb-1">
+      {!collapsed && (
+        <p className="px-3 py-1.5 text-[10px] font-semibold text-sidebar-foreground/40 uppercase tracking-[0.12em]">
+          {label}
+        </p>
+      )}
+      {collapsed && (
+        <div className="mx-auto my-1.5 w-6 border-t border-sidebar-border/30" />
+      )}
+      <ul className="space-y-0.5 px-2">
+        {items.map(({ title, url, icon: Icon }) => {
+          const link = (
             <NavLink
               to={url}
               end
@@ -126,100 +154,212 @@ function NavSection({
                 if (window.innerWidth < 1024 && setOpen) setOpen(false);
               }}
               className={({ isActive }) =>
-                `flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-colors ${
+                cn(
+                  'group flex items-center gap-2.5 rounded-lg text-[13px] font-medium transition-all duration-150',
+                  collapsed ? 'justify-center p-2.5' : 'px-3 py-2',
                   isActive
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                }`
+                    ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm'
+                    : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                )
               }
             >
-              <Icon className="w-4 h-4 flex-shrink-0" />
-              <span className="truncate">{title}</span>
+              <Icon
+                className={cn(
+                  'flex-shrink-0',
+                  collapsed ? 'w-[18px] h-[18px]' : 'w-4 h-4'
+                )}
+              />
+              {!collapsed && <span className="truncate">{title}</span>}
             </NavLink>
-          </li>
-        ))}
+          );
+
+          if (collapsed) {
+            return (
+              <li key={title}>
+                <Tooltip delayDuration={0}>
+                  <TooltipTrigger asChild>{link}</TooltipTrigger>
+                  <TooltipContent side="right" className="text-xs font-medium">
+                    {title}
+                  </TooltipContent>
+                </Tooltip>
+              </li>
+            );
+          }
+          return <li key={title}>{link}</li>;
+        })}
       </ul>
     </div>
   );
 }
 
-export function AppSidebar({ open = false, setOpen }: AppSidebarProps) {
+export function AppSidebar({
+  open = false,
+  setOpen,
+  collapsed = false,
+  setCollapsed,
+}: AppSidebarProps) {
   const { signOut } = useAdminAuth();
-  const navigate = useNavigate();
 
   return (
-    <nav
-      className={`fixed left-0 top-0 z-50 h-full bg-card border-r border-border transform transition-transform duration-200 ease-out ${
-        open ? 'translate-x-0' : '-translate-x-full'
-      } w-[240px] lg:translate-x-0 lg:static flex flex-col`}
-      aria-label="Sidebar"
-    >
-      {setOpen && (
-        <button
-          className="lg:hidden absolute top-3 right-3 p-1.5 rounded-md hover:bg-muted transition-colors"
-          onClick={() => setOpen(false)}
-          aria-label="Close sidebar"
-        >
-          <X className="w-4 h-4 text-muted-foreground" />
-        </button>
-      )}
+    <TooltipProvider>
+      <nav
+        className={cn(
+          'fixed left-0 top-0 z-50 h-dvh bg-sidebar border-r border-sidebar-border transform transition-all duration-200 ease-out flex flex-col',
+          // Mobile behavior
+          open ? 'translate-x-0' : '-translate-x-full',
+          // Desktop behavior
+          'lg:translate-x-0 lg:static',
+          // Width
+          collapsed ? 'w-[60px]' : 'w-[240px]'
+        )}
+        aria-label="Sidebar"
+      >
+        {/* Mobile close */}
+        {setOpen && (
+          <button
+            className="lg:hidden absolute top-3 right-3 p-1.5 rounded-md hover:bg-sidebar-accent transition-colors z-10"
+            onClick={() => setOpen(false)}
+            aria-label="Close sidebar"
+          >
+            <X className="w-4 h-4 text-sidebar-foreground/60" />
+          </button>
+        )}
 
-      {/* Logo */}
-      <div className="flex items-center gap-2.5 px-4 h-14 border-b border-border flex-shrink-0">
-        <img
-          src="/assets/img/logo.webp"
-          alt="Logo"
-          className="w-8 h-8 object-contain"
-        />
-        <span className="text-sm font-bold text-foreground">GSAI Admin</span>
-      </div>
-
-      {/* Navigation */}
-      <div className="flex-1 py-4 px-2 overflow-y-auto space-y-4">
-        <NavSection
-          label="Overview"
-          items={navItems.filter((i) => i.category === 'main')}
-          setOpen={setOpen}
-        />
-        <NavSection
-          label="Management"
-          items={navItems.filter((i) => i.category === 'manage')}
-          setOpen={setOpen}
-        />
-        <NavSection
-          label="Content"
-          items={navItems.filter((i) => i.category === 'content')}
-          setOpen={setOpen}
-        />
-      </div>
-
-      {/* Footer */}
-      <div className="p-3 border-t border-border space-y-2">
-        <button
-          onClick={() => window.open('/', '_blank')}
-          className="w-full flex items-center justify-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground px-3 py-2 rounded-lg hover:bg-muted transition-colors"
+        {/* Logo */}
+        <div
+          className={cn(
+            'flex items-center border-b border-sidebar-border flex-shrink-0 h-14',
+            collapsed ? 'justify-center px-2' : 'gap-3 px-4'
+          )}
         >
-          <Globe className="w-3.5 h-3.5" />
-          Go to Website
-        </button>
-        <button
-          onClick={() => signOut()}
-          className="w-full flex items-center justify-center gap-2 bg-destructive/10 text-destructive hover:bg-destructive/20 px-3 py-2 rounded-lg transition-colors text-xs font-medium"
-        >
-          <LogOut className="w-3.5 h-3.5" />
-          Sign Out
-        </button>
-        <div className="pt-2 border-t border-border/50 text-center">
-          <p className="text-[10px] text-muted-foreground/60 font-medium">
-            v1.0.0
-          </p>
-          <p className="text-[9px] text-muted-foreground/40 mt-0.5">
-            Built by{' '}
-            <span className="text-muted-foreground/60">Sarwan Yadav</span> ·{' '}
-            <span className="text-muted-foreground/60">EllowDigital</span>
-          </p>
+          <img
+            src="/assets/img/logo.webp"
+            alt="Logo"
+            className="w-8 h-8 object-contain rounded-lg"
+          />
+          {!collapsed && (
+            <div className="min-w-0">
+              <span className="text-sm font-bold text-sidebar-foreground tracking-tight">
+                GSAI Admin
+              </span>
+              <p className="text-[10px] text-sidebar-foreground/40 leading-none">
+                Management Portal
+              </p>
+            </div>
+          )}
         </div>
-      </div>
-    </nav>
+
+        {/* Navigation */}
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="py-3 space-y-1">
+            <NavSection
+              label="Overview"
+              items={navItems.filter((i) => i.category === 'main')}
+              setOpen={setOpen}
+              collapsed={collapsed}
+            />
+            <NavSection
+              label="Management"
+              items={navItems.filter((i) => i.category === 'manage')}
+              setOpen={setOpen}
+              collapsed={collapsed}
+            />
+            <NavSection
+              label="Content"
+              items={navItems.filter((i) => i.category === 'content')}
+              setOpen={setOpen}
+              collapsed={collapsed}
+            />
+          </div>
+        </ScrollArea>
+
+        {/* Footer */}
+        <div
+          className={cn(
+            'border-t border-sidebar-border flex-shrink-0',
+            collapsed ? 'p-1.5 space-y-1' : 'p-3 space-y-1.5'
+          )}
+        >
+          {/* Collapse toggle - desktop only */}
+          {setCollapsed && (
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setCollapsed(!collapsed)}
+                  className={cn(
+                    'hidden lg:flex items-center gap-2 text-[12px] font-medium text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-colors',
+                    collapsed
+                      ? 'justify-center p-2.5 w-full'
+                      : 'px-3 py-2 w-full'
+                  )}
+                >
+                  {collapsed ? (
+                    <PanelLeft className="w-4 h-4" />
+                  ) : (
+                    <>
+                      <PanelLeftClose className="w-4 h-4" />
+                      <span>Collapse</span>
+                    </>
+                  )}
+                </button>
+              </TooltipTrigger>
+              {collapsed && (
+                <TooltipContent side="right" className="text-xs">
+                  Expand sidebar
+                </TooltipContent>
+              )}
+            </Tooltip>
+          )}
+
+          {/* Website link */}
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => window.open('/', '_blank')}
+                className={cn(
+                  'flex items-center gap-2 text-[12px] font-medium text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-colors',
+                  collapsed ? 'justify-center p-2.5 w-full' : 'px-3 py-2 w-full'
+                )}
+              >
+                <Globe className="w-4 h-4 flex-shrink-0" />
+                {!collapsed && <span>View Website</span>}
+              </button>
+            </TooltipTrigger>
+            {collapsed && (
+              <TooltipContent side="right" className="text-xs">
+                View Website
+              </TooltipContent>
+            )}
+          </Tooltip>
+
+          {/* Sign out */}
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => signOut()}
+                className={cn(
+                  'flex items-center gap-2 text-[12px] font-medium text-destructive/80 hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors',
+                  collapsed ? 'justify-center p-2.5 w-full' : 'px-3 py-2 w-full'
+                )}
+              >
+                <LogOut className="w-4 h-4 flex-shrink-0" />
+                {!collapsed && <span>Sign Out</span>}
+              </button>
+            </TooltipTrigger>
+            {collapsed && (
+              <TooltipContent side="right" className="text-xs">
+                Sign Out
+              </TooltipContent>
+            )}
+          </Tooltip>
+
+          {!collapsed && (
+            <p className="text-[9px] text-sidebar-foreground/25 text-center pt-1">
+              v1.0.0 · EllowDigital
+            </p>
+          )}
+        </div>
+      </nav>
+    </TooltipProvider>
   );
 }

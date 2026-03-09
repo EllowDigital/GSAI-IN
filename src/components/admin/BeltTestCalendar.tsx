@@ -23,6 +23,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from '@/hooks/use-toast';
 import { format, isSameDay, parseISO } from 'date-fns';
 import {
@@ -33,6 +35,8 @@ import {
   Clock,
   Trash2,
   Loader2,
+  Bell,
+  Send,
 } from 'lucide-react';
 
 interface BeltTest {
@@ -48,15 +52,21 @@ export default function BeltTestCalendar() {
     new Date()
   );
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [notifyDialogOpen, setNotifyDialogOpen] = useState(false);
   const [editingTest, setEditingTest] = useState<BeltTest | null>(null);
+  const [notifyTest, setNotifyTest] = useState<BeltTest | null>(null);
+  const [selectedStudentIds, setSelectedStudentIds] = useState<Set<string>>(
+    new Set()
+  );
+  const [notifyDiscipline, setNotifyDiscipline] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     time: '10:00',
+    discipline: '',
   });
   const queryClient = useQueryClient();
 
-  // Fetch events tagged as belt tests
   const { data: beltTests = [], isLoading } = useQuery({
     queryKey: ['belt-tests'],
     queryFn: async () => {
@@ -70,27 +80,30 @@ export default function BeltTestCalendar() {
     },
   });
 
-  // Fetch students ready for belt test
   const { data: readyStudents = [] } = useQuery({
     queryKey: ['students-ready-for-test'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('student_progress')
-        .select(
-          `
-          id,
-          status,
-          stripe_count,
-          student:students(id, name, program)
-        `
-        )
+        .select('id, status, stripe_count, student:students(id, name, program)')
         .or('status.eq.ready,stripe_count.gte.4');
       if (error) throw error;
       return data || [];
     },
   });
 
-  // Create/Update mutation
+  const { data: allStudents = [] } = useQuery({
+    queryKey: ['all-students-for-notify'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('students')
+        .select('id, name, program')
+        .order('name');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   const saveMutation = useMutation({
     mutationFn: async (data: {
       id?: string;
@@ -132,7 +145,6 @@ export default function BeltTestCalendar() {
     },
   });
 
-  // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from('events').delete().eq('id', id);
@@ -151,6 +163,45 @@ export default function BeltTestCalendar() {
     },
   });
 
+  // Send notifications to students
+  const notifyMutation = useMutation({
+    mutationFn: async ({
+      test,
+      studentIds,
+      discipline,
+    }: {
+      test: BeltTest;
+      studentIds: string[];
+      discipline: string;
+    }) => {
+      const notifications = studentIds.map((studentId) => ({
+        student_id: studentId,
+        event_id: test.id,
+        title: `Belt Exam: ${test.title}`,
+        message: `You have a belt exam scheduled on ${format(parseISO(test.date), 'MMMM d, yyyy')}. ${test.description || 'Please prepare accordingly.'}`,
+        exam_date: test.date,
+        discipline: discipline || null,
+      }));
+
+      const { error } = await supabase
+        .from('belt_exam_notifications')
+        .insert(notifications);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Notifications Sent',
+        description: `Notified ${selectedStudentIds.size} student(s) about the belt exam`,
+      });
+      setNotifyDialogOpen(false);
+      setSelectedStudentIds(new Set());
+      setNotifyTest(null);
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message, variant: 'error' });
+    },
+  });
+
   const handleOpenDialog = (test?: BeltTest) => {
     if (test) {
       setEditingTest(test);
@@ -158,6 +209,7 @@ export default function BeltTestCalendar() {
         title: test.title,
         description: test.description || '',
         time: '10:00',
+        discipline: '',
       });
     } else {
       setEditingTest(null);
@@ -165,6 +217,7 @@ export default function BeltTestCalendar() {
         title: 'Belt Grading Test',
         description: '',
         time: '10:00',
+        discipline: '',
       });
     }
     setDialogOpen(true);
@@ -173,38 +226,70 @@ export default function BeltTestCalendar() {
   const handleCloseDialog = () => {
     setDialogOpen(false);
     setEditingTest(null);
-    setFormData({ title: '', description: '', time: '10:00' });
+    setFormData({ title: '', description: '', time: '10:00', discipline: '' });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDate) return;
-
-    const dateStr = format(selectedDate, 'yyyy-MM-dd');
     saveMutation.mutate({
       id: editingTest?.id,
       title: formData.title,
-      date: dateStr,
+      date: format(selectedDate, 'yyyy-MM-dd'),
       description: formData.description,
     });
   };
 
-  // Get tests for selected date
+  const handleOpenNotify = (test: BeltTest) => {
+    setNotifyTest(test);
+    setNotifyDiscipline('');
+    setSelectedStudentIds(new Set());
+    setNotifyDialogOpen(true);
+  };
+
+  const handleSendNotify = () => {
+    if (!notifyTest || selectedStudentIds.size === 0) return;
+    notifyMutation.mutate({
+      test: notifyTest,
+      studentIds: Array.from(selectedStudentIds),
+      discipline: notifyDiscipline,
+    });
+  };
+
+  const toggleStudent = (id: string) => {
+    setSelectedStudentIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const selectAllStudents = () => {
+    const filtered = notifyDiscipline
+      ? allStudents.filter((s) =>
+          s.program?.toLowerCase().includes(notifyDiscipline.toLowerCase())
+        )
+      : allStudents;
+    setSelectedStudentIds(new Set(filtered.map((s) => s.id)));
+  };
+
+  const filteredStudentsForNotify = notifyDiscipline
+    ? allStudents.filter((s) =>
+        s.program?.toLowerCase().includes(notifyDiscipline.toLowerCase())
+      )
+    : allStudents;
+
   const testsOnSelectedDate = selectedDate
     ? beltTests.filter((test) => isSameDay(parseISO(test.date), selectedDate))
     : [];
 
-  // Get dates that have tests
   const testDates = beltTests.map((test) => parseISO(test.date));
 
-  // Upcoming tests (next 30 days)
   const upcomingTests = beltTests.filter((test) => {
     const testDate = parseISO(test.date);
     const now = new Date();
-    const thirtyDaysFromNow = new Date(
-      now.getTime() + 30 * 24 * 60 * 60 * 1000
-    );
-    return testDate >= now && testDate <= thirtyDaysFromNow;
+    const thirtyDays = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    return testDate >= now && testDate <= thirtyDays;
   });
 
   return (
@@ -216,7 +301,7 @@ export default function BeltTestCalendar() {
             Belt Test Schedule
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Schedule and manage belt grading tests
+            Schedule belt tests and notify students via their portal
           </p>
         </div>
         <Button onClick={() => handleOpenDialog()} className="gap-2">
@@ -226,7 +311,6 @@ export default function BeltTestCalendar() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Calendar */}
         <Card className="lg:col-span-2">
           <CardContent className="p-4">
             <Calendar
@@ -234,9 +318,7 @@ export default function BeltTestCalendar() {
               selected={selectedDate}
               onSelect={setSelectedDate}
               className="w-full"
-              modifiers={{
-                hasTest: testDates,
-              }}
+              modifiers={{ hasTest: testDates }}
               modifiersStyles={{
                 hasTest: {
                   backgroundColor: 'hsl(var(--primary) / 0.2)',
@@ -246,7 +328,6 @@ export default function BeltTestCalendar() {
               }}
             />
 
-            {/* Tests on selected date */}
             {selectedDate && (
               <div className="mt-4 pt-4 border-t">
                 <h3 className="font-medium text-sm mb-3">
@@ -270,7 +351,15 @@ export default function BeltTestCalendar() {
                             )}
                           </div>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleOpenNotify(test)}
+                            title="Send notifications"
+                          >
+                            <Bell className="w-4 h-4 text-primary" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -300,9 +389,7 @@ export default function BeltTestCalendar() {
           </CardContent>
         </Card>
 
-        {/* Sidebar */}
         <div className="space-y-4">
-          {/* Upcoming Tests */}
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -319,12 +406,23 @@ export default function BeltTestCalendar() {
                 upcomingTests.map((test) => (
                   <div
                     key={test.id}
-                    className="p-2 rounded-lg bg-muted/30 text-sm"
+                    className="flex items-center justify-between p-2 rounded-lg bg-muted/30 text-sm"
                   >
-                    <p className="font-medium">{test.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {format(parseISO(test.date), 'MMM d, yyyy')}
-                    </p>
+                    <div>
+                      <p className="font-medium">{test.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {format(parseISO(test.date), 'MMM d, yyyy')}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 w-7 p-0"
+                      onClick={() => handleOpenNotify(test)}
+                      title="Notify students"
+                    >
+                      <Bell className="w-3.5 h-3.5 text-primary" />
+                    </Button>
                   </div>
                 ))
               ) : (
@@ -335,7 +433,6 @@ export default function BeltTestCalendar() {
             </CardContent>
           </Card>
 
-          {/* Students Ready */}
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -388,7 +485,6 @@ export default function BeltTestCalendar() {
                 : 'Select a date first'}
             </DialogDescription>
           </DialogHeader>
-
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="title">Test Title</Label>
@@ -402,7 +498,17 @@ export default function BeltTestCalendar() {
                 required
               />
             </div>
-
+            <div className="space-y-2">
+              <Label htmlFor="discipline">Discipline (optional)</Label>
+              <Input
+                id="discipline"
+                value={formData.discipline}
+                onChange={(e) =>
+                  setFormData({ ...formData, discipline: e.target.value })
+                }
+                placeholder="e.g. Karate, Taekwondo"
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="time">Time</Label>
               <Input
@@ -414,7 +520,6 @@ export default function BeltTestCalendar() {
                 }
               />
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="description">Notes (Optional)</Label>
               <Textarea
@@ -427,7 +532,6 @@ export default function BeltTestCalendar() {
                 rows={3}
               />
             </div>
-
             <DialogFooter>
               <Button
                 type="button"
@@ -451,6 +555,102 @@ export default function BeltTestCalendar() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Notify Students Dialog */}
+      <Dialog open={notifyDialogOpen} onOpenChange={setNotifyDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Bell className="w-5 h-5 text-primary" />
+              Notify Students
+            </DialogTitle>
+            <DialogDescription>
+              Send belt exam notification to selected students. They'll see it
+              in their Student Portal.
+              {notifyTest && (
+                <span className="block mt-1 font-medium">
+                  {notifyTest.title} —{' '}
+                  {format(parseISO(notifyTest.date), 'MMM d, yyyy')}
+                </span>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Filter by Discipline</Label>
+              <Input
+                value={notifyDiscipline}
+                onChange={(e) => setNotifyDiscipline(e.target.value)}
+                placeholder="e.g. Karate (leave empty for all)"
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
+                {filteredStudentsForNotify.length} student(s) •{' '}
+                {selectedStudentIds.size} selected
+              </p>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={selectAllStudents}
+                className="text-xs h-7"
+              >
+                Select All
+              </Button>
+            </div>
+            <ScrollArea className="h-[250px] border rounded-lg p-2">
+              <div className="space-y-1">
+                {filteredStudentsForNotify.map((student) => (
+                  <label
+                    key={student.id}
+                    className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${selectedStudentIds.has(student.id) ? 'bg-primary/10' : 'hover:bg-muted/50'}`}
+                  >
+                    <Checkbox
+                      checked={selectedStudentIds.has(student.id)}
+                      onCheckedChange={() => toggleStudent(student.id)}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {student.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {student.program}
+                      </p>
+                    </div>
+                  </label>
+                ))}
+                {filteredStudentsForNotify.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-8">
+                    No students found
+                  </p>
+                )}
+              </div>
+            </ScrollArea>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setNotifyDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSendNotify}
+              disabled={
+                selectedStudentIds.size === 0 || notifyMutation.isPending
+              }
+              className="gap-2"
+            >
+              {notifyMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Send className="w-4 h-4" />
+              )}
+              Notify {selectedStudentIds.size} Student(s)
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

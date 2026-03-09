@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -16,11 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ProgressStatus } from '@/hooks/useProgressionQuery';
-import {
-  isBeltDiscipline,
-  isLevelDiscipline,
-  getDisciplineConfig,
-} from '@/config/disciplineConfig';
+import { useDisciplines } from '@/hooks/useDisciplines';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface StudentOption {
@@ -78,37 +74,69 @@ export default function AssignStudentBeltDialog({
   const [beltId, setBeltId] = useState('');
   const [status, setStatus] = useState<ProgressStatus>('needs_work');
   const [error, setError] = useState<string | null>(null);
+  const [selectedProgram, setSelectedProgram] = useState('');
 
-  // Get selected student's program/discipline
+  // Use DB-driven discipline data
+  const {
+    isBeltBased: checkBeltBased,
+    isLevelBased: checkLevelBased,
+    hasStripes,
+    getDiscipline,
+  } = useDisciplines();
+
+  // Get selected student
   const selectedStudent = useMemo(() => {
     return students.find((s) => s.value === studentId);
   }, [students, studentId]);
 
-  const studentProgram = selectedStudent?.program ?? '';
-  const isBeltBased = isBeltDiscipline(studentProgram);
-  const isLevelBased = isLevelDiscipline(studentProgram);
-  const disciplineConfig = getDisciplineConfig(studentProgram);
+  // Parse all programs from comma-separated string
+  const studentPrograms = useMemo(() => {
+    if (!selectedStudent?.program) return [];
+    return selectedStudent.program
+      .split(',')
+      .map((p) => p.trim())
+      .filter(Boolean);
+  }, [selectedStudent]);
 
-  // Filter belts by student's discipline
+  const hasMultiplePrograms = studentPrograms.length > 1;
+
+  // Auto-select first program when student changes
+  React.useEffect(() => {
+    if (studentId && studentPrograms.length > 0) {
+      setSelectedProgram(studentPrograms[0]);
+    } else {
+      setSelectedProgram('');
+    }
+  }, [studentId, studentPrograms]);
+
+  const studentProgram = selectedProgram || studentPrograms[0] || '';
+  const isBeltBased = checkBeltBased(studentProgram);
+  const isLevelBased = checkLevelBased(studentProgram);
+  const discipline = getDiscipline(studentProgram);
+
+  // Filter belts/levels by student's SELECTED program
   const filteredBelts = useMemo(() => {
-    if (!studentId || !studentProgram) return belts;
+    if (!studentId || !studentProgram) return [];
 
-    // For belt-based disciplines, filter to matching discipline or general
     if (isBeltBased) {
-      return belts.filter((belt) => {
+      const matched = belts.filter((belt) => {
         const beltDiscipline = belt.discipline?.toLowerCase();
         const program = studentProgram.toLowerCase();
-        // Match exact discipline or use general fallback
         return (
           beltDiscipline === program ||
-          beltDiscipline === 'general' ||
           (program === 'grappling' && beltDiscipline === 'bjj') ||
           (program === 'bjj' && beltDiscipline === 'grappling')
         );
       });
+      // If no discipline-specific belts found, try general
+      if (matched.length === 0) {
+        return belts.filter(
+          (belt) => belt.discipline === 'general' || !belt.discipline
+        );
+      }
+      return matched;
     }
 
-    // For level-based disciplines, use real discipline_levels from DB
     if (isLevelBased) {
       const matchingLevels = disciplineLevels.filter(
         (dl) => dl.discipline.toLowerCase() === studentProgram.toLowerCase()
@@ -125,7 +153,7 @@ export default function AssignStudentBeltDialog({
       }
     }
 
-    // Fallback: show general belts
+    // Unknown discipline - show general belts as fallback
     return belts.filter(
       (belt) => belt.discipline === 'general' || !belt.discipline
     );
@@ -138,30 +166,29 @@ export default function AssignStudentBeltDialog({
     isLevelBased,
   ]);
 
-  // Note: belt selection is reset when the student is changed in the handler below.
-
-  const studentPlaceholder = useMemo(() => {
-    if (students.length === 0) {
-      return 'No students found';
-    }
-    return 'Select student';
-  }, [students.length]);
+  const studentPlaceholder =
+    students.length === 0 ? 'No students found' : 'Select student';
 
   const beltPlaceholder = useMemo(() => {
-    if (!studentId) {
-      return 'Select a student first';
-    }
-    if (filteredBelts.length === 0) {
+    if (!studentId) return 'Select a student first';
+    if (!selectedProgram) return 'Select a program first';
+    if (filteredBelts.length === 0)
       return `No ${isBeltBased ? 'belts' : 'levels'} for ${studentProgram}`;
-    }
     return isBeltBased ? 'Select belt' : 'Select level';
-  }, [studentId, filteredBelts.length, isBeltBased, studentProgram]);
+  }, [
+    studentId,
+    selectedProgram,
+    filteredBelts.length,
+    isBeltBased,
+    studentProgram,
+  ]);
 
   const resetForm = () => {
     setStudentId('');
     setBeltId('');
     setStatus('needs_work');
     setError(null);
+    setSelectedProgram('');
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -172,7 +199,6 @@ export default function AssignStudentBeltDialog({
       );
       return;
     }
-
     setError(null);
     await onSubmit({ studentId, beltLevelId: beltId, status, isLevelBased });
     resetForm();
@@ -183,9 +209,7 @@ export default function AssignStudentBeltDialog({
     <Dialog
       open={open}
       onOpenChange={(next) => {
-        if (!next) {
-          resetForm();
-        }
+        if (!next) resetForm();
         onOpenChange(next);
       }}
     >
@@ -193,10 +217,11 @@ export default function AssignStudentBeltDialog({
         <DialogHeader>
           <DialogTitle>Assign Student Progression</DialogTitle>
           <DialogDescription>
-            Select a student to see their discipline-specific belts or levels.
+            Select a student, choose their program, then assign a belt or level.
           </DialogDescription>
         </DialogHeader>
         <form className="space-y-4" onSubmit={handleSubmit}>
+          {/* Student Selection */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">
               Student
@@ -206,6 +231,7 @@ export default function AssignStudentBeltDialog({
               onValueChange={(v) => {
                 setStudentId(v);
                 setBeltId('');
+                setSelectedProgram('');
               }}
             >
               <SelectTrigger disabled={students.length === 0}>
@@ -221,40 +247,73 @@ export default function AssignStudentBeltDialog({
             </Select>
           </div>
 
-          {/* Discipline info when student is selected */}
-          {studentId && disciplineConfig && (
+          {/* Program Selection - always show when student has programs */}
+          {studentId && studentPrograms.length > 0 && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
+                Program{' '}
+                {hasMultiplePrograms && (
+                  <span className="text-muted-foreground text-xs">
+                    (multi-enrolled)
+                  </span>
+                )}
+              </label>
+              <Select
+                value={selectedProgram}
+                onValueChange={(v) => {
+                  setSelectedProgram(v);
+                  setBeltId('');
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose program" />
+                </SelectTrigger>
+                <SelectContent>
+                  {studentPrograms.map((prog) => {
+                    const disc = getDiscipline(prog);
+                    return (
+                      <SelectItem key={prog} value={prog}>
+                        {prog}
+                        {disc && (
+                          <span className="text-muted-foreground ml-1">
+                            ({disc.type === 'belt' ? 'Belt' : 'Level'})
+                          </span>
+                        )}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+              {hasMultiplePrograms && (
+                <p className="text-xs text-muted-foreground">
+                  Select the program to assign progression for.
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Discipline info */}
+          {studentId && selectedProgram && discipline && (
             <Alert className="bg-muted/50 border-primary/20">
               <Info className="h-4 w-4 text-primary" />
               <AlertDescription className="text-sm">
-                <span className="font-medium">{disciplineConfig.name}</span>
+                <span className="font-medium">{discipline.name}</span>
                 {' — '}
-                {disciplineConfig.type === 'belt' ? (
+                {discipline.type === 'belt' ? (
                   <span className="text-muted-foreground">
                     Belt-based progression
-                    {disciplineConfig.hasStripes && ' (with stripes)'}
+                    {discipline.has_stripes ? ' (with stripes)' : ''}
                   </span>
                 ) : (
                   <span className="text-muted-foreground">
-                    Level-based progression (no belts)
+                    Level-based progression
                   </span>
                 )}
               </AlertDescription>
             </Alert>
           )}
 
-          {/* Level-based discipline warning */}
-          {studentId && isLevelBased && (
-            <Alert className="bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900">
-              <Layers className="h-4 w-4 text-amber-600" />
-              <AlertDescription className="text-sm text-amber-700 dark:text-amber-400">
-                {studentProgram} uses level-based progression.
-                {disciplineConfig?.levels && (
-                  <span> Levels: {disciplineConfig.levels.join(' → ')}</span>
-                )}
-              </AlertDescription>
-            </Alert>
-          )}
-
+          {/* Belt / Level Selection */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">
               {isBeltBased ? 'Belt Level' : 'Training Level'}
@@ -262,7 +321,9 @@ export default function AssignStudentBeltDialog({
             <Select
               value={beltId}
               onValueChange={setBeltId}
-              disabled={!studentId || filteredBelts.length === 0}
+              disabled={
+                !studentId || !selectedProgram || filteredBelts.length === 0
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder={beltPlaceholder} />
@@ -282,13 +343,16 @@ export default function AssignStudentBeltDialog({
                 ))}
               </SelectContent>
             </Select>
-            {studentId && filteredBelts.length === 0 && isBeltBased && (
-              <p className="text-xs text-muted-foreground">
-                No belts configured for {studentProgram}. Using general belts.
+            {studentId && selectedProgram && filteredBelts.length === 0 && (
+              <p className="text-xs text-amber-600">
+                No {isBeltBased ? 'belts' : 'levels'} configured for{' '}
+                {studentProgram}. Set them up in Disciplines →{' '}
+                {isBeltBased ? 'Belt Setup' : 'Levels'}.
               </p>
             )}
           </div>
 
+          {/* Status */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">
               Status
@@ -310,7 +374,7 @@ export default function AssignStudentBeltDialog({
             </Select>
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-destructive">{error}</p>}
 
           <div className="flex justify-end gap-2 pt-2">
             <Button
@@ -323,7 +387,7 @@ export default function AssignStudentBeltDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading || !studentId}>
+            <Button type="submit" disabled={loading || !studentId || !beltId}>
               {loading ? 'Saving…' : 'Assign'}
             </Button>
           </div>

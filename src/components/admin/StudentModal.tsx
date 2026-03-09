@@ -39,20 +39,8 @@ import {
 } from '@/utils/inputValidation';
 import { useBeltLevels } from '@/hooks/useBeltLevels';
 import { useStudentPrograms } from '@/hooks/useStudentPrograms';
+import { useDisciplines } from '@/hooks/useDisciplines';
 import { X, Plus } from 'lucide-react';
-
-// List of valid programs
-const programOptions = [
-  { value: 'Karate', label: '🥋 Karate' },
-  { value: 'Taekwondo', label: '🦵 Taekwondo' },
-  { value: 'Boxing', label: '🥊 Boxing' },
-  { value: 'Kickboxing', label: '🥋 Kickboxing' },
-  { value: 'Grappling', label: '🤼 Grappling' },
-  { value: 'MMA', label: '🥋 MMA' },
-  { value: 'Kalaripayattu', label: '🕉️ Kalaripayattu' },
-  { value: 'Self-Defense', label: '🛡️ Self-Defense' },
-  { value: 'Fat Loss', label: '🏋️ Fat Loss' },
-];
 
 const StudentSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -80,6 +68,7 @@ export default function StudentModal({
   student,
 }: StudentModalProps) {
   const { getWhiteBeltId } = useBeltLevels();
+  const { disciplineOptions } = useDisciplines();
   const {
     programs: existingPrograms,
     addProgram,
@@ -88,6 +77,12 @@ export default function StudentModal({
   const [additionalPrograms, setAdditionalPrograms] = useState<string[]>([]);
   const [addingProgram, setAddingProgram] = useState('');
   const queryClient = useQueryClient();
+
+  // DB-driven program options
+  const programOptions = disciplineOptions.map((d) => ({
+    value: d.value,
+    label: d.value,
+  }));
 
   const { data: globalFee } = useQuery({
     queryKey: ['academy-settings', 'default_monthly_fee'],
@@ -117,12 +112,24 @@ export default function StudentModal({
     },
   });
 
+  // Derive primary program from student_programs table when editing
+  const primaryFromDB = student
+    ? existingPrograms.find((p) => p.is_primary)?.program_name
+    : undefined;
+
   useEffect(() => {
     if (student) {
+      // Use primary from junction table if available, else fallback to student.program (first entry)
+      const primaryProgram =
+        primaryFromDB ||
+        (student.program?.includes(',')
+          ? student.program.split(',')[0].trim()
+          : student.program || '');
+
       form.reset({
         name: student.name || '',
         aadhar_number: student.aadhar_number || '',
-        program: student.program || '',
+        program: primaryProgram,
         join_date: student.join_date ? student.join_date.slice(0, 10) : '',
         parent_name: student.parent_name || '',
         parent_contact: student.parent_contact || '',
@@ -142,9 +149,8 @@ export default function StudentModal({
         default_monthly_fee: globalFee ?? 2000,
         discount_percent: 0,
       });
-      setAdditionalPrograms([]);
     }
-  }, [student, open, globalFee]);
+  }, [student, open, globalFee, primaryFromDB]);
 
   const handleAvatarUpload = (url: string) =>
     form.setValue('profile_image_url', url);
@@ -173,7 +179,7 @@ export default function StudentModal({
       const prog = existingPrograms.find(
         (p) => p.program_name === programName && !p.is_primary
       );
-      if (prog) await removeProgram(prog.id);
+      if (prog) await removeProgram(prog.id, student.id);
     } else {
       setAdditionalPrograms((prev) => prev.filter((p) => p !== programName));
     }
@@ -226,7 +232,7 @@ export default function StudentModal({
       const payload = {
         name: sanitizedValues.name,
         aadhar_number: aadharValidation.sanitized,
-        program: sanitizedValues.program,
+        program: sanitizedValues.program, // Will be updated below with all programs
         join_date: sanitizedValues.join_date,
         parent_name: sanitizedValues.parent_name,
         parent_contact: phoneValidation.sanitized,
@@ -236,15 +242,7 @@ export default function StudentModal({
       };
 
       if (student) {
-        const { data, error } = await supabase
-          .from('students')
-          .update(payload)
-          .eq('id', student.id)
-          .select()
-          .single();
-        if (error) throw error;
-
-        // Update primary program in junction table
+        // First update primary program in junction table
         await supabase
           .from('student_programs')
           .update({ is_primary: false })
@@ -258,6 +256,26 @@ export default function StudentModal({
           },
           { onConflict: 'student_id,program_name' }
         );
+
+        // Fetch all programs from junction table to sync students.program field
+        const { data: allProgs } = await supabase
+          .from('student_programs')
+          .select('program_name')
+          .eq('student_id', student.id)
+          .order('is_primary', { ascending: false });
+
+        const allProgramNames = allProgs?.map((p) => p.program_name) || [
+          sanitizedValues.program,
+        ];
+        payload.program = allProgramNames.join(', ');
+
+        const { data, error } = await supabase
+          .from('students')
+          .update(payload)
+          .eq('id', student.id)
+          .select()
+          .single();
+        if (error) throw error;
 
         return data;
       } else {
@@ -322,12 +340,21 @@ export default function StudentModal({
       queryClient.invalidateQueries({ queryKey: ['students'] });
       queryClient.invalidateQueries({ queryKey: ['students-portal-status'] });
       queryClient.invalidateQueries({ queryKey: ['portal-accounts'] });
+      queryClient.invalidateQueries({ queryKey: ['fees'] });
       onOpenChange(false);
     }
   };
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      setAdditionalPrograms([]);
+      setAddingProgram('');
+    }
+    onOpenChange(nextOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{student ? 'Edit Student' : 'Add Student'}</DialogTitle>

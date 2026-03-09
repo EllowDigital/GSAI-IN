@@ -131,14 +131,13 @@ export default function Blogs() {
   const isDeleting = (id: string) => deletingIds.has(id);
 
   return (
-    <div className="w-full p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1400px] mx-auto space-y-6">
-      {/* Header Card */}
-      <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 shadow-sm rounded-none sm:rounded-2xl">
-        <div className="border-b border-slate-200/60 dark:border-slate-700/60 p-4 sm:p-6">
+    <div className="w-full p-4 sm:p-5 lg:p-6 space-y-4 max-w-[1600px] mx-auto">
+      <div className="bg-card border border-border shadow-sm rounded-xl">
+        <div className="border-b border-border p-4 sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800 dark:text-white">
-                <BookMarked className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
+              <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2 text-foreground">
+                <BookMarked className="w-5 h-5 text-primary" />
                 <span>Blog Management</span>
               </h2>
               <p className="mt-1 text-sm sm:text-base text-muted-foreground">

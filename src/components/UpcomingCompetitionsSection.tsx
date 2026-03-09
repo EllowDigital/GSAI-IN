@@ -31,7 +31,44 @@ export default function UpcomingCompetitionsSection() {
     staleTime: 1000 * 60 * 5,
   });
 
-  if (isLoading || competitions.length === 0) return null;
+  if (isLoading) return null;
+
+  // Always render section wrapper with id for navbar anchor, show empty state if no competitions
+  if (competitions.length === 0) {
+    return (
+      <section
+        id="competitions"
+        className="section-shell relative bg-[#0a0a0a] overflow-hidden py-12 md:py-20 lg:py-24"
+      >
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-yellow-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/20">
+              <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            </div>
+            <span className="text-base sm:text-lg font-semibold text-yellow-500 tracking-wide uppercase">
+              Competitions
+            </span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
+            Compete &{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500">
+              Excel
+            </span>
+          </h2>
+          <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto mb-6">
+            No upcoming competitions right now. Check back soon or browse past
+            results!
+          </p>
+          <Link
+            to="/competitions"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-yellow-500 to-red-600 text-white font-bold shadow-lg shadow-yellow-500/20 hover:shadow-orange-500/40 transition-all"
+          >
+            View All Competitions <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </section>
+    );
+  }
 
   const variants = {
     container: {

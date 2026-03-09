@@ -125,7 +125,7 @@ export default function AnnouncementsManager() {
   };
 
   return (
-    <div className="w-full min-h-full p-3 sm:p-4 lg:p-6 xl:p-8 space-y-6">
+    <div className="w-full p-4 sm:p-5 lg:p-6 space-y-4 max-w-[1600px] mx-auto">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
