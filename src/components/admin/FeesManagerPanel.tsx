@@ -44,6 +44,7 @@ export default function FeesManagerPanel() {
   const [bulkMode, setBulkMode] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
+  const { data: programFees } = useProgramFees();
 
   useEffect(() => {
     const channel = supabase
