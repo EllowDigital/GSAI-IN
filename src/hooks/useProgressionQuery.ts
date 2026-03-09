@@ -560,5 +560,7 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
     updatingStripeCount: stripeMutation.isPending,
     deleteProgress: deleteMutation.mutateAsync,
     deletingProgress: deleteMutation.isPending,
+    editProgress: editMutation.mutateAsync,
+    editingProgress: editMutation.isPending,
   };
 }
