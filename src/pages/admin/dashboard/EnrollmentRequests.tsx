@@ -43,10 +43,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
-import {
-  createWhatsAppUrl,
-  openWhatsAppConversation,
-} from '@/utils/whatsapp';
+import { createWhatsAppUrl, openWhatsAppConversation } from '@/utils/whatsapp';
 
 interface EnrollmentRequest {
   id: string;

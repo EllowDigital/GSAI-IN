@@ -26,8 +26,7 @@ export default function ProgramEnquiryForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const message =
-      `Hi, I'm interested in the *${programTitle}* program.\n\nName: ${formData.name.trim()}\nPhone: ${formData.phone.trim()}\nMessage: ${formData.message.trim()}`
+    const message = `Hi, I'm interested in the *${programTitle}* program.\n\nName: ${formData.name.trim()}\nPhone: ${formData.phone.trim()}\nMessage: ${formData.message.trim()}`;
     const didOpen = openWhatsAppConversation('916394135988', message);
 
     if (!didOpen) {
