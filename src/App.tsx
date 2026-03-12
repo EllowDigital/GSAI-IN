@@ -41,10 +41,14 @@ const AllEventsPage = lazy(() => import('@/pages/public/AllEventsPage'));
 const AllNewsPage = lazy(() => import('@/pages/public/AllNewsPage'));
 const AllBlogsPage = lazy(() => import('@/pages/public/AllBlogsPage'));
 const AllGalleryPage = lazy(() => import('@/pages/public/AllGalleryPage'));
-const LocationLucknow = lazy(() => import('@/pages/public/LocationLucknowPage'));
+const LocationLucknow = lazy(
+  () => import('@/pages/public/LocationLucknowPage')
+);
 const ProgramDetail = lazy(() => import('@/pages/public/ProgramDetailPage'));
 const AllProgramsPage = lazy(() => import('@/pages/public/AllProgramsPage'));
-const AllCompetitionsPage = lazy(() => import('@/pages/public/AllCompetitionsPage'));
+const AllCompetitionsPage = lazy(
+  () => import('@/pages/public/AllCompetitionsPage')
+);
 const EnrollPage = lazy(() => import('@/pages/public/EnrollPage'));
 const StudentPortal = lazy(() => import('./pages/student/StudentPortal'));
 

@@ -30,7 +30,11 @@ const logos = [
     url: '/assets/affiliations/khelo-india.png',
     category: 'sports',
   },
-  { name: 'MSME', url: '/assets/affiliations/MSME.png', category: 'certification' },
+  {
+    name: 'MSME',
+    url: '/assets/affiliations/MSME.png',
+    category: 'certification',
+  },
   {
     name: 'ISO Certified',
     url: '/assets/affiliations/iso.png',
