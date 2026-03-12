@@ -4,6 +4,10 @@ Structure (professional & formal):
 
 - `/assets/` - static site assets (images, icons, illustrations). Keep organized into clearly named subfolders by purpose: `images/`, `hero/`, `illustrations/`, `affiliations/`.
 - `/icons/` - favicon and app icon image set generated for multiple sizes. Root `/favicon.ico` remains as the stable browser fallback.
+
+Temporary compatibility note:
+- Legacy `/favicon_io/*` requests are currently redirected to `/icons/*` via `public/_redirects`.
+- Remove those redirects only after the new icon paths have baked in production and old references are no longer observed.
 - `/pages/` - small static pages used by external services (e.g., `success.html`, `privacy.html`). These are intentionally minimal and are kept separate from the React SPA to make form redirects and crawlers simpler.
 - `/manifest.webmanifest` - PWA manifest describing how the site behaves when installed.
 - `/robots.txt` - crawler rules.

@@ -12,7 +12,9 @@ http://ghatakgsai.netlify.app/* https://ghataksportsacademy.com/:splat 301!
 https://www.ghatakgsai.netlify.app/* https://ghataksportsacademy.com/:splat 301!
 http://www.ghatakgsai.netlify.app/* https://ghataksportsacademy.com/:splat 301!
 
-# Backward-compatible favicon migration
+# Temporary favicon migration compatibility.
+# Remove these once the new /icons paths have been live in production long enough
+# for browser caches, crawlers, and external references to stop requesting /favicon_io.
 /favicon_io/favicon.ico /favicon.ico 301
 /favicon_io/* /icons/:splat 301
 
