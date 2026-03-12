@@ -1,7 +1,7 @@
 import React from 'react';
 import { useStudentAuth } from '@/pages/student/StudentAuthProvider';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

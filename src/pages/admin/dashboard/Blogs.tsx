@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Plus, Grid, List, BookMarked } from 'lucide-react';
 import BlogEditorModal from '@/components/admin/BlogEditorModal';
 import BlogsTable from '@/components/admin/blogs/BlogsTable';
 import BlogsCards from '@/components/admin/blogs/BlogsCards';
 import { exportBlogsToCsv } from '@/utils/exportToCsv';
-import { Tables } from '@/integrations/supabase/types';
+import { Tables } from '@/services/supabase/types';
 import RefreshButton from '@/components/admin/RefreshButton';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/useToast';
 
 type Blog = Tables<'blogs'>;
 

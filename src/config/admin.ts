@@ -5,7 +5,7 @@
  * This replaces hardcoded admin emails with proper database verification.
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 
 /**
  * Checks if the current authenticated user is an admin

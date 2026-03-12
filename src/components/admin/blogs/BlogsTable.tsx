@@ -9,7 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Edit, Trash2, Calendar, FileText, Image } from 'lucide-react';
-import { Tables } from '@/integrations/supabase/types';
+import { Tables } from '@/services/supabase/types';
 
 type Blog = Tables<'blogs'>;
 

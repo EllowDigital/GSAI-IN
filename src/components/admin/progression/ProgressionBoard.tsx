@@ -72,7 +72,7 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from '@/components/ui/sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import { useDisciplines } from '@/hooks/useDisciplines';
 
 const STATUS_CONFIG: Record<

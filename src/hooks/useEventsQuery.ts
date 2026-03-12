@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Tables } from '@/integrations/supabase/types';
+import { supabase } from '@/services/supabase/client';
+import { Tables } from '@/services/supabase/types';
 import { useOptimizedQuery } from './useOptimizedQuery';
 import { realtimeManager } from '@/utils/supabaseOptimization';
 

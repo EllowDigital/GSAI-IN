@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Tables } from '@/integrations/supabase/types';
+import { supabase } from '@/services/supabase/client';
+import { Tables } from '@/services/supabase/types';
 import { Button } from '@/components/ui/button';
 import { useAdminAuth } from '../AdminAuthProvider';
 import { Plus, Grid3X3, Table2, Calendar } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/useToast';
 import EventCard from '@/components/admin/EventCard';
 import AdminEventFormModal from '@/components/admin/AdminEventFormModal';
 import EventDeleteDialog from '@/components/admin/EventDeleteDialog';

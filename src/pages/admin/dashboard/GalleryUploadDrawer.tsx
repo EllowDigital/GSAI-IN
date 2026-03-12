@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 

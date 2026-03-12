@@ -8,7 +8,7 @@ import React, {
   useRef,
 } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import { Session } from '@supabase/supabase-js';
 import { AuthCelebration } from '@/components/admin/AuthCelebration';
 

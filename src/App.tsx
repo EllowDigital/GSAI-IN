@@ -22,30 +22,34 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeSupabaseOptimization } from '@/utils/supabaseOptimization';
 import { performanceMonitor } from '@/utils/performance';
 
-import Preloader from './components/Preloader';
-import OfflineBanner from './components/OfflineBanner';
-import PWAInstallToast from './components/PWAInstallToast';
-import EnhancedErrorBoundary from './components/EnhancedErrorBoundary';
-import PageTracker from './components/PageTracker';
-import ScrollToTop from './components/ScrollToTop';
+import Preloader from '@/components/common/Preloader';
+import OfflineBanner from '@/components/common/OfflineBanner';
+import PWAInstallToast from '@/components/common/PWAInstallToast';
+import EnhancedErrorBoundary from '@/components/feedback/EnhancedErrorBoundary';
+import PageTracker from '@/components/layout/PageTracker';
+import ScrollToTop from '@/components/layout/ScrollToTop';
 
 // Lazy load components for better performance
-const HomePageWrapper = lazy(() => import('./pages/HomePageWrapper'));
-const NotFound = lazy(() => import('./pages/NotFound'));
-const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
-const TermsPage = lazy(() => import('./pages/TermsPage'));
-const BlogPost = lazy(() => import('./pages/BlogPost'));
-const EventDetail = lazy(() => import('./pages/EventDetail'));
-const NewsDetail = lazy(() => import('./pages/NewsDetail'));
-const AllEventsPage = lazy(() => import('./pages/AllEventsPage'));
-const AllNewsPage = lazy(() => import('./pages/AllNewsPage'));
-const AllBlogsPage = lazy(() => import('./pages/AllBlogsPage'));
-const AllGalleryPage = lazy(() => import('./pages/AllGalleryPage'));
-const LocationLucknow = lazy(() => import('./pages/LocationLucknow'));
-const ProgramDetail = lazy(() => import('./pages/ProgramDetail'));
-const AllProgramsPage = lazy(() => import('./pages/AllProgramsPage'));
-const AllCompetitionsPage = lazy(() => import('./pages/AllCompetitionsPage'));
-const EnrollPage = lazy(() => import('./pages/EnrollPage'));
+const HomePageWrapper = lazy(() => import('@/pages/public/HomePageWrapper'));
+const NotFound = lazy(() => import('@/pages/public/NotFoundPage'));
+const PrivacyPage = lazy(() => import('@/pages/public/PrivacyPage'));
+const TermsPage = lazy(() => import('@/pages/public/TermsPage'));
+const BlogPost = lazy(() => import('@/pages/public/BlogPostPage'));
+const EventDetail = lazy(() => import('@/pages/public/EventDetailPage'));
+const NewsDetail = lazy(() => import('@/pages/public/NewsDetailPage'));
+const AllEventsPage = lazy(() => import('@/pages/public/AllEventsPage'));
+const AllNewsPage = lazy(() => import('@/pages/public/AllNewsPage'));
+const AllBlogsPage = lazy(() => import('@/pages/public/AllBlogsPage'));
+const AllGalleryPage = lazy(() => import('@/pages/public/AllGalleryPage'));
+const LocationLucknow = lazy(
+  () => import('@/pages/public/LocationLucknowPage')
+);
+const ProgramDetail = lazy(() => import('@/pages/public/ProgramDetailPage'));
+const AllProgramsPage = lazy(() => import('@/pages/public/AllProgramsPage'));
+const AllCompetitionsPage = lazy(
+  () => import('@/pages/public/AllCompetitionsPage')
+);
+const EnrollPage = lazy(() => import('@/pages/public/EnrollPage'));
 const StudentPortal = lazy(() => import('./pages/student/StudentPortal'));
 
 const AdminArea = lazy(() => import('./pages/admin/AdminArea'));

@@ -1,8 +1,8 @@
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
-import './index.css';
+import './styles/index.css';
 import { initializeBuildOptimizations } from './utils/buildOptimization';
-import { validateSupabaseConfig } from './integrations/supabase/constants';
+import { validateSupabaseConfig } from '@/services/supabase/constants';
 import { BrowserRouter } from 'react-router-dom';
 
 // Initialize build optimizations

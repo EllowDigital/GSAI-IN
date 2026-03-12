@@ -11,8 +11,8 @@ import {
 } from '@/components/ui/select';
 import { Loader2, IndianRupee, Receipt, StickyNote, Tag } from 'lucide-react';
 import { useForm, useWatch } from 'react-hook-form';
-import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/useToast';
+import { supabase } from '@/services/supabase/client';
 import { FeeReceiptUploader } from './FeeReceiptUploader';
 import { getFeeStatus } from '@/utils/feeStatusUtils';
 import { safeAsync, formatErrorForDisplay } from '@/utils/errorHandling';

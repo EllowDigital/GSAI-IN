@@ -28,7 +28,7 @@ import { Badge } from '@/components/ui/badge';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import { toast } from '@/components/ui/sonner';
 import StudentAvatarUploader from './StudentAvatarUploader';
 import { safeAsync, formatErrorForDisplay } from '@/utils/errorHandling';

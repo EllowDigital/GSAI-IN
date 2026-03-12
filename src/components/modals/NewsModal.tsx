@@ -13,7 +13,7 @@ import {
   DrawerHeader,
   DrawerClose,
 } from '@/components/ui/drawer';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/useMobile';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 

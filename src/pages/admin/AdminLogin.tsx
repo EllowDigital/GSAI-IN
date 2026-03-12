@@ -71,7 +71,7 @@ export default function AdminLogin() {
           <div className="relative w-24 h-24 mx-auto">
             <div className="absolute inset-0 bg-yellow-500/20 rounded-full blur-xl animate-pulse" />
             <img
-              src="/assets/img/logo.webp"
+              src="/assets/images/logo.webp"
               alt="GSAI Logo"
               className="relative w-full h-full object-contain drop-shadow-[0_0_15px_rgba(234,179,8,0.3)]"
             />

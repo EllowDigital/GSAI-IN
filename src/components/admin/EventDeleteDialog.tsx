@@ -7,9 +7,9 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { Tables } from '@/integrations/supabase/types';
+import { toast } from '@/hooks/useToast';
+import { supabase } from '@/services/supabase/client';
+import { Tables } from '@/services/supabase/types';
 import Spinner from '@/components/ui/spinner';
 
 type EventRow = Tables<'events'>;

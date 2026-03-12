@@ -18,13 +18,13 @@ self.addEventListener('fetch', (event) => {
 
   if (
     requestUrl.origin === self.location.origin &&
-    requestUrl.pathname.startsWith('/assets/gsai-illustrations')
+    requestUrl.pathname.startsWith('/assets/illustrations')
   ) {
     // Allow local illustration assets to fall through to the network fetch handler below.
   } else if (requestUrl.hostname === 'illustrations.shadcn.com') {
     const fileName = requestUrl.pathname.split('/').pop();
     if (fileName) {
-      const localUrl = new URL(`/assets/gsai-illustrations/${fileName}`, self.location.origin);
+      const localUrl = new URL(`/assets/illustrations/${fileName}`, self.location.origin);
       event.respondWith(fetch(localUrl.href));
       return;
     }

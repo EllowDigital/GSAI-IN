@@ -112,7 +112,7 @@ const marketingPages = [
 ];
 
 const defaultImageMeta = [{
-  url: `${hostname}/assets/img/social-preview.png`,
+  url: `${hostname}/assets/images/social-preview.png`,
   caption: 'Ghatak Sports Academy India - Martial Arts Training',
   title: 'Ghatak Sports Academy India - Premier Martial Arts Academy',
   geoLocation: 'Lucknow, Uttar Pradesh, India',
@@ -120,10 +120,10 @@ const defaultImageMeta = [{
 }];
 
 const defaultVideoMeta = [{
-  thumbnail_loc: `${hostname}/assets/img/logo.webp`,
+  thumbnail_loc: `${hostname}/assets/images/logo.webp`,
   title: 'Ghatak Sports Academy India - Training Introduction',
   description: 'Watch our introductory video showcasing martial arts training, facilities, and student achievements at Ghatak Sports Academy India.',
-  content_loc: `${hostname}/assets/slider/intro.mp4`,
+  content_loc: `${hostname}/assets/hero/intro.mp4`,
   duration: 120,
   publication_date: '2025-03-01T00:00:00Z',
   family_friendly: 'yes',
@@ -235,7 +235,7 @@ const getPublicHtmlPageEntries = () => {
 };
 
 const getProgramPageEntries = () => {
-  const programsDataPath = './src/data/programsData.ts';
+  const programsDataPath = './src/constants/programsData.ts';
 
   try {
     const source = readFileSync(programsDataPath, 'utf8');

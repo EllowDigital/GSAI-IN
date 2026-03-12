@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { programs } from '@/data/programsData';
+import { supabase } from '@/services/supabase/client';
+import { useToast } from '@/hooks/useToast';
+import { programs } from '@/constants/programsData';
 import { Plus, Trash2, Star, Eye, EyeOff } from 'lucide-react';
 
 interface Testimonial {
