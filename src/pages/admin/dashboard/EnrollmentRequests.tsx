@@ -43,6 +43,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
+import { createWhatsAppUrl, openWhatsAppConversation } from '@/utils/whatsapp';
 
 interface EnrollmentRequest {
   id: string;
@@ -124,11 +125,7 @@ export default function EnrollmentRequestsManager() {
   ) => {
     const message = `Dear ${req.parent_name},\n\nWe regret to inform you that the enrollment request for ${req.student_name} in the ${req.program} program has not been approved at this time.\n\n${notes ? `Reason: ${notes}\n\n` : ''}If you have questions, please contact us.\n\nGhatak Sports Academy India`;
 
-    // Open WhatsApp
-    window.open(
-      `https://wa.me/91${req.parent_phone}?text=${encodeURIComponent(message)}`,
-      '_blank'
-    );
+    const didOpenWhatsApp = openWhatsAppConversation(req.parent_phone, message);
 
     // Also send email if student email exists
     if (req.student_email) {
@@ -141,12 +138,24 @@ export default function EnrollmentRequestsManager() {
           name: req.student_name,
           replyTo: req.student_email,
         });
-        toast.success('Rejection notification sent via WhatsApp & email');
+        toast.success(
+          didOpenWhatsApp
+            ? 'Rejection notification sent via WhatsApp & email'
+            : 'Email sent, but WhatsApp could not be opened for this phone number'
+        );
       } catch {
-        toast.success('WhatsApp opened (email notification failed)');
+        toast.success(
+          didOpenWhatsApp
+            ? 'WhatsApp opened (email notification failed)'
+            : 'Email failed and WhatsApp could not be opened for this phone number'
+        );
       }
     } else {
-      toast.success('WhatsApp opened with rejection message');
+      toast.success(
+        didOpenWhatsApp
+          ? 'WhatsApp opened with rejection message'
+          : 'WhatsApp could not be opened for this phone number'
+      );
     }
   };
 
@@ -369,6 +378,17 @@ export default function EnrollmentRequestsManager() {
   });
 
   const pendingCount = requests.filter((r) => r.status === 'pending').length;
+
+  const parentWhatsAppUrl = viewReq
+    ? createWhatsAppUrl(viewReq.parent_phone)
+    : null;
+
+  const credentialsWhatsAppUrl = approveReq
+    ? createWhatsAppUrl(
+        approveReq.parent_phone,
+        `🥋 Welcome to GSAI!\n\nDear ${approveReq.parent_name},\n\n${approveReq.student_name} has been enrolled in ${approveReq.program}.\n\n🔐 Student Portal Login:\nURL: ${window.location.origin}/student/login\nLogin ID: ${createdCreds?.loginId ?? ''}\nPassword: ${createdCreds?.password ?? ''}\n\nThe student can change their password after first login.`
+      )
+    : null;
 
   return (
     <div className="w-full p-4 sm:p-5 lg:p-6 space-y-4 max-w-[1600px] mx-auto">
@@ -793,14 +813,20 @@ export default function EnrollmentRequestsManager() {
                   )}
                 </div>
               )}
-              <a
-                href={`https://wa.me/91${viewReq.parent_phone}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full text-center py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors"
-              >
-                📱 WhatsApp Parent
-              </a>
+              {parentWhatsAppUrl ? (
+                <a
+                  href={parentWhatsAppUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full text-center py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors"
+                >
+                  📱 WhatsApp Parent
+                </a>
+              ) : (
+                <div className="block w-full text-center py-2 rounded-lg bg-muted text-muted-foreground text-sm font-medium">
+                  Parent phone number is invalid for WhatsApp
+                </div>
+              )}
             </div>
           )}
         </DialogContent>
@@ -990,9 +1016,9 @@ export default function EnrollmentRequestsManager() {
                   their password from the student portal.
                 </p>
               </div>
-              {approveReq && (
+              {approveReq && credentialsWhatsAppUrl && (
                 <a
-                  href={`https://wa.me/91${approveReq.parent_phone}?text=${encodeURIComponent(`🥋 Welcome to GSAI!\n\nDear ${approveReq.parent_name},\n\n${approveReq.student_name} has been enrolled in ${approveReq.program}.\n\n🔐 Student Portal Login:\nURL: ${window.location.origin}/student/login\nLogin ID: ${createdCreds.loginId}\nPassword: ${createdCreds.password}\n\nThe student can change their password after first login.`)}`}
+                  href={credentialsWhatsAppUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block w-full text-center py-2.5 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors"

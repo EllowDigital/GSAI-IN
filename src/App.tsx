@@ -6,13 +6,7 @@ import React, {
   lazy,
   Suspense,
 } from 'react';
-import {
-  Navigate,
-  Routes,
-  Route,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
+import { Navigate, Routes, Route, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -105,7 +99,6 @@ const App = () => {
   });
   const [showInstallCTA, setShowInstallCTA] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
   const interceptInstallPromptRef = useRef(true);
   const installPromptRef = useRef<BeforeInstallPromptEvent | null>(null);
 
@@ -207,21 +200,14 @@ const App = () => {
     }
   }, [installPrompt]);
 
-  // Only show install toast on admin routes for logged-in users
+  // Only show install toast on the admin login page.
   const shouldShowInstallToast =
     showInstallCTA &&
     !isPWAInstalled() &&
-    location.pathname.startsWith('/admin') &&
+    location.pathname === '/admin/login' &&
     !dismissedInstallToast &&
     !!installPrompt;
 
-  // Redirect to admin if opened as PWA
-  useEffect(() => {
-    if (loading) return;
-    if (!isPWAInstalled()) return;
-    if (location.pathname !== '/') return;
-    navigate('/admin/dashboard', { replace: true });
-  }, [loading, isPWAInstalled, location.pathname, navigate]);
   return (
     <EnhancedErrorBoundary>
       <HelmetProvider>

@@ -15,26 +15,9 @@ import {
   SUPABASE_ANON_KEY,
   SUPABASE_URL,
 } from './constants';
-/**
- * Use sessionStorage so ctrl/cmd+R keeps the session, while a full app close clears it.
- * Falls back to in-memory storage when the DOM is unavailable (e.g. during SSR).
- */
-const resolveSessionStorage = () => {
-  if (typeof window === 'undefined') {
-    return undefined;
-  }
+import { getSupabaseAuthStorage } from './session';
 
-  try {
-    const testKey = '__supabase_session_test__';
-    window.sessionStorage.setItem(testKey, '1');
-    window.sessionStorage.removeItem(testKey);
-    return window.sessionStorage;
-  } catch (_error) {
-    return undefined;
-  }
-};
-
-const sessionStorageAdapter = resolveSessionStorage();
+const authStorageAdapter = getSupabaseAuthStorage();
 
 /**
  * Optimized Supabase client instance with performance enhancements
@@ -50,7 +33,7 @@ export const supabase = createClient<Database>(
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: false,
-      storage: sessionStorageAdapter,
+      storage: authStorageAdapter,
       storageKey: ADMIN_SESSION_STORAGE_KEY,
     },
     realtime: {

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Mail, Send, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/useToast';
@@ -13,6 +13,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { openWhatsAppConversation } from '@/utils/whatsapp';
 
 interface FeeReminderButtonProps {
   studentName: string;
@@ -115,10 +116,7 @@ Ghatak Sports Academy`;
       if (response.ok) {
         // Also open WhatsApp as secondary channel
         const whatsappMsg = `Dear ${parentName},\n\nThis is a reminder that the fee of ₹${amount.toLocaleString()} for ${studentName}'s training for ${MONTH_NAMES[month - 1]} ${year} is pending.\n\nPlease clear the dues at your earliest convenience.\n\n- Ghatak Sports Academy`;
-        window.open(
-          `https://wa.me/91${parentContact}?text=${encodeURIComponent(whatsappMsg)}`,
-          '_blank'
-        );
+        openWhatsAppConversation(parentContact, whatsappMsg);
 
         toast({
           title: 'Reminder Sent',
@@ -136,10 +134,7 @@ Ghatak Sports Academy`;
       });
       // Fallback: open WhatsApp
       const whatsappMsg = `Dear ${parentName},\n\nThis is a reminder that the fee of ₹${amount.toLocaleString()} for ${studentName}'s training for ${MONTH_NAMES[month - 1]} ${year} is pending.\n\nPlease clear the dues.\n\n- Ghatak Sports Academy`;
-      window.open(
-        `https://wa.me/91${parentContact}?text=${encodeURIComponent(whatsappMsg)}`,
-        '_blank'
-      );
+      openWhatsAppConversation(parentContact, whatsappMsg);
     } finally {
       setSending(false);
     }
@@ -151,10 +146,10 @@ Ghatak Sports Academy`;
         variant="outline"
         size="sm"
         onClick={handleOpenDialog}
-        className="gap-1.5"
+        className="h-8 w-full min-w-0 gap-1.5 rounded-lg px-2 text-xs sm:h-9"
       >
-        <Mail className="w-3.5 h-3.5" />
-        <span className="hidden sm:inline">Remind</span>
+        <Mail className="h-3.5 w-3.5 shrink-0" />
+        <span className="truncate">Remind</span>
       </Button>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
