@@ -159,33 +159,35 @@ export default function FeesCards({
 
               {/* Actions */}
               {!bulkMode && (
-                <div className="flex gap-2 pt-1">
+                <div className="grid grid-cols-2 gap-2 pt-1">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 h-8 sm:h-9 text-xs rounded-lg"
+                    className="h-8 w-full min-w-0 sm:h-9 text-xs rounded-lg"
                     onClick={() => onShowHistory(student)}
                   >
                     <History className="w-3.5 h-3.5 mr-1.5" />
                     History
                   </Button>
-                  {status !== 'paid' && (
-                    <FeeReminderButton
-                      studentName={student.name}
-                      parentName={student.parent_name || 'Parent'}
-                      parentContact={student.parent_contact || ''}
-                      amount={
-                        fee ? fee.balance_due : student.default_monthly_fee
-                      }
-                      month={fee ? fee.month : filterMonth}
-                      year={fee ? fee.year : filterYear}
-                    />
-                  )}
+                  <div className="min-w-0">
+                    {status !== 'paid' && (
+                      <FeeReminderButton
+                        studentName={student.name}
+                        parentName={student.parent_name || 'Parent'}
+                        parentContact={student.parent_contact || ''}
+                        amount={
+                          fee ? fee.balance_due : student.default_monthly_fee
+                        }
+                        month={fee ? fee.month : filterMonth}
+                        year={fee ? fee.year : filterYear}
+                      />
+                    )}
+                  </div>
                   <Button
                     variant={fee ? 'secondary' : 'default'}
                     size="sm"
                     onClick={() => onEditFee({ student, fee })}
-                    className="flex-1 h-8 sm:h-9 text-xs rounded-lg"
+                    className="col-span-2 h-8 w-full min-w-0 sm:h-9 text-xs rounded-lg"
                   >
                     {fee ? (
                       <>

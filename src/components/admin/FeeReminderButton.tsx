@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Mail, Send, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/useToast';
@@ -146,10 +146,10 @@ Ghatak Sports Academy`;
         variant="outline"
         size="sm"
         onClick={handleOpenDialog}
-        className="gap-1.5"
+        className="h-8 w-full min-w-0 gap-1.5 rounded-lg px-2 text-xs sm:h-9"
       >
-        <Mail className="w-3.5 h-3.5" />
-        <span className="hidden sm:inline">Remind</span>
+        <Mail className="h-3.5 w-3.5 shrink-0" />
+        <span className="truncate">Remind</span>
       </Button>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
