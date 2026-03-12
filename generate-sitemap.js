@@ -235,7 +235,7 @@ const getPublicHtmlPageEntries = () => {
 };
 
 const getProgramPageEntries = () => {
-  const programsDataPath = './src/data/programsData.ts';
+  const programsDataPath = './src/constants/programsData.ts';
 
   try {
     const source = readFileSync(programsDataPath, 'utf8');
