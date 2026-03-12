@@ -11,6 +11,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/services/supabase/client';
 import { Session } from '@supabase/supabase-js';
 import { AuthCelebration } from '@/components/admin/AuthCelebration';
+import { clearPersistedSupabaseSession } from '@/services/supabase/session';
+import { toast } from '@/components/ui/sonner';
 
 interface StudentProfile {
   studentId: string;
@@ -171,23 +173,35 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    if (isSigningOut.current) return;
+
     isSigningOut.current = true;
+    setIsLoading(true);
     triggerAnimation('logout', 'You have been signed out successfully.', 2500);
 
     try {
       await new Promise((r) => setTimeout(r, 1000));
-      await supabase.auth.signOut();
-    } catch {
-      // Ignore sign-out errors
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        throw error;
+      }
+
+      clearPersistedSupabaseSession();
+      setSession(null);
+      setProfile(null);
+
+      await new Promise((r) => setTimeout(r, 300));
+      setAuthAnimation(null);
+      navigate('/student/login', { replace: true });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Unexpected sign-out error.';
+      toast.error(`Sign out failed: ${message}`);
+      return;
+    } finally {
+      setIsLoading(false);
+      isSigningOut.current = false;
     }
-
-    setSession(null);
-    setProfile(null);
-
-    await new Promise((r) => setTimeout(r, 300));
-    setAuthAnimation(null);
-    isSigningOut.current = false;
-    navigate('/', { replace: true });
   };
 
   return (

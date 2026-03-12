@@ -9,6 +9,7 @@ export const SUPABASE_ANON_KEY =
   '';
 
 export const ADMIN_SESSION_STORAGE_KEY = 'gsai-admin-session';
+export const ADMIN_VERIFIED_USER_STORAGE_KEY = 'gsai-admin-verified-user';
 export const POST_LOGIN_REDIRECT_KEY = 'gsai-admin-post-login-route';
 
 // Validation function (called explicitly from main.tsx)

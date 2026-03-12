@@ -16,8 +16,12 @@ import type { Enums } from '@/services/supabase/types';
 import {
   ADMIN_SESSION_STORAGE_KEY,
   POST_LOGIN_REDIRECT_KEY,
-  SUPABASE_PROJECT_ID,
 } from '@/services/supabase/constants';
+import {
+  clearPersistedSupabaseSession,
+  getRememberedAdminUser,
+  rememberVerifiedAdminUser,
+} from '@/services/supabase/session';
 import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
 
 const ADMIN_ROLE: Enums<'app_role'> = 'admin';
@@ -40,22 +44,6 @@ const getNavigationType = ():
     'navigation'
   ) as PerformanceNavigationTiming[];
   return entry?.type;
-};
-
-const clearPersistedSupabaseSession = () => {
-  if (typeof window === 'undefined') return;
-  try {
-    window.sessionStorage.removeItem(ADMIN_SESSION_STORAGE_KEY);
-
-    const prefix = SUPABASE_PROJECT_ID ? `sb-${SUPABASE_PROJECT_ID}` : 'sb-';
-    Object.keys(window.localStorage).forEach((key) => {
-      if (key.startsWith(prefix) || key.includes('supabase.auth')) {
-        window.localStorage.removeItem(key);
-      }
-    });
-  } catch (error) {
-    console.warn('Unable to clear persisted Supabase session cache', error);
-  }
 };
 
 type AdminAuthContextType = {
@@ -158,7 +146,7 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
   const checkAdminStatus = async (
     userId: string | null,
     email: string | null
-  ): Promise<boolean> => {
+  ): Promise<boolean | null> => {
     if (!userId) return false;
 
     try {
@@ -205,6 +193,7 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
 
       if (rpcError || roleError) {
         console.error('Admin role lookup failed', rpcError || roleError);
+        return null;
       }
 
       return false;
@@ -214,7 +203,7 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
       } else {
         console.error('Admin status check failed:', error);
       }
-      return false;
+      return null;
     }
   };
 
@@ -228,12 +217,23 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
       .toString()
       .toLowerCase();
     let isAdminUser = roleFromMetadata === 'admin';
+    const rememberedAdminUserId = getRememberedAdminUser();
 
     if (typeof adminStatusOverride === 'boolean') {
       isAdminUser = adminStatusOverride;
     } else if (!isAdminUser) {
-      isAdminUser = await checkAdminStatus(userId, email);
+      const adminStatus = await checkAdminStatus(userId, email);
+
+      if (adminStatus === true) {
+        isAdminUser = true;
+      } else if (adminStatus === null && rememberedAdminUserId === userId) {
+        isAdminUser = true;
+      } else {
+        isAdminUser = false;
+      }
     }
+
+    rememberVerifiedAdminUser(isAdminUser ? userId : null);
 
     setSession(newSession);
     setUserEmail(email);

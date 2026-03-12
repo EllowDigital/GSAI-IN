@@ -13,6 +13,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { openWhatsAppConversation } from '@/utils/whatsapp';
 
 interface FeeReminderButtonProps {
   studentName: string;
@@ -115,10 +116,7 @@ Ghatak Sports Academy`;
       if (response.ok) {
         // Also open WhatsApp as secondary channel
         const whatsappMsg = `Dear ${parentName},\n\nThis is a reminder that the fee of ₹${amount.toLocaleString()} for ${studentName}'s training for ${MONTH_NAMES[month - 1]} ${year} is pending.\n\nPlease clear the dues at your earliest convenience.\n\n- Ghatak Sports Academy`;
-        window.open(
-          `https://wa.me/91${parentContact}?text=${encodeURIComponent(whatsappMsg)}`,
-          '_blank'
-        );
+        openWhatsAppConversation(parentContact, whatsappMsg);
 
         toast({
           title: 'Reminder Sent',
@@ -136,10 +134,7 @@ Ghatak Sports Academy`;
       });
       // Fallback: open WhatsApp
       const whatsappMsg = `Dear ${parentName},\n\nThis is a reminder that the fee of ₹${amount.toLocaleString()} for ${studentName}'s training for ${MONTH_NAMES[month - 1]} ${year} is pending.\n\nPlease clear the dues.\n\n- Ghatak Sports Academy`;
-      window.open(
-        `https://wa.me/91${parentContact}?text=${encodeURIComponent(whatsappMsg)}`,
-        '_blank'
-      );
+      openWhatsAppConversation(parentContact, whatsappMsg);
     } finally {
       setSending(false);
     }

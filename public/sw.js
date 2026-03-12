@@ -16,12 +16,11 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const requestUrl = new URL(event.request.url);
 
-  if (
-    requestUrl.origin === self.location.origin &&
-    requestUrl.pathname.startsWith('/assets/illustrations')
-  ) {
-    // Allow local illustration assets to fall through to the network fetch handler below.
-  } else if (requestUrl.hostname === 'illustrations.shadcn.com') {
+  if (requestUrl.port === '8097' || requestUrl.hostname.endsWith('chrome-extension')) {
+    return;
+  }
+
+  if (requestUrl.hostname === 'illustrations.shadcn.com') {
     const fileName = requestUrl.pathname.split('/').pop();
     if (fileName) {
       const localUrl = new URL(`/assets/illustrations/${fileName}`, self.location.origin);
@@ -30,18 +29,7 @@ self.addEventListener('fetch', (event) => {
     }
   }
 
-  // Ignore React DevTools / other localhost requests the SW should not intercept
-  if (requestUrl.port === '8097' || requestUrl.hostname.endsWith('chrome-extension')) {
+  if (requestUrl.origin !== self.location.origin) {
     return;
   }
-
-  event.respondWith(
-    fetch(event.request).catch((error) => {
-      console.warn('[SW] Network fetch failed, letting browser handle fallback', {
-        url: requestUrl.href,
-        error: error?.message,
-      });
-      return Response.error();
-    })
-  );
 });
