@@ -3,7 +3,7 @@ Public folder contents (GSAI-IN)
 Structure (professional & formal):
 
 - `/assets/` - static site assets (images, icons, illustrations). Keep organized into clearly named subfolders by purpose: `images/`, `hero/`, `illustrations/`, `affiliations/`.
-- `/favicon_io/` - favicon image set generated for multiple sizes.
+- `/icons/` - favicon and app icon image set generated for multiple sizes. Root `/favicon.ico` remains as the stable browser fallback.
 - `/pages/` - small static pages used by external services (e.g., `success.html`, `privacy.html`). These are intentionally minimal and are kept separate from the React SPA to make form redirects and crawlers simpler.
 - `/manifest.webmanifest` - PWA manifest describing how the site behaves when installed.
 - `/robots.txt` - crawler rules.
