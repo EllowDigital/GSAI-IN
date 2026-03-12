@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 
 const CERTIFICATE_PUBLIC_PREFIX = '/storage/v1/object/public/certificates/';
 const CERTIFICATE_SIGNED_PREFIX = '/storage/v1/object/sign/certificates/';

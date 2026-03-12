@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Pencil, Trash2, MapPin } from 'lucide-react';
-import { Tables } from '@/integrations/supabase/types';
+import { Tables } from '@/services/supabase/types';
 
 type EventRow = Tables<'events'>;
 

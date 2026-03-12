@@ -26,7 +26,7 @@ export const generateArticleStructuredData = (
       ? article.image_url.startsWith('http')
         ? article.image_url
         : `${baseUrl}${article.image_url}`
-      : `${baseUrl}/assets/img/logo.webp`,
+      : `${baseUrl}/assets/images/logo.webp`,
     datePublished: article.published_at || new Date().toISOString(),
     dateModified: article.published_at || new Date().toISOString(),
     author: {
@@ -39,7 +39,7 @@ export const generateArticleStructuredData = (
       name: 'Ghatak Sports Academy India',
       logo: {
         '@type': 'ImageObject',
-        url: `${baseUrl}/assets/img/logo.webp`,
+        url: `${baseUrl}/assets/images/logo.webp`,
         width: 400,
         height: 400,
       },
@@ -86,7 +86,7 @@ export const generateEventStructuredData = (event: {
       ? event.image_url.startsWith('http')
         ? event.image_url
         : `${baseUrl}${event.image_url}`
-      : `${baseUrl}/assets/img/logo.webp`,
+      : `${baseUrl}/assets/images/logo.webp`,
     organizer: {
       '@type': 'Organization',
       name: 'Ghatak Sports Academy India',

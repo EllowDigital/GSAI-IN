@@ -233,7 +233,7 @@ export function AppSidebar({
           )}
         >
           <img
-            src="/assets/img/logo.webp"
+            src="/assets/images/logo.webp"
             alt="Logo"
             className="w-8 h-8 object-contain rounded-lg"
           />

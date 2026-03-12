@@ -52,7 +52,7 @@ import {
   X,
 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import { useBeltLevels } from '@/hooks/useBeltLevels';
 import { useDisciplineLevels } from '@/hooks/useDisciplineLevels';
 

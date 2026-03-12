@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import {
   Dialog,
   DialogContent,
@@ -13,9 +13,9 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/useToast';
 import NewsImageUploader from './NewsImageUploader';
-import { Tables } from '@/integrations/supabase/types';
+import { Tables } from '@/services/supabase/types';
 
 type NewsRow = Tables<'news'>;
 

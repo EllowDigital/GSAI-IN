@@ -9,11 +9,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/useToast';
+import { supabase } from '@/services/supabase/client';
 import EventImageUploader from './EventImageUploader';
 import Spinner from '@/components/ui/spinner';
-import { Tables } from '@/integrations/supabase/types';
+import { Tables } from '@/services/supabase/types';
 import { format } from 'date-fns';
 import {
   Popover,

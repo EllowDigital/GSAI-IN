@@ -5,15 +5,15 @@ import { Plus, Grid, List, Newspaper, AlertCircle } from 'lucide-react';
 import NewsEditorModal from './NewsEditorModal';
 import NewsDeleteDialog from './NewsDeleteDialog';
 import { exportNewsToCsv } from '@/utils/exportToCsv';
-import { Tables } from '@/integrations/supabase/types';
+import { Tables } from '@/services/supabase/types';
 import RefreshButton from './RefreshButton';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/useToast';
 import { useNewsQuery } from '@/hooks/useEnhancedQuery';
 import {
   formatErrorForDisplay,
   handleSupabaseError,
 } from '@/utils/errorHandling';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 
 type NewsRow = Tables<'news'>;
 

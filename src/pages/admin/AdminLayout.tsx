@@ -4,7 +4,7 @@ import { useAdminAuth } from './AdminAuthProvider';
 import { AppSidebar } from '@/components/admin/AppSidebar';
 import { useQueryClient } from '@tanstack/react-query';
 import { RefreshCw, Menu, Search, Bell } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/useToast';
 import { cn } from '@/lib/utils';
 
 const PAGE_TITLES: Record<string, string> = {

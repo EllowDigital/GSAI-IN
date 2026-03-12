@@ -22,7 +22,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import clsx from 'clsx';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import { useAllStudentPrograms } from '@/hooks/useStudentPrograms';
 
 const BELT_COLORS: Record<string, string> = {

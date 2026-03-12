@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import type {
   Tables,
   TablesInsert,
   TablesUpdate,
-} from '@/integrations/supabase/types';
+} from '@/services/supabase/types';
 
 // Type for Fees Hook Arguments
 type UseFeesArgs = {

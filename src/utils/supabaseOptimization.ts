@@ -2,7 +2,7 @@
  * Supabase optimization utilities for better performance and connection management
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import { performanceMonitor } from './performance';
 
 // Connection pool management

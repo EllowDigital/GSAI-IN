@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useStudentAuth } from '@/pages/student/StudentAuthProvider';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,7 @@ import {
   X,
 } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/useToast';
 
 const BELT_COLORS: Record<string, string> = {
   white: 'bg-gray-100 text-gray-800 border-gray-300',

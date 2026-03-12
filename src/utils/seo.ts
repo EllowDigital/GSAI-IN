@@ -170,7 +170,7 @@ export const getMetaDescription = (pathname: string): string => {
  */
 export const getOGImage = (customImage?: string): string => {
   const defaultImage =
-    'https://ghataksportsacademy.com/assets/img/social-preview.png';
+    'https://ghataksportsacademy.com/assets/images/social-preview.png';
   return customImage || defaultImage;
 };
 

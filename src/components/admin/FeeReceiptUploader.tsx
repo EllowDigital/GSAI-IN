@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Loader2, UploadCloud, Trash2 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';

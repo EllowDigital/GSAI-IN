@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 
 import { FeeForm } from './FeeForm';
 import { getFeeStatus } from '@/utils/feeStatusUtils';

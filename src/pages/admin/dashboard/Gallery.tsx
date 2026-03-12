@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import { Button } from '@/components/ui/button';
 import {
   Upload,
@@ -13,9 +13,9 @@ import {
 import GalleryImageCard from './GalleryImageCard';
 import GalleryUploadDrawer from './GalleryUploadDrawer';
 import { exportGalleryToCsv } from '@/utils/exportToCsv';
-import { Tables } from '@/integrations/supabase/types';
+import { Tables } from '@/services/supabase/types';
 import RefreshButton from '@/components/admin/RefreshButton';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/useToast';
 
 type GalleryImage = Tables<'gallery_images'>;
 

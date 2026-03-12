@@ -8,16 +8,16 @@ import React, {
   useCallback,
 } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import { Session } from '@supabase/supabase-js';
 import { toast } from '@/components/ui/sonner';
 import { AuthCelebration } from '@/components/admin/AuthCelebration';
-import type { Enums } from '@/integrations/supabase/types';
+import type { Enums } from '@/services/supabase/types';
 import {
   ADMIN_SESSION_STORAGE_KEY,
   POST_LOGIN_REDIRECT_KEY,
   SUPABASE_PROJECT_ID,
-} from '@/integrations/supabase/constants';
+} from '@/services/supabase/constants';
 import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
 
 const ADMIN_ROLE: Enums<'app_role'> = 'admin';

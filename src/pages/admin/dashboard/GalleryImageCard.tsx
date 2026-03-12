@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Trash2, Loader2 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import toast from 'react-hot-toast';
 
 // CARD: responsive, adaptive overlays/texts and mobile-friendly interaction areas
