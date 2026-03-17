@@ -118,12 +118,20 @@ export default function EnrollmentRequestsManager() {
     },
   });
 
+  const createRejectionMessage = (req: EnrollmentRequest, notes: string) => {
+    return `Dear ${req.parent_name},\n\nWe regret to inform you that the enrollment request for ${req.student_name} in the ${req.program} program has not been approved at this time.\n\n${notes ? `Reason: ${notes}\n\n` : ''}If you have questions, please contact us.\n\nGhatak Sports Academy India`;
+  };
+
+  const createCredentialsMessage = (req: EnrollmentRequest) => {
+    return `🥋 Welcome to GSAI!\n\nDear ${req.parent_name},\n\n${req.student_name} has been enrolled in ${req.program}.\n\n🔐 Student Portal Login:\nURL: ${window.location.origin}/student/login\nLogin ID: ${createdCreds?.loginId ?? ''}\nPassword: ${createdCreds?.password ?? ''}\n\nThe student can change their password after first login.`;
+  };
+
   // Send rejection notification via WhatsApp + email
   const sendRejectionNotification = async (
     req: EnrollmentRequest,
     notes: string
   ) => {
-    const message = `Dear ${req.parent_name},\n\nWe regret to inform you that the enrollment request for ${req.student_name} in the ${req.program} program has not been approved at this time.\n\n${notes ? `Reason: ${notes}\n\n` : ''}If you have questions, please contact us.\n\nGhatak Sports Academy India`;
+    const message = createRejectionMessage(req, notes);
 
     const didOpenWhatsApp = openWhatsAppConversation(req.parent_phone, message);
 
@@ -351,9 +359,13 @@ export default function EnrollmentRequestsManager() {
     setCreatedCreds(null);
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success('Copied!');
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success('Copied!');
+    } catch {
+      toast.error('Copy failed. Please copy manually.');
+    }
   };
 
   const handleRejectWithNotes = (req: EnrollmentRequest) => {
@@ -383,11 +395,14 @@ export default function EnrollmentRequestsManager() {
     ? createWhatsAppUrl(viewReq.parent_phone)
     : null;
 
+  const rejectionMessageForView = viewReq
+    ? createRejectionMessage(viewReq, adminNotes.trim())
+    : '';
+
+  const credentialsMessage = approveReq ? createCredentialsMessage(approveReq) : '';
+
   const credentialsWhatsAppUrl = approveReq
-    ? createWhatsAppUrl(
-        approveReq.parent_phone,
-        `🥋 Welcome to GSAI!\n\nDear ${approveReq.parent_name},\n\n${approveReq.student_name} has been enrolled in ${approveReq.program}.\n\n🔐 Student Portal Login:\nURL: ${window.location.origin}/student/login\nLogin ID: ${createdCreds?.loginId ?? ''}\nPassword: ${createdCreds?.password ?? ''}\n\nThe student can change their password after first login.`
-      )
+    ? createWhatsAppUrl(approveReq.parent_phone, credentialsMessage)
     : null;
 
   return (
@@ -814,14 +829,24 @@ export default function EnrollmentRequestsManager() {
                 </div>
               )}
               {parentWhatsAppUrl ? (
-                <a
-                  href={parentWhatsAppUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full text-center py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors"
-                >
-                  📱 WhatsApp Parent
-                </a>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <a
+                    href={parentWhatsAppUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full text-center py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors"
+                  >
+                    📱 WhatsApp Parent
+                  </a>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => copyToClipboard(rejectionMessageForView)}
+                  >
+                    <Copy className="w-4 h-4 mr-2" /> Copy Message
+                  </Button>
+                </div>
               ) : (
                 <div className="block w-full text-center py-2 rounded-lg bg-muted text-muted-foreground text-sm font-medium">
                   Parent phone number is invalid for WhatsApp
@@ -1017,14 +1042,24 @@ export default function EnrollmentRequestsManager() {
                 </p>
               </div>
               {approveReq && credentialsWhatsAppUrl && (
-                <a
-                  href={credentialsWhatsAppUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full text-center py-2.5 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors"
-                >
-                  📱 Send Credentials via WhatsApp
-                </a>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <a
+                    href={credentialsWhatsAppUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full text-center py-2.5 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors"
+                  >
+                    📱 Send Credentials via WhatsApp
+                  </a>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => copyToClipboard(credentialsMessage)}
+                  >
+                    <Copy className="w-4 h-4 mr-2" /> Copy Message
+                  </Button>
+                </div>
               )}
               <Button
                 onClick={handleCloseApprove}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Mail, Send, Loader2 } from 'lucide-react';
+import { Mail, Send, Loader2, Copy } from 'lucide-react';
 import { toast } from '@/hooks/useToast';
 import {
   Dialog,
@@ -140,6 +140,22 @@ Ghatak Sports Academy`;
     }
   };
 
+  const handleCopyMessage = async () => {
+    try {
+      await navigator.clipboard.writeText(message);
+      toast({
+        title: 'Copied',
+        description: 'WhatsApp message copied. You can paste it manually.',
+      });
+    } catch {
+      toast({
+        title: 'Copy Failed',
+        description: 'Clipboard is blocked. Please copy the text manually.',
+        variant: 'error' as any,
+      });
+    }
+  };
+
   return (
     <>
       <Button
@@ -191,6 +207,15 @@ Ghatak Sports Academy`;
                 onChange={(e) => setMessage(e.target.value)}
                 className="text-sm"
               />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleCopyMessage}
+                className="w-full sm:w-auto"
+              >
+                <Copy className="w-4 h-4 mr-2" /> Copy Message
+              </Button>
             </div>
 
             <div className="bg-muted/50 rounded-lg p-3 text-sm space-y-1">
