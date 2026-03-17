@@ -829,7 +829,7 @@ export default function EnrollmentRequestsManager() {
                 </div>
               )}
               {parentWhatsAppUrl ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <a
                     href={parentWhatsAppUrl}
                     target="_blank"
@@ -845,6 +845,14 @@ export default function EnrollmentRequestsManager() {
                     onClick={() => copyToClipboard(rejectionMessageForView)}
                   >
                     <Copy className="w-4 h-4 mr-2" /> Copy Message
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => copyToClipboard(viewReq.parent_phone)}
+                  >
+                    <Phone className="w-4 h-4 mr-2" /> Copy Parent Number
                   </Button>
                 </div>
               ) : (
@@ -1042,7 +1050,7 @@ export default function EnrollmentRequestsManager() {
                 </p>
               </div>
               {approveReq && credentialsWhatsAppUrl && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <a
                     href={credentialsWhatsAppUrl}
                     target="_blank"
@@ -1058,6 +1066,14 @@ export default function EnrollmentRequestsManager() {
                     onClick={() => copyToClipboard(credentialsMessage)}
                   >
                     <Copy className="w-4 h-4 mr-2" /> Copy Message
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => copyToClipboard(approveReq.parent_phone)}
+                  >
+                    <Phone className="w-4 h-4 mr-2" /> Copy Parent Number
                   </Button>
                 </div>
               )}
