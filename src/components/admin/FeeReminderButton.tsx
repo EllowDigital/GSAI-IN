@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Mail, Send, Loader2 } from 'lucide-react';
+import { Mail, Send, Loader2, Copy, Phone } from 'lucide-react';
 import { toast } from '@/hooks/useToast';
 import {
   Dialog,
@@ -140,6 +140,38 @@ Ghatak Sports Academy`;
     }
   };
 
+  const handleCopyMessage = async () => {
+    try {
+      await navigator.clipboard.writeText(message);
+      toast({
+        title: 'Copied',
+        description: 'WhatsApp message copied. You can paste it manually.',
+      });
+    } catch {
+      toast({
+        title: 'Copy Failed',
+        description: 'Clipboard is blocked. Please copy the text manually.',
+        variant: 'error' as any,
+      });
+    }
+  };
+
+  const handleCopyParentNumber = async () => {
+    try {
+      await navigator.clipboard.writeText(parentContact);
+      toast({
+        title: 'Copied',
+        description: 'Parent number copied to clipboard.',
+      });
+    } catch {
+      toast({
+        title: 'Copy Failed',
+        description: 'Clipboard is blocked. Please copy the number manually.',
+        variant: 'error' as any,
+      });
+    }
+  };
+
   return (
     <>
       <Button
@@ -191,6 +223,26 @@ Ghatak Sports Academy`;
                 onChange={(e) => setMessage(e.target.value)}
                 className="text-sm"
               />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopyMessage}
+                  className="w-full"
+                >
+                  <Copy className="w-4 h-4 mr-2" /> Copy Message
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopyParentNumber}
+                  className="w-full"
+                >
+                  <Phone className="w-4 h-4 mr-2" /> Copy Parent Number
+                </Button>
+              </div>
             </div>
 
             <div className="bg-muted/50 rounded-lg p-3 text-sm space-y-1">
