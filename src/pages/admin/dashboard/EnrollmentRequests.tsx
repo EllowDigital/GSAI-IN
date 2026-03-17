@@ -399,7 +399,9 @@ export default function EnrollmentRequestsManager() {
     ? createRejectionMessage(viewReq, adminNotes.trim())
     : '';
 
-  const credentialsMessage = approveReq ? createCredentialsMessage(approveReq) : '';
+  const credentialsMessage = approveReq
+    ? createCredentialsMessage(approveReq)
+    : '';
 
   const credentialsWhatsAppUrl = approveReq
     ? createWhatsAppUrl(approveReq.parent_phone, credentialsMessage)
