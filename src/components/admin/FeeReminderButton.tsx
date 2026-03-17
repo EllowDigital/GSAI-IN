@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Mail, Send, Loader2, Copy } from 'lucide-react';
+import { Mail, Send, Loader2, Copy, Phone } from 'lucide-react';
 import { toast } from '@/hooks/useToast';
 import {
   Dialog,
@@ -240,7 +240,7 @@ Ghatak Sports Academy`;
                   onClick={handleCopyParentNumber}
                   className="w-full"
                 >
-                  <Mail className="w-4 h-4 mr-2" /> Copy Parent Number
+                  <Phone className="w-4 h-4 mr-2" /> Copy Parent Number
                 </Button>
               </div>
             </div>
