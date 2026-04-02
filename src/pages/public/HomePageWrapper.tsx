@@ -92,7 +92,7 @@ const HomePageWrapper: React.FC = () => {
         redirectIfAdmin(email);
       } catch (err) {
         // Enhanced error logging for development
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.DEV) {
           console.warn('Auth session check failed:', err);
         }
       } finally {
