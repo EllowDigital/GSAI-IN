@@ -31,7 +31,7 @@ import StudentFeeHistory from '@/components/student/StudentFeeHistory';
 import StudentProgressionTracker from '@/components/student/StudentProgressionTracker';
 import StudentEventsView from '@/components/student/StudentEventsView';
 import StudentAnnouncements from '@/components/student/StudentAnnouncements';
-import StudentAttendanceView from '@/components/student/StudentAttendanceView';
+
 import StudentBeltExamNotifications from '@/components/student/StudentBeltExamNotifications';
 import { downloadCertificateFile } from '@/utils/certificateDownload';
 
