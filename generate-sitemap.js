@@ -315,8 +315,7 @@ async function generateSitemap() {
   // 1. Connect
   const isConnected = await initSupabase();
   if (!isConnected) {
-    Logger.error("Aborting: Could not establish DB connection.");
-    process.exit(1);
+    Logger.warn('Supabase unavailable. Continuing with static and program pages only.');
   }
 
   try {

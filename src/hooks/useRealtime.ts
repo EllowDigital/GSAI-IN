@@ -137,7 +137,6 @@ export const useRealtime = () => {
         )
         .subscribe(),
 
-
       supabase
         .channel('rt-announcements')
         .on(

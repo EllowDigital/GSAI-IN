@@ -16,7 +16,6 @@ import {
   Swords,
   Megaphone,
   UserPlus,
-  
   Dumbbell,
   ChevronLeft,
   ChevronRight,
