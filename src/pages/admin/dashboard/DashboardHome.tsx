@@ -74,7 +74,6 @@ export default function DashboardHome() {
         gallery: galleryRes.data || [],
         enrollments: (enrollRes.data || []) as any[],
         announcements: (announcementsRes.data || []) as any[],
-        attendance: attendanceRes.data || [],
       };
     },
     staleTime: 1000 * 60 * 5,
