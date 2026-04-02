@@ -117,17 +117,6 @@ export default function DashboardHome() {
     const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1)
       .toISOString()
       .split('T')[0];
-    const thisMonthAttendance = data.attendance.filter(
-      (a: any) => a.date >= thisMonthStart
-    );
-    const presentCount = thisMonthAttendance.filter(
-      (a: any) => a.status === 'present'
-    ).length;
-    const totalAttendanceRecords = thisMonthAttendance.length;
-    const attendanceRate =
-      totalAttendanceRecords > 0
-        ? Math.round((presentCount / totalAttendanceRecords) * 100)
-        : 0;
 
     const revenueChart = [];
     for (let i = 5; i >= 0; i--) {
