@@ -152,7 +152,7 @@ export default function DashboardHome() {
       activeAnnouncements,
       collectedThisMonth,
       collectionRate,
-      attendanceRate,
+      
       totalBlogs: data.blogs.length,
       totalNews: data.news.length,
       totalEvents: data.events.length,
