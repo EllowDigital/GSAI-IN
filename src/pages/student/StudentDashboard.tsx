@@ -416,9 +416,6 @@ export default function StudentDashboard() {
           <TabsContent value="progression" className="mt-4">
             <StudentProgressionTracker />
           </TabsContent>
-          <TabsContent value="attendance" className="mt-4">
-            <StudentAttendanceView />
-          </TabsContent>
           <TabsContent value="fees" className="mt-4">
             <StudentFeeHistory />
           </TabsContent>
