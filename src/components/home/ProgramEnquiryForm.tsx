@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Send, MessageCircle, CheckCircle2 } from 'lucide-react';
-import { openWhatsAppConversation } from '@/utils/whatsapp';
+
 
 interface ProgramEnquiryFormProps {
   programTitle: string;
