@@ -92,7 +92,7 @@ class PerformanceMonitor {
   }
 
   private logMetric(name: string, value: number) {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log(`🚀 Performance Metric - ${name}: ${Math.round(value)}ms`);
     }
 
