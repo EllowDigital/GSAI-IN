@@ -42,7 +42,7 @@ export const pushToDataLayer = (data: GTMEvent): void => {
       window.dataLayer.push(data);
 
       // Log in development for debugging
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         console.log('📊 GTM Event:', data);
       }
     } else {
