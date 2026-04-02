@@ -47,7 +47,7 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
     this.props.onError?.(error, errorInfo);
 
     // In production, you might want to send this to an error reporting service
-    if (process.env.NODE_ENV === 'production') {
+    if (import.meta.env.PROD) {
       // Example: sendErrorToService({ error, errorInfo, errorId: this.state.errorId });
     }
   }
