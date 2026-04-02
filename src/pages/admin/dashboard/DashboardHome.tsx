@@ -48,7 +48,6 @@ export default function DashboardHome() {
         galleryRes,
         enrollRes,
         announcementsRes,
-        attendanceRes,
       ] = await Promise.all([
         supabase
           .from('students')
@@ -64,7 +63,6 @@ export default function DashboardHome() {
         supabase.from('gallery_images').select('id'),
         supabase.from('enrollment_requests' as any).select('id, status') as any,
         supabase.from('announcements').select('id, is_active'),
-        supabase.from('attendance').select('id, student_id, date, status'),
       ]);
 
       return {
