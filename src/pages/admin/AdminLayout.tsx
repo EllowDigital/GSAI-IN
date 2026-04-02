@@ -14,7 +14,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/admin/dashboard/fees': 'Fee Management',
   '/admin/dashboard/progression': 'Student Progression',
   '/admin/dashboard/disciplines': 'Disciplines',
-  '/admin/dashboard/attendance': 'Attendance',
+
   '/admin/dashboard/events': 'Events',
   '/admin/dashboard/competitions': 'Competitions',
   '/admin/dashboard/blogs': 'Blog Management',

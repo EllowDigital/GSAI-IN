@@ -42,7 +42,7 @@ export const pushToDataLayer = (data: GTMEvent): void => {
       window.dataLayer.push(data);
 
       // Log in development for debugging
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         console.log('📊 GTM Event:', data);
       }
     } else {
@@ -322,7 +322,7 @@ export const initializeGTM = (userId?: string, userType?: string): void => {
     user_id: userId || null,
     user_type: userType || 'anonymous',
     app_version: '1.0.0', // Your app version
-    environment: process.env.NODE_ENV,
+    environment: import.meta.env.MODE,
   });
 };
 

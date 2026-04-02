@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Send, MessageCircle, CheckCircle2 } from 'lucide-react';
-import { openWhatsAppConversation } from '@/utils/whatsapp';
 
 interface ProgramEnquiryFormProps {
   programTitle: string;
@@ -26,12 +25,13 @@ export default function ProgramEnquiryForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const message = `Hi, I'm interested in the *${programTitle}* program.\n\nName: ${formData.name.trim()}\nPhone: ${formData.phone.trim()}\nMessage: ${formData.message.trim()}`;
-    const didOpen = openWhatsAppConversation('916394135988', message);
+    const nameVal = formData.name.trim();
+    const phoneVal = formData.phone.trim();
+    const msgVal = formData.message.trim();
+    const message = `Hi, I'm interested in the *${programTitle}* program.\n\nName: ${nameVal}\nPhone: ${phoneVal}${msgVal ? `\nMessage: ${msgVal}` : ''}`;
 
-    if (!didOpen) {
-      return;
-    }
+    const whatsappUrl = `https://wa.me/916394135988?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
 
     setSubmitted(true);
     setTimeout(() => setSubmitted(false), 4000);

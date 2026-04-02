@@ -65,7 +65,7 @@ export const useCanonicalUrl = (customPath?: string): void => {
 
     canonicalLink.setAttribute('href', canonicalUrl);
 
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log('🔗 Canonical URL updated:', canonicalUrl);
     }
   }, [location.pathname, customPath]);
@@ -189,7 +189,7 @@ export const checkForDuplicateRoutes = (routes: string[]): boolean => {
   const uniqueRoutes = new Set(normalized);
   const hasDuplicates = uniqueRoutes.size !== normalized.length;
 
-  if (hasDuplicates && process.env.NODE_ENV === 'development') {
+  if (hasDuplicates && import.meta.env.DEV) {
     console.warn('⚠️ Duplicate routes detected:', routes);
   }
 
@@ -340,7 +340,7 @@ export const getHreflangTags = (
  * Logs potential SEO problems to console
  */
 export const trackSEOIssues = (pathname: string): void => {
-  if (process.env.NODE_ENV !== 'development') return;
+  if (!import.meta.env.DEV) return;
 
   const { isValid, issues } = validateUrlStructure(pathname);
 

@@ -304,7 +304,7 @@ export const useFormFieldTracking = (formId: string) => {
     if (value && value.length > 0) {
       // You can implement debouncing here if needed
       // For now, just track that the field was interacted with
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         console.log(`📝 Form field tracked: ${formId}.${fieldName}`);
       }
     }

@@ -16,7 +16,6 @@ import {
   Swords,
   Megaphone,
   UserPlus,
-  CalendarCheck,
   Dumbbell,
   ChevronLeft,
   ChevronRight,
@@ -64,12 +63,6 @@ const navItems = [
     title: 'Disciplines',
     url: '/admin/dashboard/disciplines',
     icon: Dumbbell,
-    category: 'manage',
-  },
-  {
-    title: 'Attendance',
-    url: '/admin/dashboard/attendance',
-    icon: CalendarCheck,
     category: 'manage',
   },
   {

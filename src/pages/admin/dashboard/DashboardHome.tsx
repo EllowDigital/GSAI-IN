@@ -48,7 +48,6 @@ export default function DashboardHome() {
         galleryRes,
         enrollRes,
         announcementsRes,
-        attendanceRes,
       ] = await Promise.all([
         supabase
           .from('students')
@@ -64,7 +63,6 @@ export default function DashboardHome() {
         supabase.from('gallery_images').select('id'),
         supabase.from('enrollment_requests' as any).select('id, status') as any,
         supabase.from('announcements').select('id, is_active'),
-        supabase.from('attendance').select('id, student_id, date, status'),
       ]);
 
       return {
@@ -76,7 +74,6 @@ export default function DashboardHome() {
         gallery: galleryRes.data || [],
         enrollments: (enrollRes.data || []) as any[],
         announcements: (announcementsRes.data || []) as any[],
-        attendance: attendanceRes.data || [],
       };
     },
     staleTime: 1000 * 60 * 5,
@@ -120,17 +117,6 @@ export default function DashboardHome() {
     const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1)
       .toISOString()
       .split('T')[0];
-    const thisMonthAttendance = data.attendance.filter(
-      (a: any) => a.date >= thisMonthStart
-    );
-    const presentCount = thisMonthAttendance.filter(
-      (a: any) => a.status === 'present'
-    ).length;
-    const totalAttendanceRecords = thisMonthAttendance.length;
-    const attendanceRate =
-      totalAttendanceRecords > 0
-        ? Math.round((presentCount / totalAttendanceRecords) * 100)
-        : 0;
 
     const revenueChart = [];
     for (let i = 5; i >= 0; i--) {
@@ -166,7 +152,7 @@ export default function DashboardHome() {
       activeAnnouncements,
       collectedThisMonth,
       collectionRate,
-      attendanceRate,
+
       totalBlogs: data.blogs.length,
       totalNews: data.news.length,
       totalEvents: data.events.length,
@@ -214,11 +200,11 @@ export default function DashboardHome() {
       trend: analytics.collectionRate >= 80 ? 'up' : 'down',
     },
     {
-      label: 'Attendance Rate',
-      value: `${analytics.attendanceRate}%`,
+      label: 'Active Content',
+      value: analytics.totalBlogs + analytics.totalNews,
       icon: Activity,
-      change: 'This month',
-      trend: analytics.attendanceRate >= 80 ? 'up' : 'down',
+      change: `${analytics.totalBlogs} blogs, ${analytics.totalNews} news`,
+      trend: 'neutral',
     },
   ];
 
