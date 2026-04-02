@@ -200,11 +200,11 @@ export default function DashboardHome() {
       trend: analytics.collectionRate >= 80 ? 'up' : 'down',
     },
     {
-      label: 'Attendance Rate',
-      value: `${analytics.attendanceRate}%`,
+      label: 'Active Content',
+      value: analytics.totalBlogs + analytics.totalNews,
       icon: Activity,
-      change: 'This month',
-      trend: analytics.attendanceRate >= 80 ? 'up' : 'down',
+      change: `${analytics.totalBlogs} blogs, ${analytics.totalNews} news`,
+      trend: 'neutral',
     },
   ];
 
