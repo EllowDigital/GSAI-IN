@@ -92,7 +92,7 @@ class PerformanceMonitor {
   }
 
   private logMetric(name: string, value: number) {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log(`🚀 Performance Metric - ${name}: ${Math.round(value)}ms`);
     }
 
@@ -145,7 +145,7 @@ export const performanceMonitor = new PerformanceMonitor();
 
 // Utility functions
 export const reportWebVitals = (metric: any) => {
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.log('📊 Web Vitals:', metric);
   }
   // Send to analytics service

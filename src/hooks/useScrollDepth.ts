@@ -29,7 +29,7 @@ import { trackScrollDepth } from '@/utils/gtm';
 export const useScrollDepth = () => {
   const location = useLocation();
   const milestones = useRef<Set<number>>(new Set());
-  const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
+  const scrollTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Reset milestones on route change
   useEffect(() => {
@@ -68,7 +68,7 @@ export const useScrollDepth = () => {
           milestones.current.add(threshold);
           trackScrollDepth(threshold);
 
-          if (process.env.NODE_ENV === 'development') {
+          if (import.meta.env.DEV) {
             console.log(`📊 Scroll Depth: ${threshold}%`);
           }
         }

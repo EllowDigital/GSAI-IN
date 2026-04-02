@@ -165,7 +165,7 @@ export function logError(error: AppError | Error | unknown, context?: string) {
   console.error('Application Error:', errorInfo);
 
   // In production, you might want to send errors to an external service
-  if (process.env.NODE_ENV === 'production') {
+  if (import.meta.env.PROD) {
     // Example: sendToErrorService(errorInfo);
   }
 }
