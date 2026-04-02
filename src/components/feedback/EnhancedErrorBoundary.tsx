@@ -176,7 +176,7 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
               </div>
 
               {/* Development Error Details */}
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+              {import.meta.env.DEV && this.state.error && (
                 <details className="mt-6">
                   <summary className="cursor-pointer text-gray-700 font-semibold mb-4 flex items-center gap-2">
                     <Bug className="w-4 h-4" />

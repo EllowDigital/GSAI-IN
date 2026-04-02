@@ -121,7 +121,7 @@ const HomePageWrapper: React.FC = () => {
             }
           }
         } catch (err) {
-          if (process.env.NODE_ENV === 'development') {
+          if (import.meta.env.DEV) {
             console.warn('Auth state change error:', err);
           }
         }

@@ -340,7 +340,7 @@ export const getHreflangTags = (
  * Logs potential SEO problems to console
  */
 export const trackSEOIssues = (pathname: string): void => {
-  if (process.env.NODE_ENV !== 'development') return;
+  if (!import.meta.env.DEV) return;
 
   const { isValid, issues } = validateUrlStructure(pathname);
 

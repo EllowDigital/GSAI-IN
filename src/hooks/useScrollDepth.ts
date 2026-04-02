@@ -68,7 +68,7 @@ export const useScrollDepth = () => {
           milestones.current.add(threshold);
           trackScrollDepth(threshold);
 
-          if (process.env.NODE_ENV === 'development') {
+          if (import.meta.env.DEV) {
             console.log(`📊 Scroll Depth: ${threshold}%`);
           }
         }

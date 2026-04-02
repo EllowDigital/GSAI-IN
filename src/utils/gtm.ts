@@ -322,7 +322,7 @@ export const initializeGTM = (userId?: string, userType?: string): void => {
     user_id: userId || null,
     user_type: userType || 'anonymous',
     app_version: '1.0.0', // Your app version
-    environment: process.env.NODE_ENV,
+    environment: import.meta.env.MODE,
   });
 };
 

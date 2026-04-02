@@ -99,7 +99,7 @@ export default function HeroSection() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [wordIndex, setWordIndex] = useState(0);
   const [showSanskrit, setShowSanskrit] = useState(false);
-  const imageTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const imageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const isVideoActive = mediaMode === 'video';

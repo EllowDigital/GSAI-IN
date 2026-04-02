@@ -145,7 +145,7 @@ export const performanceMonitor = new PerformanceMonitor();
 
 // Utility functions
 export const reportWebVitals = (metric: any) => {
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.log('📊 Web Vitals:', metric);
   }
   // Send to analytics service
