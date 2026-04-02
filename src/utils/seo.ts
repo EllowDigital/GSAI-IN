@@ -189,7 +189,7 @@ export const checkForDuplicateRoutes = (routes: string[]): boolean => {
   const uniqueRoutes = new Set(normalized);
   const hasDuplicates = uniqueRoutes.size !== normalized.length;
 
-  if (hasDuplicates && process.env.NODE_ENV === 'development') {
+  if (hasDuplicates && import.meta.env.DEV) {
     console.warn('⚠️ Duplicate routes detected:', routes);
   }
 
