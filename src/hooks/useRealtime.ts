@@ -137,17 +137,6 @@ export const useRealtime = () => {
         )
         .subscribe(),
 
-      supabase
-        .channel('rt-attendance')
-        .on(
-          'postgres_changes',
-          { event: '*', schema: 'public', table: 'attendance' },
-          () => {
-            queryClient.invalidateQueries({ queryKey: ['attendance'] });
-            queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
-          }
-        )
-        .subscribe(),
 
       supabase
         .channel('rt-announcements')
