@@ -65,7 +65,7 @@ export const useCanonicalUrl = (customPath?: string): void => {
 
     canonicalLink.setAttribute('href', canonicalUrl);
 
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log('🔗 Canonical URL updated:', canonicalUrl);
     }
   }, [location.pathname, customPath]);
