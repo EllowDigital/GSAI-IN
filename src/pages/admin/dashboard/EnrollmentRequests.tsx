@@ -39,11 +39,17 @@ import {
   Copy,
   CheckCircle,
   KeyRound,
-  Mail,
   RefreshCw,
 } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import { createWhatsAppUrl, openWhatsAppConversation } from '@/utils/whatsapp';
+import {
+  buildEnrollmentPortalMessage,
+  buildEnrollmentRejectedMessage,
+  buildEnrollmentStageMessage,
+  getEnrollmentStageActionLabel,
+  type EnrollmentMessageStage,
+} from '@/utils/enrollmentMessages';
 
 interface EnrollmentRequest {
   id: string;
@@ -82,6 +88,22 @@ const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
   },
 };
 
+const resolveEnrollmentMessageStage = (
+  status: string
+): EnrollmentMessageStage => {
+  switch (status) {
+    case 'contacted':
+      return 'contacted';
+    case 'approved':
+      return 'approved';
+    case 'rejected':
+      return 'rejected';
+    case 'pending':
+    default:
+      return 'pending';
+  }
+};
+
 export default function EnrollmentRequestsManager() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
@@ -116,22 +138,30 @@ export default function EnrollmentRequestsManager() {
       if (error) throw error;
       return (data || []) as EnrollmentRequest[];
     },
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
   });
 
-  const createRejectionMessage = (req: EnrollmentRequest, notes: string) => {
-    return `Dear ${req.parent_name},\n\nWe regret to inform you that the enrollment request for ${req.student_name} in the ${req.program} program has not been approved at this time.\n\n${notes ? `Reason: ${notes}\n\n` : ''}If you have questions, please contact us.\n\nGhatak Sports Academy India`;
-  };
-
-  const createCredentialsMessage = (req: EnrollmentRequest) => {
-    return `🥋 Welcome to GSAI!\n\nDear ${req.parent_name},\n\n${req.student_name} has been enrolled in ${req.program}.\n\n🔐 Student Portal Login:\nURL: ${window.location.origin}/student/login\nLogin ID: ${createdCreds?.loginId ?? ''}\nPassword: ${createdCreds?.password ?? ''}\n\nThe student can change their password after first login.`;
-  };
+  const buildMessagePayload = (req: EnrollmentRequest, notes?: string) => ({
+    parentName: req.parent_name,
+    parentPhone: req.parent_phone,
+    studentName: req.student_name,
+    age: req.age,
+    gender: req.gender,
+    program: req.program,
+    studentEmail: req.student_email,
+    studentPhone: req.student_phone,
+    notes,
+  });
 
   // Send rejection notification via WhatsApp + email
   const sendRejectionNotification = async (
     req: EnrollmentRequest,
     notes: string
   ) => {
-    const message = createRejectionMessage(req, notes);
+    const message = buildEnrollmentRejectedMessage(
+      buildMessagePayload(req, notes)
+    );
 
     const didOpenWhatsApp = openWhatsAppConversation(req.parent_phone, message);
 
@@ -391,20 +421,35 @@ export default function EnrollmentRequestsManager() {
 
   const pendingCount = requests.filter((r) => r.status === 'pending').length;
 
-  const parentWhatsAppMessage = viewReq
-    ? `Dear ${viewReq.parent_name},\n\nRegarding ${viewReq.student_name}'s enrollment in ${viewReq.program} program.\n\nPlease contact us for further details.\n\n- Ghatak Sports Academy India`
+  const currentWhatsAppStage = viewReq
+    ? resolveEnrollmentMessageStage(viewReq.status)
+    : 'pending';
+
+  const currentWhatsAppMessage = viewReq
+    ? buildEnrollmentStageMessage(
+        currentWhatsAppStage,
+        buildMessagePayload(
+          viewReq,
+          adminNotes.trim() || viewReq.admin_notes || undefined
+        )
+      )
     : '';
+
+  const currentWhatsAppLabel = viewReq
+    ? getEnrollmentStageActionLabel(currentWhatsAppStage)
+    : 'WhatsApp Parent';
 
   const parentWhatsAppUrl = viewReq
-    ? createWhatsAppUrl(viewReq.parent_phone, parentWhatsAppMessage)
+    ? createWhatsAppUrl(viewReq.parent_phone, currentWhatsAppMessage)
     : null;
 
-  const rejectionMessageForView = viewReq
-    ? createRejectionMessage(viewReq, adminNotes.trim())
-    : '';
-
-  const credentialsMessage = approveReq
-    ? createCredentialsMessage(approveReq)
+  const credentialsMessage = approveReq && createdCreds
+    ? buildEnrollmentPortalMessage({
+        ...buildMessagePayload(approveReq),
+        loginId: createdCreds.loginId,
+        password: createdCreds.password,
+        portalUrl: `${window.location.origin}/student/login`,
+      })
     : '';
 
   const credentialsWhatsAppUrl = approveReq
@@ -572,7 +617,8 @@ export default function EnrollmentRequestsManager() {
                       <>
                         <Button
                           size="sm"
-                          className="text-xs h-8 gap-1 bg-blue-600 hover:bg-blue-700"
+                          variant="outline"
+                          className="text-xs h-8 gap-1"
                           onClick={() =>
                             updateMutation.mutate({
                               id: req.id,
@@ -580,7 +626,7 @@ export default function EnrollmentRequestsManager() {
                             })
                           }
                         >
-                          <Phone className="w-3 h-3" />
+                          <Phone className="w-3 h-3" /> Contact
                         </Button>
                         <Button
                           size="sm"
@@ -591,7 +637,7 @@ export default function EnrollmentRequestsManager() {
                             setAdminNotes(req.admin_notes || '');
                           }}
                         >
-                          <X className="w-3 h-3" />
+                          <X className="w-3 h-3" /> Reject
                         </Button>
                       </>
                     )}
@@ -651,13 +697,18 @@ export default function EnrollmentRequestsManager() {
           if (!o) setViewReq(null);
         }}
       >
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Enrollment Request</DialogTitle>
-          </DialogHeader>
+        <DialogContent className="max-w-xl max-h-[90vh] overflow-hidden p-0">
+          <div className="max-h-[90vh] overflow-y-auto">
+            <DialogHeader className="border-b border-border px-5 py-4 sm:px-6">
+              <DialogTitle>Enrollment Request</DialogTitle>
+              <DialogDescription>
+                Review the request, notes, and parent communication from one
+                simple screen.
+              </DialogDescription>
+            </DialogHeader>
           {viewReq && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3 text-sm">
+            <div className="space-y-5 p-5 sm:p-6">
+              <div className="grid gap-3 text-sm [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]">
                 <div>
                   <p className="text-xs text-muted-foreground">Student</p>
                   <p className="font-medium">{viewReq.student_name}</p>
@@ -739,7 +790,7 @@ export default function EnrollmentRequestsManager() {
               </div>
 
               {/* Admin Notes */}
-              <div>
+              <div className="rounded-xl border border-border bg-card p-4">
                 <label className="text-xs font-medium text-muted-foreground">
                   Admin Notes
                 </label>
@@ -747,7 +798,7 @@ export default function EnrollmentRequestsManager() {
                   value={adminNotes}
                   onChange={(e) => setAdminNotes(e.target.value)}
                   placeholder="Add notes (required for rejection)..."
-                  rows={2}
+                  rows={3}
                   className="mt-1"
                   disabled={
                     viewReq.status === 'approved' ||
@@ -801,7 +852,7 @@ export default function EnrollmentRequestsManager() {
                     )}
                     <Button
                       size="sm"
-                      className="gap-1 text-xs bg-green-600 hover:bg-green-700"
+                      className="gap-1 text-xs bg-primary text-primary-foreground hover:bg-primary/90"
                       onClick={() => {
                         setViewReq(null);
                         handleStartApprove(viewReq);
@@ -835,22 +886,22 @@ export default function EnrollmentRequestsManager() {
                 </div>
               )}
               {parentWhatsAppUrl ? (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="grid gap-2 [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]">
                   <a
                     href={parentWhatsAppUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block w-full text-center py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors"
+                    className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                   >
-                    📱 WhatsApp Parent
+                    📱 {currentWhatsAppLabel}
                   </a>
                   <Button
                     type="button"
                     variant="outline"
                     className="w-full"
-                    onClick={() => copyToClipboard(rejectionMessageForView)}
+                    onClick={() => copyToClipboard(currentWhatsAppMessage)}
                   >
-                    <Copy className="w-4 h-4 mr-2" /> Copy Message
+                    <Copy className="w-4 h-4 mr-2" /> Copy Text
                   </Button>
                   <Button
                     type="button"
@@ -868,6 +919,7 @@ export default function EnrollmentRequestsManager() {
               )}
             </div>
           )}
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -878,7 +930,7 @@ export default function EnrollmentRequestsManager() {
           if (!o) handleCloseApprove();
         }}
       >
-        <DialogContent className="max-w-sm">
+        <DialogContent className="max-w-md w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               {approveStep === 'confirm' && (
@@ -958,7 +1010,7 @@ export default function EnrollmentRequestsManager() {
               <Button
                 onClick={handleCreateStudent}
                 disabled={approving}
-                className="w-full bg-green-600 hover:bg-green-700"
+                className="w-full"
               >
                 {approving ? <Spinner size={16} /> : 'Create Student Record'}
               </Button>
@@ -1056,14 +1108,14 @@ export default function EnrollmentRequestsManager() {
                 </p>
               </div>
               {approveReq && credentialsWhatsAppUrl && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="grid gap-2 [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]">
                   <a
                     href={credentialsWhatsAppUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block w-full text-center py-2.5 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors"
+                    className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                   >
-                    📱 Send Credentials via WhatsApp
+                    📱 Send Portal Details
                   </a>
                   <Button
                     type="button"

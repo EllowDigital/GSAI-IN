@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { RefreshCw, Menu, Search, Bell } from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
 import { cn } from '@/lib/utils';
+import { useRealtime } from '@/hooks/useRealtime';
 
 const PAGE_TITLES: Record<string, string> = {
   '/admin/dashboard': 'Dashboard',
@@ -32,6 +33,8 @@ const AdminLayout: React.FC = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const location = useLocation();
+
+  useRealtime();
 
   const pageTitle = PAGE_TITLES[location.pathname] || 'Admin';
 
