@@ -319,6 +319,13 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     try {
+      // Sign out any existing session first to prevent "Lock broken by another request" errors
+      try {
+        await supabase.auth.signOut({ scope: 'local' });
+      } catch {
+        // Ignore sign-out errors — we just want to clear any stale lock
+      }
+
       const { data, error } = await withTimeout(
         supabase.auth.signInWithPassword({
           email,

@@ -391,8 +391,12 @@ export default function EnrollmentRequestsManager() {
 
   const pendingCount = requests.filter((r) => r.status === 'pending').length;
 
+  const parentWhatsAppMessage = viewReq
+    ? `Dear ${viewReq.parent_name},\n\nRegarding ${viewReq.student_name}'s enrollment in ${viewReq.program} program.\n\nPlease contact us for further details.\n\n- Ghatak Sports Academy India`
+    : '';
+
   const parentWhatsAppUrl = viewReq
-    ? createWhatsAppUrl(viewReq.parent_phone)
+    ? createWhatsAppUrl(viewReq.parent_phone, parentWhatsAppMessage)
     : null;
 
   const rejectionMessageForView = viewReq
@@ -647,7 +651,7 @@ export default function EnrollmentRequestsManager() {
           if (!o) setViewReq(null);
         }}
       >
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Enrollment Request</DialogTitle>
           </DialogHeader>
