@@ -90,7 +90,9 @@ export const useRealtime = () => {
           'postgres_changes',
           { event: '*', schema: 'public', table: 'enrollment_requests' },
           () => {
-            queryClient.invalidateQueries({ queryKey: ['enrollment-requests'] });
+            queryClient.invalidateQueries({
+              queryKey: ['enrollment-requests'],
+            });
             invalidateDashboard();
           }
         )

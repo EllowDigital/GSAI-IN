@@ -69,9 +69,7 @@ export const getEnrollmentStageActionLabel = (
   }
 };
 
-export const buildEnrollmentReceivedMessage = (
-  data: EnrollmentMessageData
-) => {
+export const buildEnrollmentReceivedMessage = (data: EnrollmentMessageData) => {
   const relation = getStudentRelation(data.gender);
 
   return [
@@ -102,9 +100,7 @@ export const buildEnrollmentContactedMessage = (
   ].join('\n\n');
 };
 
-export const buildEnrollmentApprovedMessage = (
-  data: EnrollmentMessageData
-) => {
+export const buildEnrollmentApprovedMessage = (data: EnrollmentMessageData) => {
   const relation = getStudentRelation(data.gender);
 
   return [
@@ -120,9 +116,7 @@ export const buildEnrollmentApprovedMessage = (
   ].join('\n\n');
 };
 
-export const buildEnrollmentRejectedMessage = (
-  data: EnrollmentMessageData
-) => {
+export const buildEnrollmentRejectedMessage = (data: EnrollmentMessageData) => {
   const relation = getStudentRelation(data.gender);
 
   return [
