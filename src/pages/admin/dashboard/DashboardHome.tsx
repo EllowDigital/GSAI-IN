@@ -20,7 +20,6 @@ import {
   ArrowUpRight,
   Zap,
 } from 'lucide-react';
-import { useRealtime } from '@/hooks/useRealtime';
 import {
   AreaChart,
   Area,
@@ -34,8 +33,6 @@ import {
 } from 'recharts';
 
 export default function DashboardHome() {
-  useRealtime();
-
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard-analytics'],
     queryFn: async () => {
@@ -65,6 +62,19 @@ export default function DashboardHome() {
         supabase.from('announcements').select('id, is_active'),
       ]);
 
+      const firstError = [
+        studentsRes,
+        feesRes,
+        blogsRes,
+        newsRes,
+        eventsRes,
+        galleryRes,
+        enrollRes,
+        announcementsRes,
+      ].find((response) => response.error)?.error;
+
+      if (firstError) throw firstError;
+
       return {
         students: studentsRes.data || [],
         fees: feesRes.data || [],
@@ -76,7 +86,9 @@ export default function DashboardHome() {
         announcements: (announcementsRes.data || []) as any[],
       };
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 15,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
     refetchInterval: 60000,
   });
 
