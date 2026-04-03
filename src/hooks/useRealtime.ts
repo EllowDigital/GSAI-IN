@@ -6,6 +6,11 @@ export const useRealtime = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    const invalidateDashboard = () => {
+      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-analytics'] });
+    };
+
     const channels = [
       supabase
         .channel('rt-students')
@@ -14,7 +19,7 @@ export const useRealtime = () => {
           { event: '*', schema: 'public', table: 'students' },
           () => {
             queryClient.invalidateQueries({ queryKey: ['students'] });
-            queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+            invalidateDashboard();
           }
         )
         .subscribe(),
@@ -26,7 +31,7 @@ export const useRealtime = () => {
           { event: '*', schema: 'public', table: 'fees' },
           () => {
             queryClient.invalidateQueries({ queryKey: ['fees'] });
-            queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+            invalidateDashboard();
           }
         )
         .subscribe(),
@@ -38,7 +43,7 @@ export const useRealtime = () => {
           { event: '*', schema: 'public', table: 'events' },
           () => {
             queryClient.invalidateQueries({ queryKey: ['events'] });
-            queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+            invalidateDashboard();
           }
         )
         .subscribe(),
@@ -50,7 +55,7 @@ export const useRealtime = () => {
           { event: '*', schema: 'public', table: 'blogs' },
           () => {
             queryClient.invalidateQueries({ queryKey: ['blogs'] });
-            queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+            invalidateDashboard();
           }
         )
         .subscribe(),
@@ -62,7 +67,7 @@ export const useRealtime = () => {
           { event: '*', schema: 'public', table: 'news' },
           () => {
             queryClient.invalidateQueries({ queryKey: ['news'] });
-            queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+            invalidateDashboard();
           }
         )
         .subscribe(),
@@ -74,7 +79,21 @@ export const useRealtime = () => {
           { event: '*', schema: 'public', table: 'gallery_images' },
           () => {
             queryClient.invalidateQueries({ queryKey: ['gallery-images'] });
-            queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+            invalidateDashboard();
+          }
+        )
+        .subscribe(),
+
+      supabase
+        .channel('rt-enrollment-requests')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'enrollment_requests' },
+          () => {
+            queryClient.invalidateQueries({
+              queryKey: ['enrollment-requests'],
+            });
+            invalidateDashboard();
           }
         )
         .subscribe(),
@@ -144,6 +163,7 @@ export const useRealtime = () => {
           { event: '*', schema: 'public', table: 'announcements' },
           () => {
             queryClient.invalidateQueries({ queryKey: ['announcements'] });
+            invalidateDashboard();
           }
         )
         .subscribe(),
