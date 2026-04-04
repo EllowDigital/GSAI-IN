@@ -28,8 +28,6 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
-  BarChart,
-  Bar,
 } from 'recharts';
 
 export default function DashboardHome() {
@@ -194,29 +192,29 @@ export default function DashboardHome() {
       label: 'Total Students',
       value: analytics.totalStudents,
       icon: Users,
-      change: `${analytics.pendingEnrollments} pending`,
-      trend: analytics.pendingEnrollments > 0 ? 'up' : 'neutral',
+      hint: `${analytics.pendingEnrollments} pending enrollments`,
+      tone: 'neutral',
     },
     {
       label: 'Total Revenue',
       value: `₹${analytics.totalRevenue.toLocaleString()}`,
       icon: DollarSign,
-      change: `₹${analytics.collectedThisMonth.toLocaleString()} this month`,
-      trend: 'up',
+      hint: `₹${analytics.collectedThisMonth.toLocaleString()} collected this month`,
+      tone: 'success',
     },
     {
       label: 'Collection Rate',
       value: `${analytics.collectionRate}%`,
       icon: TrendingUp,
-      change: `${analytics.unpaidCount} unpaid`,
-      trend: analytics.collectionRate >= 80 ? 'up' : 'down',
+      hint: `${analytics.unpaidCount} unpaid records`,
+      tone: analytics.collectionRate >= 80 ? 'success' : 'warning',
     },
     {
       label: 'Active Content',
       value: analytics.totalBlogs + analytics.totalNews,
       icon: Activity,
-      change: `${analytics.totalBlogs} blogs, ${analytics.totalNews} news`,
-      trend: 'neutral',
+      hint: `${analytics.totalBlogs} blogs and ${analytics.totalNews} news`,
+      tone: 'neutral',
     },
   ];
 
@@ -286,84 +284,94 @@ export default function DashboardHome() {
     },
   ];
 
+  const todayLabel = new Date().toLocaleDateString('en-IN', {
+    weekday: 'short',
+    day: '2-digit',
+    month: 'short',
+  });
+
   return (
     <div className="admin-page">
-      {/* Welcome Section */}
-      <div>
-        <h2 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">
-          Welcome back 👋
-        </h2>
-        <p className="text-sm text-muted-foreground mt-0.5">
-          Here's what's happening with your academy today.
-        </p>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded-xl border border-border bg-card p-5 hover:shadow-sm transition-shadow group"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className="p-2 rounded-lg bg-primary/5 group-hover:bg-primary/10 transition-colors">
-                <stat.icon className="w-4 h-4 text-primary" />
-              </div>
-              <span
-                className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${
-                  stat.trend === 'up'
-                    ? 'text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/40'
-                    : stat.trend === 'down'
-                      ? 'text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/40'
-                      : 'text-muted-foreground bg-muted'
-                }`}
-              >
-                {stat.change}
-              </span>
+      <section className="admin-panel overflow-hidden">
+        <div className="admin-panel-body bg-gradient-to-r from-primary/5 via-background to-background">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+                Welcome back
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground sm:text-base">
+                Clean overview of students, revenue, and content performance.
+              </p>
             </div>
-            <div className="text-2xl font-bold text-foreground tracking-tight tabular-nums">
-              {stat.value}
+            <div className="inline-flex items-center gap-2 rounded-lg border border-border/70 bg-card px-3 py-2 text-xs font-medium text-muted-foreground sm:text-sm">
+              <Clock className="h-4 w-4 text-primary" />
+              {todayLabel}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
           </div>
-        ))}
-      </div>
 
-      {/* Quick Actions */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-            <Zap className="w-4 h-4 text-primary" />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {stats.map((stat) => (
+              <article
+                key={stat.label}
+                className="rounded-xl border border-border/70 bg-card p-4 transition-shadow hover:shadow-sm"
+              >
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <stat.icon className="h-4 w-4" />
+                  </div>
+                  <span
+                    className={
+                      stat.tone === 'success'
+                        ? 'rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700'
+                        : stat.tone === 'warning'
+                          ? 'rounded-full bg-amber-50 px-2 py-1 text-[10px] font-semibold text-amber-700'
+                          : 'rounded-full bg-muted px-2 py-1 text-[10px] font-semibold text-muted-foreground'
+                    }
+                  >
+                    {stat.label}
+                  </span>
+                </div>
+                <p className="text-2xl font-bold tabular-nums text-foreground">
+                  {stat.value}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">{stat.hint}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground sm:text-base">
+            <Zap className="h-4 w-4 text-primary" />
             Quick Actions
           </h3>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
           {quickActions.map((action) => (
             <Link
               key={action.title}
               to={action.path}
-              className="group flex flex-col items-center gap-2 rounded-xl border border-border bg-card p-4 hover:border-primary/30 hover:shadow-sm transition-all text-center"
+              className="group rounded-xl border border-border/70 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-sm"
             >
-              <div className="p-2.5 rounded-xl bg-primary/5 group-hover:bg-primary/10 group-hover:scale-110 transition-all">
-                <action.icon className="w-4 h-4 text-primary" />
+              <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary/15">
+                <action.icon className="h-4 w-4" />
               </div>
-              <div>
-                <span className="text-xs font-semibold text-foreground leading-tight block">
+              <div className="space-y-0.5 text-left">
+                <p className="text-xs font-semibold leading-tight text-foreground sm:text-sm">
                   {action.title}
-                </span>
-                <span className="text-[10px] text-muted-foreground">
-                  {action.desc}
-                </span>
+                </p>
+                <p className="text-[11px] text-muted-foreground">{action.desc}</p>
               </div>
             </Link>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Revenue Chart */}
-        <div className="lg:col-span-2 rounded-xl border border-border bg-card p-5">
+      <section className="grid grid-cols-1 gap-4 xl:grid-cols-12">
+        <div className="admin-panel xl:col-span-8">
+          <div className="admin-panel-body">
           <div className="flex items-center justify-between mb-5">
             <div>
               <h3 className="text-sm font-semibold text-foreground">
@@ -443,10 +451,13 @@ export default function DashboardHome() {
             </ResponsiveContainer>
           </div>
         </div>
+          </div>
+        </div>
 
-        {/* Programs Breakdown */}
-        <div className="rounded-xl border border-border bg-card p-5">
-          <div className="flex items-center justify-between mb-5">
+        <div className="space-y-4 xl:col-span-4">
+          <div className="admin-panel">
+            <div className="admin-panel-body">
+              <div className="mb-5 flex items-center justify-between">
             <div>
               <h3 className="text-sm font-semibold text-foreground">
                 Programs
@@ -498,22 +509,43 @@ export default function DashboardHome() {
               </p>
             )}
           </div>
-        </div>
-      </div>
+            </div>
+          </div>
 
-      {/* Content Overview */}
-      <div>
+          <div className="admin-panel">
+            <div className="admin-panel-body">
+              <h3 className="text-sm font-semibold text-foreground">Live Snapshot</h3>
+              <div className="mt-3 space-y-2">
+                <div className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2 text-sm">
+                  <span className="text-muted-foreground">Pending enrollments</span>
+                  <span className="font-semibold text-foreground">{analytics.pendingEnrollments}</span>
+                </div>
+                <div className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2 text-sm">
+                  <span className="text-muted-foreground">Unpaid fee records</span>
+                  <span className="font-semibold text-foreground">{analytics.unpaidCount}</span>
+                </div>
+                <div className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2 text-sm">
+                  <span className="text-muted-foreground">Active announcements</span>
+                  <span className="font-semibold text-foreground">{analytics.activeAnnouncements}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-foreground">
+          <h3 className="text-sm font-semibold text-foreground sm:text-base">
             Content Overview
           </h3>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {contentItems.map((item) => (
             <Link
               key={item.label}
               to={item.path}
-              className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 hover:border-primary/30 hover:shadow-sm transition-all"
+              className="group flex items-center gap-3 rounded-xl border border-border/70 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-sm"
             >
               <div className="p-2 rounded-lg bg-muted group-hover:bg-primary/10 transition-colors">
                 <item.icon className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -528,7 +560,7 @@ export default function DashboardHome() {
             </Link>
           ))}
         </div>
-      </div>
+      </section>
     </div>
   );
 }
