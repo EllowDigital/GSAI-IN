@@ -1,12 +1,20 @@
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const ALLOWED_ORIGINS = new Set(
+  (Deno.env.get('ALLOWED_EMAIL_ORIGINS') ?? '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+);
 
 const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend'
 const ACADEMY_NAME = 'Ghatak Sports Academy India'
 const ACADEMY_EMAIL = 'ghatakgsai@gmail.com'
 const ACADEMY_PHONE = '+91 63941 35988'
+const RATE_LIMIT_WINDOW_MS = 60_000
+const MAX_REQUESTS_PER_WINDOW = 20
+
+const requestBuckets = new Map<string, number[]>()
 
 interface EmailRequest {
   to: string
@@ -14,6 +22,120 @@ interface EmailRequest {
   html?: string
   text?: string
   replyTo?: string
+}
+
+interface ApiErrorResponse {
+  success: false
+  error: {
+    code: string
+    message: string
+    details?: unknown
+  }
+}
+
+function isOriginAllowed(origin: string | null): boolean {
+  if (!origin) return true
+  if (ALLOWED_ORIGINS.size === 0) return false
+  return ALLOWED_ORIGINS.has(origin)
+}
+
+function getCorsHeaders(origin: string | null): Record<string, string> {
+  const headers: Record<string, string> = {
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Max-Age': '86400',
+    Vary: 'Origin',
+  }
+
+  if (isOriginAllowed(origin)) {
+    headers['Access-Control-Allow-Origin'] = origin ?? '*'
+  }
+
+  return headers
+}
+
+function jsonResponse(status: number, payload: unknown, origin: string | null) {
+  return new Response(JSON.stringify(payload), {
+    status,
+    headers: {
+      ...getCorsHeaders(origin),
+      'Content-Type': 'application/json',
+    },
+  })
+}
+
+function errorResponse(
+  status: number,
+  code: string,
+  message: string,
+  origin: string | null,
+  details?: unknown
+) {
+  const payload: ApiErrorResponse = {
+    success: false,
+    error: { code, message, ...(details !== undefined ? { details } : {}) },
+  }
+  return jsonResponse(status, payload, origin)
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+}
+
+function sanitizeHeaderValue(value: string): string {
+  return value.replace(/[\r\n]+/g, ' ').trim()
+}
+
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+}
+
+function enforceRateLimit(key: string): boolean {
+  const now = Date.now()
+  const windowStart = now - RATE_LIMIT_WINDOW_MS
+  const requests = (requestBuckets.get(key) ?? []).filter((stamp) => stamp >= windowStart)
+
+  if (requests.length >= MAX_REQUESTS_PER_WINDOW) {
+    requestBuckets.set(key, requests)
+    return false
+  }
+
+  requests.push(now)
+  requestBuckets.set(key, requests)
+  return true
+}
+
+async function wait(ms: number) {
+  await new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+async function sendWithRetry(url: string, init: RequestInit, maxAttempts = 3) {
+  let lastResponse: Response | null = null
+  let lastError: unknown = null
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      const response = await fetch(url, init)
+      lastResponse = response
+
+      if (response.ok || response.status < 500 || attempt === maxAttempts) {
+        return response
+      }
+    } catch (error) {
+      lastError = error
+      if (attempt === maxAttempts) throw error
+    }
+
+    await wait(250 * attempt)
+  }
+
+  if (lastResponse) return lastResponse
+  throw lastError ?? new Error('Unknown email delivery error')
 }
 
 function buildHtmlEmail(subject: string, bodyHtml: string): string {
@@ -50,36 +172,90 @@ function buildHtmlEmail(subject: string, bodyHtml: string): string {
 }
 
 Deno.serve(async (req) => {
+  const origin = req.headers.get('Origin')
+
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    if (!isOriginAllowed(origin)) {
+      return errorResponse(403, 'forbidden_origin', 'Origin is not allowed', origin)
+    }
+    return new Response('ok', { headers: getCorsHeaders(origin) })
+  }
+
+  if (req.method !== 'POST') {
+    return errorResponse(405, 'method_not_allowed', 'Only POST is allowed', origin)
+  }
+
+  const authHeader = req.headers.get('Authorization')
+  if (!authHeader?.startsWith('Bearer ')) {
+    return errorResponse(401, 'unauthorized', 'Missing or invalid authorization header', origin)
+  }
+
+  const supabaseClient = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_ANON_KEY')!,
+    { global: { headers: { Authorization: authHeader } } }
+  )
+
+  const { data: authData, error: authError } = await supabaseClient.auth.getUser()
+  if (authError || !authData.user) {
+    return errorResponse(401, 'unauthorized', 'Invalid or expired token', origin)
+  }
+
+  const userId = authData.user.id
+  const { data: roleData, error: roleError } = await supabaseClient
+    .from('user_roles')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('role', 'admin')
+    .maybeSingle()
+
+  if (roleError || !roleData) {
+    return errorResponse(403, 'forbidden', 'Admin access required', origin)
+  }
+
+  if (!isOriginAllowed(origin)) {
+    return errorResponse(403, 'forbidden_origin', 'Origin is not allowed', origin)
+  }
+
+  if (!enforceRateLimit(userId)) {
+    return errorResponse(429, 'rate_limited', 'Too many email requests. Please retry later.', origin)
   }
 
   const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')
   if (!LOVABLE_API_KEY) {
-    return new Response(JSON.stringify({ error: 'LOVABLE_API_KEY not configured' }), {
-      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
+    return errorResponse(500, 'server_misconfigured', 'LOVABLE_API_KEY not configured', origin)
   }
 
   const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
   if (!RESEND_API_KEY) {
-    return new Response(JSON.stringify({ error: 'RESEND_API_KEY not configured' }), {
-      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
+    return errorResponse(500, 'server_misconfigured', 'RESEND_API_KEY not configured', origin)
   }
 
   try {
     const body = await req.json() as EmailRequest
-    
-    if (!body.to || !body.subject) {
-      return new Response(JSON.stringify({ error: 'Missing required fields: to, subject' }), {
-        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
+
+    const to = (body.to ?? '').trim()
+    const subject = sanitizeHeaderValue((body.subject ?? '').trim())
+    if (!to || !subject) {
+      return errorResponse(400, 'invalid_payload', 'Missing required fields: to, subject', origin)
     }
 
-    const htmlContent = body.html || buildHtmlEmail(body.subject, `<p>${(body.text || '').replace(/\n/g, '<br>')}</p>`)
+    if (!isValidEmail(to)) {
+      return errorResponse(400, 'invalid_email', 'Recipient email is invalid', origin)
+    }
 
-    const response = await fetch(`${GATEWAY_URL}/emails`, {
+    const replyTo = body.replyTo?.trim()
+    if (replyTo && !isValidEmail(replyTo)) {
+      return errorResponse(400, 'invalid_reply_to', 'replyTo email is invalid', origin)
+    }
+
+    const text = typeof body.text === 'string' ? body.text : ''
+
+    const htmlContent = body.html && body.html.trim().length > 0
+      ? body.html
+      : buildHtmlEmail(subject, `<p>${escapeHtml(text).replace(/\n/g, '<br>')}</p>`)
+
+    const response = await sendWithRetry(`${GATEWAY_URL}/emails`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -88,30 +264,37 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         from: `${ACADEMY_NAME} <noreply@ghataksportsacademy.com>`,
-        to: [body.to],
-        subject: body.subject,
+        to: [to],
+        subject,
         html: htmlContent,
-        ...(body.replyTo ? { reply_to: body.replyTo } : {}),
+        ...(replyTo ? { reply_to: replyTo } : {}),
       }),
     })
 
-    const data = await response.json()
+    const data = await response.json().catch(() => ({}))
 
     if (!response.ok) {
-      console.error('Resend API error:', JSON.stringify(data))
-      return new Response(JSON.stringify({ error: `Resend API failed [${response.status}]`, details: data }), {
-        status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      console.error('Resend API error', {
+        status: response.status,
+        userId,
+        details: data,
       })
+      return errorResponse(
+        response.status,
+        'email_delivery_failed',
+        `Resend API failed [${response.status}]`,
+        origin,
+        data
+      )
     }
 
-    return new Response(JSON.stringify({ success: true, id: data.id }), {
-      status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
+    return jsonResponse(200, { success: true, data: { id: data.id } }, origin)
   } catch (error: unknown) {
-    console.error('Email send error:', error)
-    const msg = error instanceof Error ? error.message : 'Unknown error'
-    return new Response(JSON.stringify({ error: msg }), {
-      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    console.error('Email send error', {
+      error,
+      origin,
     })
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return errorResponse(500, 'internal_error', message, origin)
   }
 })

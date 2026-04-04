@@ -73,6 +73,10 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
     authTimeoutRef.current = setTimeout(() => setAuthAnimation(null), duration);
   };
 
+  const requiresPasswordSetup = (sess: Session | null): boolean => {
+    return Boolean(sess?.user?.user_metadata?.require_password_setup);
+  };
+
   const loadProfile = useCallback(
     async (userId: string): Promise<StudentProfile | null> => {
       try {
@@ -111,9 +115,16 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
           if (!mounted) return;
           if (prof) {
             setProfile(prof);
+            if (requiresPasswordSetup(sess)) {
+              if (location.pathname !== '/student/set-password') {
+                navigate('/student/set-password', { replace: true });
+              }
+              return;
+            }
             if (
               location.pathname === '/student/login' ||
-              location.pathname === '/student'
+              location.pathname === '/student' ||
+              location.pathname === '/student/set-password'
             ) {
               navigate('/student/dashboard', { replace: true });
             }
@@ -132,6 +143,11 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
         if (!mounted || isSigningOut.current) return;
         setSession(newSession);
         if (newSession) {
+          if (requiresPasswordSetup(newSession)) {
+            if (location.pathname !== '/student/set-password') {
+              navigate('/student/set-password', { replace: true });
+            }
+          }
           const prof = await loadProfile(newSession.user.id);
           if (mounted) setProfile(prof);
         } else {
@@ -156,6 +172,11 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
         password,
       });
       if (error) throw new Error(error.message);
+
+      if (requiresPasswordSetup(data.session)) {
+        navigate('/student/set-password', { replace: true });
+        return;
+      }
 
       const prof = await loadProfile(data.user.id);
       if (!prof) {

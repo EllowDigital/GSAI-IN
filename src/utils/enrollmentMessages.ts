@@ -152,7 +152,7 @@ export const buildEnrollmentStageMessage = (
 export const buildEnrollmentPortalMessage = (
   data: EnrollmentMessageData & {
     loginId: string;
-    password: string;
+    setupLink: string;
     portalUrl: string;
   }
 ) => {
@@ -166,9 +166,9 @@ export const buildEnrollmentPortalMessage = (
       'Student Portal Login',
       `• Portal: ${data.portalUrl}`,
       `• Login ID: ${data.loginId}`,
-      `• Password: ${data.password}`,
+      `• Password Setup Link: ${data.setupLink}`,
     ].join('\n'),
-    'Please log in and change the password after the first sign-in.',
+    'Use the setup link to create a secure password before first sign-in.',
     buildAcademyContactDetails(),
     `Welcome to ${ACADEMY_NAME}.`,
   ].join('\n\n');
