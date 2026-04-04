@@ -168,7 +168,8 @@ export default function EnrollmentRequestsManager() {
     // Send email via Resend if student email exists
     if (req.student_email) {
       try {
-        const { sendEmail, buildEnrollmentRejectedEmail } = await import('@/utils/resendEmail');
+        const { sendEmail, buildEnrollmentRejectedEmail } =
+          await import('@/utils/resendEmail');
         const emailPayload = buildEnrollmentRejectedEmail({
           parentName: req.parent_name,
           studentName: req.student_name,
@@ -176,7 +177,10 @@ export default function EnrollmentRequestsManager() {
           gender: req.gender,
           notes,
         });
-        const emailSent = await sendEmail({ ...emailPayload, to: req.student_email });
+        const emailSent = await sendEmail({
+          ...emailPayload,
+          to: req.student_email,
+        });
 
         if (didOpenWhatsApp && emailSent) {
           toast.success('Rejection sent via WhatsApp and email');
@@ -248,7 +252,8 @@ export default function EnrollmentRequestsManager() {
         // Send email via Resend if student email exists
         if (req.student_email) {
           try {
-            const { sendEmail, buildEnrollmentStageEmail } = await import('@/utils/resendEmail');
+            const { sendEmail, buildEnrollmentStageEmail } =
+              await import('@/utils/resendEmail');
             const emailPayload = buildEnrollmentStageEmail(stage, {
               parentName: req.parent_name,
               studentName: req.student_name,
@@ -256,9 +261,15 @@ export default function EnrollmentRequestsManager() {
               gender: req.gender,
               notes: data.notes,
             });
-            const sent = await sendEmail({ ...emailPayload, to: req.student_email });
+            const sent = await sendEmail({
+              ...emailPayload,
+              to: req.student_email,
+            });
             if (!sent) {
-              console.error('Email send failed for enrollment update', { requestId: req.id, stage });
+              console.error('Email send failed for enrollment update', {
+                requestId: req.id,
+                stage,
+              });
             }
           } catch (error) {
             console.error('Email send failed for enrollment update', error);
@@ -419,7 +430,8 @@ export default function EnrollmentRequestsManager() {
       // Send portal credentials via email if student email exists
       if (approveReq?.student_email) {
         try {
-          const { sendEmail, buildPortalCredentialsEmail } = await import('@/utils/resendEmail');
+          const { sendEmail, buildPortalCredentialsEmail } =
+            await import('@/utils/resendEmail');
           const emailPayload = buildPortalCredentialsEmail({
             parentName: approveReq.parent_name,
             studentName: approveReq.student_name,
@@ -429,9 +441,14 @@ export default function EnrollmentRequestsManager() {
             portalUrl,
             gender: approveReq.gender,
           });
-          const sent = await sendEmail({ ...emailPayload, to: approveReq.student_email });
+          const sent = await sendEmail({
+            ...emailPayload,
+            to: approveReq.student_email,
+          });
           if (!sent) {
-            toast.warning('Portal account created, but the email could not be sent.');
+            toast.warning(
+              'Portal account created, but the email could not be sent.'
+            );
           }
         } catch (error) {
           console.error('Failed to send portal setup email:', error);
@@ -1098,7 +1115,8 @@ export default function EnrollmentRequestsManager() {
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                A one-time secure password setup link will be generated and shared instead of a plaintext password.
+                A one-time secure password setup link will be generated and
+                shared instead of a plaintext password.
               </p>
               <Button
                 onClick={handleCreatePortal}
@@ -1158,7 +1176,8 @@ export default function EnrollmentRequestsManager() {
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Share the setup link privately. The student must set a password before signing in.
+                  Share the setup link privately. The student must set a
+                  password before signing in.
                 </p>
               </div>
               {approveReq && credentialsWhatsAppUrl && (

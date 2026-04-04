@@ -114,7 +114,8 @@ export default function StudentLogin() {
         </form>
 
         <p className="text-center text-xs text-muted-foreground">
-          Use the secure password setup link shared by the academy before first sign-in.
+          Use the secure password setup link shared by the academy before first
+          sign-in.
         </p>
 
         <div className="text-center">

@@ -69,7 +69,8 @@ export default function StudentSetPassword() {
       toast.success('Password set successfully. Please sign in.');
       navigate('/student/login', { replace: true });
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to set password.';
+      const message =
+        error instanceof Error ? error.message : 'Failed to set password.';
       toast.error(message);
     } finally {
       setSubmitting(false);
@@ -122,7 +123,11 @@ export default function StudentSetPassword() {
           </div>
 
           <Button type="submit" className="w-full" disabled={submitting}>
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Set Password'}
+            {submitting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              'Set Password'
+            )}
           </Button>
         </form>
 

@@ -74,7 +74,11 @@ export async function sendEmail(params: SendEmailParams): Promise<boolean> {
 
 // ── HTML builders for beautiful email templates ──
 
-function infoRow(label: string, value: string, options?: { valueIsHtml?: boolean }): string {
+function infoRow(
+  label: string,
+  value: string,
+  options?: { valueIsHtml?: boolean }
+): string {
   const safeLabel = escapeHtml(label);
   const safeValue = options?.valueIsHtml ? value : escapeHtml(value);
   return `<p style="margin:4px 0;font-size:14px"><strong>${safeLabel}:</strong> ${safeValue}</p>`;
@@ -103,8 +107,8 @@ export function buildFeeReminderEmail(params: {
       <p>This is a friendly reminder that the training fee for your child is pending.</p>
       ${infoBox(
         infoRow('Student', studentName) +
-        infoRow('Amount Due', `₹${amount.toLocaleString()}`) +
-        infoRow('Period', `${month} ${year}`)
+          infoRow('Amount Due', `₹${amount.toLocaleString()}`) +
+          infoRow('Period', `${month} ${year}`)
       )}
       <p>Kindly clear the dues at your earliest convenience. If already paid, please ignore this message.</p>
       <p style="margin-top:20px">For queries, contact us:</p>
@@ -134,8 +138,8 @@ export function buildEnrollmentReceivedEmail(params: {
       <p>We have received the enrollment request for your ${safeRelation}, <strong>${safeStudentName}</strong>, in the <strong>${safeProgram}</strong> program.</p>
       ${infoBox(
         infoRow('Student', params.studentName) +
-        infoRow('Program', params.program) +
-        infoRow('Parent', params.parentName)
+          infoRow('Program', params.program) +
+          infoRow('Parent', params.parentName)
       )}
       <p>Our team will review the request and contact you shortly regarding batch timing, trial class, and next steps.</p>
       <p style="margin-top:20px">📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
@@ -164,7 +168,7 @@ export function buildEnrollmentContactedEmail(params: {
       <p>This is an update regarding the enrollment of your ${safeRelation}, <strong>${safeStudentName}</strong>, in the <strong>${safeProgram}</strong> program.</p>
       ${infoBox(
         infoRow('Student', params.studentName) +
-        infoRow('Program', params.program)
+          infoRow('Program', params.program)
       )}
       <p>Our team is ready to assist you. Please reply to this email or call us to confirm trial class, batch timing, and admission guidance.</p>
       ${safeNotes ? `<p><strong>Note:</strong> ${safeNotes}</p>` : ''}
@@ -194,8 +198,8 @@ export function buildEnrollmentApprovedEmail(params: {
       <p>We are pleased to inform you that the enrollment for your ${safeRelation}, <strong>${safeStudentName}</strong>, in the <strong>${safeProgram}</strong> program has been <strong style="color:#16a34a">approved</strong>!</p>
       ${infoBox(
         infoRow('Student', params.studentName) +
-        infoRow('Program', params.program) +
-        infoRow('Status', '✅ Approved')
+          infoRow('Program', params.program) +
+          infoRow('Status', '✅ Approved')
       )}
       <p>Our team will guide you for final joining formalities and student portal access. Please keep your registered mobile number active.</p>
       ${safeNotes ? `<p><strong>Note:</strong> ${safeNotes}</p>` : ''}
@@ -225,7 +229,7 @@ export function buildEnrollmentRejectedEmail(params: {
       <p>After review, we are unable to proceed with the enrollment request for your ${safeRelation}, <strong>${safeStudentName}</strong>, in the <strong>${safeProgram}</strong> program at this time.</p>
       ${infoBox(
         infoRow('Student', params.studentName) +
-        infoRow('Program', params.program)
+          infoRow('Program', params.program)
       )}
       ${safeNotes ? `<p><strong>Reason:</strong> ${safeNotes}</p>` : ''}
       <p>If you have questions or wish to explore other options, please contact us directly.</p>
@@ -259,13 +263,21 @@ export function buildPortalCredentialsEmail(params: {
       <p>Admission has been completed for your ${safeRelation}, <strong>${safeStudentName}</strong>, in the <strong>${safeProgram}</strong> program.</p>
       <p>Use the one-time secure link below to set the student portal password:</p>
       ${infoBox(
-        infoRow('Portal URL', `<a href="${safePortalUrl}" rel="noopener noreferrer">${escapeHtml(safePortalUrl)}</a>`, {
-          valueIsHtml: true,
-        }) +
-        infoRow('Login ID', params.loginId) +
-        infoRow('Password Setup Link', `<a href="${safeSetupLink}" rel="noopener noreferrer">Set Password Securely</a>`, {
-          valueIsHtml: true,
-        })
+        infoRow(
+          'Portal URL',
+          `<a href="${safePortalUrl}" rel="noopener noreferrer">${escapeHtml(safePortalUrl)}</a>`,
+          {
+            valueIsHtml: true,
+          }
+        ) +
+          infoRow('Login ID', params.loginId) +
+          infoRow(
+            'Password Setup Link',
+            `<a href="${safeSetupLink}" rel="noopener noreferrer">Set Password Securely</a>`,
+            {
+              valueIsHtml: true,
+            }
+          )
       )}
       <p>⚠️ Do not share this setup link publicly. It should be used only once by the student/parent.</p>
       <p style="margin-top:20px">📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
@@ -276,7 +288,11 @@ export function buildPortalCredentialsEmail(params: {
 
 // ── Enrollment Stage Email Dispatcher ──
 
-export type EnrollmentEmailStage = 'pending' | 'contacted' | 'approved' | 'rejected';
+export type EnrollmentEmailStage =
+  | 'pending'
+  | 'contacted'
+  | 'approved'
+  | 'rejected';
 
 export function buildEnrollmentStageEmail(
   stage: EnrollmentEmailStage,
