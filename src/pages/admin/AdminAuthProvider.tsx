@@ -76,6 +76,9 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     message: string;
   }>(null);
   const pendingLogoutRef = useRef(false);
+  const verifiedAdminUserIdRef = useRef<string | null>(
+    getRememberedAdminUser()
+  );
   const authAnimationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null
   );
@@ -84,6 +87,10 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
   );
   const navigate = useNavigate();
   const location = useLocation();
+  const locationRef = useRef({
+    pathname: location.pathname,
+    search: location.search,
+  });
   const navigationTypeRef = useRef<
     PerformanceNavigationTiming['type'] | undefined
   >(getNavigationType());
@@ -95,6 +102,7 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     setSession(null);
     setUserEmail(null);
     setIsAdmin(false);
+    verifiedAdminUserIdRef.current = null;
     if (typeof window !== 'undefined') {
       window.sessionStorage.removeItem(ADMIN_SESSION_STORAGE_KEY);
     }
@@ -103,19 +111,29 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     }
   };
 
+  useEffect(() => {
+    locationRef.current = {
+      pathname: location.pathname,
+      search: location.search,
+    };
+  }, [location.pathname, location.search]);
+
   const rememberIntendedRoute = useCallback(() => {
     if (typeof window === 'undefined') return;
-    if (!location.pathname.startsWith('/admin')) {
+
+    const { pathname, search } = locationRef.current;
+
+    if (!pathname.startsWith('/admin')) {
       window.sessionStorage.removeItem(POST_LOGIN_REDIRECT_KEY);
       return;
     }
-    if (location.pathname.startsWith('/admin/login')) {
+    if (pathname.startsWith('/admin/login')) {
       window.sessionStorage.removeItem(POST_LOGIN_REDIRECT_KEY);
       return;
     }
-    const pathWithQuery = `${location.pathname}${location.search}`;
+    const pathWithQuery = `${pathname}${search}`;
     window.sessionStorage.setItem(POST_LOGIN_REDIRECT_KEY, pathWithQuery);
-  }, [location.pathname, location.search]);
+  }, []);
 
   const consumeRedirectRoute = () => {
     if (typeof window === 'undefined') {
@@ -223,9 +241,17 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
       .toLowerCase();
     let isAdminUser = roleFromMetadata === 'admin';
     const rememberedAdminUserId = getRememberedAdminUser();
+    const hasPreviouslyVerifiedAdminUser =
+      !!userId &&
+      (verifiedAdminUserIdRef.current === userId ||
+        rememberedAdminUserId === userId);
 
     if (typeof adminStatusOverride === 'boolean') {
       isAdminUser = adminStatusOverride;
+    } else if (hasPreviouslyVerifiedAdminUser) {
+      // Avoid aggressive role re-checks after a user is already verified.
+      // This prevents false logouts during transient network/database slowness.
+      isAdminUser = true;
     } else if (!isAdminUser) {
       const adminStatus = await checkAdminStatus(userId, email);
 
@@ -239,6 +265,7 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     }
 
     rememberVerifiedAdminUser(isAdminUser ? userId : null);
+    verifiedAdminUserIdRef.current = isAdminUser ? userId : null;
 
     setSession(newSession);
     setUserEmail(email);
@@ -263,7 +290,7 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
         if (isAdminUser) {
           // If an admin session exists and we're on the login route, forward to the intended/admin dashboard.
           const destination = consumeRedirectRoute();
-          if (location.pathname.startsWith('/admin/login')) {
+          if (locationRef.current.pathname.startsWith('/admin/login')) {
             navigate(destination, { replace: true });
           }
         } else if (!isAdminUser && !pendingLogoutRef.current) {
@@ -301,7 +328,7 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
 
           if (isAdminUser) {
             const destination = consumeRedirectRoute();
-            if (location.pathname.startsWith('/admin/login')) {
+            if (locationRef.current.pathname.startsWith('/admin/login')) {
               navigate(destination, { replace: true });
             }
           } else if (!isAdminUser && !pendingLogoutRef.current) {

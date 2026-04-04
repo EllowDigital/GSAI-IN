@@ -7,6 +7,7 @@ import { RefreshCw, Menu, PanelLeftClose, PanelLeft } from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
 import { cn } from '@/lib/utils';
 import { useRealtime } from '@/hooks/useRealtime';
+import { supabase } from '@/services/supabase/client';
 
 const PAGE_TITLES: Record<string, string> = {
   '/admin/dashboard': 'Dashboard',
@@ -47,6 +48,55 @@ const AdminLayout: React.FC = () => {
       document.body.style.overflow = '';
     };
   }, [sidebarOpen]);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const warmAdminData = async () => {
+      await Promise.allSettled([
+        queryClient.prefetchQuery({
+          queryKey: ['students'],
+          queryFn: async () => {
+            const { data, error } = await supabase
+              .from('students')
+              .select(
+                'id, name, aadhar_number, program, join_date, parent_name, parent_contact, profile_image_url, created_at, default_monthly_fee, discount_percent'
+              )
+              .order('created_at', { ascending: false });
+            if (error) throw error;
+            return data ?? [];
+          },
+          staleTime: 1000 * 60 * 10,
+        }),
+        queryClient.prefetchQuery({
+          queryKey: ['fees'],
+          queryFn: async () => {
+            const { data, error } = await supabase
+              .from('fees')
+              .select('*')
+              .order('due_date', { ascending: false });
+            if (error) throw error;
+            return data ?? [];
+          },
+          staleTime: 1000 * 60 * 5,
+        }),
+        queryClient.prefetchQuery({
+          queryKey: ['enrollment-requests'],
+          queryFn: async () => {
+            const { data, error } = await supabase
+              .from('enrollment_requests')
+              .select('*')
+              .order('created_at', { ascending: false });
+            if (error) throw error;
+            return data ?? [];
+          },
+          staleTime: 1000 * 60 * 5,
+        }),
+      ]);
+    };
+
+    void warmAdminData();
+  }, [isAdmin, queryClient]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);

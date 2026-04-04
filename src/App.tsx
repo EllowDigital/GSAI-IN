@@ -63,10 +63,11 @@ const queryClient = new QueryClient({
         }
         return failureCount < 2;
       },
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 30, // 30 minutes (replaced cacheTime)
+      staleTime: 1000 * 60 * 10, // 10 minutes
+      gcTime: 1000 * 60 * 60, // 60 minutes
+      refetchOnMount: false,
       refetchOnWindowFocus: false,
-      refetchOnReconnect: 'always',
+      refetchOnReconnect: true,
       networkMode: 'offlineFirst',
     },
     mutations: {
