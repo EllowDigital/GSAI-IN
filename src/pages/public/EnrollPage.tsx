@@ -173,6 +173,18 @@ export default function EnrollPage() {
         } as any);
 
       if (error) throw error;
+
+      if (data.studentEmail) {
+        await supabase.functions.invoke('send-enrollment-received-email', {
+          body: {
+            to: data.studentEmail,
+            parentName: data.parentName,
+            studentName: data.studentName,
+            program: data.program,
+          },
+        });
+      }
+
       setSubmitted(true);
       toast.success('Enrollment request submitted successfully!');
     } catch (err: any) {

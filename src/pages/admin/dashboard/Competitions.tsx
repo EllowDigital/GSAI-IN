@@ -46,9 +46,9 @@ import CompetitionRegistrations from '@/components/admin/CompetitionRegistration
 import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
 import {
   openManualWhatsAppBroadcast,
-  sendAnnouncementToApprovedStudents,
+  sendQueuedAnnouncement,
 } from '@/utils/studentCommunication';
-import { buildCompetitionAnnouncementEmail } from '@/utils/resendEmail';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface Competition {
   id: string;
@@ -132,6 +132,8 @@ export default function Competitions() {
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [sendEmailNotification, setSendEmailNotification] = useState(true);
+  const [prepareWhatsAppMessage, setPrepareWhatsAppMessage] = useState(true);
 
   const mapEmbedUrl = buildMapEmbedUrl(form.location_text);
   const mapOpenUrl = form.location_text.trim()
@@ -201,18 +203,18 @@ export default function Competitions() {
         if (error) throw error;
       }
 
-      const emailStats = await sendAnnouncementToApprovedStudents((recipient) =>
-        buildCompetitionAnnouncementEmail({
-          parentName: recipient.parentName,
-          studentName: recipient.studentName,
-          name: payload.name,
+      let emailStats = { total: 0, sent: 0, failed: 0 };
+      if (sendEmailNotification) {
+        emailStats = await sendQueuedAnnouncement({
+          type: 'competition',
+          title: payload.name,
           date: payload.date,
           endDate: payload.end_date,
           location: payload.location_text,
           description: payload.description,
-          competitionsPageUrl: `${window.location.origin}/student/dashboard`,
-        })
-      );
+          pageUrl: `${window.location.origin}/student/dashboard`,
+        });
+      }
 
       return emailStats;
     },
@@ -224,6 +226,28 @@ export default function Competitions() {
           `Competition email sent to ${emailStats.sent}/${emailStats.total} students${emailStats.failed ? ` (${emailStats.failed} failed)` : ''}.`
         );
       }
+
+      if (prepareWhatsAppMessage) {
+        const msg = buildCompetitionWhatsAppMessage({
+          id: editing?.id || 'new',
+          name: form.name,
+          description: form.description || null,
+          date: form.date,
+          end_date: form.end_date || null,
+          location_text: form.location_text || null,
+          location_lat: null,
+          location_lng: null,
+          max_participants: form.max_participants
+            ? parseInt(form.max_participants)
+            : null,
+          image_url: form.image_url || null,
+          status: form.status,
+          created_at: '',
+        });
+        navigator.clipboard.writeText(msg).catch(() => undefined);
+        openManualWhatsAppBroadcast(msg);
+      }
+
       closeForm();
     },
     onError: (e: Error) => toast.error('Failed: ' + formatError(e)),
@@ -259,6 +283,8 @@ export default function Competitions() {
     });
     setImageFile(null);
     setImagePreview(null);
+    setSendEmailNotification(true);
+    setPrepareWhatsAppMessage(true);
     setFormOpen(true);
   };
 
@@ -276,6 +302,8 @@ export default function Competitions() {
     });
     setImageFile(null);
     setImagePreview(c.image_url || null);
+    setSendEmailNotification(true);
+    setPrepareWhatsAppMessage(true);
     setFormOpen(true);
   };
 
@@ -834,6 +862,38 @@ export default function Competitions() {
                   </span>
                 </label>
               )}
+            </div>
+            <div className="rounded-lg border border-border p-3 space-y-3 bg-muted/20">
+              <div className="flex items-center gap-3">
+                <Checkbox
+                  id="competition-send-email-toggle"
+                  checked={sendEmailNotification}
+                  onCheckedChange={(checked) =>
+                    setSendEmailNotification(Boolean(checked))
+                  }
+                />
+                <label
+                  htmlFor="competition-send-email-toggle"
+                  className="text-sm font-medium"
+                >
+                  Send Email Notification: On/Off
+                </label>
+              </div>
+              <div className="flex items-center gap-3">
+                <Checkbox
+                  id="competition-prepare-whatsapp-toggle"
+                  checked={prepareWhatsAppMessage}
+                  onCheckedChange={(checked) =>
+                    setPrepareWhatsAppMessage(Boolean(checked))
+                  }
+                />
+                <label
+                  htmlFor="competition-prepare-whatsapp-toggle"
+                  className="text-sm font-medium"
+                >
+                  Prepare WhatsApp Message: On/Off
+                </label>
+              </div>
             </div>
             <Button
               type="submit"

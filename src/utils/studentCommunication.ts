@@ -1,5 +1,4 @@
 import { supabase } from '@/services/supabase/client';
-import { sendEmail } from '@/utils/resendEmail';
 
 interface StudentRecipient {
   email: string;
@@ -8,14 +7,15 @@ interface StudentRecipient {
   parentPhone: string;
 }
 
-type EmailBuilder = (
-  recipient: StudentRecipient
-) => {
-  subject: string;
-  html?: string;
-  text?: string;
-  replyTo?: string;
-};
+interface BulkAnnouncementPayload {
+  type: 'event' | 'competition';
+  title: string;
+  description?: string | null;
+  date: string;
+  endDate?: string | null;
+  location?: string | null;
+  pageUrl?: string | null;
+}
 
 function normalizeEmail(value: string): string {
   return value.trim().toLowerCase();
@@ -51,28 +51,28 @@ export async function getApprovedStudentRecipients(): Promise<StudentRecipient[]
   return recipients;
 }
 
-export async function sendAnnouncementToApprovedStudents(
-  buildEmail: EmailBuilder
+export async function sendQueuedAnnouncement(
+  payload: BulkAnnouncementPayload
 ): Promise<{ total: number; sent: number; failed: number }> {
-  const recipients = await getApprovedStudentRecipients();
-
-  let sent = 0;
-  let failed = 0;
-
-  for (const recipient of recipients) {
-    const payload = buildEmail(recipient);
-    const ok = await sendEmail({ ...payload, to: recipient.email });
-    if (ok) {
-      sent += 1;
-    } else {
-      failed += 1;
+  const { data, error } = await supabase.functions.invoke(
+    'send-bulk-announcement',
+    {
+      body: payload,
     }
+  );
+
+  if (error) {
+    throw new Error(error.message || 'Failed to send bulk announcement');
+  }
+
+  if (data?.error) {
+    throw new Error(data.error);
   }
 
   return {
-    total: recipients.length,
-    sent,
-    failed,
+    total: Number(data?.total || 0),
+    sent: Number(data?.sent || 0),
+    failed: Number(data?.failed || 0),
   };
 }
 

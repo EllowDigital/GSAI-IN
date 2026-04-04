@@ -23,8 +23,11 @@ import {
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
-import { sendAnnouncementToApprovedStudents } from '@/utils/studentCommunication';
-import { buildEventAnnouncementEmail } from '@/utils/resendEmail';
+import {
+  openManualWhatsAppBroadcast,
+  sendQueuedAnnouncement,
+} from '@/utils/studentCommunication';
+import { Checkbox } from '@/components/ui/checkbox';
 
 type EventRow = Tables<'events'>;
 
@@ -103,6 +106,27 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [sendEmailNotification, setSendEmailNotification] = useState(true);
+  const [prepareWhatsAppMessage, setPrepareWhatsAppMessage] = useState(true);
+
+  const buildEventWhatsAppMessage = () => {
+    const title = (form.title || '').toString();
+    const fromDate = (form.from_date || '').toString();
+    const endDate = form.end_date ? ` to ${form.end_date}` : '';
+    const location = (form as any).location ? `\nLocation: ${(form as any).location}` : '';
+    const description = form.description ? `\n${form.description}` : '';
+
+    return [
+      `*${title}*`,
+      `Date: ${fromDate}${endDate}`,
+      location,
+      description,
+      '',
+      'Ghatak Sports Academy India',
+    ]
+      .filter(Boolean)
+      .join('\n');
+  };
 
   useEffect(() => {
     // Defer state initialization to avoid synchronous setState in effect
@@ -115,6 +139,8 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
         setImagePreview(null);
       }
       setImageFile(null);
+      setSendEmailNotification(true);
+      setPrepareWhatsAppMessage(true);
     }, 0);
 
     return () => clearTimeout(t);
@@ -193,23 +219,32 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
         }
         toast.success('Event updated.');
 
-        const stats = await sendAnnouncementToApprovedStudents((recipient) =>
-          buildEventAnnouncementEmail({
-            parentName: recipient.parentName,
-            studentName: recipient.studentName,
+        if (sendEmailNotification) {
+          const stats = await sendQueuedAnnouncement({
+            type: 'event',
             title: (form.title || '').toString(),
-            fromDate: (form.from_date || '').toString(),
+            date: (form.from_date || '').toString(),
             endDate: (form.end_date || null) as string | null,
             location: ((form as any).location || null) as string | null,
             description: (form.description || null) as string | null,
-            eventsPageUrl: `${window.location.origin}/events`,
-          })
-        );
+            pageUrl: `${window.location.origin}/events`,
+          });
 
-        if (stats.total > 0) {
-          toast.success(
-            `Event email sent to ${stats.sent}/${stats.total} students${stats.failed ? ` (${stats.failed} failed)` : ''}.`
-          );
+          if (stats.total > 0) {
+            toast.success(
+              `Event email sent to ${stats.sent}/${stats.total} students${stats.failed ? ` (${stats.failed} failed)` : ''}.`
+            );
+          }
+        }
+
+        if (prepareWhatsAppMessage) {
+          const message = buildEventWhatsAppMessage();
+          try {
+            await navigator.clipboard.writeText(message);
+          } catch {
+            // ignore clipboard failure
+          }
+          openManualWhatsAppBroadcast(message);
         }
       } else {
         // Create (fix: provide date)
@@ -232,23 +267,32 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
         }
         toast.success('Event created.');
 
-        const stats = await sendAnnouncementToApprovedStudents((recipient) =>
-          buildEventAnnouncementEmail({
-            parentName: recipient.parentName,
-            studentName: recipient.studentName,
+        if (sendEmailNotification) {
+          const stats = await sendQueuedAnnouncement({
+            type: 'event',
             title: (form.title || '').toString(),
-            fromDate: (form.from_date || '').toString(),
+            date: (form.from_date || '').toString(),
             endDate: (form.end_date || null) as string | null,
             location: ((form as any).location || null) as string | null,
             description: (form.description || null) as string | null,
-            eventsPageUrl: `${window.location.origin}/events`,
-          })
-        );
+            pageUrl: `${window.location.origin}/events`,
+          });
 
-        if (stats.total > 0) {
-          toast.success(
-            `Event email sent to ${stats.sent}/${stats.total} students${stats.failed ? ` (${stats.failed} failed)` : ''}.`
-          );
+          if (stats.total > 0) {
+            toast.success(
+              `Event email sent to ${stats.sent}/${stats.total} students${stats.failed ? ` (${stats.failed} failed)` : ''}.`
+            );
+          }
+        }
+
+        if (prepareWhatsAppMessage) {
+          const message = buildEventWhatsAppMessage();
+          try {
+            await navigator.clipboard.writeText(message);
+          } catch {
+            // ignore clipboard failure
+          }
+          openManualWhatsAppBroadcast(message);
         }
       }
       onOpenChange(false);
@@ -330,6 +374,38 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
                     form.from_date ? new Date(form.from_date) : undefined
                   }
                 />
+              </div>
+              <div className="rounded-lg border border-border p-3 space-y-3 bg-muted/20">
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    id="event-send-email-toggle"
+                    checked={sendEmailNotification}
+                    onCheckedChange={(checked) =>
+                      setSendEmailNotification(Boolean(checked))
+                    }
+                  />
+                  <label
+                    htmlFor="event-send-email-toggle"
+                    className="text-sm font-medium"
+                  >
+                    Send Email Notification: On/Off
+                  </label>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    id="event-prepare-whatsapp-toggle"
+                    checked={prepareWhatsAppMessage}
+                    onCheckedChange={(checked) =>
+                      setPrepareWhatsAppMessage(Boolean(checked))
+                    }
+                  />
+                  <label
+                    htmlFor="event-prepare-whatsapp-toggle"
+                    className="text-sm font-medium"
+                  >
+                    Prepare WhatsApp Message: On/Off
+                  </label>
+                </div>
               </div>
               <div className="flex flex-col gap-3 sm:gap-4">
                 <label className="font-medium text-sm" htmlFor="event-tag">
