@@ -96,7 +96,7 @@ const steps = [
 const inputClass =
   'bg-white/[0.04] border-white/[0.08] text-white placeholder:text-gray-600 focus-visible:ring-yellow-500/30 focus-visible:border-yellow-500/40 h-11 text-sm rounded-xl';
 const labelClass = 'text-gray-400 text-xs font-medium';
-const ENROLLMENT_ADMIN_TO = 'ghatakgsai@gmai.com';
+const ENROLLMENT_ADMIN_TO = 'ghatakgsai@gmail.com';
 const ENROLLMENT_ADMIN_CC = 'sarwanyadav6174@gmail.com';
 
 export default function EnrollPage() {
