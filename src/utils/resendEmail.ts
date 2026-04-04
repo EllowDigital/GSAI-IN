@@ -95,8 +95,6 @@ export function buildFeeReminderEmail(params: {
 }): SendEmailParams & { to: string } {
   const { parentName, studentName, amount, month, year } = params;
   const safeParentName = escapeHtml(parentName);
-  const safeStudentName = escapeHtml(studentName);
-  const safeMonth = escapeHtml(month);
   return {
     to: '', // caller must set
     subject: `Fee Reminder: ${studentName} - ${month} ${year}`,
@@ -251,7 +249,6 @@ export function buildPortalCredentialsEmail(params: {
   const safeStudentName = escapeHtml(params.studentName);
   const safeProgram = escapeHtml(params.program);
   const safeRelation = escapeHtml(relation);
-  const safeLoginId = escapeHtml(params.loginId);
   const safePortalUrl = validateHttpsUrl(params.portalUrl, 'portalUrl');
   const safeSetupLink = validateHttpsUrl(params.setupLink, 'setupLink');
 
