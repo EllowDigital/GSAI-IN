@@ -49,6 +49,7 @@ import {
   sendQueuedAnnouncement,
 } from '@/utils/studentCommunication';
 import { Checkbox } from '@/components/ui/checkbox';
+import AnnouncementDeliveryLogs from '@/components/admin/AnnouncementDeliveryLogs';
 
 interface Competition {
   id: string;
@@ -930,6 +931,11 @@ export default function Competitions() {
           }}
         />
       )}
+
+      <AnnouncementDeliveryLogs
+        typeFilter="competition"
+        title="Competition Campaign Delivery Logs"
+      />
     </div>
   );
 }

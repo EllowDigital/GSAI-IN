@@ -12,6 +12,7 @@ import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import Spinner from '@/components/ui/spinner';
 import RefreshButton from '@/components/admin/RefreshButton';
 import { openManualWhatsAppBroadcast } from '@/utils/studentCommunication';
+import AnnouncementDeliveryLogs from '@/components/admin/AnnouncementDeliveryLogs';
 
 type EventRow = Tables<'events'>;
 
@@ -335,6 +336,11 @@ const Events = () => {
           </div>
         </div>
       </div>
+
+      <AnnouncementDeliveryLogs
+        typeFilter="event"
+        title="Event Campaign Delivery Logs"
+      />
 
       <AdminEventFormModal
         open={modalOpen}

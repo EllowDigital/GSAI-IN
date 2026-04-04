@@ -181,6 +181,7 @@ Deno.serve(async (req) => {
 
     let sent = 0;
     let failed = 0;
+    const totalRecipients = uniqueRecipients.size;
 
     for (const [, recipient] of uniqueRecipients) {
       const email = (recipient.student_email || '').toString().trim().toLowerCase();
@@ -208,12 +209,34 @@ Deno.serve(async (req) => {
       }
     }
 
+    const { error: logError } = await supabaseAdmin
+      .from('announcement_delivery_logs')
+      .insert({
+        announcement_type: type,
+        announcement_title: (payload.title || '').toString(),
+        total_recipients: totalRecipients,
+        sent_count: sent,
+        failed_count: failed,
+        triggered_by: user.id,
+        metadata: {
+          date: payload.date || null,
+          endDate: payload.endDate || null,
+          location: payload.location || null,
+          pageUrl: payload.pageUrl || null,
+        },
+      });
+
+    if (logError) {
+      console.error('announcement_delivery_logs insert failed', logError);
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
-        total: uniqueRecipients.size,
+        total: totalRecipients,
         sent,
         failed,
+        log_saved: !logError,
       }),
       {
         status: 200,
