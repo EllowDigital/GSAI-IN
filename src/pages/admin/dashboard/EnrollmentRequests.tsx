@@ -397,6 +397,25 @@ export default function EnrollmentRequestsManager() {
       queryClient.invalidateQueries({ queryKey: ['portal-accounts'] });
       queryClient.invalidateQueries({ queryKey: ['students-without-portal'] });
       toast.success('Portal account created!');
+
+      // Send portal credentials via email if student email exists
+      if (approveReq?.student_email) {
+        try {
+          const { sendEmail, buildPortalCredentialsEmail } = await import('@/utils/resendEmail');
+          const emailPayload = buildPortalCredentialsEmail({
+            parentName: approveReq.parent_name,
+            studentName: approveReq.student_name,
+            program: approveReq.program,
+            loginId: loginId.trim(),
+            password: password.trim(),
+            portalUrl: `${window.location.origin}/student/login`,
+            gender: approveReq.gender,
+          });
+          await sendEmail({ ...emailPayload, to: approveReq.student_email });
+        } catch {
+          console.error('Failed to send portal credentials email');
+        }
+      }
     } catch (err: any) {
       toast.error(err.message || 'Failed to create portal account');
     } finally {
