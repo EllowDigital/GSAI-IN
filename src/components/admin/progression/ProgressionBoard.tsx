@@ -990,17 +990,19 @@ export default function ProgressionBoard() {
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground flex items-center gap-2">
-            <Trophy className="h-6 w-6 sm:h-7 sm:w-7 text-yellow-500" />
-            Student Progression
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Track belt & level-based assessments across all programs
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
+      <section className="admin-panel overflow-hidden">
+        <div className="admin-panel-body bg-gradient-to-r from-primary/5 via-background to-background">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground flex items-center gap-2">
+                <Trophy className="h-6 w-6 sm:h-7 sm:w-7 text-yellow-500" />
+                Student Progression
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Track belt and level-based assessments across all programs.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
             size="sm"
@@ -1040,8 +1042,10 @@ export default function ProgressionBoard() {
             <UserPlus className="h-4 w-4 sm:mr-2" />
             <span className="hidden sm:inline">Assign Student</span>
           </Button>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
@@ -1072,9 +1076,9 @@ export default function ProgressionBoard() {
       </div>
 
       {/* Filters */}
-      <Card className="border-border/50">
+      <Card className="border-border/70 bg-muted/[0.25]">
         <CardContent className="p-3 sm:p-4">
-          <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
+          <div className="flex flex-col gap-2 lg:flex-row lg:gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -1173,7 +1177,7 @@ export default function ProgressionBoard() {
           })}
         </div>
       ) : (
-        <Card className="p-8 sm:p-12 border-border/50">
+        <Card className="p-8 sm:p-12 border-border/70">
           <div className="text-center">
             <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-muted rounded-full flex items-center justify-center mb-4">
               <Award className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground" />
