@@ -75,11 +75,10 @@ export const buildEnrollmentReceivedMessage = (data: EnrollmentMessageData) => {
 
   return [
     `Namaste ${data.parentName} ji,`,
-    `We have received the enrollment request for your ${relation}, ${data.studentName}, for the ${data.program} program at ${ACADEMY_NAME}.`,
-    buildRegistrationDetails(data),
-    'Our team will review the request and contact you shortly regarding batch timing, trial class, and the next steps.',
+    `Enrollment request received for your ${relation}, ${data.studentName} (${data.program}).`,
+    'Our team will contact you within 24 hours for next steps.',
     buildAcademyContactDetails(),
-    `Thank you for choosing ${ACADEMY_NAME}.`,
+    `Regards, ${ACADEMY_NAME}`,
   ].join('\n\n');
 };
 
@@ -90,14 +89,13 @@ export const buildEnrollmentContactedMessage = (
 
   return [
     `Namaste ${data.parentName} ji,`,
-    `This is an update regarding the enrollment request for your ${relation}, ${data.studentName}, in the ${data.program} program at ${ACADEMY_NAME}.`,
-    buildRegistrationDetails(data),
+    `Update: enrollment request for your ${relation}, ${data.studentName} (${data.program}).`,
     compactLines([
-      'Our team is ready to assist you further. Please reply on this WhatsApp or call us to confirm the next step for trial class, batch timing, and admission guidance.',
+      'Please reply on WhatsApp or call us to confirm trial class and batch timing.',
       data.notes ? `Admin Note: ${data.notes}` : null,
     ]).join('\n\n'),
     buildAcademyContactDetails(),
-    'We will be happy to help you complete the process smoothly.',
+    `Regards, ${ACADEMY_NAME}`,
   ].join('\n\n');
 };
 
@@ -106,14 +104,13 @@ export const buildEnrollmentApprovedMessage = (data: EnrollmentMessageData) => {
 
   return [
     `Namaste ${data.parentName} ji,`,
-    `We are pleased to inform you that the enrollment request for your ${relation}, ${data.studentName}, in the ${data.program} program has been approved by ${ACADEMY_NAME}.`,
-    buildRegistrationDetails(data),
+    `Good news. Enrollment approved for your ${relation}, ${data.studentName} (${data.program}).`,
     compactLines([
-      'Please keep your registered mobile number active. Our team will guide you for final joining formalities and student portal access.',
+      'Student portal credentials and joining details will be shared shortly.',
       data.notes ? `Admin Note: ${data.notes}` : null,
     ]).join('\n\n'),
     buildAcademyContactDetails(),
-    'Thank you for your trust in our academy.',
+    `Regards, ${ACADEMY_NAME}`,
   ].join('\n\n');
 };
 
@@ -122,14 +119,13 @@ export const buildEnrollmentRejectedMessage = (data: EnrollmentMessageData) => {
 
   return [
     `Namaste ${data.parentName} ji,`,
-    `After review, we are unable to proceed with the enrollment request for your ${relation}, ${data.studentName}, in the ${data.program} program at this time.`,
-    buildRegistrationDetails(data),
+    `After review, we are unable to proceed with enrollment for your ${relation}, ${data.studentName} (${data.program}) at this time.`,
     compactLines([
       data.notes ? `Reason / Note: ${data.notes}` : null,
-      'If you would like more clarity or wish to discuss the next available option, please contact us directly.',
+      'For clarification or alternate options, please contact us.',
     ]).join('\n\n'),
     buildAcademyContactDetails(),
-    `Thank you for your understanding.\n\n${ACADEMY_NAME}`,
+    `Regards, ${ACADEMY_NAME}`,
   ].join('\n\n');
 };
 
@@ -161,15 +157,14 @@ export const buildEnrollmentPortalMessage = (
 
   return [
     `Namaste ${data.parentName} ji,`,
-    `Admission has been completed successfully for your ${relation}, ${data.studentName}, in the ${data.program} program at ${ACADEMY_NAME}.`,
-    buildRegistrationDetails(data),
+    `Admission completed for your ${relation}, ${data.studentName} (${data.program}).`,
     [
       'Student Portal Login',
       `• Portal: ${data.portalUrl}`,
       `• Login ID: ${data.loginId}`,
       `• Default Password: ${data.defaultPassword || STUDENT_PORTAL_DEFAULT_PASSWORD}`,
     ].join('\n'),
-    'Sign in with the default password, then update password from inside the student portal.',
+    'Please sign in and change the default password immediately.',
     buildAcademyContactDetails(),
     `Welcome to ${ACADEMY_NAME}.`,
   ].join('\n\n');
