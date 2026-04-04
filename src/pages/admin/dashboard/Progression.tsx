@@ -16,15 +16,22 @@ export default function Progression() {
                   Progression Workspace
                 </h1>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Track student advancement, assessments, and belt exam planning.
+                  Track student advancement, assessments, and belt exam
+                  planning.
                 </p>
               </div>
               <TabsList className="grid h-10 w-full grid-cols-2 rounded-xl border border-border/70 bg-card p-1 sm:w-[300px]">
-                <TabsTrigger value="progression" className="gap-2 rounded-lg text-xs sm:text-sm">
+                <TabsTrigger
+                  value="progression"
+                  className="gap-2 rounded-lg text-xs sm:text-sm"
+                >
                   <Award className="w-4 h-4" />
                   <span>Progression</span>
                 </TabsTrigger>
-                <TabsTrigger value="calendar" className="gap-2 rounded-lg text-xs sm:text-sm">
+                <TabsTrigger
+                  value="calendar"
+                  className="gap-2 rounded-lg text-xs sm:text-sm"
+                >
                   <CalendarDays className="w-4 h-4" />
                   <span>Belt Exams</span>
                 </TabsTrigger>

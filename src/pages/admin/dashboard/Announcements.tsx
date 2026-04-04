@@ -116,7 +116,9 @@ export default function AnnouncementsManager() {
       );
     },
     onError: (e) =>
-      toast.error(e instanceof Error ? e.message : 'Failed to save announcement.'),
+      toast.error(
+        e instanceof Error ? e.message : 'Failed to save announcement.'
+      ),
   });
 
   const deleteMutation = useMutation({
@@ -132,7 +134,9 @@ export default function AnnouncementsManager() {
       toast.success('Announcement deleted');
     },
     onError: (e) =>
-      toast.error(e instanceof Error ? e.message : 'Failed to delete announcement.'),
+      toast.error(
+        e instanceof Error ? e.message : 'Failed to delete announcement.'
+      ),
   });
 
   const priorityColor = (p: string) => {
@@ -172,8 +176,8 @@ export default function AnnouncementsManager() {
                   Announcements Hub
                 </h1>
                 <p className="mt-2 max-w-2xl text-sm text-slate-200 sm:text-base">
-                  Publish timely updates with clear priority levels and expiration
-                  control for students.
+                  Publish timely updates with clear priority levels and
+                  expiration control for students.
                 </p>
               </div>
             </div>
@@ -479,7 +483,9 @@ function AnnouncementForm({
           maxLength={1200}
           required
         />
-        <p className="mt-1 text-xs text-muted-foreground">{content.length}/1200</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {content.length}/1200
+        </p>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>

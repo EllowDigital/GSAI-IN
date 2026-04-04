@@ -41,10 +41,7 @@ export default function TestimonialsManager() {
   });
   const { toast } = useToast();
 
-  const {
-    data: testimonials = [],
-    isLoading: loading,
-  } = useQuery({
+  const { data: testimonials = [], isLoading: loading } = useQuery({
     queryKey: ['admin-program-testimonials'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -87,7 +84,8 @@ export default function TestimonialsManager() {
     onError: (error) => {
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to add testimonial.',
+        description:
+          error instanceof Error ? error.message : 'Failed to add testimonial.',
         variant: 'error',
       });
     },
@@ -108,7 +106,10 @@ export default function TestimonialsManager() {
     onError: (error) => {
       toast({
         title: 'Update failed',
-        description: error instanceof Error ? error.message : 'Could not update publish status.',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Could not update publish status.',
         variant: 'error',
       });
     },
@@ -130,7 +131,10 @@ export default function TestimonialsManager() {
     onError: (error) => {
       toast({
         title: 'Delete failed',
-        description: error instanceof Error ? error.message : 'Could not delete testimonial.',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Could not delete testimonial.',
         variant: 'error',
       });
     },
@@ -158,7 +162,9 @@ export default function TestimonialsManager() {
     deleteMutation.mutate(id);
   };
 
-  const publishedCount = testimonials.filter((item) => item.is_published).length;
+  const publishedCount = testimonials.filter(
+    (item) => item.is_published
+  ).length;
   const draftCount = testimonials.length - publishedCount;
 
   return (
@@ -253,39 +259,39 @@ export default function TestimonialsManager() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Program *
-              </label>
-              <select
-                value={form.program_slug}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, program_slug: e.target.value }))
-                }
-                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
-              >
-                <option value="">Select program</option>
-                {programs.map((p) => (
-                  <option key={p.slug} value={p.slug}>
-                    {p.title}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Student Name *
-              </label>
-              <input
-                value={form.student_name}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, student_name: e.target.value }))
-                }
-                maxLength={100}
-                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
-                placeholder="e.g. Rahul Sharma"
-              />
-            </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    Program *
+                  </label>
+                  <select
+                    value={form.program_slug}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, program_slug: e.target.value }))
+                    }
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
+                  >
+                    <option value="">Select program</option>
+                    {programs.map((p) => (
+                      <option key={p.slug} value={p.slug}>
+                        {p.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    Student Name *
+                  </label>
+                  <input
+                    value={form.student_name}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, student_name: e.target.value }))
+                    }
+                    maxLength={100}
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
+                    placeholder="e.g. Rahul Sharma"
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1">
@@ -421,7 +427,9 @@ export default function TestimonialsManager() {
                           {t.is_published ? (
                             <>
                               <Eye className="w-4 h-4 text-emerald-600" />
-                              <span className="hidden sm:inline">Published</span>
+                              <span className="hidden sm:inline">
+                                Published
+                              </span>
                             </>
                           ) : (
                             <>

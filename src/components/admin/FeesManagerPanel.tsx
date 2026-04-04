@@ -403,19 +403,27 @@ export default function FeesManagerPanel() {
           <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
             <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
               <p className="text-[11px] text-muted-foreground">Students</p>
-              <p className="text-lg font-semibold text-foreground tabular-nums">{feeSnapshot.total}</p>
+              <p className="text-lg font-semibold text-foreground tabular-nums">
+                {feeSnapshot.total}
+              </p>
             </div>
             <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
               <p className="text-[11px] text-muted-foreground">Paid</p>
-              <p className="text-lg font-semibold text-foreground tabular-nums">{feeSnapshot.paid}</p>
+              <p className="text-lg font-semibold text-foreground tabular-nums">
+                {feeSnapshot.paid}
+              </p>
             </div>
             <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
               <p className="text-[11px] text-muted-foreground">Pending</p>
-              <p className="text-lg font-semibold text-foreground tabular-nums">{feeSnapshot.unpaid}</p>
+              <p className="text-lg font-semibold text-foreground tabular-nums">
+                {feeSnapshot.unpaid}
+              </p>
             </div>
             <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
               <p className="text-[11px] text-muted-foreground">Total Due</p>
-              <p className="text-lg font-semibold text-foreground tabular-nums">₹{feeSnapshot.totalDue.toLocaleString()}</p>
+              <p className="text-lg font-semibold text-foreground tabular-nums">
+                ₹{feeSnapshot.totalDue.toLocaleString()}
+              </p>
             </div>
           </div>
         </div>

@@ -19,7 +19,8 @@ export default function Testimonials() {
                 Program Testimonials
               </h1>
               <p className="mt-1 text-sm text-muted-foreground sm:text-base">
-                A cleaner and modern workspace to manage student success stories.
+                A cleaner and modern workspace to manage student success
+                stories.
               </p>
             </div>
             <div className="grid w-full gap-2 sm:grid-cols-2 lg:w-auto lg:min-w-[360px]">
@@ -28,7 +29,9 @@ export default function Testimonials() {
                   <MessageSquareQuote className="h-4 w-4 text-primary" />
                   <div>
                     <p className="text-xs text-muted-foreground">Focus</p>
-                    <p className="text-sm font-medium text-foreground">Content Quality</p>
+                    <p className="text-sm font-medium text-foreground">
+                      Content Quality
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -37,7 +40,9 @@ export default function Testimonials() {
                   <Star className="h-4 w-4 text-yellow-500" />
                   <div>
                     <p className="text-xs text-muted-foreground">Goal</p>
-                    <p className="text-sm font-medium text-foreground">Higher Trust</p>
+                    <p className="text-sm font-medium text-foreground">
+                      Higher Trust
+                    </p>
                   </div>
                 </CardContent>
               </Card>

@@ -101,12 +101,18 @@ export default function Gallery() {
 
   const bulkDeleteMutation = useMutation({
     mutationFn: async (ids: string[]) => {
-      const { error } = await supabase.from('gallery_images').delete().in('id', ids);
+      const { error } = await supabase
+        .from('gallery_images')
+        .delete()
+        .in('id', ids);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['gallery_images'] });
-      toast({ title: 'Deleted', description: 'Selected images removed successfully' });
+      toast({
+        title: 'Deleted',
+        description: 'Selected images removed successfully',
+      });
       setSelectedImages(new Set());
     },
     onError: (error: any) => {
@@ -162,7 +168,8 @@ export default function Gallery() {
       const toDate = dateTo ? new Date(`${dateTo}T23:59:59`) : null;
 
       const withinDateRange =
-        (!fromDate || createdAt >= fromDate) && (!toDate || createdAt <= toDate);
+        (!fromDate || createdAt >= fromDate) &&
+        (!toDate || createdAt <= toDate);
 
       return matchesQuery && matchesTag && withinDateRange;
     });
@@ -173,15 +180,17 @@ export default function Gallery() {
   }, [query, tagFilter, dateFrom, dateTo, viewMode]);
 
   const activeDateRange = useMemo(
-    () =>
-      [dateFrom || null, dateTo || null] as [Date | null, Date | null],
+    () => [dateFrom || null, dateTo || null] as [Date | null, Date | null],
     [dateFrom, dateTo]
   );
 
   const totalPages = Math.ceil(filteredImages.length / IMAGES_PER_PAGE);
   const paginatedImages = useMemo(
     () =>
-      filteredImages.slice((page - 1) * IMAGES_PER_PAGE, page * IMAGES_PER_PAGE),
+      filteredImages.slice(
+        (page - 1) * IMAGES_PER_PAGE,
+        page * IMAGES_PER_PAGE
+      ),
     [filteredImages, page]
   );
 
@@ -242,19 +251,29 @@ export default function Gallery() {
             <div className="grid w-full gap-2 sm:grid-cols-3 lg:w-auto lg:min-w-[460px]">
               <Card className="border-white/20 bg-white/10 text-slate-100">
                 <CardContent className="p-3">
-                  <p className="text-xs uppercase tracking-wide text-slate-300">Total</p>
-                  <p className="mt-1 text-2xl font-semibold">{isLoading ? '...' : images.length}</p>
+                  <p className="text-xs uppercase tracking-wide text-slate-300">
+                    Total
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold">
+                    {isLoading ? '...' : images.length}
+                  </p>
                 </CardContent>
               </Card>
               <Card className="border-white/20 bg-white/10 text-slate-100">
                 <CardContent className="p-3">
-                  <p className="text-xs uppercase tracking-wide text-slate-300">With Tags</p>
-                  <p className="mt-1 text-2xl font-semibold">{isLoading ? '...' : totalTagged}</p>
+                  <p className="text-xs uppercase tracking-wide text-slate-300">
+                    With Tags
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold">
+                    {isLoading ? '...' : totalTagged}
+                  </p>
                 </CardContent>
               </Card>
               <Card className="border-white/20 bg-white/10 text-slate-100">
                 <CardContent className="p-3">
-                  <p className="text-xs uppercase tracking-wide text-slate-300">Selected</p>
+                  <p className="text-xs uppercase tracking-wide text-slate-300">
+                    Selected
+                  </p>
                   <p className="mt-1 text-2xl font-semibold">{selectedCount}</p>
                 </CardContent>
               </Card>
@@ -271,7 +290,8 @@ export default function Gallery() {
                 Gallery Controls
               </h2>
               <p className="text-sm text-muted-foreground">
-                Filter and switch layouts quickly while keeping media operations simple.
+                Filter and switch layouts quickly while keeping media operations
+                simple.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -389,7 +409,9 @@ export default function Gallery() {
               variant="destructive"
               size="sm"
               onClick={handleDeleteMany}
-              disabled={selectedImages.size === 0 || bulkDeleteMutation.isPending}
+              disabled={
+                selectedImages.size === 0 || bulkDeleteMutation.isPending
+              }
               className="gap-1.5"
             >
               {bulkDeleteMutation.isPending ? (
@@ -402,8 +424,11 @@ export default function Gallery() {
           </div>
 
           <div className="rounded-xl border border-border/70 bg-muted/20 px-3 py-2 text-xs text-muted-foreground sm:text-sm">
-            Showing {paginatedImages.length} of {filteredImages.length} filtered images.
-            {activeDateRange[0] || activeDateRange[1] ? ' Date range filter active.' : ''}
+            Showing {paginatedImages.length} of {filteredImages.length} filtered
+            images.
+            {activeDateRange[0] || activeDateRange[1]
+              ? ' Date range filter active.'
+              : ''}
           </div>
 
           <div className="max-h-[68vh] overflow-y-auto">
@@ -414,7 +439,9 @@ export default function Gallery() {
             ) : filteredImages.length === 0 ? (
               <div className="text-center py-10 px-4">
                 <ImageIcon className="w-16 h-16 mx-auto mb-3 text-muted-foreground/40" />
-                <p className="text-sm text-muted-foreground">No images matched your filters.</p>
+                <p className="text-sm text-muted-foreground">
+                  No images matched your filters.
+                </p>
               </div>
             ) : viewMode === 'cards' ? (
               <div className="admin-card-grid">
@@ -454,10 +481,14 @@ export default function Gallery() {
                               #{image.tag}
                             </Badge>
                           ) : (
-                            <span className="text-xs text-muted-foreground">No tag</span>
+                            <span className="text-xs text-muted-foreground">
+                              No tag
+                            </span>
                           )}
                           <span className="text-xs text-muted-foreground">
-                            {new Date(image.created_at || '').toLocaleDateString()}
+                            {new Date(
+                              image.created_at || ''
+                            ).toLocaleDateString()}
                           </span>
                         </div>
                         <div className="flex gap-2">
@@ -499,7 +530,10 @@ export default function Gallery() {
                   </thead>
                   <tbody className="divide-y divide-border">
                     {paginatedImages.map((image) => (
-                      <tr key={image.id} className="hover:bg-muted/30 transition">
+                      <tr
+                        key={image.id}
+                        className="hover:bg-muted/30 transition"
+                      >
                         <td className="p-3">
                           <input
                             type="checkbox"
@@ -515,16 +549,22 @@ export default function Gallery() {
                             loading="lazy"
                           />
                         </td>
-                        <td className="p-3 max-w-xs truncate">{image.caption || 'Untitled image'}</td>
+                        <td className="p-3 max-w-xs truncate">
+                          {image.caption || 'Untitled image'}
+                        </td>
                         <td className="p-3">
                           {image.tag ? (
                             <Badge variant="outline">#{image.tag}</Badge>
                           ) : (
-                            <span className="text-xs text-muted-foreground">No tag</span>
+                            <span className="text-xs text-muted-foreground">
+                              No tag
+                            </span>
                           )}
                         </td>
                         <td className="p-3 text-sm text-muted-foreground">
-                          {new Date(image.created_at || '').toLocaleDateString()}
+                          {new Date(
+                            image.created_at || ''
+                          ).toLocaleDateString()}
                         </td>
                         <td className="p-3 text-right space-x-2">
                           <Button
@@ -552,16 +592,18 @@ export default function Gallery() {
 
             {totalPages > 1 && (
               <div className="mt-4 flex flex-wrap justify-center gap-2">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                  <Button
-                    key={p}
-                    size="sm"
-                    variant={p === page ? 'default' : 'outline'}
-                    onClick={() => setPage(p)}
-                  >
-                    {p}
-                  </Button>
-                ))}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (p) => (
+                    <Button
+                      key={p}
+                      size="sm"
+                      variant={p === page ? 'default' : 'outline'}
+                      onClick={() => setPage(p)}
+                    >
+                      {p}
+                    </Button>
+                  )
+                )}
               </div>
             )}
           </div>

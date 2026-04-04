@@ -336,7 +336,8 @@ export default function Competitions() {
     () =>
       competitions.filter((c) => {
         const query = search.toLowerCase().trim();
-        const searchable = `${c.name || ''} ${c.description || ''} ${c.location_text || ''}`.toLowerCase();
+        const searchable =
+          `${c.name || ''} ${c.description || ''} ${c.location_text || ''}`.toLowerCase();
         const matchesSearch = query ? searchable.includes(query) : true;
         const matchesStatus =
           statusFilter === 'all' ? true : c.status === statusFilter;
@@ -468,7 +469,8 @@ export default function Competitions() {
                 Competition Operations
               </h2>
               <p className="text-sm text-muted-foreground">
-                Search, filter, and switch layouts for faster tournament actions.
+                Search, filter, and switch layouts for faster tournament
+                actions.
               </p>
             </div>
           </div>

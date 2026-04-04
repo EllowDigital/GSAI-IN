@@ -54,7 +54,9 @@ export default function About() {
 
     const loadLastUpdated = async () => {
       try {
-        const response = await fetch('/last-updated.json', { cache: 'no-store' });
+        const response = await fetch('/last-updated.json', {
+          cache: 'no-store',
+        });
         if (!response.ok) return;
         const payload = (await response.json()) as LastUpdatedPayload;
         if (isMounted && payload.lastUpdated) {
@@ -202,14 +204,18 @@ export default function About() {
               <p className="text-xs uppercase tracking-wide text-muted-foreground">
                 Current Version
               </p>
-              <p className="mt-1 text-lg font-semibold text-foreground">v2.4.0</p>
+              <p className="mt-1 text-lg font-semibold text-foreground">
+                v2.4.0
+              </p>
             </div>
 
             <div className="rounded-xl border border-border/70 bg-muted/20 p-3">
               <p className="text-xs uppercase tracking-wide text-muted-foreground">
                 Last Admin Update
               </p>
-              <p className="mt-1 text-lg font-semibold text-foreground">{formattedDate}</p>
+              <p className="mt-1 text-lg font-semibold text-foreground">
+                {formattedDate}
+              </p>
             </div>
 
             <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3">
@@ -249,8 +255,12 @@ export default function About() {
                   <Icon className="h-5 w-5 text-primary" />
                   <LinkIcon className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
                 </div>
-                <p className="mt-3 text-sm font-semibold text-foreground">{label}</p>
-                <p className="mt-1 text-xs text-muted-foreground">Open official profile</p>
+                <p className="mt-3 text-sm font-semibold text-foreground">
+                  {label}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Open official profile
+                </p>
               </a>
             ))}
           </div>

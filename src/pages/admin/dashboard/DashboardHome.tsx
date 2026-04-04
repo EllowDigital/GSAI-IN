@@ -334,7 +334,9 @@ export default function DashboardHome() {
                 <p className="text-2xl font-bold tabular-nums text-foreground">
                   {stat.value}
                 </p>
-                <p className="mt-1 text-xs text-muted-foreground">{stat.hint}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {stat.hint}
+                </p>
               </article>
             ))}
           </div>
@@ -362,7 +364,9 @@ export default function DashboardHome() {
                 <p className="text-xs font-semibold leading-tight text-foreground sm:text-sm">
                   {action.title}
                 </p>
-                <p className="text-[11px] text-muted-foreground">{action.desc}</p>
+                <p className="text-[11px] text-muted-foreground">
+                  {action.desc}
+                </p>
               </div>
             </Link>
           ))}
@@ -372,160 +376,176 @@ export default function DashboardHome() {
       <section className="grid grid-cols-1 gap-4 xl:grid-cols-12">
         <div className="admin-panel xl:col-span-8">
           <div className="admin-panel-body">
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <h3 className="text-sm font-semibold text-foreground">
-                Revenue Overview
-              </h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Last 6 months collection trend
-              </p>
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h3 className="text-sm font-semibold text-foreground">
+                  Revenue Overview
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Last 6 months collection trend
+                </p>
+              </div>
+              <Link
+                to="/admin/dashboard/fees"
+                className="text-xs text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors"
+              >
+                View all <ArrowUpRight className="w-3 h-3" />
+              </Link>
             </div>
-            <Link
-              to="/admin/dashboard/fees"
-              className="text-xs text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors"
-            >
-              View all <ArrowUpRight className="w-3 h-3" />
-            </Link>
+            <div className="h-56 sm:h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={analytics.revenueChart}>
+                  <defs>
+                    <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop
+                        offset="5%"
+                        stopColor="hsl(var(--primary))"
+                        stopOpacity={0.15}
+                      />
+                      <stop
+                        offset="95%"
+                        stopColor="hsl(var(--primary))"
+                        stopOpacity={0}
+                      />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="hsl(var(--border))"
+                    strokeOpacity={0.5}
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="month"
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                    stroke="hsl(var(--muted-foreground))"
+                  />
+                  <YAxis
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`}
+                    stroke="hsl(var(--muted-foreground))"
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      fontSize: '12px',
+                      borderRadius: '10px',
+                      border: '1px solid hsl(var(--border))',
+                      background: 'hsl(var(--card))',
+                      boxShadow: '0 4px 12px -2px rgba(0,0,0,0.1)',
+                    }}
+                    formatter={(value: number) => [
+                      `₹${value.toLocaleString()}`,
+                      'Revenue',
+                    ]}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="hsl(var(--primary))"
+                    fill="url(#revGrad)"
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 4, strokeWidth: 2 }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-          <div className="h-56 sm:h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={analytics.revenueChart}>
-                <defs>
-                  <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop
-                      offset="5%"
-                      stopColor="hsl(var(--primary))"
-                      stopOpacity={0.15}
-                    />
-                    <stop
-                      offset="95%"
-                      stopColor="hsl(var(--primary))"
-                      stopOpacity={0}
-                    />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="hsl(var(--border))"
-                  strokeOpacity={0.5}
-                  vertical={false}
-                />
-                <XAxis
-                  dataKey="month"
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={false}
-                  stroke="hsl(var(--muted-foreground))"
-                />
-                <YAxis
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`}
-                  stroke="hsl(var(--muted-foreground))"
-                />
-                <Tooltip
-                  contentStyle={{
-                    fontSize: '12px',
-                    borderRadius: '10px',
-                    border: '1px solid hsl(var(--border))',
-                    background: 'hsl(var(--card))',
-                    boxShadow: '0 4px 12px -2px rgba(0,0,0,0.1)',
-                  }}
-                  formatter={(value: number) => [
-                    `₹${value.toLocaleString()}`,
-                    'Revenue',
-                  ]}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="hsl(var(--primary))"
-                  fill="url(#revGrad)"
-                  strokeWidth={2}
-                  dot={false}
-                  activeDot={{ r: 4, strokeWidth: 2 }}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
         </div>
 
         <div className="space-y-4 xl:col-span-4">
           <div className="admin-panel">
             <div className="admin-panel-body">
               <div className="mb-5 flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-semibold text-foreground">
-                Programs
-              </h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Student distribution
-              </p>
-            </div>
-            <Link
-              to="/admin/dashboard/students"
-              className="text-xs text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors"
-            >
-              Details <ArrowUpRight className="w-3 h-3" />
-            </Link>
-          </div>
-          <div className="space-y-4">
-            {analytics.programs.map((program) => {
-              const maxCount = analytics.programs[0]?.count || 1;
-              const percentage = Math.round(
-                (program.count / analytics.totalStudents) * 100
-              );
-              return (
-                <div key={program.name} className="space-y-1.5">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-foreground truncate">
-                      {program.name}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground tabular-nums">
-                        {program.count}
-                      </span>
-                      <span className="text-[10px] text-muted-foreground/60 tabular-nums w-8 text-right">
-                        {percentage}%
-                      </span>
-                    </div>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
-                    <div
-                      className="bg-primary h-1.5 rounded-full transition-all duration-700 ease-out"
-                      style={{ width: `${(program.count / maxCount) * 100}%` }}
-                    />
-                  </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">
+                    Programs
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Student distribution
+                  </p>
                 </div>
-              );
-            })}
-            {analytics.programs.length === 0 && (
-              <p className="text-xs text-muted-foreground text-center py-8">
-                No programs yet
-              </p>
-            )}
-          </div>
+                <Link
+                  to="/admin/dashboard/students"
+                  className="text-xs text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors"
+                >
+                  Details <ArrowUpRight className="w-3 h-3" />
+                </Link>
+              </div>
+              <div className="space-y-4">
+                {analytics.programs.map((program) => {
+                  const maxCount = analytics.programs[0]?.count || 1;
+                  const percentage = Math.round(
+                    (program.count / analytics.totalStudents) * 100
+                  );
+                  return (
+                    <div key={program.name} className="space-y-1.5">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-foreground truncate">
+                          {program.name}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-muted-foreground tabular-nums">
+                            {program.count}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground/60 tabular-nums w-8 text-right">
+                            {percentage}%
+                          </span>
+                        </div>
+                      </div>
+                      <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
+                        <div
+                          className="bg-primary h-1.5 rounded-full transition-all duration-700 ease-out"
+                          style={{
+                            width: `${(program.count / maxCount) * 100}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+                {analytics.programs.length === 0 && (
+                  <p className="text-xs text-muted-foreground text-center py-8">
+                    No programs yet
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
           <div className="admin-panel">
             <div className="admin-panel-body">
-              <h3 className="text-sm font-semibold text-foreground">Live Snapshot</h3>
+              <h3 className="text-sm font-semibold text-foreground">
+                Live Snapshot
+              </h3>
               <div className="mt-3 space-y-2">
                 <div className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2 text-sm">
-                  <span className="text-muted-foreground">Pending enrollments</span>
-                  <span className="font-semibold text-foreground">{analytics.pendingEnrollments}</span>
+                  <span className="text-muted-foreground">
+                    Pending enrollments
+                  </span>
+                  <span className="font-semibold text-foreground">
+                    {analytics.pendingEnrollments}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2 text-sm">
-                  <span className="text-muted-foreground">Unpaid fee records</span>
-                  <span className="font-semibold text-foreground">{analytics.unpaidCount}</span>
+                  <span className="text-muted-foreground">
+                    Unpaid fee records
+                  </span>
+                  <span className="font-semibold text-foreground">
+                    {analytics.unpaidCount}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2 text-sm">
-                  <span className="text-muted-foreground">Active announcements</span>
-                  <span className="font-semibold text-foreground">{analytics.activeAnnouncements}</span>
+                  <span className="text-muted-foreground">
+                    Active announcements
+                  </span>
+                  <span className="font-semibold text-foreground">
+                    {analytics.activeAnnouncements}
+                  </span>
                 </div>
               </div>
             </div>

@@ -272,8 +272,8 @@ export default function StudentPortalManager() {
                   Student Portal Accounts
                 </h2>
                 <p className="mt-2 max-w-2xl text-sm text-slate-200 sm:text-base">
-                  Create and manage student logins with safer reset and credential
-                  sharing workflows.
+                  Create and manage student logins with safer reset and
+                  credential sharing workflows.
                 </p>
               </div>
             </div>
@@ -304,7 +304,9 @@ export default function StudentPortalManager() {
                   <p className="text-xs uppercase tracking-wide text-slate-300">
                     Filtered
                   </p>
-                  <p className="mt-1 text-2xl font-semibold">{filtered.length}</p>
+                  <p className="mt-1 text-2xl font-semibold">
+                    {filtered.length}
+                  </p>
                 </CardContent>
               </Card>
             </div>
@@ -320,7 +322,8 @@ export default function StudentPortalManager() {
                 Account Operations
               </h3>
               <p className="text-sm text-muted-foreground">
-                Search portal users, reset credentials, and revoke access quickly.
+                Search portal users, reset credentials, and revoke access
+                quickly.
               </p>
             </div>
             <Button
@@ -429,7 +432,9 @@ export default function StudentPortalManager() {
               <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-4 space-y-3">
                 <div className="flex items-center gap-2 text-green-600">
                   <CheckCircle className="w-5 h-5" />
-                  <span className="font-semibold text-sm">Account Created!</span>
+                  <span className="font-semibold text-sm">
+                    Account Created!
+                  </span>
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center justify-between">
@@ -532,7 +537,11 @@ export default function StudentPortalManager() {
                 disabled={createMutation.isPending || !selectedStudent}
                 className="w-full"
               >
-                {createMutation.isPending ? <Spinner size={16} /> : 'Create Account'}
+                {createMutation.isPending ? (
+                  <Spinner size={16} />
+                ) : (
+                  'Create Account'
+                )}
               </Button>
             </div>
           )}
@@ -545,7 +554,8 @@ export default function StudentPortalManager() {
             <DialogTitle>Reset Password</DialogTitle>
             <DialogDescription>
               Set a new password for{' '}
-              <strong>{resetAccount?.students?.name}</strong> ({resetAccount?.login_id})
+              <strong>{resetAccount?.students?.name}</strong> (
+              {resetAccount?.login_id})
             </DialogDescription>
           </DialogHeader>
           {resetSuccess ? (
@@ -553,12 +563,16 @@ export default function StudentPortalManager() {
               <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-4 space-y-3">
                 <div className="flex items-center gap-2 text-green-600">
                   <ShieldCheck className="w-5 h-5" />
-                  <span className="font-semibold text-sm">Password Updated!</span>
+                  <span className="font-semibold text-sm">
+                    Password Updated!
+                  </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">New Password:</span>
                   <div className="flex items-center gap-1.5">
-                    <code className="font-mono text-foreground">{newPassword}</code>
+                    <code className="font-mono text-foreground">
+                      {newPassword}
+                    </code>
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(newPassword);
@@ -602,7 +616,11 @@ export default function StudentPortalManager() {
                 disabled={resetMutation.isPending}
                 className="w-full"
               >
-                {resetMutation.isPending ? <Spinner size={16} /> : 'Reset Password'}
+                {resetMutation.isPending ? (
+                  <Spinner size={16} />
+                ) : (
+                  'Reset Password'
+                )}
               </Button>
             </div>
           )}

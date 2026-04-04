@@ -201,17 +201,26 @@ export default function StudentDashboard() {
                 {profile?.studentName || 'Student Dashboard'}
               </h2>
               <p className="text-sm text-slate-200">
-                View your progression, upcoming events, fees, and competition activity in one place.
+                View your progression, upcoming events, fees, and competition
+                activity in one place.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-2 sm:min-w-[260px]">
               <div className="rounded-xl border border-white/20 bg-white/10 p-3">
-                <p className="text-[11px] uppercase tracking-wide text-slate-300">Programs</p>
-                <p className="mt-1 text-sm font-medium truncate">{enrolledPrograms.length || 1}</p>
+                <p className="text-[11px] uppercase tracking-wide text-slate-300">
+                  Programs
+                </p>
+                <p className="mt-1 text-sm font-medium truncate">
+                  {enrolledPrograms.length || 1}
+                </p>
               </div>
               <div className="rounded-xl border border-white/20 bg-white/10 p-3">
-                <p className="text-[11px] uppercase tracking-wide text-slate-300">Certificates</p>
-                <p className="mt-1 text-sm font-medium">{(myCertificates as any[]).length}</p>
+                <p className="text-[11px] uppercase tracking-wide text-slate-300">
+                  Certificates
+                </p>
+                <p className="mt-1 text-sm font-medium">
+                  {(myCertificates as any[]).length}
+                </p>
               </div>
             </div>
           </div>
@@ -461,7 +470,8 @@ export default function StudentDashboard() {
       <footer className="border-t border-border/50 py-3 text-center">
         <p className="text-[10px] text-muted-foreground/50">
           Built by{' '}
-          <span className="text-muted-foreground/70">Sarwan Yadav</span> · <span className="text-muted-foreground/70">EllowDigital</span>
+          <span className="text-muted-foreground/70">Sarwan Yadav</span> ·{' '}
+          <span className="text-muted-foreground/70">EllowDigital</span>
           <span className="inline-flex items-center gap-1 ml-2 text-muted-foreground/60">
             <ShieldCheck className="h-3 w-3" /> Secure Student Access
           </span>

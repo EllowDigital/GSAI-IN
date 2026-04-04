@@ -302,12 +302,17 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
         if (isTimeoutError(error)) {
           if (attempt < INIT_AUTH_MAX_RETRIES) {
             toast.message('Admin auth is slow. Retrying...');
-            authRetryTimeoutRef.current = setTimeout(() => {
-              initializeAuth(attempt + 1);
-            }, INIT_AUTH_RETRY_DELAY_MS * (attempt + 1));
+            authRetryTimeoutRef.current = setTimeout(
+              () => {
+                initializeAuth(attempt + 1);
+              },
+              INIT_AUTH_RETRY_DELAY_MS * (attempt + 1)
+            );
             return;
           }
-          toast.warning('Admin auth is taking longer than expected. Keeping your current session.');
+          toast.warning(
+            'Admin auth is taking longer than expected. Keeping your current session.'
+          );
           setIsLoading(false);
           return;
         }

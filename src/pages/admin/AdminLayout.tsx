@@ -171,7 +171,9 @@ const AdminLayout: React.FC = () => {
               <button
                 className="hidden lg:inline-flex items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                aria-label={
+                  sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'
+                }
                 title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               >
                 {sidebarCollapsed ? (

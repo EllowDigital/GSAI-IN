@@ -84,13 +84,15 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
         throw new Error('Upload succeeded but image URL is missing.');
       }
 
-      const { error: insertError } = await supabase.from('gallery_images').insert([
-        {
-          image_url: urlData.publicUrl,
-          caption: caption.trim() || null,
-          tag: tag.trim() || null,
-        },
-      ]);
+      const { error: insertError } = await supabase
+        .from('gallery_images')
+        .insert([
+          {
+            image_url: urlData.publicUrl,
+            caption: caption.trim() || null,
+            tag: tag.trim() || null,
+          },
+        ]);
 
       if (insertError) throw insertError;
 

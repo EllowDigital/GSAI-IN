@@ -85,7 +85,9 @@ const clearRuntimeCachesOnHardReload = async () => {
   try {
     const keys = await caches.keys();
     await Promise.all(
-      keys.filter((key) => key.startsWith('gsai-')).map((key) => caches.delete(key))
+      keys
+        .filter((key) => key.startsWith('gsai-'))
+        .map((key) => caches.delete(key))
     );
   } catch (error) {
     console.warn('Unable to clear runtime caches on hard reload:', error);
@@ -97,7 +99,9 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     if (import.meta.env.DEV) {
       const registrations = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(registrations.map((registration) => registration.unregister()));
+      await Promise.all(
+        registrations.map((registration) => registration.unregister())
+      );
       return;
     }
 

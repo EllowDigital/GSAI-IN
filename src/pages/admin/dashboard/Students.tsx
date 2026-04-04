@@ -16,7 +16,8 @@ export default function Students() {
                   Students And Portal
                 </h1>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Manage student records and portal accounts from one unified workspace.
+                  Manage student records and portal accounts from one unified
+                  workspace.
                 </p>
               </div>
               <TabsList className="grid h-10 w-full grid-cols-2 rounded-xl border border-border/70 bg-card p-1 sm:w-[260px]">

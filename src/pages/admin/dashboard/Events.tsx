@@ -170,7 +170,8 @@ const Events = () => {
 
   const filteredEvents = useMemo(() => {
     return events.filter((event) => {
-      const searchable = `${event.title || ''} ${event.description || ''} ${(event as any).location || ''}`.toLowerCase();
+      const searchable =
+        `${event.title || ''} ${event.description || ''} ${(event as any).location || ''}`.toLowerCase();
       const matchesSearch = searchQuery.trim()
         ? searchable.includes(searchQuery.toLowerCase().trim())
         : true;
@@ -363,7 +364,9 @@ const Events = () => {
                   )}
                 </div>
                 <h3 className="text-lg sm:text-xl font-semibold text-foreground">
-                  {events.length === 0 ? 'No events found' : 'No matching events'}
+                  {events.length === 0
+                    ? 'No events found'
+                    : 'No matching events'}
                 </h3>
                 <p className="text-sm sm:text-base text-muted-foreground">
                   {events.length === 0
@@ -413,14 +416,18 @@ const Events = () => {
                     <table className="w-full">
                       <thead className="bg-muted/50">
                         <tr>
-                          <th className="text-left p-3 sm:p-4 font-semibold">Event</th>
+                          <th className="text-left p-3 sm:p-4 font-semibold">
+                            Event
+                          </th>
                           <th className="text-left p-3 sm:p-4 font-semibold hidden sm:table-cell">
                             Date
                           </th>
                           <th className="text-left p-3 sm:p-4 font-semibold hidden md:table-cell">
                             Description
                           </th>
-                          <th className="text-right p-3 sm:p-4 font-semibold">Actions</th>
+                          <th className="text-right p-3 sm:p-4 font-semibold">
+                            Actions
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-border">
@@ -431,7 +438,9 @@ const Events = () => {
                           >
                             <td className="p-3 sm:p-4">
                               <div className="space-y-1">
-                                <div className="font-medium text-foreground">{event.title}</div>
+                                <div className="font-medium text-foreground">
+                                  {event.title}
+                                </div>
                                 {event.tag && (
                                   <span className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary rounded px-2 py-1">
                                     <MapPin className="w-3 h-3" />
@@ -447,7 +456,9 @@ const Events = () => {
                               {new Date(event.date).toLocaleDateString()}
                             </td>
                             <td className="p-3 sm:p-4 text-muted-foreground hidden md:table-cell max-w-xs">
-                              <div className="truncate">{event.description}</div>
+                              <div className="truncate">
+                                {event.description}
+                              </div>
                             </td>
                             <td className="p-3 sm:p-4 text-right">
                               <div className="flex gap-1 sm:gap-2 justify-end">

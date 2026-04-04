@@ -46,8 +46,8 @@ export default function Disciplines() {
                   Disciplines Workspace
                 </h1>
                 <p className="mt-2 max-w-2xl text-sm text-slate-200 sm:text-base">
-                  Manage discipline structure, belt hierarchies, and level ladders
-                  from one streamlined control center.
+                  Manage discipline structure, belt hierarchies, and level
+                  ladders from one streamlined control center.
                 </p>
               </div>
             </div>
@@ -96,7 +96,8 @@ export default function Disciplines() {
                 Configuration Sections
               </h2>
               <p className="text-sm text-muted-foreground">
-                Switch between discipline records, belt presets, and level setup.
+                Switch between discipline records, belt presets, and level
+                setup.
               </p>
             </div>
             <div className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground">

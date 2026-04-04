@@ -587,7 +587,9 @@ export default function EnrollmentRequestsManager() {
   });
 
   const pendingCount = requests.filter((r) => r.status === 'pending').length;
-  const contactedCount = requests.filter((r) => r.status === 'contacted').length;
+  const contactedCount = requests.filter(
+    (r) => r.status === 'contacted'
+  ).length;
   const approvedCount = requests.filter((r) => r.status === 'approved').length;
   const rejectedCount = requests.filter((r) => r.status === 'rejected').length;
 
@@ -634,10 +636,12 @@ export default function EnrollmentRequestsManager() {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h1 className="flex items-center gap-2 text-xl font-bold text-foreground sm:text-2xl">
-                <UserPlus className="h-5 w-5 text-primary" /> Enrollment Requests
+                <UserPlus className="h-5 w-5 text-primary" /> Enrollment
+                Requests
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                Review requests, approve admissions, and create student login credentials in one workflow.
+                Review requests, approve admissions, and create student login
+                credentials in one workflow.
               </p>
             </div>
 
@@ -647,7 +651,9 @@ export default function EnrollmentRequestsManager() {
                 size="sm"
                 className="h-9 gap-2"
                 onClick={() =>
-                  queryClient.invalidateQueries({ queryKey: ['enrollment-requests'] })
+                  queryClient.invalidateQueries({
+                    queryKey: ['enrollment-requests'],
+                  })
                 }
               >
                 <RefreshCw className="w-4 h-4" />
@@ -659,19 +665,27 @@ export default function EnrollmentRequestsManager() {
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:max-w-3xl">
             <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
               <p className="text-[11px] text-muted-foreground">Pending</p>
-              <p className="text-lg font-semibold text-foreground">{pendingCount}</p>
+              <p className="text-lg font-semibold text-foreground">
+                {pendingCount}
+              </p>
             </div>
             <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
               <p className="text-[11px] text-muted-foreground">Contacted</p>
-              <p className="text-lg font-semibold text-foreground">{contactedCount}</p>
+              <p className="text-lg font-semibold text-foreground">
+                {contactedCount}
+              </p>
             </div>
             <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
               <p className="text-[11px] text-muted-foreground">Approved</p>
-              <p className="text-lg font-semibold text-foreground">{approvedCount}</p>
+              <p className="text-lg font-semibold text-foreground">
+                {approvedCount}
+              </p>
             </div>
             <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
               <p className="text-[11px] text-muted-foreground">Rejected</p>
-              <p className="text-lg font-semibold text-foreground">{rejectedCount}</p>
+              <p className="text-lg font-semibold text-foreground">
+                {rejectedCount}
+              </p>
             </div>
           </div>
         </div>
@@ -691,22 +705,24 @@ export default function EnrollmentRequestsManager() {
             </div>
 
             <div className="flex flex-wrap gap-1.5">
-              {['all', 'pending', 'contacted', 'approved', 'rejected'].map((s) => (
-                <Button
-                  key={s}
-                  variant={statusFilter === s ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setStatusFilter(s)}
-                  className="h-8 text-xs capitalize"
-                >
-                  {s === 'all' ? 'All' : s}
-                  {s === 'pending' && pendingCount > 0 && (
-                    <span className="ml-1 rounded-full bg-white/20 px-1.5 py-0.5 text-[10px]">
-                      {pendingCount}
-                    </span>
-                  )}
-                </Button>
-              ))}
+              {['all', 'pending', 'contacted', 'approved', 'rejected'].map(
+                (s) => (
+                  <Button
+                    key={s}
+                    variant={statusFilter === s ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setStatusFilter(s)}
+                    className="h-8 text-xs capitalize"
+                  >
+                    {s === 'all' ? 'All' : s}
+                    {s === 'pending' && pendingCount > 0 && (
+                      <span className="ml-1 rounded-full bg-white/20 px-1.5 py-0.5 text-[10px]">
+                        {pendingCount}
+                      </span>
+                    )}
+                  </Button>
+                )
+              )}
             </div>
           </div>
 
@@ -725,7 +741,8 @@ export default function EnrollmentRequestsManager() {
           ) : (
             <div className="space-y-3">
               {filtered.map((req) => {
-                const config = STATUS_CONFIG[req.status] || STATUS_CONFIG.pending;
+                const config =
+                  STATUS_CONFIG[req.status] || STATUS_CONFIG.pending;
                 return (
                   <Card
                     key={req.id}
@@ -738,7 +755,10 @@ export default function EnrollmentRequestsManager() {
                             <h3 className="text-sm font-semibold text-foreground sm:text-base">
                               {req.student_name}
                             </h3>
-                            <Badge variant="outline" className={`text-[10px] ${config.className}`}>
+                            <Badge
+                              variant="outline"
+                              className={`text-[10px] ${config.className}`}
+                            >
                               {config.label}
                             </Badge>
                             <Badge variant="secondary" className="text-[10px]">
@@ -757,7 +777,8 @@ export default function EnrollmentRequestsManager() {
                               Age {req.age} • {req.gender}
                             </span>
                             <span className="inline-flex items-center gap-1">
-                              <Clock className="h-3 w-3" /> {format(new Date(req.created_at), 'MMM d, yyyy')}
+                              <Clock className="h-3 w-3" />{' '}
+                              {format(new Date(req.created_at), 'MMM d, yyyy')}
                             </span>
                           </div>
 
@@ -781,15 +802,16 @@ export default function EnrollmentRequestsManager() {
                             <Eye className="w-3 h-3" /> View
                           </Button>
 
-                          {req.status !== 'approved' && req.status !== 'rejected' && (
-                            <Button
-                              size="sm"
-                              className="h-8 gap-1 bg-green-600 text-xs hover:bg-green-700"
-                              onClick={() => handleStartApprove(req)}
-                            >
-                              <Check className="w-3 h-3" /> Approve & Add
-                            </Button>
-                          )}
+                          {req.status !== 'approved' &&
+                            req.status !== 'rejected' && (
+                              <Button
+                                size="sm"
+                                className="h-8 gap-1 bg-green-600 text-xs hover:bg-green-700"
+                                onClick={() => handleStartApprove(req)}
+                              >
+                                <Check className="w-3 h-3" /> Approve & Add
+                              </Button>
+                            )}
 
                           {req.status === 'approved' && (
                             <Badge
@@ -864,9 +886,14 @@ export default function EnrollmentRequestsManager() {
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Delete Request?</AlertDialogTitle>
+                                <AlertDialogTitle>
+                                  Delete Request?
+                                </AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Permanently remove this enrollment request. If it is approved, the linked student profile, login credentials, progression, fees, and all related records will also be deleted forever.
+                                  Permanently remove this enrollment request. If
+                                  it is approved, the linked student profile,
+                                  login credentials, progression, fees, and all
+                                  related records will also be deleted forever.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>

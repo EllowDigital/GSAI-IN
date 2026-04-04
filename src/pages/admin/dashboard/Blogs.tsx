@@ -148,7 +148,8 @@ export default function Blogs() {
 
   const filteredBlogs = useMemo(() => {
     return blogs.filter((blog) => {
-      const searchable = `${blog.title || ''} ${blog.description || ''} ${blog.content || ''}`.toLowerCase();
+      const searchable =
+        `${blog.title || ''} ${blog.description || ''} ${blog.content || ''}`.toLowerCase();
       return searchQuery.trim()
         ? searchable.includes(searchQuery.toLowerCase().trim())
         : true;
@@ -194,20 +195,32 @@ export default function Blogs() {
             <div className="grid w-full gap-2 sm:grid-cols-3 lg:w-auto lg:min-w-[460px]">
               <Card className="border-white/20 bg-white/10 text-slate-100">
                 <CardContent className="p-3">
-                  <p className="text-xs uppercase tracking-wide text-slate-300">Total Posts</p>
-                  <p className="mt-1 text-2xl font-semibold">{isLoading ? '...' : blogs.length}</p>
+                  <p className="text-xs uppercase tracking-wide text-slate-300">
+                    Total Posts
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold">
+                    {isLoading ? '...' : blogs.length}
+                  </p>
                 </CardContent>
               </Card>
               <Card className="border-white/20 bg-white/10 text-slate-100">
                 <CardContent className="p-3">
-                  <p className="text-xs uppercase tracking-wide text-slate-300">This Month</p>
-                  <p className="mt-1 text-2xl font-semibold">{isLoading ? '...' : thisMonthCount}</p>
+                  <p className="text-xs uppercase tracking-wide text-slate-300">
+                    This Month
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold">
+                    {isLoading ? '...' : thisMonthCount}
+                  </p>
                 </CardContent>
               </Card>
               <Card className="border-white/20 bg-white/10 text-slate-100">
                 <CardContent className="p-3">
-                  <p className="text-xs uppercase tracking-wide text-slate-300">Filtered</p>
-                  <p className="mt-1 text-2xl font-semibold">{filteredBlogs.length}</p>
+                  <p className="text-xs uppercase tracking-wide text-slate-300">
+                    Filtered
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold">
+                    {filteredBlogs.length}
+                  </p>
                 </CardContent>
               </Card>
             </div>
@@ -224,7 +237,8 @@ export default function Blogs() {
                 <span>Blog Operations</span>
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Manage posts, switch views, and maintain high-quality content flow.
+                Manage posts, switch views, and maintain high-quality content
+                flow.
               </p>
             </div>
             <div className="flex gap-2 mt-2 sm:mt-0">

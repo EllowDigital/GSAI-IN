@@ -1003,45 +1003,45 @@ export default function ProgressionBoard() {
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              const exportData = records.map((r) => ({
-                studentName: r.students?.name,
-                program: r.students?.program,
-                beltColor: r.belt_levels?.color,
-                beltRank: r.belt_levels?.rank,
-                status: r.status,
-                stripeCount: r.stripe_count ?? 0,
-                assessmentDate: r.assessment_date,
-                coachNotes: r.coach_notes,
-              }));
-              exportProgressionToCsv(exportData);
-            }}
-            disabled={records.length === 0}
-            className="h-9"
-          >
-            <Download className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">Export</span>
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setHistoryDialogOpen(true)}
-            className="h-9"
-          >
-            <History className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">History</span>
-          </Button>
-          <Button
-            size="sm"
-            onClick={() => setAssignDialogOpen(true)}
-            className="h-9"
-          >
-            <UserPlus className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">Assign Student</span>
-          </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const exportData = records.map((r) => ({
+                    studentName: r.students?.name,
+                    program: r.students?.program,
+                    beltColor: r.belt_levels?.color,
+                    beltRank: r.belt_levels?.rank,
+                    status: r.status,
+                    stripeCount: r.stripe_count ?? 0,
+                    assessmentDate: r.assessment_date,
+                    coachNotes: r.coach_notes,
+                  }));
+                  exportProgressionToCsv(exportData);
+                }}
+                disabled={records.length === 0}
+                className="h-9"
+              >
+                <Download className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Export</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setHistoryDialogOpen(true)}
+                className="h-9"
+              >
+                <History className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">History</span>
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => setAssignDialogOpen(true)}
+                className="h-9"
+              >
+                <UserPlus className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Assign Student</span>
+              </Button>
             </div>
           </div>
         </div>

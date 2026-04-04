@@ -216,21 +216,25 @@ export default function DisciplinesManager() {
       <div className="admin-panel border-border/70 bg-gradient-to-r from-slate-50 to-background">
         <div className="admin-panel-body space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-semibold text-foreground flex items-center gap-2">
-            <GraduationCap className="h-6 w-6 text-primary/90" />
-            Disciplines
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-            Manage all martial arts disciplines — add, rename, delete, or toggle
-            active status
-          </p>
-        </div>
-        <Button size="sm" onClick={openCreate} className="h-9 gap-2 self-start sm:self-auto">
-          <Plus className="h-4 w-4" />
-          Add Discipline
-        </Button>
-      </div>
+            <div>
+              <h2 className="text-xl sm:text-2xl font-semibold text-foreground flex items-center gap-2">
+                <GraduationCap className="h-6 w-6 text-primary/90" />
+                Disciplines
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
+                Manage all martial arts disciplines — add, rename, delete, or
+                toggle active status
+              </p>
+            </div>
+            <Button
+              size="sm"
+              onClick={openCreate}
+              className="h-9 gap-2 self-start sm:self-auto"
+            >
+              <Plus className="h-4 w-4" />
+              Add Discipline
+            </Button>
+          </div>
         </div>
       </div>
 

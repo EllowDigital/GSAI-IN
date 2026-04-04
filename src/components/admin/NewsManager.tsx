@@ -40,9 +40,9 @@ export default function NewsManager() {
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'Published' | 'Draft'>(
-    'all'
-  );
+  const [statusFilter, setStatusFilter] = useState<
+    'all' | 'Published' | 'Draft'
+  >('all');
   const [viewMode, setViewMode] = usePersistentState<'cards' | 'table'>(
     'admin:layout:view-mode',
     'cards',
@@ -144,7 +144,8 @@ export default function NewsManager() {
 
   const filteredNews = useMemo(() => {
     return news.filter((item) => {
-      const searchable = `${item.title || ''} ${item.short_description || ''}`.toLowerCase();
+      const searchable =
+        `${item.title || ''} ${item.short_description || ''}`.toLowerCase();
       const matchesSearch = searchQuery.trim()
         ? searchable.includes(searchQuery.toLowerCase().trim())
         : true;
@@ -154,7 +155,9 @@ export default function NewsManager() {
     });
   }, [news, searchQuery, statusFilter]);
 
-  const publishedCount = news.filter((item) => item.status === 'Published').length;
+  const publishedCount = news.filter(
+    (item) => item.status === 'Published'
+  ).length;
   const draftCount = news.filter((item) => item.status === 'Draft').length;
 
   const renderTableView = () => (
@@ -194,7 +197,9 @@ export default function NewsManager() {
                   />
                 ) : (
                   <div className="w-16 h-12 bg-muted rounded-lg flex items-center justify-center">
-                    <span className="text-muted-foreground text-xs">No Image</span>
+                    <span className="text-muted-foreground text-xs">
+                      No Image
+                    </span>
                   </div>
                 )}
               </td>
@@ -349,20 +354,32 @@ export default function NewsManager() {
             <div className="grid w-full gap-2 sm:grid-cols-3 lg:w-auto lg:min-w-[460px]">
               <Card className="border-white/20 bg-white/10 text-slate-100">
                 <CardContent className="p-3">
-                  <p className="text-xs uppercase tracking-wide text-slate-300">Total</p>
-                  <p className="mt-1 text-2xl font-semibold">{isLoading ? '...' : news.length}</p>
+                  <p className="text-xs uppercase tracking-wide text-slate-300">
+                    Total
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold">
+                    {isLoading ? '...' : news.length}
+                  </p>
                 </CardContent>
               </Card>
               <Card className="border-white/20 bg-white/10 text-slate-100">
                 <CardContent className="p-3">
-                  <p className="text-xs uppercase tracking-wide text-slate-300">Published</p>
-                  <p className="mt-1 text-2xl font-semibold">{isLoading ? '...' : publishedCount}</p>
+                  <p className="text-xs uppercase tracking-wide text-slate-300">
+                    Published
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold">
+                    {isLoading ? '...' : publishedCount}
+                  </p>
                 </CardContent>
               </Card>
               <Card className="border-white/20 bg-white/10 text-slate-100">
                 <CardContent className="p-3">
-                  <p className="text-xs uppercase tracking-wide text-slate-300">Drafts</p>
-                  <p className="mt-1 text-2xl font-semibold">{isLoading ? '...' : draftCount}</p>
+                  <p className="text-xs uppercase tracking-wide text-slate-300">
+                    Drafts
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold">
+                    {isLoading ? '...' : draftCount}
+                  </p>
                 </CardContent>
               </Card>
             </div>
@@ -380,7 +397,8 @@ export default function NewsManager() {
               </h2>
 
               <p className="mt-1 text-sm text-muted-foreground">
-                Maintain articles, update statuses, and keep public updates current.
+                Maintain articles, update statuses, and keep public updates
+                current.
               </p>
             </div>
             <div className="flex gap-2 mt-2 sm:mt-0">
@@ -409,9 +427,7 @@ export default function NewsManager() {
                 <AlertCircle className="w-5 h-5 flex-shrink-0" />
                 <div className="flex-1">
                   <p className="font-medium">Failed to load news</p>
-                  <p className="text-sm mt-1">
-                    {formatErrorForDisplay(error)}
-                  </p>
+                  <p className="text-sm mt-1">{formatErrorForDisplay(error)}</p>
                 </div>
                 <Button
                   variant="outline"
@@ -495,10 +511,16 @@ export default function NewsManager() {
             ) : filteredNews.length === 0 ? (
               <div className="text-center py-8 sm:py-12 space-y-4">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-muted rounded-full flex items-center justify-center text-muted-foreground">
-                  {news.length === 0 ? <Newspaper className="h-8 w-8" /> : <Clock3 className="h-8 w-8" />}
+                  {news.length === 0 ? (
+                    <Newspaper className="h-8 w-8" />
+                  ) : (
+                    <Clock3 className="h-8 w-8" />
+                  )}
                 </div>
                 <h3 className="text-lg sm:text-xl font-semibold text-foreground">
-                  {news.length === 0 ? 'No news articles found' : 'No results found'}
+                  {news.length === 0
+                    ? 'No news articles found'
+                    : 'No results found'}
                 </h3>
                 <p className="text-sm sm:text-base text-muted-foreground">
                   {news.length === 0
