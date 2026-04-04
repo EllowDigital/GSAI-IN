@@ -14,7 +14,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { openWhatsAppConversation } from '@/utils/whatsapp';
-import { sendEmail, buildFeeReminderEmail } from '@/utils/resendEmail';
 
 interface FeeReminderButtonProps {
   studentName: string;
@@ -40,9 +39,6 @@ const MONTH_NAMES = [
   'November',
   'December',
 ];
-
-// FormSubmit.co sends TO this verified email (academy inbox)
-const FORMSUBMIT_ACADEMY_EMAIL = 'ghataksportsacademy@gmail.com';
 
 export default function FeeReminderButton({
   studentName,
@@ -88,6 +84,9 @@ Ghatak Sports Academy`;
     setSending(true);
 
     try {
+      const { sendEmail, buildFeeReminderEmail } =
+        await import('@/utils/resendEmail');
+
       // Send email via Resend
       const emailPayload = buildFeeReminderEmail({
         parentName,
