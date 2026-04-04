@@ -105,6 +105,16 @@ const resolveEnrollmentMessageStage = (
   }
 };
 
+function normalizeEmail(value?: string | null): string {
+  const trimmed = (value || '').trim().toLowerCase();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed) ? trimmed : '';
+}
+
+function resolveEnrollmentRecipientEmail(req: EnrollmentRequest): string {
+  // Parent email is not a dedicated column yet; fall back to parent_phone only if it is actually an email string.
+  return normalizeEmail(req.student_email) || normalizeEmail(req.parent_phone);
+}
+
 export default function EnrollmentRequestsManager() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
@@ -169,8 +179,10 @@ export default function EnrollmentRequestsManager() {
 
     const didOpenWhatsApp = openWhatsAppConversation(req.parent_phone, message);
 
-    // Send email via Resend if student email exists
-    if (req.student_email) {
+    const recipientEmail = resolveEnrollmentRecipientEmail(req);
+
+    // Send email if a valid student/parent email exists.
+    if (recipientEmail) {
       try {
         const { sendEmail, buildEnrollmentRejectedEmail } =
           await import('@/utils/resendEmail');
@@ -183,7 +195,7 @@ export default function EnrollmentRequestsManager() {
         });
         const emailSent = await sendEmail({
           ...emailPayload,
-          to: req.student_email,
+          to: recipientEmail,
         });
 
         if (didOpenWhatsApp && emailSent) {
@@ -212,7 +224,7 @@ export default function EnrollmentRequestsManager() {
     } else {
       (didOpenWhatsApp ? toast.success : toast.error)(
         didOpenWhatsApp
-          ? 'WhatsApp opened with rejection message'
+          ? 'No valid email found. Sent via WhatsApp only.'
           : 'WhatsApp could not open for this number'
       );
     }
@@ -247,8 +259,16 @@ export default function EnrollmentRequestsManager() {
       if (req) {
         const stage = resolveEnrollmentMessageStage(data.status);
 
-        // Send email via Resend if student email exists
-        if (req.student_email) {
+        if (stage === 'rejected') {
+          await sendRejectionNotification(req, data.notes || '');
+          setViewReq(null);
+          return;
+        }
+
+        const recipientEmail = resolveEnrollmentRecipientEmail(req);
+
+        // Send email if student email exists, otherwise fallback to parent email-like value.
+        if (recipientEmail) {
           try {
             const { sendEmail, buildEnrollmentStageEmail } =
               await import('@/utils/resendEmail');
@@ -262,7 +282,7 @@ export default function EnrollmentRequestsManager() {
             });
             const sent = await sendEmail({
               ...emailPayload,
-              to: req.student_email,
+              to: recipientEmail,
             });
             if (!sent) {
               console.error('Email send failed for enrollment update', {
@@ -273,6 +293,10 @@ export default function EnrollmentRequestsManager() {
           } catch (error) {
             console.error('Email send failed for enrollment update', error);
           }
+        } else {
+          toast.info(
+            'No valid email found for this enrollment. Use WhatsApp only.'
+          );
         }
       }
       setViewReq(null);
@@ -480,8 +504,12 @@ export default function EnrollmentRequestsManager() {
       queryClient.invalidateQueries({ queryKey: ['students-without-portal'] });
       toast.success('Portal account created!');
 
-      // Send portal credentials via email if student email exists
-      if (approveReq?.student_email) {
+      const recipientEmail = approveReq
+        ? resolveEnrollmentRecipientEmail(approveReq)
+        : '';
+
+      // Send portal credentials via email if student/parent email exists.
+      if (recipientEmail) {
         try {
           const { sendEmail, buildPortalCredentialsEmail } =
             await import('@/utils/resendEmail');
@@ -496,7 +524,7 @@ export default function EnrollmentRequestsManager() {
           });
           const sent = await sendEmail({
             ...emailPayload,
-            to: approveReq.student_email,
+            to: recipientEmail,
           });
           if (!sent) {
             toast.warning(
@@ -509,6 +537,10 @@ export default function EnrollmentRequestsManager() {
             'Portal account created, but credentials email failed.'
           );
         }
+      } else {
+        toast.info(
+          'Portal account created. No valid email found, share credentials via WhatsApp only.'
+        );
       }
     } catch (err: any) {
       toast.error(err.message || 'Failed to create portal account');
