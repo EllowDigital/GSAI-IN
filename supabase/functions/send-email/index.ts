@@ -24,6 +24,7 @@ const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend'
 const ACADEMY_NAME = 'Ghatak Sports Academy India'
 const ACADEMY_EMAIL = 'ghatakgsai@gmail.com'
 const ACADEMY_PHONE = '+91 63941 35988'
+const ACADEMY_LOGO_URL = 'https://ghataksportsacademy.com/assets/images/logo.webp'
 const RATE_LIMIT_WINDOW_MS = 60_000
 const MAX_REQUESTS_PER_WINDOW = 20
 
@@ -171,29 +172,33 @@ function buildHtmlEmail(subject: string, bodyHtml: string): string {
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
-  body{margin:0;padding:0;background:#f4f4f7;font-family:Arial,Helvetica,sans-serif}
-  .wrapper{max-width:600px;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
-  .header{background:#1a1a2e;color:#fff;padding:24px 32px;text-align:center}
-  .header h1{margin:0;font-size:20px;font-weight:700;letter-spacing:0.5px}
-  .body{padding:28px 32px;color:#333;line-height:1.7;font-size:15px}
-  .body h2{color:#1a1a2e;font-size:18px;margin:0 0 16px}
-  .info-box{background:#f0f4ff;border-left:4px solid #3b82f6;padding:14px 18px;border-radius:0 6px 6px 0;margin:16px 0}
-  .info-box p{margin:4px 0;font-size:14px}
-  .footer{background:#f8f9fa;padding:20px 32px;text-align:center;font-size:12px;color:#888;border-top:1px solid #eee}
-  .footer a{color:#3b82f6;text-decoration:none}
-  .btn{display:inline-block;background:#3b82f6;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600;margin:12px 0}
+  body{margin:0;padding:0;background:#eef2f7;font-family:Arial,Helvetica,sans-serif;color:#1f2937}
+  .wrapper{max-width:640px;margin:0 auto;padding:24px 14px}
+  .card{background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;box-shadow:0 8px 30px rgba(15,23,42,.06)}
+  .header{background:#0f172a;padding:20px 26px;text-align:center}
+  .logo{height:46px;max-width:220px;object-fit:contain;display:block;margin:0 auto 8px}
+  .academy{color:#e2e8f0;font-size:14px;font-weight:600;letter-spacing:.2px}
+  .body{padding:26px;color:#1f2937;line-height:1.65;font-size:15px}
+  .body h2{margin:0 0 14px;color:#0f172a;font-size:19px}
+  .footer{background:#f8fafc;border-top:1px solid #e5e7eb;padding:16px 26px;text-align:center;color:#64748b;font-size:12px}
+  .footer a{color:#1d4ed8;text-decoration:none}
 </style></head>
 <body>
 <div class="wrapper">
-  <div class="header"><h1>🥋 ${ACADEMY_NAME}</h1></div>
-  <div class="body">
-    <h2>${subject}</h2>
-    ${bodyHtml}
-  </div>
-  <div class="footer">
-    <p>${ACADEMY_NAME}</p>
-    <p>📞 ${ACADEMY_PHONE} | ✉️ <a href="mailto:${ACADEMY_EMAIL}">${ACADEMY_EMAIL}</a></p>
-    <p style="margin-top:8px;font-size:11px;color:#aaa">This is an automated notification. Please do not reply directly.</p>
+  <div class="card">
+    <div class="header">
+      <img class="logo" src="${ACADEMY_LOGO_URL}" alt="${ACADEMY_NAME} logo" />
+      <div class="academy">${ACADEMY_NAME}</div>
+    </div>
+    <div class="body">
+      <h2>${subject}</h2>
+      ${bodyHtml}
+    </div>
+    <div class="footer">
+      <p>${ACADEMY_NAME}</p>
+      <p>Phone / WhatsApp: ${ACADEMY_PHONE} | Email: <a href="mailto:${ACADEMY_EMAIL}">${ACADEMY_EMAIL}</a></p>
+      <p style="margin-top:8px">This is an automated email from the academy portal.</p>
+    </div>
   </div>
 </div>
 </body></html>`

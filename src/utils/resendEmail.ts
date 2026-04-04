@@ -4,6 +4,7 @@ const ACADEMY_NAME = 'Ghatak Sports Academy India';
 const ACADEMY_EMAIL = 'ghatakgsai@gmail.com';
 const ACADEMY_PHONE = '+91 63941 35988';
 const STUDENT_PORTAL_DEFAULT_PASSWORD = 'GSAI-STUDENT-2026';
+const ACADEMY_LOGO_URL = 'https://ghataksportsacademy.com/assets/images/logo.webp';
 
 interface SendEmailParams {
   to: string;
@@ -43,12 +44,68 @@ function validateHttpsUrl(value: string, fieldName: string): string {
   return parsed.toString();
 }
 
+function isFullHtmlDocument(value: string): boolean {
+  return /<html[\s>]/i.test(value);
+}
+
+function buildBrandedEmailHtml(subject: string, bodyHtml: string): string {
+  const safeSubject = escapeHtml(subject);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <style>
+    body{margin:0;padding:0;background:#eef2f7;font-family:Arial,Helvetica,sans-serif;color:#1f2937}
+    .wrapper{max-width:640px;margin:0 auto;padding:24px 14px}
+    .card{background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;box-shadow:0 8px 30px rgba(15,23,42,.06)}
+    .header{background:#0f172a;padding:20px 26px;text-align:center}
+    .logo{height:46px;max-width:220px;object-fit:contain;display:block;margin:0 auto 8px}
+    .academy{color:#e2e8f0;font-size:14px;font-weight:600;letter-spacing:.2px}
+    .content{padding:26px;color:#1f2937;line-height:1.65;font-size:15px}
+    .content h2{margin:0 0 14px;color:#0f172a;font-size:19px}
+    .info-box{background:#f8fafc;border:1px solid #dbeafe;border-left:4px solid #2563eb;padding:12px 14px;border-radius:10px;margin:16px 0}
+    .info-box p{margin:4px 0;font-size:14px}
+    .btn{display:inline-block;background:#1d4ed8;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600}
+    .footer{background:#f8fafc;border-top:1px solid #e5e7eb;padding:16px 26px;text-align:center;color:#64748b;font-size:12px}
+    .footer a{color:#1d4ed8;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <div class="header">
+        <img class="logo" src="${ACADEMY_LOGO_URL}" alt="${ACADEMY_NAME} logo" />
+        <div class="academy">${ACADEMY_NAME}</div>
+      </div>
+      <div class="content">
+        <h2>${safeSubject}</h2>
+        ${bodyHtml}
+      </div>
+      <div class="footer">
+        <p>${ACADEMY_NAME}</p>
+        <p>Phone / WhatsApp: ${ACADEMY_PHONE} | Email: <a href="mailto:${ACADEMY_EMAIL}">${ACADEMY_EMAIL}</a></p>
+        <p style="margin-top:8px">This is an automated email from the academy portal.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
 export async function sendEmail(params: SendEmailParams): Promise<boolean> {
   try {
+    const normalizedHtml = params.html?.trim();
     const payload: SendEmailParams = {
       ...params,
       to: params.to.trim(),
       subject: sanitizeSubject(params.subject),
+      html: normalizedHtml
+        ? isFullHtmlDocument(normalizedHtml)
+          ? normalizedHtml
+          : buildBrandedEmailHtml(params.subject, normalizedHtml)
+        : undefined,
       replyTo: params.replyTo?.trim(),
     };
 
@@ -197,7 +254,7 @@ export function buildEnrollmentApprovedEmail(params: {
     ? validateHttpsUrl(params.portalUrl, 'portalUrl')
     : 'https://ghataksportsacademy.com/student/login';
   return {
-    subject: `🎉 Enrollment Approved - ${params.studentName} | ${ACADEMY_NAME}`,
+    subject: `Enrollment Approved - ${params.studentName} | ${ACADEMY_NAME}`,
     html: `
       <p>Namaste <strong>${safeParentName}</strong> ji,</p>
       <p>We are pleased to inform you that the enrollment for your ${safeRelation}, <strong>${safeStudentName}</strong>, in the <strong>${safeProgram}</strong> program has been <strong style="color:#16a34a">approved</strong>!</p>

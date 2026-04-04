@@ -8,12 +8,19 @@ const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend';
 const ACADEMY_NAME = 'Ghatak Sports Academy India';
 const ACADEMY_EMAIL = 'ghatakgsai@gmail.com';
 const ACADEMY_PHONE = '+91 63941 35988';
+const ACADEMY_LOGO_URL = 'https://ghataksportsacademy.com/assets/images/logo.webp';
+const ADMIN_PORTAL_URL = 'https://ghataksportsacademy.com/admin';
 
 interface RequestBody {
   to?: string;
+  cc?: string;
   parentName?: string;
   studentName?: string;
   program?: string;
+  parentPhone?: string;
+  studentEmail?: string;
+  studentPhone?: string;
+  notificationType?: 'parent' | 'admin';
 }
 
 function escapeHtml(value: string): string {
@@ -29,37 +36,102 @@ function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-function buildHtml(parentName: string, studentName: string, program: string): string {
+function buildParentHtml(parentName: string, studentName: string, program: string): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <style>
-    body{margin:0;padding:0;background:#f4f4f7;font-family:Arial,Helvetica,sans-serif}
-    .wrapper{max-width:600px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-    .header{background:#111827;color:#fff;padding:22px 28px;text-align:center}
-    .body{padding:24px 28px;color:#1f2937;line-height:1.6;font-size:15px}
-    .box{background:#f9fafb;border-left:4px solid #2563eb;padding:12px 14px;border-radius:0 6px 6px 0;margin:14px 0}
+    body{margin:0;padding:0;background:#eef2f7;font-family:Arial,Helvetica,sans-serif;color:#1f2937}
+    .wrapper{max-width:640px;margin:0 auto;padding:24px 14px}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;box-shadow:0 8px 30px rgba(15,23,42,.06)}
+    .header{background:#0f172a;padding:20px 26px;text-align:center}
+    .logo{height:46px;max-width:220px;object-fit:contain;display:block;margin:0 auto 8px}
+    .academy{color:#e2e8f0;font-size:14px;font-weight:600;letter-spacing:.2px}
+    .body{padding:26px;color:#1f2937;line-height:1.65;font-size:15px}
+    .box{background:#f8fafc;border:1px solid #dbeafe;border-left:4px solid #2563eb;padding:12px 14px;border-radius:10px;margin:14px 0}
     .box p{margin:4px 0;font-size:14px}
-    .footer{background:#f8fafc;padding:16px 28px;text-align:center;font-size:12px;color:#6b7280;border-top:1px solid #e5e7eb}
+    .footer{background:#f8fafc;padding:16px 26px;text-align:center;font-size:12px;color:#64748b;border-top:1px solid #e5e7eb}
   </style>
 </head>
 <body>
   <div class="wrapper">
-    <div class="header"><strong>${ACADEMY_NAME}</strong></div>
-    <div class="body">
-      <p>Namaste <strong>${escapeHtml(parentName)}</strong> ji,</p>
-      <p>We have successfully received the enrollment request for <strong>${escapeHtml(studentName)}</strong> in <strong>${escapeHtml(program)}</strong>.</p>
-      <div class="box">
-        <p><strong>Status:</strong> Request Received</p>
-        <p><strong>Next Step:</strong> Our team will contact you within 24 hours.</p>
+    <div class="card">
+      <div class="header">
+        <img class="logo" src="${ACADEMY_LOGO_URL}" alt="${ACADEMY_NAME} logo" />
+        <div class="academy">${ACADEMY_NAME}</div>
       </div>
-      <p>Thank you for choosing ${ACADEMY_NAME}.</p>
+      <div class="body">
+        <p>Namaste <strong>${escapeHtml(parentName)}</strong> ji,</p>
+        <p>We have successfully received the enrollment request for <strong>${escapeHtml(studentName)}</strong> in <strong>${escapeHtml(program)}</strong>.</p>
+        <div class="box">
+          <p><strong>Status:</strong> Request Received</p>
+          <p><strong>Next Step:</strong> Our team will contact you within 24 hours.</p>
+        </div>
+        <p>Thank you for choosing ${ACADEMY_NAME}.</p>
+      </div>
+      <div class="footer">
+        <p>Phone / WhatsApp: ${ACADEMY_PHONE}</p>
+        <p>Email: ${ACADEMY_EMAIL}</p>
+      </div>
     </div>
-    <div class="footer">
-      <p>Phone / WhatsApp: ${ACADEMY_PHONE}</p>
-      <p>Email: ${ACADEMY_EMAIL}</p>
+  </div>
+</body>
+</html>`;
+}
+
+function buildAdminHtml(details: {
+  studentName: string;
+  parentName: string;
+  program: string;
+  parentPhone: string;
+  studentEmail: string;
+  studentPhone: string;
+}): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <style>
+    body{margin:0;padding:0;background:#eef2f7;font-family:Arial,Helvetica,sans-serif;color:#1f2937}
+    .wrapper{max-width:640px;margin:0 auto;padding:24px 14px}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;box-shadow:0 8px 30px rgba(15,23,42,.06)}
+    .header{background:#0f172a;padding:20px 26px;text-align:center}
+    .logo{height:46px;max-width:220px;object-fit:contain;display:block;margin:0 auto 8px}
+    .academy{color:#e2e8f0;font-size:14px;font-weight:600;letter-spacing:.2px}
+    .body{padding:26px;color:#1f2937;line-height:1.65;font-size:15px}
+    .box{background:#f8fafc;border:1px solid #dbeafe;border-left:4px solid #2563eb;padding:12px 14px;border-radius:10px;margin:14px 0}
+    .box p{margin:4px 0;font-size:14px}
+    .footer{background:#f8fafc;padding:16px 26px;text-align:center;font-size:12px;color:#64748b;border-top:1px solid #e5e7eb}
+    .btn{display:inline-block;background:#1d4ed8;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600;margin-top:10px}
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <div class="header">
+        <img class="logo" src="${ACADEMY_LOGO_URL}" alt="${ACADEMY_NAME} logo" />
+        <div class="academy">${ACADEMY_NAME}</div>
+      </div>
+      <div class="body">
+        <p>A new enrollment form has been submitted from the public website.</p>
+        <div class="box">
+          <p><strong>Student:</strong> ${escapeHtml(details.studentName)}</p>
+          <p><strong>Program:</strong> ${escapeHtml(details.program)}</p>
+          <p><strong>Parent:</strong> ${escapeHtml(details.parentName)}</p>
+          <p><strong>Parent Phone:</strong> ${escapeHtml(details.parentPhone)}</p>
+          <p><strong>Student Email:</strong> ${escapeHtml(details.studentEmail)}</p>
+          <p><strong>Student Phone:</strong> ${escapeHtml(details.studentPhone)}</p>
+        </div>
+        <p>Please review this request in the admin portal and decide the next stage (contact / approve / reject).</p>
+        <p><a class="btn" href="${ADMIN_PORTAL_URL}" rel="noopener noreferrer">Open Admin Portal</a></p>
+      </div>
+      <div class="footer">
+        <p>Phone / WhatsApp: ${ACADEMY_PHONE}</p>
+        <p>Email: ${ACADEMY_EMAIL}</p>
+      </div>
     </div>
   </div>
 </body>
@@ -91,9 +163,14 @@ Deno.serve(async (req) => {
   try {
     const body = (await req.json()) as RequestBody;
     const to = (body.to || '').trim().toLowerCase();
+    const cc = (body.cc || '').trim().toLowerCase();
     const parentName = (body.parentName || 'Parent').trim();
     const studentName = (body.studentName || 'Student').trim();
     const program = (body.program || 'Selected Program').trim();
+    const parentPhone = (body.parentPhone || 'Not provided').trim();
+    const studentEmail = (body.studentEmail || 'Not provided').trim();
+    const studentPhone = (body.studentPhone || 'Not provided').trim();
+    const notificationType = body.notificationType === 'admin' ? 'admin' : 'parent';
 
     if (!isValidEmail(to)) {
       return new Response(JSON.stringify({ error: 'Invalid email' }), {
@@ -101,6 +178,30 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    if (cc && !isValidEmail(cc)) {
+      return new Response(JSON.stringify({ error: 'Invalid cc email' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const subject =
+      notificationType === 'admin'
+        ? `New Enrollment Submission | ${ACADEMY_NAME}`
+        : `Enrollment Request Received | ${ACADEMY_NAME}`;
+
+    const html =
+      notificationType === 'admin'
+        ? buildAdminHtml({
+            studentName,
+            parentName,
+            program,
+            parentPhone,
+            studentEmail,
+            studentPhone,
+          })
+        : buildParentHtml(parentName, studentName, program);
 
     const response = await fetch(`${GATEWAY_URL}/emails`, {
       method: 'POST',
@@ -112,8 +213,9 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         from: `${ACADEMY_NAME} <noreply@ghataksportsacademy.com>`,
         to: [to],
-        subject: `Enrollment Request Received | ${ACADEMY_NAME}`,
-        html: buildHtml(parentName, studentName, program),
+        ...(cc ? { cc: [cc] } : {}),
+        subject,
+        html,
       }),
     });
 

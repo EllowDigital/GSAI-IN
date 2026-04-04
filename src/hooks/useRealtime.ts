@@ -1,14 +1,55 @@
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/services/supabase/client';
+import { toast } from '@/hooks/useToast';
+
+type EnrollmentRow = {
+  id: string;
+  created_at?: string | null;
+  [key: string]: unknown;
+};
+
+function upsertEnrollment(
+  existing: EnrollmentRow[] | undefined,
+  row: EnrollmentRow
+): EnrollmentRow[] {
+  const current = existing ?? [];
+  const filtered = current.filter((item) => item.id !== row.id);
+  const next = [row, ...filtered];
+  return next.sort((a, b) => {
+    const aTime = a.created_at ? Date.parse(a.created_at) : 0;
+    const bTime = b.created_at ? Date.parse(b.created_at) : 0;
+    return bTime - aTime;
+  });
+}
 
 export const useRealtime = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    const invalidateTimers = new Map<string, ReturnType<typeof setTimeout>>();
+    let lastEnrollmentInsertToastAt = 0;
+
+    const scheduleInvalidate = (queryKey: string[], delayMs = 350) => {
+      const key = JSON.stringify(queryKey);
+      const existing = invalidateTimers.get(key);
+      if (existing) clearTimeout(existing);
+
+      const timeout = setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey });
+        invalidateTimers.delete(key);
+      }, delayMs);
+
+      invalidateTimers.set(key, timeout);
+    };
+
     const invalidateDashboard = () => {
-      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard-analytics'] });
+      scheduleInvalidate(['dashboard-stats']);
+      scheduleInvalidate(['dashboard-analytics']);
+    };
+
+    const invalidateMany = (keys: string[][]) => {
+      keys.forEach((key) => scheduleInvalidate(key));
     };
 
     const channels = [
@@ -18,7 +59,7 @@ export const useRealtime = () => {
           'postgres_changes',
           { event: '*', schema: 'public', table: 'students' },
           () => {
-            queryClient.invalidateQueries({ queryKey: ['students'] });
+            scheduleInvalidate(['students']);
             invalidateDashboard();
           }
         )
@@ -30,7 +71,7 @@ export const useRealtime = () => {
           'postgres_changes',
           { event: '*', schema: 'public', table: 'fees' },
           () => {
-            queryClient.invalidateQueries({ queryKey: ['fees'] });
+            scheduleInvalidate(['fees']);
             invalidateDashboard();
           }
         )
@@ -42,7 +83,7 @@ export const useRealtime = () => {
           'postgres_changes',
           { event: '*', schema: 'public', table: 'events' },
           () => {
-            queryClient.invalidateQueries({ queryKey: ['events'] });
+            scheduleInvalidate(['events']);
             invalidateDashboard();
           }
         )
@@ -54,7 +95,7 @@ export const useRealtime = () => {
           'postgres_changes',
           { event: '*', schema: 'public', table: 'blogs' },
           () => {
-            queryClient.invalidateQueries({ queryKey: ['blogs'] });
+            scheduleInvalidate(['blogs']);
             invalidateDashboard();
           }
         )
@@ -66,7 +107,7 @@ export const useRealtime = () => {
           'postgres_changes',
           { event: '*', schema: 'public', table: 'news' },
           () => {
-            queryClient.invalidateQueries({ queryKey: ['news'] });
+            scheduleInvalidate(['news']);
             invalidateDashboard();
           }
         )
@@ -78,7 +119,7 @@ export const useRealtime = () => {
           'postgres_changes',
           { event: '*', schema: 'public', table: 'gallery_images' },
           () => {
-            queryClient.invalidateQueries({ queryKey: ['gallery-images'] });
+            scheduleInvalidate(['gallery-images']);
             invalidateDashboard();
           }
         )
@@ -89,10 +130,23 @@ export const useRealtime = () => {
         .on(
           'postgres_changes',
           { event: '*', schema: 'public', table: 'enrollment_requests' },
-          () => {
-            queryClient.invalidateQueries({
-              queryKey: ['enrollment-requests'],
-            });
+          (payload) => {
+            if (payload.eventType === 'INSERT' && payload.new) {
+              const newRow = payload.new as EnrollmentRow;
+              queryClient.setQueryData(
+                ['enrollment-requests'],
+                (current: EnrollmentRow[] | undefined) =>
+                  upsertEnrollment(current, newRow)
+              );
+
+              const now = Date.now();
+              if (now - lastEnrollmentInsertToastAt > 15000) {
+                toast.info('New enrollment received', 'A new form was submitted.');
+                lastEnrollmentInsertToastAt = now;
+              }
+            }
+
+            scheduleInvalidate(['enrollment-requests']);
             invalidateDashboard();
           }
         )
@@ -105,14 +159,12 @@ export const useRealtime = () => {
           'postgres_changes',
           { event: '*', schema: 'public', table: 'student_programs' },
           () => {
-            queryClient.invalidateQueries({ queryKey: ['student-programs'] });
-            queryClient.invalidateQueries({
-              queryKey: ['all-student-programs'],
-            });
-            queryClient.invalidateQueries({
-              queryKey: ['student-programs-all'],
-            });
-            queryClient.invalidateQueries({ queryKey: ['students'] });
+            invalidateMany([
+              ['student-programs'],
+              ['all-student-programs'],
+              ['student-programs-all'],
+              ['students'],
+            ]);
           }
         )
         .subscribe(),
@@ -123,7 +175,7 @@ export const useRealtime = () => {
           'postgres_changes',
           { event: '*', schema: 'public', table: 'promotion_history' },
           () => {
-            queryClient.invalidateQueries({ queryKey: ['promotion-history'] });
+            scheduleInvalidate(['promotion-history']);
           }
         )
         .subscribe(),
@@ -134,7 +186,7 @@ export const useRealtime = () => {
           'postgres_changes',
           { event: '*', schema: 'public', table: 'student_progress' },
           () => {
-            queryClient.invalidateQueries({ queryKey: ['student-progress'] });
+            scheduleInvalidate(['student-progress']);
           }
         )
         .subscribe(),
@@ -149,9 +201,7 @@ export const useRealtime = () => {
             table: 'student_discipline_progress',
           },
           () => {
-            queryClient.invalidateQueries({
-              queryKey: ['discipline-progress-admin'],
-            });
+            scheduleInvalidate(['discipline-progress-admin']);
           }
         )
         .subscribe(),
@@ -162,7 +212,7 @@ export const useRealtime = () => {
           'postgres_changes',
           { event: '*', schema: 'public', table: 'announcements' },
           () => {
-            queryClient.invalidateQueries({ queryKey: ['announcements'] });
+            scheduleInvalidate(['announcements']);
             invalidateDashboard();
           }
         )
@@ -174,13 +224,14 @@ export const useRealtime = () => {
           'postgres_changes',
           { event: '*', schema: 'public', table: 'belt_levels' },
           () => {
-            queryClient.invalidateQueries({ queryKey: ['belt-levels'] });
+            scheduleInvalidate(['belt-levels']);
           }
         )
         .subscribe(),
     ];
 
     return () => {
+      invalidateTimers.forEach((timer) => clearTimeout(timer));
       channels.forEach((ch) => supabase.removeChannel(ch));
     };
   }, [queryClient]);

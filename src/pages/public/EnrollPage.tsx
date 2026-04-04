@@ -89,6 +89,8 @@ const steps = [
 const inputClass =
   'bg-white/[0.04] border-white/[0.08] text-white placeholder:text-gray-600 focus-visible:ring-yellow-500/30 focus-visible:border-yellow-500/40 h-11 text-sm rounded-xl';
 const labelClass = 'text-gray-400 text-xs font-medium';
+const ENROLLMENT_ADMIN_TO = 'ghatakgsai@gmai.com';
+const ENROLLMENT_ADMIN_CC = 'sarwanyadav6174@gmail.com';
 
 export default function EnrollPage() {
   const [searchParams] = useSearchParams();
@@ -174,16 +176,42 @@ export default function EnrollPage() {
 
       if (error) throw error;
 
-      if (data.studentEmail) {
-        await supabase.functions.invoke('send-enrollment-received-email', {
+      const emailTasks: Promise<unknown>[] = [
+        supabase.functions.invoke('send-enrollment-received-email', {
           body: {
-            to: data.studentEmail,
+            to: ENROLLMENT_ADMIN_TO,
+            cc: ENROLLMENT_ADMIN_CC,
             parentName: data.parentName,
             studentName: data.studentName,
             program: data.program,
+            parentPhone: data.parentPhone,
+            studentEmail: data.studentEmail || 'Not provided',
+            studentPhone: data.studentPhone || 'Not provided',
+            notificationType: 'admin',
           },
-        });
+        }),
+      ];
+
+      if (data.studentEmail) {
+        emailTasks.push(
+          supabase.functions.invoke('send-enrollment-received-email', {
+            body: {
+              to: data.studentEmail,
+              parentName: data.parentName,
+              studentName: data.studentName,
+              program: data.program,
+              notificationType: 'parent',
+            },
+          })
+        );
       }
+
+      const emailResults = await Promise.allSettled(emailTasks);
+      emailResults.forEach((result) => {
+        if (result.status === 'rejected') {
+          console.error('Enrollment email task failed:', result.reason);
+        }
+      });
 
       setSubmitted(true);
       toast.success('Enrollment request submitted successfully!');
