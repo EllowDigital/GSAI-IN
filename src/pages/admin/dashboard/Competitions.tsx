@@ -44,6 +44,11 @@ import { format } from 'date-fns';
 import CompetitionCertificates from '@/components/admin/CompetitionCertificates';
 import CompetitionRegistrations from '@/components/admin/CompetitionRegistrations';
 import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
+import {
+  openManualWhatsAppBroadcast,
+  sendAnnouncementToApprovedStudents,
+} from '@/utils/studentCommunication';
+import { buildCompetitionAnnouncementEmail } from '@/utils/resendEmail';
 
 interface Competition {
   id: string;
@@ -88,6 +93,23 @@ const formatError = (error: unknown): string => {
   if (isTimeoutError(error)) return 'Connection is slow. Please try again.';
   if (error instanceof Error) return error.message;
   return 'Unexpected error occurred.';
+};
+
+const buildCompetitionWhatsAppMessage = (c: Competition): string => {
+  const endDate = c.end_date ? ` to ${c.end_date}` : '';
+  const location = c.location_text ? `\nLocation: ${c.location_text}` : '';
+  const description = c.description ? `\n${c.description}` : '';
+
+  return [
+    `*${c.name}*`,
+    `Date: ${c.date}${endDate}`,
+    location,
+    description,
+    '',
+    'Shared by Ghatak Sports Academy India',
+  ]
+    .filter(Boolean)
+    .join('\n');
 };
 
 export default function Competitions() {
@@ -178,10 +200,30 @@ export default function Competitions() {
         );
         if (error) throw error;
       }
+
+      const emailStats = await sendAnnouncementToApprovedStudents((recipient) =>
+        buildCompetitionAnnouncementEmail({
+          parentName: recipient.parentName,
+          studentName: recipient.studentName,
+          name: payload.name,
+          date: payload.date,
+          endDate: payload.end_date,
+          location: payload.location_text,
+          description: payload.description,
+          competitionsPageUrl: `${window.location.origin}/student/dashboard`,
+        })
+      );
+
+      return emailStats;
     },
-    onSuccess: () => {
+    onSuccess: (emailStats) => {
       queryClient.invalidateQueries({ queryKey: ['competitions'] });
       toast.success(editing ? 'Competition updated.' : 'Competition created.');
+      if (emailStats.total > 0) {
+        toast.success(
+          `Competition email sent to ${emailStats.sent}/${emailStats.total} students${emailStats.failed ? ` (${emailStats.failed} failed)` : ''}.`
+        );
+      }
       closeForm();
     },
     onError: (e: Error) => toast.error('Failed: ' + formatError(e)),
@@ -256,6 +298,22 @@ export default function Competitions() {
   const filtered = competitions.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handleManualWhatsApp = async (competition: Competition) => {
+    const message = buildCompetitionWhatsAppMessage(competition);
+    try {
+      await navigator.clipboard.writeText(message);
+    } catch {
+      // Continue even if clipboard write fails.
+    }
+
+    const opened = openManualWhatsAppBroadcast(message);
+    toast.success(
+      opened
+        ? 'WhatsApp opened. Message copied, choose recipients manually.'
+        : 'Message copied. Send manually in WhatsApp.'
+    );
+  };
 
   const { data: regCounts = {} } = useQuery({
     queryKey: ['competition-reg-counts'],
@@ -442,6 +500,14 @@ export default function Competitions() {
                 )}
                 <div className="flex flex-wrap gap-1.5 pt-2 border-t border-border/30">
                   <Button
+                    variant="secondary"
+                    size="sm"
+                    className="gap-1 text-xs h-8"
+                    onClick={() => handleManualWhatsApp(c)}
+                  >
+                    WhatsApp
+                  </Button>
+                  <Button
                     variant="outline"
                     size="sm"
                     className="flex-1 gap-1 text-xs h-8"
@@ -555,6 +621,14 @@ export default function Competitions() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 px-2 text-xs"
+                            onClick={() => handleManualWhatsApp(c)}
+                          >
+                            WA
+                          </Button>
                           <Button
                             variant="ghost"
                             size="sm"

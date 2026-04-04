@@ -301,6 +301,92 @@ export type EnrollmentEmailStage =
   | 'approved'
   | 'rejected';
 
+export function buildEventAnnouncementEmail(params: {
+  parentName: string;
+  studentName: string;
+  title: string;
+  fromDate: string;
+  endDate?: string | null;
+  location?: string | null;
+  description?: string | null;
+  eventsPageUrl?: string;
+}): Omit<SendEmailParams, 'to'> {
+  const safeParentName = escapeHtml(params.parentName || 'Parent');
+  const safeStudentName = escapeHtml(params.studentName || 'Student');
+  const safeTitle = escapeHtml(params.title);
+  const safeFromDate = escapeHtml(params.fromDate);
+  const safeEndDate = params.endDate ? escapeHtml(params.endDate) : null;
+  const safeLocation = params.location ? escapeHtml(params.location) : null;
+  const safeDescription = params.description
+    ? escapeHtml(params.description)
+    : null;
+  const safeEventsPageUrl = params.eventsPageUrl
+    ? validateHttpsUrl(params.eventsPageUrl, 'eventsPageUrl')
+    : 'https://ghataksportsacademy.com/events';
+
+  return {
+    subject: `New Event: ${params.title} | ${ACADEMY_NAME}`,
+    html: `
+      <p>Namaste <strong>${safeParentName}</strong> ji,</p>
+      <p>We are excited to share a new academy event update for <strong>${safeStudentName}</strong>.</p>
+      ${infoBox(
+        infoRow('Event', safeTitle) +
+          infoRow('Starts On', safeFromDate) +
+          (safeEndDate ? infoRow('Ends On', safeEndDate) : '') +
+          (safeLocation ? infoRow('Location', safeLocation) : '')
+      )}
+      ${safeDescription ? `<p><strong>Details:</strong> ${safeDescription}</p>` : ''}
+      <p>View complete event details here:</p>
+      <p><a class="btn" href="${safeEventsPageUrl}" rel="noopener noreferrer">View Events</a></p>
+      <p style="margin-top:20px">📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
+      <p style="margin-top:16px">Regards,<br><strong>${ACADEMY_NAME}</strong></p>
+    `,
+  };
+}
+
+export function buildCompetitionAnnouncementEmail(params: {
+  parentName: string;
+  studentName: string;
+  name: string;
+  date: string;
+  endDate?: string | null;
+  location?: string | null;
+  description?: string | null;
+  competitionsPageUrl?: string;
+}): Omit<SendEmailParams, 'to'> {
+  const safeParentName = escapeHtml(params.parentName || 'Parent');
+  const safeStudentName = escapeHtml(params.studentName || 'Student');
+  const safeName = escapeHtml(params.name);
+  const safeDate = escapeHtml(params.date);
+  const safeEndDate = params.endDate ? escapeHtml(params.endDate) : null;
+  const safeLocation = params.location ? escapeHtml(params.location) : null;
+  const safeDescription = params.description
+    ? escapeHtml(params.description)
+    : null;
+  const safeCompetitionsPageUrl = params.competitionsPageUrl
+    ? validateHttpsUrl(params.competitionsPageUrl, 'competitionsPageUrl')
+    : 'https://ghataksportsacademy.com/student/dashboard';
+
+  return {
+    subject: `Competition Update: ${params.name} | ${ACADEMY_NAME}`,
+    html: `
+      <p>Namaste <strong>${safeParentName}</strong> ji,</p>
+      <p>A new competition update is available for <strong>${safeStudentName}</strong>.</p>
+      ${infoBox(
+        infoRow('Competition', safeName) +
+          infoRow('Date', safeDate) +
+          (safeEndDate ? infoRow('End Date', safeEndDate) : '') +
+          (safeLocation ? infoRow('Location', safeLocation) : '')
+      )}
+      ${safeDescription ? `<p><strong>Details:</strong> ${safeDescription}</p>` : ''}
+      <p>Please check the student portal for registration and updates:</p>
+      <p><a class="btn" href="${safeCompetitionsPageUrl}" rel="noopener noreferrer">Open Student Portal</a></p>
+      <p style="margin-top:20px">📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
+      <p style="margin-top:16px">Regards,<br><strong>${ACADEMY_NAME}</strong></p>
+    `,
+  };
+}
+
 export function buildEnrollmentStageEmail(
   stage: EnrollmentEmailStage,
   params: {

@@ -115,16 +115,17 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
           if (!mounted) return;
           if (prof) {
             setProfile(prof);
+            const currentPath = window.location.pathname;
             if (requiresPasswordSetup(sess)) {
-              if (location.pathname !== '/student/set-password') {
+              if (currentPath !== '/student/set-password') {
                 navigate('/student/set-password', { replace: true });
               }
               return;
             }
             if (
-              location.pathname === '/student/login' ||
-              location.pathname === '/student' ||
-              location.pathname === '/student/set-password'
+              currentPath === '/student/login' ||
+              currentPath === '/student' ||
+              currentPath === '/student/set-password'
             ) {
               navigate('/student/dashboard', { replace: true });
             }
@@ -143,8 +144,9 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
         if (!mounted || isSigningOut.current) return;
         setSession(newSession);
         if (newSession) {
+          const currentPath = window.location.pathname;
           if (requiresPasswordSetup(newSession)) {
-            if (location.pathname !== '/student/set-password') {
+            if (currentPath !== '/student/set-password') {
               navigate('/student/set-password', { replace: true });
             }
           }
@@ -161,7 +163,7 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
       listener.subscription.unsubscribe();
       clearAnimationTimeout();
     };
-  }, [loadProfile, navigate, location.pathname]);
+  }, [loadProfile, navigate]);
 
   const signIn = async (loginId: string, password: string) => {
     setIsLoading(true);
@@ -184,10 +186,8 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
         throw new Error('No student account found for this ID.');
       }
       setProfile(prof);
-      triggerAnimation('login', `Welcome back, ${prof.studentName}!`, 2200);
-      await new Promise((r) => setTimeout(r, 1500));
+      triggerAnimation('login', `Welcome back, ${prof.studentName}!`, 900);
       navigate('/student/dashboard', { replace: true });
-      setTimeout(() => setAuthAnimation(null), 800);
     } finally {
       setIsLoading(false);
     }
@@ -198,10 +198,9 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
 
     isSigningOut.current = true;
     setIsLoading(true);
-    triggerAnimation('logout', 'You have been signed out successfully.', 2500);
+    triggerAnimation('logout', 'You have been signed out successfully.', 700);
 
     try {
-      await new Promise((r) => setTimeout(r, 1000));
       const { error } = await supabase.auth.signOut();
       if (error) {
         throw error;
@@ -211,7 +210,6 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
       setSession(null);
       setProfile(null);
 
-      await new Promise((r) => setTimeout(r, 300));
       setAuthAnimation(null);
       navigate('/student/login', { replace: true });
     } catch (error) {

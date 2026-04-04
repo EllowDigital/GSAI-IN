@@ -23,6 +23,8 @@ import {
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
+import { sendAnnouncementToApprovedStudents } from '@/utils/studentCommunication';
+import { buildEventAnnouncementEmail } from '@/utils/resendEmail';
 
 type EventRow = Tables<'events'>;
 
@@ -170,8 +172,6 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
         }
       }
 
-      const { data: sessionData } = await supabase.auth.getSession();
-
       if (editingEvent) {
         // Update
         const { error } = await supabase
@@ -192,6 +192,25 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
           return;
         }
         toast.success('Event updated.');
+
+        const stats = await sendAnnouncementToApprovedStudents((recipient) =>
+          buildEventAnnouncementEmail({
+            parentName: recipient.parentName,
+            studentName: recipient.studentName,
+            title: (form.title || '').toString(),
+            fromDate: (form.from_date || '').toString(),
+            endDate: (form.end_date || null) as string | null,
+            location: ((form as any).location || null) as string | null,
+            description: (form.description || null) as string | null,
+            eventsPageUrl: `${window.location.origin}/events`,
+          })
+        );
+
+        if (stats.total > 0) {
+          toast.success(
+            `Event email sent to ${stats.sent}/${stats.total} students${stats.failed ? ` (${stats.failed} failed)` : ''}.`
+          );
+        }
       } else {
         // Create (fix: provide date)
         const { error } = await supabase.from('events').insert([
@@ -212,6 +231,25 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
           return;
         }
         toast.success('Event created.');
+
+        const stats = await sendAnnouncementToApprovedStudents((recipient) =>
+          buildEventAnnouncementEmail({
+            parentName: recipient.parentName,
+            studentName: recipient.studentName,
+            title: (form.title || '').toString(),
+            fromDate: (form.from_date || '').toString(),
+            endDate: (form.end_date || null) as string | null,
+            location: ((form as any).location || null) as string | null,
+            description: (form.description || null) as string | null,
+            eventsPageUrl: `${window.location.origin}/events`,
+          })
+        );
+
+        if (stats.total > 0) {
+          toast.success(
+            `Event email sent to ${stats.sent}/${stats.total} students${stats.failed ? ` (${stats.failed} failed)` : ''}.`
+          );
+        }
       }
       onOpenChange(false);
     } catch (err: any) {
