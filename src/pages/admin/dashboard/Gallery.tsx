@@ -1,16 +1,23 @@
-// --- PART 1 (State + Logic Setup) ---
-
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/services/supabase/client';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import {
   Upload,
   Table as TableIcon,
   Image as ImageIcon,
   Eye,
+  Trash2,
+  CalendarDays,
+  Search,
+  Sparkles,
+  CheckSquare,
+  XCircle,
+  Loader2,
 } from 'lucide-react';
-import GalleryImageCard from './GalleryImageCard';
 import GalleryUploadDrawer from './GalleryUploadDrawer';
 import { exportGalleryToCsv } from '@/utils/exportToCsv';
 import { Tables } from '@/services/supabase/types';
@@ -22,7 +29,6 @@ type GalleryImage = Tables<'gallery_images'>;
 
 export default function Gallery() {
   const [uploadDrawerOpen, setUploadDrawerOpen] = useState(false);
-  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [viewMode, setViewMode] = usePersistentState<'cards' | 'table'>(
     'admin:layout:view-mode',
@@ -37,11 +43,14 @@ export default function Gallery() {
   const [selectedImages, setSelectedImages] = useState<Set<string>>(new Set());
   const [page, setPage] = useState(1);
   const [previewImage, setPreviewImage] = useState<GalleryImage | null>(null);
+  const [query, setQuery] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
 
   const IMAGES_PER_PAGE = 20;
   const queryClient = useQueryClient();
 
-  const { data: images = [], isLoading } = useQuery({
+  const { data: images = [], isLoading } = useQuery<GalleryImage[]>({
     queryKey: ['gallery_images'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -49,8 +58,13 @@ export default function Gallery() {
         .select('*')
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data || [];
+      return (data || []) as GalleryImage[];
     },
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 60,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    placeholderData: (previousData) => previousData,
   });
 
   useEffect(() => {
@@ -76,9 +90,6 @@ export default function Gallery() {
         .eq('id', id);
       if (error) throw error;
     },
-    onMutate: (id) => {
-      setDeletingIds((prev) => new Set(prev).add(id));
-    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['gallery_images'] });
       toast({ title: 'Deleted', description: 'Image removed successfully' });
@@ -86,21 +97,34 @@ export default function Gallery() {
     onError: (error: any) => {
       toast({ title: 'Error', description: error.message, variant: 'error' });
     },
-    onSettled: (_, __, id) => {
-      setDeletingIds((prev) => {
-        const next = new Set(prev);
-        next.delete(id);
-        return next;
-      });
+  });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const { error } = await supabase.from('gallery_images').delete().in('id', ids);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['gallery_images'] });
+      toast({ title: 'Deleted', description: 'Selected images removed successfully' });
+      setSelectedImages(new Set());
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message, variant: 'error' });
     },
   });
 
-  const handleDelete = (id: string) => deleteMutation.mutate(id);
-  const isDeleting = (id: string) => deletingIds.has(id);
+  const handleDelete = (id: string) => {
+    if (!window.confirm('Delete this image?')) return;
+    deleteMutation.mutate(id);
+  };
 
   const handleDeleteMany = () => {
-    selectedImages.forEach((id) => deleteMutation.mutate(id));
-    setSelectedImages(new Set());
+    if (selectedImages.size === 0) return;
+    if (!window.confirm(`Delete ${selectedImages.size} selected images?`)) {
+      return;
+    }
+    bulkDeleteMutation.mutate(Array.from(selectedImages));
   };
 
   const handleRefresh = async () => {
@@ -123,22 +147,46 @@ export default function Gallery() {
     }
   };
 
-  const filteredImages = images.filter((img) => {
-    const matchesTag = tagFilter
-      ? img.tag?.toLowerCase().includes(tagFilter.toLowerCase())
-      : true;
-    const createdAt = new Date(img.created_at || '');
-    const withinDateRange =
-      (!dateRange[0] || createdAt >= dateRange[0]) &&
-      (!dateRange[1] || createdAt <= dateRange[1]);
-    return matchesTag && withinDateRange;
-  });
+  const filteredImages = useMemo(() => {
+    return images.filter((img) => {
+      const searchable = `${img.caption || ''} ${img.tag || ''}`.toLowerCase();
+      const matchesQuery = query.trim()
+        ? searchable.includes(query.toLowerCase().trim())
+        : true;
+      const matchesTag = tagFilter
+        ? img.tag?.toLowerCase().includes(tagFilter.toLowerCase())
+        : true;
+
+      const createdAt = new Date(img.created_at || '');
+      const fromDate = dateFrom ? new Date(`${dateFrom}T00:00:00`) : null;
+      const toDate = dateTo ? new Date(`${dateTo}T23:59:59`) : null;
+
+      const withinDateRange =
+        (!fromDate || createdAt >= fromDate) && (!toDate || createdAt <= toDate);
+
+      return matchesQuery && matchesTag && withinDateRange;
+    });
+  }, [images, query, tagFilter, dateFrom, dateTo]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [query, tagFilter, dateFrom, dateTo, viewMode]);
+
+  const activeDateRange = useMemo(
+    () =>
+      [dateFrom || null, dateTo || null] as [Date | null, Date | null],
+    [dateFrom, dateTo]
+  );
 
   const totalPages = Math.ceil(filteredImages.length / IMAGES_PER_PAGE);
-  const paginatedImages = filteredImages.slice(
-    (page - 1) * IMAGES_PER_PAGE,
-    page * IMAGES_PER_PAGE
+  const paginatedImages = useMemo(
+    () =>
+      filteredImages.slice((page - 1) * IMAGES_PER_PAGE, page * IMAGES_PER_PAGE),
+    [filteredImages, page]
   );
+
+  const totalTagged = images.filter((img) => !!img.tag).length;
+  const selectedCount = selectedImages.size;
 
   const toggleSelect = (id: string) => {
     setSelectedImages((prev) => {
@@ -150,22 +198,83 @@ export default function Gallery() {
 
   const handleImageClick = (img: GalleryImage) => setPreviewImage(img);
 
+  const toggleSelectAllOnPage = () => {
+    setSelectedImages((prev) => {
+      const next = new Set(prev);
+      const allSelected = paginatedImages.every((img) => next.has(img.id));
+
+      paginatedImages.forEach((img) => {
+        if (allSelected) {
+          next.delete(img.id);
+        } else {
+          next.add(img.id);
+        }
+      });
+
+      return next;
+    });
+  };
+
   return (
-    <div className="admin-page">
-      <div className="admin-panel">
+    <div className="admin-page space-y-5 lg:space-y-6">
+      <section className="admin-panel overflow-hidden border-border/70 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-slate-100 shadow-md">
+        <div className="relative p-5 sm:p-6 lg:p-7">
+          <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10 blur-3xl" />
+          <div className="pointer-events-none absolute -left-20 -bottom-20 h-52 w-52 rounded-full bg-cyan-300/20 blur-3xl" />
+
+          <div className="relative flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="space-y-3">
+              <Badge className="w-fit gap-1 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-slate-100 hover:bg-white/10">
+                <Sparkles className="h-3.5 w-3.5" />
+                Visual Content Workspace
+              </Badge>
+              <div>
+                <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                  Gallery Management
+                </h1>
+                <p className="mt-2 max-w-2xl text-sm text-slate-200 sm:text-base">
+                  Upload, organize, preview, and curate gallery assets in one
+                  streamlined modern workspace.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid w-full gap-2 sm:grid-cols-3 lg:w-auto lg:min-w-[460px]">
+              <Card className="border-white/20 bg-white/10 text-slate-100">
+                <CardContent className="p-3">
+                  <p className="text-xs uppercase tracking-wide text-slate-300">Total</p>
+                  <p className="mt-1 text-2xl font-semibold">{isLoading ? '...' : images.length}</p>
+                </CardContent>
+              </Card>
+              <Card className="border-white/20 bg-white/10 text-slate-100">
+                <CardContent className="p-3">
+                  <p className="text-xs uppercase tracking-wide text-slate-300">With Tags</p>
+                  <p className="mt-1 text-2xl font-semibold">{isLoading ? '...' : totalTagged}</p>
+                </CardContent>
+              </Card>
+              <Card className="border-white/20 bg-white/10 text-slate-100">
+                <CardContent className="p-3">
+                  <p className="text-xs uppercase tracking-wide text-slate-300">Selected</p>
+                  <p className="mt-1 text-2xl font-semibold">{selectedCount}</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="admin-panel">
         <div className="admin-panel-header">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="admin-toolbar">
             <div>
-              <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2 text-foreground">
-                <ImageIcon className="w-5 h-5 text-primary" />
-                <span>Gallery Management</span>
+              <h2 className="text-base font-semibold text-foreground sm:text-lg">
+                Gallery Controls
               </h2>
-              <p className="mt-1 text-sm sm:text-base text-muted-foreground">
-                Upload, organize, and manage images for your academy gallery and
-                content.
+              <p className="text-sm text-muted-foreground">
+                Filter and switch layouts quickly while keeping media operations simple.
               </p>
             </div>
-            <div className="flex gap-2 mt-2 sm:mt-0">
+            <div className="flex flex-wrap gap-2">
               <RefreshButton
                 onRefresh={handleRefresh}
                 isLoading={isLoading || isRefreshing}
@@ -173,128 +282,210 @@ export default function Gallery() {
               />
               <Button
                 onClick={() => setUploadDrawerOpen(true)}
-                className="gap-2 shadow"
+                className="gap-2"
                 size="sm"
               >
                 <Upload className="w-4 h-4" />
-                <span className="hidden sm:inline">Upload Images</span>
-                <span className="sm:hidden">Upload</span>
+                Upload Images
               </Button>
             </div>
           </div>
         </div>
 
-        <div className="admin-panel-body">
-          {/* Filters and Controls */}
-          <div className="flex flex-col lg:flex-row lg:items-end gap-4 lg:gap-6">
-            <div className="flex flex-col sm:flex-row gap-3 flex-1">
-              <input
-                type="text"
-                placeholder="Filter by tag..."
-                className="border border-input rounded-lg px-3 py-2 text-sm bg-background flex-1 sm:max-w-[200px]"
-                value={tagFilter}
-                onChange={(e) => setTagFilter(e.target.value)}
+        <div className="admin-panel-body space-y-4">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <div className="relative xl:col-span-2">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search by caption or tag..."
+                className="pl-9"
               />
-              <div className="flex gap-2 flex-1 sm:flex-initial">
-                <input
-                  type="date"
-                  className="border border-input rounded-lg px-3 py-2 text-sm bg-background flex-1"
-                  onChange={(e) =>
-                    setDateRange([
-                      e.target.value ? new Date(e.target.value) : null,
-                      dateRange[1],
-                    ])
-                  }
-                />
-                <input
-                  type="date"
-                  className="border border-input rounded-lg px-3 py-2 text-sm bg-background flex-1"
-                  onChange={(e) =>
-                    setDateRange([
-                      dateRange[0],
-                      e.target.value ? new Date(e.target.value) : null,
-                    ])
-                  }
-                />
-              </div>
             </div>
 
-            {/* View Controls */}
-            <div className="flex flex-wrap gap-2 sm:gap-3">
-              {/* View Mode Toggle */}
-              <div className="admin-toggle flex-1 sm:flex-initial">
-                <Button
-                  variant={viewMode === 'cards' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('cards')}
-                  className="rounded-full px-3 flex-1 sm:flex-initial"
-                >
-                  <ImageIcon className="w-4 h-4" />
-                  <span className="hidden sm:inline ml-1">Cards</span>
-                </Button>
-                <Button
-                  variant={viewMode === 'table' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('table')}
-                  className="rounded-full px-3 flex-1 sm:flex-initial"
-                >
-                  <TableIcon className="w-4 h-4" />
-                  <span className="hidden sm:inline ml-1">Table</span>
-                </Button>
-              </div>
+            <Input
+              value={tagFilter}
+              onChange={(e) => setTagFilter(e.target.value)}
+              placeholder="Filter by tag..."
+            />
 
-              <Button
-                onClick={() => exportGalleryToCsv(filteredImages)}
-                disabled={filteredImages.length === 0}
-                variant="outline"
-                size="sm"
-                className="flex-1 sm:flex-initial min-w-[100px]"
-              >
-                Export CSV
-              </Button>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="relative">
+                <CalendarDays className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+              <div className="relative">
+                <CalendarDays className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Multi Delete */}
-          {selectedImages.size > 0 && (
-            <div className="flex justify-end">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
+            <div className="admin-toggle">
               <Button
-                variant="destructive"
-                onClick={handleDeleteMany}
-                className="rounded-full text-sm"
+                variant={viewMode === 'cards' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('cards')}
+                className="rounded-full px-3"
               >
-                Delete Selected ({selectedImages.size})
+                <ImageIcon className="w-4 h-4" />
+                <span className="ml-1 hidden sm:inline">Cards</span>
+              </Button>
+              <Button
+                variant={viewMode === 'table' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('table')}
+                className="rounded-full px-3"
+              >
+                <TableIcon className="w-4 h-4" />
+                <span className="ml-1 hidden sm:inline">Table</span>
               </Button>
             </div>
-          )}
 
-          {/* Gallery View */}
-          <div className="max-h-[50vh] sm:max-h-[60vh] lg:max-h-[70vh] overflow-y-auto">
+            <Button
+              onClick={() => exportGalleryToCsv(filteredImages)}
+              disabled={filteredImages.length === 0}
+              variant="outline"
+              size="sm"
+            >
+              Export CSV
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleSelectAllOnPage}
+              disabled={paginatedImages.length === 0}
+              className="gap-1.5"
+            >
+              <CheckSquare className="h-4 w-4" />
+              Select Page
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSelectedImages(new Set())}
+              disabled={selectedImages.size === 0}
+              className="gap-1.5"
+            >
+              <XCircle className="h-4 w-4" />
+              Clear Selection
+            </Button>
+
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleDeleteMany}
+              disabled={selectedImages.size === 0 || bulkDeleteMutation.isPending}
+              className="gap-1.5"
+            >
+              {bulkDeleteMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
+              Delete Selected ({selectedImages.size})
+            </Button>
+          </div>
+
+          <div className="rounded-xl border border-border/70 bg-muted/20 px-3 py-2 text-xs text-muted-foreground sm:text-sm">
+            Showing {paginatedImages.length} of {filteredImages.length} filtered images.
+            {activeDateRange[0] || activeDateRange[1] ? ' Date range filter active.' : ''}
+          </div>
+
+          <div className="max-h-[68vh] overflow-y-auto">
             {isLoading || isRefreshing ? (
-              <div className="flex justify-center py-8 sm:py-12">
-                <div className="h-6 w-6 sm:h-8 sm:w-8 border-2 sm:border-4 border-pink-400 rounded-full animate-spin border-t-transparent" />
+              <div className="flex justify-center py-10">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
             ) : filteredImages.length === 0 ? (
-              <div className="text-center text-gray-500 py-8 sm:py-12 px-4">
-                <ImageIcon className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 text-gray-300" />
-                <p className="text-sm sm:text-base">No images found.</p>
+              <div className="text-center py-10 px-4">
+                <ImageIcon className="w-16 h-16 mx-auto mb-3 text-muted-foreground/40" />
+                <p className="text-sm text-muted-foreground">No images matched your filters.</p>
               </div>
             ) : viewMode === 'cards' ? (
-              <div className="grid gap-3 sm:gap-4 md:gap-6 grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6">
+              <div className="admin-card-grid">
                 {paginatedImages.map((image) => (
-                  <GalleryImageCard
+                  <Card
                     key={image.id}
-                    image={image}
-                    onDeleteSuccess={() =>
-                      queryClient.invalidateQueries({
-                        queryKey: ['gallery_images'],
-                      })
-                    }
-                  />
+                    className="overflow-hidden border-border/70 transition-colors hover:bg-muted/20"
+                  >
+                    <CardContent className="p-0">
+                      <button
+                        type="button"
+                        className="w-full"
+                        onClick={() => handleImageClick(image)}
+                      >
+                        <img
+                          src={image.image_url}
+                          alt={image.caption ?? 'Gallery image'}
+                          className="h-44 w-full object-cover"
+                          loading="lazy"
+                        />
+                      </button>
+                      <div className="space-y-2 p-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="truncate text-sm font-medium text-foreground">
+                            {image.caption || 'Untitled image'}
+                          </p>
+                          <input
+                            type="checkbox"
+                            checked={selectedImages.has(image.id)}
+                            onChange={() => toggleSelect(image.id)}
+                            aria-label="Select image"
+                          />
+                        </div>
+                        <div className="flex items-center justify-between gap-2">
+                          {image.tag ? (
+                            <Badge variant="outline" className="text-xs">
+                              #{image.tag}
+                            </Badge>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">No tag</span>
+                          )}
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(image.created_at || '').toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleImageClick(image)}
+                            className="flex-1"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleDelete(image.id)}
+                            disabled={deleteMutation.isPending}
+                            className="flex-1"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="admin-table-wrap">
                 <table className="w-full text-left border-collapse">
                   <thead className="bg-muted/50">
                     <tr>
@@ -308,10 +499,7 @@ export default function Gallery() {
                   </thead>
                   <tbody className="divide-y divide-border">
                     {paginatedImages.map((image) => (
-                      <tr
-                        key={image.id}
-                        className="hover:bg-muted/30 transition"
-                      >
+                      <tr key={image.id} className="hover:bg-muted/30 transition">
                         <td className="p-3">
                           <input
                             type="checkbox"
@@ -324,20 +512,19 @@ export default function Gallery() {
                             src={image.image_url}
                             alt={image.caption ?? 'Image'}
                             className="h-16 w-24 object-cover rounded-md border"
+                            loading="lazy"
                           />
                         </td>
-                        <td className="p-3 max-w-xs truncate">
-                          {image.caption}
-                        </td>
+                        <td className="p-3 max-w-xs truncate">{image.caption || 'Untitled image'}</td>
                         <td className="p-3">
-                          <span className="text-xs bg-yellow-300 text-black px-2 py-0.5 rounded">
-                            {image.tag}
-                          </span>
+                          {image.tag ? (
+                            <Badge variant="outline">#{image.tag}</Badge>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">No tag</span>
+                          )}
                         </td>
                         <td className="p-3 text-sm text-muted-foreground">
-                          {new Date(
-                            image.created_at || ''
-                          ).toLocaleDateString()}
+                          {new Date(image.created_at || '').toLocaleDateString()}
                         </td>
                         <td className="p-3 text-right space-x-2">
                           <Button
@@ -351,9 +538,9 @@ export default function Gallery() {
                             variant="destructive"
                             size="sm"
                             onClick={() => handleDelete(image.id)}
-                            disabled={isDeleting(image.id)}
+                            disabled={deleteMutation.isPending}
                           >
-                            {isDeleting(image.id) ? 'Deleting...' : 'Delete'}
+                            Delete
                           </Button>
                         </td>
                       </tr>
@@ -363,34 +550,29 @@ export default function Gallery() {
               </div>
             )}
 
-            {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex justify-center gap-2 mt-4">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (p) => (
-                    <Button
-                      key={p}
-                      size="sm"
-                      variant={p === page ? 'default' : 'outline'}
-                      onClick={() => setPage(p)}
-                    >
-                      {p}
-                    </Button>
-                  )
-                )}
+              <div className="mt-4 flex flex-wrap justify-center gap-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <Button
+                    key={p}
+                    size="sm"
+                    variant={p === page ? 'default' : 'outline'}
+                    onClick={() => setPage(p)}
+                  >
+                    {p}
+                  </Button>
+                ))}
               </div>
             )}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Upload Drawer */}
       <GalleryUploadDrawer
         open={uploadDrawerOpen}
         onClose={() => setUploadDrawerOpen(false)}
       />
 
-      {/* Image Preview Modal */}
       {previewImage && (
         <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg max-w-3xl w-full">
