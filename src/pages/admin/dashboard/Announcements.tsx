@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/services/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -65,7 +65,11 @@ export default function AnnouncementsManager() {
   const [editingAnn, setEditingAnn] = useState<Announcement | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const { data: announcements = [], isLoading } = useQuery({
+  const {
+    data: announcements = [],
+    isLoading,
+    dataUpdatedAt,
+  } = useQuery({
     queryKey: ['admin-announcements'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -150,10 +154,10 @@ export default function AnnouncementsManager() {
   const urgentAnnouncements = announcements.filter(
     (item) => item.priority === 'urgent'
   );
+  const now = dataUpdatedAt;
   const expiringSoon = announcements.filter((item) => {
     if (!item.expires_at) return false;
     const expiry = new Date(item.expires_at).getTime();
-    const now = Date.now();
     const inThreeDays = now + 1000 * 60 * 60 * 24 * 3;
     return expiry >= now && expiry <= inThreeDays;
   });
@@ -256,6 +260,7 @@ export default function AnnouncementsManager() {
                   </DialogTitle>
                 </DialogHeader>
                 <AnnouncementForm
+                  key={editingAnn?.id ?? 'new'}
                   initial={editingAnn}
                   onSubmit={(data) => upsertMutation.mutate(data)}
                   isPending={upsertMutation.isPending}
@@ -437,14 +442,6 @@ function AnnouncementForm({
   const [expiresAt, setExpiresAt] = useState(
     initial?.expires_at?.split('T')[0] || ''
   );
-
-  useEffect(() => {
-    setTitle(initial?.title || '');
-    setContent(initial?.content || '');
-    setPriority(initial?.priority || 'normal');
-    setIsActive(initial?.is_active ?? true);
-    setExpiresAt(initial?.expires_at?.split('T')[0] || '');
-  }, [initial]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

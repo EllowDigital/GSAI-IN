@@ -309,7 +309,8 @@ export default function StudentProfileCard() {
           <DialogHeader>
             <DialogTitle>Edit Profile</DialogTitle>
             <DialogDescription>
-              Update your personal details. Program and join date changes are admin-managed.
+              Update your personal details. Program and join date changes are
+              admin-managed.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">

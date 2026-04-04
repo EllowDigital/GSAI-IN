@@ -58,8 +58,8 @@ export default function StudentLogin() {
                   Track Progress, Fees, Events, and Competitions
                 </h1>
                 <p className="max-w-md text-sm text-slate-200">
-                  Secure login for students to view personal dashboard updates in
-                  one simple, modern workspace.
+                  Secure login for students to view personal dashboard updates
+                  in one simple, modern workspace.
                 </p>
               </div>
 
@@ -87,7 +87,9 @@ export default function StudentLogin() {
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
                 <GraduationCap className="h-7 w-7 text-primary" />
               </div>
-              <h2 className="text-2xl font-semibold text-foreground">Student Portal</h2>
+              <h2 className="text-2xl font-semibold text-foreground">
+                Student Portal
+              </h2>
               <p className="text-sm text-muted-foreground">
                 Sign in with your Student ID and password.
               </p>
@@ -152,7 +154,11 @@ export default function StudentLogin() {
                 </div>
               )}
 
-              <Button type="submit" disabled={isDisabled} className="h-11 w-full gap-2">
+              <Button
+                type="submit"
+                disabled={isDisabled}
+                className="h-11 w-full gap-2"
+              >
                 {isDisabled ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
