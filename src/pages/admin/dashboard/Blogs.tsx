@@ -1,8 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/services/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Plus, Grid, List, BookMarked } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  Plus,
+  Grid,
+  List,
+  BookMarked,
+  Sparkles,
+  Search,
+  CalendarDays,
+  Clock3,
+} from 'lucide-react';
 import BlogEditorModal from '@/components/admin/BlogEditorModal';
 import BlogsTable from '@/components/admin/blogs/BlogsTable';
 import BlogsCards from '@/components/admin/blogs/BlogsCards';
@@ -17,6 +29,7 @@ type Blog = Tables<'blogs'>;
 export default function Blogs() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = usePersistentState<'cards' | 'table'>(
     'admin:layout:view-mode',
     'cards',
@@ -99,9 +112,7 @@ export default function Blogs() {
   const handleModalClose = () => {
     setModalOpen(false);
     setEditingBlog(null);
-    setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: ['blogs'] });
-    }, 100);
+    queryClient.invalidateQueries({ queryKey: ['blogs'] });
   };
 
   const handleRefresh = async () => {
@@ -135,19 +146,85 @@ export default function Blogs() {
 
   const isDeleting = (id: string) => deletingIds.has(id);
 
+  const filteredBlogs = useMemo(() => {
+    return blogs.filter((blog) => {
+      const searchable = `${blog.title || ''} ${blog.description || ''} ${blog.content || ''}`.toLowerCase();
+      return searchQuery.trim()
+        ? searchable.includes(searchQuery.toLowerCase().trim())
+        : true;
+    });
+  }, [blogs, searchQuery]);
+
+  const thisMonthCount = useMemo(() => {
+    const now = new Date();
+    return blogs.filter((blog) => {
+      if (!blog.published_at) return false;
+      const published = new Date(blog.published_at);
+      return (
+        published.getFullYear() === now.getFullYear() &&
+        published.getMonth() === now.getMonth()
+      );
+    }).length;
+  }, [blogs]);
+
   return (
-    <div className="admin-page">
+    <div className="admin-page space-y-5 lg:space-y-6">
+      <section className="admin-panel overflow-hidden border-border/70 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-slate-100 shadow-md">
+        <div className="relative p-5 sm:p-6 lg:p-7">
+          <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10 blur-3xl" />
+          <div className="pointer-events-none absolute -left-20 -bottom-20 h-52 w-52 rounded-full bg-orange-300/20 blur-3xl" />
+
+          <div className="relative flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="space-y-3">
+              <Badge className="w-fit gap-1 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-slate-100 hover:bg-white/10">
+                <Sparkles className="h-3.5 w-3.5" />
+                Editorial Workspace
+              </Badge>
+              <div>
+                <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                  Blog Management
+                </h1>
+                <p className="mt-2 max-w-2xl text-sm text-slate-200 sm:text-base">
+                  Create, refine, and publish academy stories in a cleaner,
+                  faster writing workflow.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid w-full gap-2 sm:grid-cols-3 lg:w-auto lg:min-w-[460px]">
+              <Card className="border-white/20 bg-white/10 text-slate-100">
+                <CardContent className="p-3">
+                  <p className="text-xs uppercase tracking-wide text-slate-300">Total Posts</p>
+                  <p className="mt-1 text-2xl font-semibold">{isLoading ? '...' : blogs.length}</p>
+                </CardContent>
+              </Card>
+              <Card className="border-white/20 bg-white/10 text-slate-100">
+                <CardContent className="p-3">
+                  <p className="text-xs uppercase tracking-wide text-slate-300">This Month</p>
+                  <p className="mt-1 text-2xl font-semibold">{isLoading ? '...' : thisMonthCount}</p>
+                </CardContent>
+              </Card>
+              <Card className="border-white/20 bg-white/10 text-slate-100">
+                <CardContent className="p-3">
+                  <p className="text-xs uppercase tracking-wide text-slate-300">Filtered</p>
+                  <p className="mt-1 text-2xl font-semibold">{filteredBlogs.length}</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <div className="admin-panel">
         <div className="admin-panel-header">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2 text-foreground">
+              <h2 className="text-lg sm:text-xl font-semibold flex items-center gap-2 text-foreground">
                 <BookMarked className="w-5 h-5 text-primary" />
-                <span>Blog Management</span>
+                <span>Blog Operations</span>
               </h2>
-              <p className="mt-1 text-sm sm:text-base text-muted-foreground">
-                Create, edit, and publish blog posts to share academy updates
-                and insights.
+              <p className="mt-1 text-sm text-muted-foreground">
+                Manage posts, switch views, and maintain high-quality content flow.
               </p>
             </div>
             <div className="flex gap-2 mt-2 sm:mt-0">
@@ -157,8 +234,11 @@ export default function Blogs() {
                 className="flex-shrink-0"
               />
               <Button
-                onClick={() => setModalOpen(true)}
-                className="gap-2 shadow"
+                onClick={() => {
+                  setEditingBlog(null);
+                  setModalOpen(true);
+                }}
+                className="gap-2"
                 size="sm"
               >
                 <Plus className="w-4 h-4" />
@@ -170,10 +250,18 @@ export default function Blogs() {
         </div>
 
         <div className="admin-panel-body">
-          {/* View Controls */}
-          <div className="admin-toolbar">
-            {/* View Mode Toggle */}
-            <div className="admin-toggle flex-1 sm:flex-initial">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <div className="relative xl:col-span-2">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search title, summary, or content..."
+                className="pl-9"
+              />
+            </div>
+
+            <div className="admin-toggle flex-1 sm:flex-initial justify-self-start">
               <Button
                 variant={viewMode === 'cards' ? 'default' : 'ghost'}
                 size="sm"
@@ -195,17 +283,27 @@ export default function Blogs() {
             </div>
 
             <Button
-              onClick={() => exportBlogsToCsv(blogs)}
-              disabled={blogs.length === 0}
+              onClick={() => exportBlogsToCsv(filteredBlogs)}
+              disabled={filteredBlogs.length === 0}
               variant="outline"
               size="sm"
-              className="flex-1 sm:flex-initial min-w-[100px]"
+              className="justify-self-start"
             >
               Export CSV
             </Button>
           </div>
 
-          {/* Content */}
+          <div className="rounded-xl border border-border/70 bg-muted/20 px-3 py-2 text-xs text-muted-foreground sm:text-sm">
+            <span className="inline-flex items-center gap-1.5">
+              <CalendarDays className="h-3.5 w-3.5" />
+              Showing {filteredBlogs.length} of {blogs.length} posts
+            </span>
+          </div>
+
+          <div className="admin-toolbar">
+            <div />
+          </div>
+
           <div className="w-full space-y-4">
             {isLoading || isRefreshing ? (
               <div className="flex flex-col items-center justify-center py-8 sm:py-12">
@@ -214,25 +312,41 @@ export default function Blogs() {
                   Loading blog posts...
                 </p>
               </div>
-            ) : blogs.length === 0 ? (
+            ) : filteredBlogs.length === 0 ? (
               <div className="text-center py-8 sm:py-12 space-y-4">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-muted rounded-full flex items-center justify-center">
-                  <span className="text-2xl">📝</span>
+                  <Clock3 className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground" />
                 </div>
                 <h3 className="text-lg sm:text-xl font-semibold text-foreground">
-                  No blog posts found
+                  {blogs.length === 0
+                    ? 'No blog posts found'
+                    : 'No matching blog posts'}
                 </h3>
                 <p className="text-sm sm:text-base text-muted-foreground">
-                  Start creating engaging content for your academy blog.
+                  {blogs.length === 0
+                    ? 'Start creating engaging content for your academy blog.'
+                    : 'Try changing your search query.'}
                 </p>
-                <Button onClick={() => setModalOpen(true)} className="gap-2">
-                  <Plus className="w-4 h-4" />
-                  Create First Post
-                </Button>
+                {blogs.length === 0 ? (
+                  <Button
+                    onClick={() => {
+                      setEditingBlog(null);
+                      setModalOpen(true);
+                    }}
+                    className="gap-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Create First Post
+                  </Button>
+                ) : (
+                  <Button variant="outline" onClick={() => setSearchQuery('')}>
+                    Reset Search
+                  </Button>
+                )}
               </div>
             ) : viewMode === 'cards' ? (
               <BlogsCards
-                blogs={blogs}
+                blogs={filteredBlogs}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 isDeleting={isDeleting}
@@ -241,7 +355,7 @@ export default function Blogs() {
             ) : (
               <div className="rounded-2xl shadow-sm overflow-x-auto bg-card border">
                 <BlogsTable
-                  blogs={blogs}
+                  blogs={filteredBlogs}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                   isDeleting={isDeleting}
