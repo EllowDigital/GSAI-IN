@@ -139,8 +139,11 @@ export default function EnrollmentRequestsManager() {
       if (error) throw error;
       return (data || []) as EnrollmentRequest[];
     },
-    refetchOnMount: 'always',
-    refetchOnWindowFocus: true,
+    staleTime: 10_000,
+    gcTime: 5 * 60_000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
   });
 
   const buildMessagePayload = (req: EnrollmentRequest, notes?: string) => ({
