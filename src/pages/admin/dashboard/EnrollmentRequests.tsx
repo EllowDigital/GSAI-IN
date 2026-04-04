@@ -219,15 +219,35 @@ export default function EnrollmentRequestsManager() {
       if (error) throw error;
       return { id, status, notes };
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ['enrollment-requests'] });
       toast.success('Request updated');
 
-      // If rejected, auto-open WhatsApp with rejection message
-      if (data.status === 'rejected') {
-        const req = requests.find((r) => r.id === data.id);
-        if (req) {
-          sendRejectionNotification(req, data.notes || '');
+      const req = requests.find((r) => r.id === data.id);
+      if (req) {
+        // Send WhatsApp message for the stage
+        const stage = resolveEnrollmentMessageStage(data.status);
+        const whatsappMsg = buildEnrollmentStageMessage(
+          stage,
+          buildMessagePayload(req, data.notes)
+        );
+        openWhatsAppConversation(req.parent_phone, whatsappMsg);
+
+        // Send email via Resend if student email exists
+        if (req.student_email) {
+          try {
+            const { sendEmail, buildEnrollmentStageEmail } = await import('@/utils/resendEmail');
+            const emailPayload = buildEnrollmentStageEmail(stage, {
+              parentName: req.parent_name,
+              studentName: req.student_name,
+              program: req.program,
+              gender: req.gender,
+              notes: data.notes,
+            });
+            await sendEmail({ ...emailPayload, to: req.student_email });
+          } catch {
+            console.error('Email send failed for enrollment update');
+          }
         }
       }
       setViewReq(null);
