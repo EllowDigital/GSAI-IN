@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/services/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/useToast';
 import Spinner from '@/components/ui/spinner';
 import {
@@ -22,6 +23,9 @@ import {
   RefreshCw,
   CheckCircle,
   Info,
+  Sparkles,
+  ShieldCheck,
+  UserCheck,
 } from 'lucide-react';
 import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
 
@@ -78,6 +82,11 @@ export default function StudentPortalManager() {
       if (error) throw error;
       return data || [];
     },
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 60,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    placeholderData: (prev) => prev,
   });
 
   const { data: availableStudents = [] } = useQuery({
@@ -105,9 +114,13 @@ export default function StudentPortalManager() {
       );
       return (allStudents || []).filter((s) => !usedIds.has(s.id));
     },
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    placeholderData: (prev) => prev,
   });
 
-  // Auto-fill login ID and password when student is selected
   const handleStudentSelect = (studentId: string) => {
     setSelectedStudent(studentId);
     const student = availableStudents.find((s: any) => s.id === studentId);
@@ -122,10 +135,12 @@ export default function StudentPortalManager() {
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      if (!selectedStudent || !loginId.trim() || !password.trim())
+      if (!selectedStudent || !loginId.trim() || !password.trim()) {
         throw new Error('All fields required');
-      if (password.length < 6)
+      }
+      if (password.length < 6) {
         throw new Error('Password must be at least 6 characters');
+      }
       const { data, error } = await withTimeout(
         supabase.functions.invoke('create-student-account', {
           body: {
@@ -138,7 +153,7 @@ export default function StudentPortalManager() {
         'Creating student account timed out.'
       );
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      if ((data as any)?.error) throw new Error((data as any).error);
       return { loginId: loginId.trim(), password: password.trim() };
     },
     onSuccess: (creds) => {
@@ -169,10 +184,12 @@ export default function StudentPortalManager() {
 
   const resetMutation = useMutation({
     mutationFn: async () => {
-      if (!resetAccount || !newPassword.trim())
+      if (!resetAccount || !newPassword.trim()) {
         throw new Error('Password is required');
-      if (newPassword.length < 6)
+      }
+      if (newPassword.length < 6) {
         throw new Error('Password must be at least 6 characters');
+      }
       const { data, error } = await withTimeout(
         supabase.functions.invoke('reset-student-password', {
           body: {
@@ -184,7 +201,7 @@ export default function StudentPortalManager() {
         'Resetting password timed out.'
       );
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      if ((data as any)?.error) throw new Error((data as any).error);
     },
     onSuccess: () => {
       setResetSuccess(true);
@@ -227,102 +244,177 @@ export default function StudentPortalManager() {
     setResetOpen(val);
   };
 
-  const filtered = (accounts as any[]).filter(
-    (a: any) =>
-      a.students?.name?.toLowerCase().includes(search.toLowerCase()) ||
-      a.login_id?.toLowerCase().includes(search.toLowerCase())
+  const filtered = useMemo(
+    () =>
+      (accounts as any[]).filter(
+        (a: any) =>
+          a.students?.name?.toLowerCase().includes(search.toLowerCase()) ||
+          a.login_id?.toLowerCase().includes(search.toLowerCase())
+      ),
+    [accounts, search]
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div>
-          <h3 className="text-lg font-semibold text-foreground">
-            Student Portal Accounts
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            Manage student login credentials
-          </p>
-        </div>
-        <Button
-          onClick={handleCreateOpen}
-          size="sm"
-          className="gap-1.5"
-          disabled={availableStudents.length === 0}
-        >
-          <UserPlus className="w-4 h-4" /> Create Account
-        </Button>
-      </div>
+    <div className="space-y-5">
+      <section className="admin-panel overflow-hidden border-border/70 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-slate-100 shadow-md">
+        <div className="relative p-5 sm:p-6 lg:p-7">
+          <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10 blur-3xl" />
+          <div className="pointer-events-none absolute -left-20 -bottom-20 h-52 w-52 rounded-full bg-emerald-300/20 blur-3xl" />
 
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input
-          placeholder="Search accounts..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-9"
-        />
-      </div>
+          <div className="relative flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="space-y-3">
+              <Badge className="w-fit gap-1 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-slate-100 hover:bg-white/10">
+                <Sparkles className="h-3.5 w-3.5" />
+                Portal Identity Workspace
+              </Badge>
+              <div>
+                <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                  Student Portal Accounts
+                </h2>
+                <p className="mt-2 max-w-2xl text-sm text-slate-200 sm:text-base">
+                  Create and manage student logins with safer reset and credential
+                  sharing workflows.
+                </p>
+              </div>
+            </div>
 
-      {isLoading ? (
-        <div className="flex justify-center py-8">
-          <Spinner size={20} />
-        </div>
-      ) : filtered.length === 0 ? (
-        <p className="text-center text-sm text-muted-foreground py-8">
-          No portal accounts created yet.
-        </p>
-      ) : (
-        <div className="space-y-2">
-          {filtered.map((account: any) => (
-            <Card key={account.id} className="border border-border">
-              <CardContent className="p-3 flex items-center justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-foreground">
-                    {account.students?.name}
+            <div className="grid w-full gap-2 sm:grid-cols-3 lg:w-auto lg:min-w-[460px]">
+              <Card className="border-white/20 bg-white/10 text-slate-100">
+                <CardContent className="p-3">
+                  <p className="text-xs uppercase tracking-wide text-slate-300">
+                    Active Accounts
                   </p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Key className="w-3 h-3" />
-                    <span className="font-mono">{account.login_id}</span>
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(account.login_id);
-                        toast.success('Copied!');
-                      }}
-                      className="hover:text-foreground"
-                    >
-                      <Copy className="w-3 h-3" />
-                    </button>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-xs gap-1"
-                    onClick={() => handleResetOpen(account)}
-                  >
-                    <RefreshCw className="w-3 h-3" /> Reset
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="text-xs"
-                    onClick={() => {
-                      if (confirm('Remove this portal account?'))
-                        deleteMutation.mutate(account.id);
-                    }}
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  <p className="mt-1 text-2xl font-semibold">
+                    {isLoading ? '...' : accounts.length}
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-white/20 bg-white/10 text-slate-100">
+                <CardContent className="p-3">
+                  <p className="text-xs uppercase tracking-wide text-slate-300">
+                    Available Students
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold">
+                    {availableStudents.length}
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-white/20 bg-white/10 text-slate-100">
+                <CardContent className="p-3">
+                  <p className="text-xs uppercase tracking-wide text-slate-300">
+                    Filtered
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold">{filtered.length}</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </div>
-      )}
+      </section>
 
-      {/* Create Dialog */}
+      <section className="admin-panel">
+        <div className="admin-panel-header">
+          <div className="admin-toolbar">
+            <div>
+              <h3 className="text-base font-semibold text-foreground sm:text-lg">
+                Account Operations
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Search portal users, reset credentials, and revoke access quickly.
+              </p>
+            </div>
+            <Button
+              onClick={handleCreateOpen}
+              size="sm"
+              className="gap-1.5"
+              disabled={availableStudents.length === 0}
+            >
+              <UserPlus className="w-4 h-4" /> Create Account
+            </Button>
+          </div>
+        </div>
+
+        <div className="admin-panel-body space-y-4">
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by student name or login ID..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <Spinner size={20} />
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-border/70 bg-muted/20 p-8 text-center text-sm text-muted-foreground">
+              No portal accounts found for current filter.
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {filtered.map((account: any) => (
+                <Card
+                  key={account.id}
+                  className="border border-border/70 transition-colors hover:bg-muted/20"
+                >
+                  <CardContent className="p-3 flex items-center justify-between gap-3">
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <p className="text-sm font-medium text-foreground">
+                        {account.students?.name}
+                      </p>
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                        <span className="inline-flex items-center gap-1">
+                          <Key className="w-3 h-3" />
+                          <span className="font-mono">{account.login_id}</span>
+                        </span>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(account.login_id);
+                            toast.success('Copied!');
+                          }}
+                          className="inline-flex items-center gap-1 hover:text-foreground"
+                        >
+                          <Copy className="w-3 h-3" /> Copy
+                        </button>
+                        <Badge variant="outline" className="text-[10px]">
+                          <UserCheck className="w-3 h-3 mr-1" />
+                          {account.students?.program || 'Program'}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs gap-1"
+                        onClick={() => handleResetOpen(account)}
+                      >
+                        <RefreshCw className="w-3 h-3" /> Reset
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="text-xs"
+                        onClick={() => {
+                          if (confirm('Remove this portal account?')) {
+                            deleteMutation.mutate(account.id);
+                          }
+                        }}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
       <Dialog open={createOpen} onOpenChange={handleCreateClose}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
@@ -337,9 +429,7 @@ export default function StudentPortalManager() {
               <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-4 space-y-3">
                 <div className="flex items-center gap-2 text-green-600">
                   <CheckCircle className="w-5 h-5" />
-                  <span className="font-semibold text-sm">
-                    Account Created!
-                  </span>
+                  <span className="font-semibold text-sm">Account Created!</span>
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center justify-between">
@@ -394,7 +484,7 @@ export default function StudentPortalManager() {
               <div className="rounded-lg bg-muted/50 border border-border p-3 flex items-start gap-2">
                 <Info className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
                 <p className="text-xs text-muted-foreground">
-                  ID & password auto-generated:
+                  ID and password auto-generated:
                   <br />
                   <strong>GSAI-[last 4 Aadhar]</strong> /{' '}
                   <strong>GSAI-STUDENT-[year]</strong>
@@ -410,7 +500,7 @@ export default function StudentPortalManager() {
                   <option value="">Choose a student...</option>
                   {availableStudents.map((s: any) => (
                     <option key={s.id} value={s.id}>
-                      {s.name} — {s.program}
+                      {s.name} - {s.program}
                     </option>
                   ))}
                 </select>
@@ -442,43 +532,33 @@ export default function StudentPortalManager() {
                 disabled={createMutation.isPending || !selectedStudent}
                 className="w-full"
               >
-                {createMutation.isPending ? (
-                  <Spinner size={16} />
-                ) : (
-                  'Create Account'
-                )}
+                {createMutation.isPending ? <Spinner size={16} /> : 'Create Account'}
               </Button>
             </div>
           )}
         </DialogContent>
       </Dialog>
 
-      {/* Reset Password Dialog */}
       <Dialog open={resetOpen} onOpenChange={handleResetClose}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>Reset Password</DialogTitle>
             <DialogDescription>
               Set a new password for{' '}
-              <strong>{resetAccount?.students?.name}</strong> (
-              {resetAccount?.login_id})
+              <strong>{resetAccount?.students?.name}</strong> ({resetAccount?.login_id})
             </DialogDescription>
           </DialogHeader>
           {resetSuccess ? (
             <div className="space-y-4">
               <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-4 space-y-3">
                 <div className="flex items-center gap-2 text-green-600">
-                  <CheckCircle className="w-5 h-5" />
-                  <span className="font-semibold text-sm">
-                    Password Updated!
-                  </span>
+                  <ShieldCheck className="w-5 h-5" />
+                  <span className="font-semibold text-sm">Password Updated!</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">New Password:</span>
                   <div className="flex items-center gap-1.5">
-                    <code className="font-mono text-foreground">
-                      {newPassword}
-                    </code>
+                    <code className="font-mono text-foreground">{newPassword}</code>
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(newPassword);
@@ -522,11 +602,7 @@ export default function StudentPortalManager() {
                 disabled={resetMutation.isPending}
                 className="w-full"
               >
-                {resetMutation.isPending ? (
-                  <Spinner size={16} />
-                ) : (
-                  'Reset Password'
-                )}
+                {resetMutation.isPending ? <Spinner size={16} /> : 'Reset Password'}
               </Button>
             </div>
           )}

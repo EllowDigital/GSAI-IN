@@ -20,6 +20,8 @@ import {
   CalendarDays,
   Swords,
   Clock,
+  Sparkles,
+  ShieldCheck,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Navigate } from 'react-router-dom';
@@ -141,10 +143,9 @@ export default function StudentDashboard() {
       : profile?.program || 'N/A';
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="flex items-center justify-between px-4 lg:px-6 h-14">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-background to-indigo-100/50 flex flex-col">
+      <header className="sticky top-0 z-30 border-b border-border/70 bg-background/95 backdrop-blur-sm">
+        <div className="flex h-14 items-center justify-between px-4 lg:px-6">
           <div className="min-w-0 flex-1">
             <h1 className="text-base font-semibold text-foreground">
               Student Portal
@@ -188,7 +189,34 @@ export default function StudentDashboard() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto p-4 lg:p-6 space-y-6 pb-16 flex-1 w-full">
+      <main className="max-w-5xl mx-auto p-4 lg:p-6 space-y-6 pb-16 flex-1 w-full">
+        <section className="overflow-hidden rounded-2xl border border-border/70 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 p-5 text-slate-100 shadow-lg sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium">
+                <Sparkles className="h-3.5 w-3.5" />
+                Welcome Back
+              </div>
+              <h2 className="text-xl font-semibold sm:text-2xl">
+                {profile?.studentName || 'Student Dashboard'}
+              </h2>
+              <p className="text-sm text-slate-200">
+                View your progression, upcoming events, fees, and competition activity in one place.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:min-w-[260px]">
+              <div className="rounded-xl border border-white/20 bg-white/10 p-3">
+                <p className="text-[11px] uppercase tracking-wide text-slate-300">Programs</p>
+                <p className="mt-1 text-sm font-medium truncate">{enrolledPrograms.length || 1}</p>
+              </div>
+              <div className="rounded-xl border border-white/20 bg-white/10 p-3">
+                <p className="text-[11px] uppercase tracking-wide text-slate-300">Certificates</p>
+                <p className="mt-1 text-sm font-medium">{(myCertificates as any[]).length}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <StudentAnnouncements />
         {profile?.studentId && (
           <StudentBeltExamNotifications studentId={profile.studentId} />
@@ -196,29 +224,34 @@ export default function StudentDashboard() {
         <StudentProfileCard />
 
         <Tabs defaultValue="competitions" className="w-full">
-          <TabsList className="w-full grid grid-cols-4 h-auto">
-            <TabsTrigger
-              value="competitions"
-              className="gap-1 text-xs sm:text-sm py-2"
-            >
-              <Trophy className="w-3.5 h-3.5 hidden sm:block" /> Competitions
-            </TabsTrigger>
-            <TabsTrigger
-              value="progression"
-              className="gap-1 text-xs sm:text-sm py-2"
-            >
-              <Award className="w-3.5 h-3.5 hidden sm:block" /> Progression
-            </TabsTrigger>
-            <TabsTrigger value="fees" className="gap-1 text-xs sm:text-sm py-2">
-              <IndianRupee className="w-3.5 h-3.5 hidden sm:block" /> Fees
-            </TabsTrigger>
-            <TabsTrigger
-              value="events"
-              className="gap-1 text-xs sm:text-sm py-2"
-            >
-              <Calendar className="w-3.5 h-3.5 hidden sm:block" /> Events
-            </TabsTrigger>
-          </TabsList>
+          <div className="rounded-2xl border border-border/70 bg-card/90 p-2 shadow-sm">
+            <TabsList className="h-auto w-full grid grid-cols-2 gap-1 sm:grid-cols-4 sm:gap-0 bg-transparent">
+              <TabsTrigger
+                value="competitions"
+                className="gap-1 text-xs sm:text-sm py-2 rounded-lg data-[state=active]:bg-muted"
+              >
+                <Trophy className="w-3.5 h-3.5 hidden sm:block" /> Competitions
+              </TabsTrigger>
+              <TabsTrigger
+                value="progression"
+                className="gap-1 text-xs sm:text-sm py-2 rounded-lg data-[state=active]:bg-muted"
+              >
+                <Award className="w-3.5 h-3.5 hidden sm:block" /> Progression
+              </TabsTrigger>
+              <TabsTrigger
+                value="fees"
+                className="gap-1 text-xs sm:text-sm py-2 rounded-lg data-[state=active]:bg-muted"
+              >
+                <IndianRupee className="w-3.5 h-3.5 hidden sm:block" /> Fees
+              </TabsTrigger>
+              <TabsTrigger
+                value="events"
+                className="gap-1 text-xs sm:text-sm py-2 rounded-lg data-[state=active]:bg-muted"
+              >
+                <Calendar className="w-3.5 h-3.5 hidden sm:block" /> Events
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Competitions Tab */}
           <TabsContent value="competitions" className="space-y-6 mt-4">
@@ -428,8 +461,10 @@ export default function StudentDashboard() {
       <footer className="border-t border-border/50 py-3 text-center">
         <p className="text-[10px] text-muted-foreground/50">
           Built by{' '}
-          <span className="text-muted-foreground/70">Sarwan Yadav</span> ·{' '}
-          <span className="text-muted-foreground/70">EllowDigital</span>
+          <span className="text-muted-foreground/70">Sarwan Yadav</span> · <span className="text-muted-foreground/70">EllowDigital</span>
+          <span className="inline-flex items-center gap-1 ml-2 text-muted-foreground/60">
+            <ShieldCheck className="h-3 w-3" /> Secure Student Access
+          </span>
         </p>
       </footer>
     </div>
