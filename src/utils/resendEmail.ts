@@ -4,7 +4,8 @@ const ACADEMY_NAME = 'Ghatak Sports Academy India';
 const ACADEMY_EMAIL = 'ghatakgsai@gmail.com';
 const ACADEMY_PHONE = '+91 63941 35988';
 const STUDENT_PORTAL_DEFAULT_PASSWORD = 'GSAI-STUDENT-2026';
-const ACADEMY_LOGO_URL = 'https://ghataksportsacademy.com/assets/images/logo.webp';
+const ACADEMY_LOGO_URL =
+  'https://ghataksportsacademy.com/assets/images/logo.webp';
 
 interface SendEmailParams {
   to: string;

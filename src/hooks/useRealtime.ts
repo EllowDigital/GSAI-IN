@@ -141,7 +141,10 @@ export const useRealtime = () => {
 
               const now = Date.now();
               if (now - lastEnrollmentInsertToastAt > 15000) {
-                toast.info('New enrollment received', 'A new form was submitted.');
+                toast.info(
+                  'New enrollment received',
+                  'A new form was submitted.'
+                );
                 lastEnrollmentInsertToastAt = now;
               }
             }
