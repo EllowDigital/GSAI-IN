@@ -54,6 +54,10 @@ const buildAcademyContactDetails = () =>
     `• Email: ${ACADEMY_EMAIL}`,
   ].join('\n');
 
+/* =========================
+   ACTION LABEL
+========================= */
+
 export const getEnrollmentStageActionLabel = (
   stage: EnrollmentMessageStage
 ) => {
@@ -70,15 +74,19 @@ export const getEnrollmentStageActionLabel = (
   }
 };
 
+/* =========================
+   MESSAGES
+========================= */
+
 export const buildEnrollmentReceivedMessage = (data: EnrollmentMessageData) => {
   const relation = getStudentRelation(data.gender);
 
   return [
     `Namaste ${data.parentName} ji,`,
-    `Enrollment request received for your ${relation}, ${data.studentName} (${data.program}).`,
-    'Our team will contact you within 24 hours for next steps.',
+    `We have received the enrollment request for your ${relation}, ${data.studentName}, for the ${data.program} program.`,
+    `Our team will contact you within the next 24 hours to guide you through the next steps.`,
     buildAcademyContactDetails(),
-    `Regards, ${ACADEMY_NAME}`,
+    `Regards,\n${ACADEMY_NAME}`,
   ].join('\n\n');
 };
 
@@ -89,13 +97,13 @@ export const buildEnrollmentContactedMessage = (
 
   return [
     `Namaste ${data.parentName} ji,`,
-    `Update: enrollment request for your ${relation}, ${data.studentName} (${data.program}).`,
+    `This is an update regarding the enrollment request for your ${relation}, ${data.studentName} (${data.program}).`,
     compactLines([
-      'Please reply on WhatsApp or call us to confirm trial class and batch timing.',
-      data.notes ? `Admin Note: ${data.notes}` : null,
+      `Please connect with us via WhatsApp or call to confirm the trial class and batch timing.`,
+      data.notes ? `Note from Admin: ${data.notes}` : null,
     ]).join('\n\n'),
     buildAcademyContactDetails(),
-    `Regards, ${ACADEMY_NAME}`,
+    `Regards,\n${ACADEMY_NAME}`,
   ].join('\n\n');
 };
 
@@ -104,13 +112,13 @@ export const buildEnrollmentApprovedMessage = (data: EnrollmentMessageData) => {
 
   return [
     `Namaste ${data.parentName} ji,`,
-    `Good news. Enrollment approved for your ${relation}, ${data.studentName} (${data.program}).`,
+    `Good news! The enrollment for your ${relation}, ${data.studentName}, in the ${data.program} program has been approved.`,
     compactLines([
-      'Student portal credentials and joining details will be shared shortly.',
-      data.notes ? `Admin Note: ${data.notes}` : null,
+      `Student portal credentials and joining instructions will be shared with you shortly.`,
+      data.notes ? `Note from Admin: ${data.notes}` : null,
     ]).join('\n\n'),
     buildAcademyContactDetails(),
-    `Regards, ${ACADEMY_NAME}`,
+    `Regards,\n${ACADEMY_NAME}`,
   ].join('\n\n');
 };
 
@@ -119,15 +127,19 @@ export const buildEnrollmentRejectedMessage = (data: EnrollmentMessageData) => {
 
   return [
     `Namaste ${data.parentName} ji,`,
-    `After review, we are unable to proceed with enrollment for your ${relation}, ${data.studentName} (${data.program}) at this time.`,
+    `After careful review, we are unable to proceed with the enrollment for your ${relation}, ${data.studentName}, in the ${data.program} program at this time.`,
     compactLines([
-      data.notes ? `Reason / Note: ${data.notes}` : null,
-      'For clarification or alternate options, please contact us.',
+      data.notes ? `Reason: ${data.notes}` : null,
+      `For further clarification or alternative options, please feel free to contact us.`,
     ]).join('\n\n'),
     buildAcademyContactDetails(),
-    `Regards, ${ACADEMY_NAME}`,
+    `Regards,\n${ACADEMY_NAME}`,
   ].join('\n\n');
 };
+
+/* =========================
+   MASTER SWITCH
+========================= */
 
 export const buildEnrollmentStageMessage = (
   stage: EnrollmentMessageStage,
@@ -146,6 +158,10 @@ export const buildEnrollmentStageMessage = (
   }
 };
 
+/* =========================
+   PORTAL MESSAGE
+========================= */
+
 export const buildEnrollmentPortalMessage = (
   data: EnrollmentMessageData & {
     loginId: string;
@@ -157,14 +173,16 @@ export const buildEnrollmentPortalMessage = (
 
   return [
     `Namaste ${data.parentName} ji,`,
-    `Admission completed for your ${relation}, ${data.studentName} (${data.program}).`,
+    `Admission has been successfully completed for your ${relation}, ${data.studentName}, in the ${data.program} program.`,
     [
-      'Student Portal Login',
+      'Student Portal Login Details',
       `• Portal: ${data.portalUrl}`,
       `• Login ID: ${data.loginId}`,
-      `• Default Password: ${data.defaultPassword || STUDENT_PORTAL_DEFAULT_PASSWORD}`,
+      `• Default Password: ${
+        data.defaultPassword || STUDENT_PORTAL_DEFAULT_PASSWORD
+      }`,
     ].join('\n'),
-    'Please sign in and change the default password immediately.',
+    `For security reasons, please log in and change the default password immediately.`,
     buildAcademyContactDetails(),
     `Welcome to ${ACADEMY_NAME}.`,
   ].join('\n\n');
