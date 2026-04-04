@@ -121,11 +121,11 @@ export default function EnrollmentRequestsManager() {
     new Date().toISOString().slice(0, 10)
   );
   const [loginId, setLoginId] = useState('');
-  const [password, setPassword] = useState('');
   const [createdStudentId, setCreatedStudentId] = useState<string | null>(null);
   const [createdCreds, setCreatedCreds] = useState<{
     loginId: string;
-    password: string;
+    setupLink: string;
+    portalUrl: string;
   } | null>(null);
 
   const { data: requests = [], isLoading } = useQuery({
@@ -176,21 +176,33 @@ export default function EnrollmentRequestsManager() {
           gender: req.gender,
           notes,
         });
-        await sendEmail({ ...emailPayload, to: req.student_email });
-        toast.success(
+        const emailSent = await sendEmail({ ...emailPayload, to: req.student_email });
+
+        if (didOpenWhatsApp && emailSent) {
+          toast.success('Rejection sent via WhatsApp and email');
+          return;
+        }
+
+        if (didOpenWhatsApp || emailSent) {
+          toast.warning(
+            didOpenWhatsApp
+              ? 'WhatsApp sent, but email failed.'
+              : 'Email sent, but WhatsApp could not open.'
+          );
+          return;
+        }
+
+        toast.error('Both WhatsApp and email failed. Please retry.');
+      } catch (error) {
+        console.error('Failed to send rejection notifications:', error);
+        toast.error(
           didOpenWhatsApp
-            ? 'Rejection sent via WhatsApp & email'
-            : 'Email sent (WhatsApp could not open)'
-        );
-      } catch {
-        toast.success(
-          didOpenWhatsApp
-            ? 'WhatsApp opened (email failed)'
-            : 'Both WhatsApp and email failed'
+            ? 'WhatsApp sent, but email failed unexpectedly.'
+            : 'Both WhatsApp and email failed.'
         );
       }
     } else {
-      toast.success(
+      (didOpenWhatsApp ? toast.success : toast.error)(
         didOpenWhatsApp
           ? 'WhatsApp opened with rejection message'
           : 'WhatsApp could not open for this number'
@@ -244,9 +256,12 @@ export default function EnrollmentRequestsManager() {
               gender: req.gender,
               notes: data.notes,
             });
-            await sendEmail({ ...emailPayload, to: req.student_email });
-          } catch {
-            console.error('Email send failed for enrollment update');
+            const sent = await sendEmail({ ...emailPayload, to: req.student_email });
+            if (!sent) {
+              console.error('Email send failed for enrollment update', { requestId: req.id, stage });
+            }
+          } catch (error) {
+            console.error('Email send failed for enrollment update', error);
           }
         }
       }
@@ -279,8 +294,6 @@ export default function EnrollmentRequestsManager() {
     setJoinDate(new Date().toISOString().slice(0, 10));
     const last4 = req.aadhar_number ? req.aadhar_number.slice(-4) : '0000';
     setLoginId(`GSAI-${last4}`);
-    const year = new Date().getFullYear();
-    setPassword(`GSAI-STUDENT-${year}`);
     setCreatedStudentId(null);
     setCreatedCreds(null);
   };
@@ -369,30 +382,35 @@ export default function EnrollmentRequestsManager() {
   };
 
   const handleCreatePortal = async () => {
-    if (!createdStudentId || !loginId.trim() || !password.trim()) {
-      toast.error('Login ID and password are required');
-      return;
-    }
-    if (password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+    if (!createdStudentId || !loginId.trim()) {
+      toast.error('Login ID is required');
       return;
     }
     setApproving(true);
     try {
+      const setupRedirect = `${window.location.origin}/student/set-password`;
+      const portalUrl = `${window.location.origin}/student/login`;
       const { data, error } = await supabase.functions.invoke(
         'create-student-account',
         {
           body: {
             student_id: createdStudentId,
             login_id: loginId.trim(),
-            password: password.trim(),
+            redirect_to: setupRedirect,
           },
         }
       );
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
+      if (!data?.setup_link) {
+        throw new Error('Account created but setup link was not generated.');
+      }
 
-      setCreatedCreds({ loginId: loginId.trim(), password: password.trim() });
+      setCreatedCreds({
+        loginId: loginId.trim(),
+        setupLink: data.setup_link,
+        portalUrl,
+      });
       setApproveStep('done');
       queryClient.invalidateQueries({ queryKey: ['portal-accounts'] });
       queryClient.invalidateQueries({ queryKey: ['students-without-portal'] });
@@ -407,13 +425,17 @@ export default function EnrollmentRequestsManager() {
             studentName: approveReq.student_name,
             program: approveReq.program,
             loginId: loginId.trim(),
-            password: password.trim(),
-            portalUrl: `${window.location.origin}/student/login`,
+            setupLink: data.setup_link,
+            portalUrl,
             gender: approveReq.gender,
           });
-          await sendEmail({ ...emailPayload, to: approveReq.student_email });
-        } catch {
-          console.error('Failed to send portal credentials email');
+          const sent = await sendEmail({ ...emailPayload, to: approveReq.student_email });
+          if (!sent) {
+            toast.warning('Portal account created, but the email could not be sent.');
+          }
+        } catch (error) {
+          console.error('Failed to send portal setup email:', error);
+          toast.warning('Portal account created, but setup email failed.');
         }
       }
     } catch (err: any) {
@@ -488,8 +510,8 @@ export default function EnrollmentRequestsManager() {
       ? buildEnrollmentPortalMessage({
           ...buildMessagePayload(approveReq),
           loginId: createdCreds.loginId,
-          password: createdCreds.password,
-          portalUrl: `${window.location.origin}/student/login`,
+          setupLink: createdCreds.setupLink,
+          portalUrl: createdCreds.portalUrl,
         })
       : '';
 
@@ -1075,20 +1097,9 @@ export default function EnrollmentRequestsManager() {
                   className="mt-1"
                 />
               </div>
-              <div>
-                <label className="text-sm font-medium">Password *</label>
-                <Input
-                  type="text"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min 6 characters"
-                  className="mt-1"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Share this password with the student. They can change it
-                  later.
-                </p>
-              </div>
+              <p className="text-xs text-muted-foreground">
+                A one-time secure password setup link will be generated and shared instead of a plaintext password.
+              </p>
               <Button
                 onClick={handleCreatePortal}
                 disabled={approving}
@@ -1132,13 +1143,13 @@ export default function EnrollmentRequestsManager() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Password:</span>
+                    <span className="text-muted-foreground">Setup Link:</span>
                     <div className="flex items-center gap-1.5">
                       <code className="font-mono text-foreground">
-                        {createdCreds.password}
+                        Generated securely
                       </code>
                       <button
-                        onClick={() => copyToClipboard(createdCreds.password)}
+                        onClick={() => copyToClipboard(createdCreds.setupLink)}
                         className="text-muted-foreground hover:text-foreground"
                       >
                         <Copy className="w-3.5 h-3.5" />
@@ -1147,8 +1158,7 @@ export default function EnrollmentRequestsManager() {
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Share these credentials with the student. They can change
-                  their password from the student portal.
+                  Share the setup link privately. The student must set a password before signing in.
                 </p>
               </div>
               {approveReq && credentialsWhatsAppUrl && (

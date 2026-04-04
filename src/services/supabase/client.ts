@@ -32,7 +32,7 @@ export const supabase = createClient<Database>(
     auth: {
       autoRefreshToken: true,
       persistSession: true,
-      detectSessionInUrl: false,
+      detectSessionInUrl: true,
       storage: authStorageAdapter,
       storageKey: ADMIN_SESSION_STORAGE_KEY,
     },

@@ -114,10 +114,7 @@ export default function StudentLogin() {
         </form>
 
         <p className="text-center text-xs text-muted-foreground">
-          Default password:{' '}
-          <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-foreground">
-            GSAI-STUDENT-[year]
-          </code>
+          Use the secure password setup link shared by the academy before first sign-in.
         </p>
 
         <div className="text-center">
