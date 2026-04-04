@@ -67,6 +67,7 @@ interface EnrollmentRequest {
   admin_notes: string | null;
   created_at: string;
   reviewed_at: string | null;
+  linked_student_id?: string | null;
 }
 
 const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
@@ -277,15 +278,63 @@ export default function EnrollmentRequestsManager() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = (await supabase
-        .from('enrollment_requests' as any)
-        .delete()
-        .eq('id', id)) as any;
+    mutationFn: async (req: EnrollmentRequest) => {
+      if (req.status !== 'approved') {
+        const { error } = (await supabase
+          .from('enrollment_requests' as any)
+          .delete()
+          .eq('id', req.id)) as any;
+        if (error) throw error;
+        return;
+      }
+
+      let linkedStudentId = req.linked_student_id || null;
+
+      if (!linkedStudentId && req.aadhar_number) {
+        const { data: matchedStudent, error: studentLookupError } = await supabase
+          .from('students')
+          .select('id')
+          .eq('aadhar_number', req.aadhar_number)
+          .maybeSingle();
+
+        if (studentLookupError) throw studentLookupError;
+        linkedStudentId = matchedStudent?.id ?? null;
+      }
+
+      if (!linkedStudentId) {
+        throw new Error(
+          'Approved request is not linked to a student record. Delete student from Student Management first.'
+        );
+      }
+
+      const { data, error } = await supabase.functions.invoke(
+        'delete-student-account',
+        {
+          body: {
+            student_id: linkedStudentId,
+            enrollment_request_id: req.id,
+          },
+        }
+      );
+
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['enrollment-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      queryClient.invalidateQueries({ queryKey: ['student-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['student-progress'] });
+      queryClient.invalidateQueries({ queryKey: ['discipline-progress-admin'] });
+      queryClient.invalidateQueries({ queryKey: ['fees'] });
+      queryClient.invalidateQueries({ queryKey: ['attendance'] });
+      queryClient.invalidateQueries({ queryKey: ['promotion-history'] });
+      queryClient.invalidateQueries({ queryKey: ['students-portal-status'] });
+      queryClient.invalidateQueries({ queryKey: ['portal-accounts'] });
+      queryClient.invalidateQueries({ queryKey: ['belt-exam-notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['competition-registrations'] });
+      queryClient.invalidateQueries({ queryKey: ['competition-certificates'] });
       toast.success('Request deleted');
     },
     onError: (e: Error) => toast.error(e.message),
@@ -364,6 +413,7 @@ export default function EnrollmentRequestsManager() {
         .update({
           status: 'approved',
           admin_notes: adminNotes || null,
+          linked_student_id: student.id,
           reviewed_at: new Date().toISOString(),
         } as any)
         .eq('id', approveReq.id)) as any;
@@ -741,14 +791,14 @@ export default function EnrollmentRequestsManager() {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Delete Request?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Permanently remove this enrollment request.
+                            Permanently remove this enrollment request. If it is approved, the linked student profile, login credentials, progression, fees, and all related records will also be deleted forever.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
                             className="bg-destructive text-destructive-foreground"
-                            onClick={() => deleteMutation.mutate(req.id)}
+                            onClick={() => deleteMutation.mutate(req)}
                           >
                             Delete
                           </AlertDialogAction>

@@ -25,21 +25,25 @@ export default function StudentDeleteDialog({ student, onClose }: Props) {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      // All related data (fees, attendance, progress, promotions, competitions,
-      // certificates, portal accounts, programs, belt exam notifications,
-      // discipline progress) are automatically deleted via ON DELETE CASCADE
-      const { error } = await supabase
-        .from('students')
-        .delete()
-        .eq('id', student.id);
+      const { data, error } = await supabase.functions.invoke(
+        'delete-student-account',
+        {
+          body: {
+            student_id: student.id,
+          },
+        }
+      );
+
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
 
       toast.success(
-        `${student.name} and all related data permanently deleted.`
+        `${student.name} and all related data permanently deleted forever.`
       );
 
       // Invalidate ALL related queries to keep UI in sync
       queryClient.invalidateQueries({ queryKey: ['students'] });
+      queryClient.invalidateQueries({ queryKey: ['enrollment-requests'] });
       queryClient.invalidateQueries({ queryKey: ['student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['student-progress'] });
