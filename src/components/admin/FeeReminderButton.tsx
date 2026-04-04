@@ -88,53 +88,36 @@ Ghatak Sports Academy`;
     setSending(true);
 
     try {
-      // FormSubmit.co sends the notification TO the academy email
-      // The parent/student email is included in the body for reference
-      const response = await fetch(
-        `https://formsubmit.co/ajax/${FORMSUBMIT_ACADEMY_EMAIL}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify({
-            _subject: `Fee Reminder: ${studentName} - ${MONTH_NAMES[month - 1]} ${year}`,
-            _template: 'table',
-            _captcha: 'false',
-            _replyto: email,
-            'Student Name': studentName,
-            'Parent Name': parentName,
-            'Parent Contact': parentContact,
-            'Recipient Email': email,
-            'Amount Due': `₹${amount.toLocaleString()}`,
-            'Month/Year': `${MONTH_NAMES[month - 1]} ${year}`,
-            Message: message,
-          }),
-        }
-      );
+      // Send email via Resend
+      const emailPayload = buildFeeReminderEmail({
+        parentName,
+        studentName,
+        amount,
+        month: MONTH_NAMES[month - 1],
+        year,
+      });
+      emailPayload.to = email;
 
-      if (response.ok) {
-        // Also open WhatsApp as secondary channel
-        const whatsappMsg = `Dear ${parentName},\n\nThis is a reminder that the fee of ₹${amount.toLocaleString()} for ${studentName}'s training for ${MONTH_NAMES[month - 1]} ${year} is pending.\n\nPlease clear the dues at your earliest convenience.\n\n- Ghatak Sports Academy`;
-        openWhatsAppConversation(parentContact, whatsappMsg);
+      const emailSent = await sendEmail(emailPayload);
 
-        toast({
-          title: 'Reminder Sent',
-          description: `Fee reminder sent. WhatsApp also opened for ${parentName}.`,
-        });
-        setDialogOpen(false);
-      } else {
-        throw new Error('Failed to send email');
-      }
+      // Also open WhatsApp as secondary channel
+      const whatsappMsg = `Namaste ${parentName} ji,\n\nThis is a reminder that the fee of ₹${amount.toLocaleString()} for ${studentName}'s training for ${MONTH_NAMES[month - 1]} ${year} is pending.\n\nKindly clear the dues at your earliest convenience.\n\n📞 +91 63941 35988\n✉️ ghatakgsai@gmail.com\n\n- Ghatak Sports Academy India`;
+      openWhatsAppConversation(parentContact, whatsappMsg);
+
+      toast({
+        title: emailSent ? 'Reminder Sent' : 'Partial Success',
+        description: emailSent
+          ? `Email sent to ${email}. WhatsApp also opened for ${parentName}.`
+          : `WhatsApp opened. Email could not be sent.`,
+      });
+      setDialogOpen(false);
     } catch {
       toast({
         title: 'Error',
-        description: 'Failed to send email. Try WhatsApp instead.',
+        description: 'Failed to send email. WhatsApp opened instead.',
         variant: 'error' as any,
       });
-      // Fallback: open WhatsApp
-      const whatsappMsg = `Dear ${parentName},\n\nThis is a reminder that the fee of ₹${amount.toLocaleString()} for ${studentName}'s training for ${MONTH_NAMES[month - 1]} ${year} is pending.\n\nPlease clear the dues.\n\n- Ghatak Sports Academy`;
+      const whatsappMsg = `Namaste ${parentName} ji,\n\nThis is a reminder that the fee of ₹${amount.toLocaleString()} for ${studentName}'s training for ${MONTH_NAMES[month - 1]} ${year} is pending.\n\nKindly clear the dues.\n\n- Ghatak Sports Academy India`;
       openWhatsAppConversation(parentContact, whatsappMsg);
     } finally {
       setSending(false);
