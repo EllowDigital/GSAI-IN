@@ -17,6 +17,7 @@ import Competitions from './dashboard/Competitions';
 import Announcements from './dashboard/Announcements';
 import EnrollmentRequests from './dashboard/EnrollmentRequests';
 import Disciplines from './dashboard/Disciplines';
+import About from './dashboard/About';
 
 const AdminArea = () => {
   return (
@@ -37,6 +38,7 @@ const AdminArea = () => {
           <Route path="testimonials" element={<Testimonials />} />
           <Route path="competitions" element={<Competitions />} />
           <Route path="announcements" element={<Announcements />} />
+          <Route path="about" element={<About />} />
 
           <Route path="*" element={<NotFoundAdmin />} />
         </Route>

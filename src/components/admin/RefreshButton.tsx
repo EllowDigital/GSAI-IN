@@ -64,10 +64,10 @@ const RefreshButton: React.FC<RefreshButtonProps> = ({
 
   const getStatusColor = () => {
     if (refreshStatus === 'success')
-      return 'from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 border-green-200/60 hover:border-green-300/80 text-green-700 hover:text-green-800';
+      return 'border-green-200/70 bg-green-50/80 text-green-700 hover:bg-green-100/80';
     if (refreshStatus === 'error')
-      return 'from-red-50 to-pink-50 hover:from-red-100 hover:to-pink-100 border-red-200/60 hover:border-red-300/80 text-red-700 hover:text-red-800';
-    return 'from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border-blue-200/60 hover:border-blue-300/80 text-blue-700 hover:text-blue-800';
+      return 'border-red-200/70 bg-red-50/80 text-red-700 hover:bg-red-100/80';
+    return 'border-border/70 bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground';
   };
 
   const getStatusText = () => {
@@ -84,10 +84,9 @@ const RefreshButton: React.FC<RefreshButtonProps> = ({
       variant={variant}
       size={size}
       className={`
-        group relative overflow-hidden
-        bg-gradient-to-r ${getStatusColor()}
-        shadow-sm hover:shadow-md
-        transition-all duration-300
+        group relative overflow-hidden rounded-lg
+        ${getStatusColor()}
+        transition-all duration-200
         ${loading ? 'cursor-not-allowed opacity-75' : ''}
         ${refreshStatus !== 'idle' ? 'animate-pulse' : ''}
         ${className}
@@ -129,7 +128,7 @@ const RefreshButton: React.FC<RefreshButtonProps> = ({
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -10, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="font-medium text-sm"
+              className="hidden text-sm font-medium sm:inline"
             >
               {getStatusText()}
             </motion.span>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense, useMemo } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/services/supabase/client';
 import FeeSummaryCard from './FeeSummaryCard';
@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useProgramFees } from './FeeSettingsCard';
+import { usePersistentState } from '@/hooks/usePersistentState';
 import {
   Grid,
   List,
@@ -38,7 +39,11 @@ export default function FeesManagerPanel() {
   const [historyDrawerOpen, setHistoryDrawerOpen] = useState(false);
   const [historyStudent, setHistoryStudent] = useState<any | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = usePersistentState<'cards' | 'table'>(
+    'admin:layout:view-mode',
+    'cards',
+    ['cards', 'table']
+  );
   const [selectedStudentIds, setSelectedStudentIds] = useState<Set<string>>(
     new Set()
   );
@@ -69,11 +74,26 @@ export default function FeesManagerPanel() {
       const { data, error } = await supabase
         .from('students')
         .select(
-          'id, name, program, default_monthly_fee, profile_image_url, discount_percent'
+          'id, name, program, default_monthly_fee, profile_image_url, discount_percent, parent_email'
         );
       if (error) throw error;
       return data || [];
     },
+  });
+
+  const { data: enrollmentEmails = [] } = useQuery({
+    queryKey: ['enrollment-request-emails'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('enrollment_requests')
+        .select('linked_student_id, student_email, parent_email, created_at')
+        .not('linked_student_id', 'is', null)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 60_000,
   });
 
   // Fetch fees for filtered month/year
@@ -199,11 +219,22 @@ export default function FeesManagerPanel() {
   });
 
   // Compose filtered rows
+  const emailByStudentId = new Map<string, string>();
+  for (const row of enrollmentEmails) {
+    const studentId = (row.linked_student_id || '').toString();
+    const email = ((row.student_email || row.parent_email || '') as string)
+      .toString()
+      .trim();
+    if (!studentId || !email || emailByStudentId.has(studentId)) continue;
+    emailByStudentId.set(studentId, email);
+  }
+
   const rows = Array.isArray(students)
     ? students
         .map((student) => {
           const fee = fees?.find((f) => f.student_id === student.id) || null;
-          return { student, fee };
+          const reminderEmail = emailByStudentId.get(student.id) || null;
+          return { student, fee, reminderEmail };
         })
         .filter((row) => {
           if (
@@ -222,6 +253,24 @@ export default function FeesManagerPanel() {
     : [];
 
   const isLoading = loadingStudents || loadingFees || isRefreshing;
+
+  const feeSnapshot = useMemo(() => {
+    const paid = rows.filter((r) => r.fee?.status === 'paid').length;
+    const unpaid = rows.filter((r) => !r.fee || r.fee.status !== 'paid').length;
+    const totalDue = rows.reduce((sum, r) => {
+      if (r.fee) {
+        return sum + Number(r.fee.balance_due || 0);
+      }
+      return sum + Number(r.student.default_monthly_fee || 0);
+    }, 0);
+
+    return {
+      paid,
+      unpaid,
+      totalDue,
+      total: rows.length,
+    };
+  }, [rows]);
 
   // Selection handlers
   const toggleSelection = (studentId: string) => {
@@ -327,10 +376,10 @@ export default function FeesManagerPanel() {
   };
 
   return (
-    <div className="w-full p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1600px] mx-auto space-y-4 sm:space-y-6">
+    <div className="admin-page">
       {/* Header Card */}
-      <div className="bg-card border border-border/50 shadow-sm rounded-xl sm:rounded-2xl">
-        <div className="border-b border-border/50 p-4 sm:p-6">
+      <div className="admin-panel rounded-xl sm:rounded-2xl overflow-hidden">
+        <div className="admin-panel-header bg-gradient-to-r from-primary/5 via-background to-background">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-foreground">
@@ -350,9 +399,36 @@ export default function FeesManagerPanel() {
               />
             </div>
           </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+              <p className="text-[11px] text-muted-foreground">Students</p>
+              <p className="text-lg font-semibold text-foreground tabular-nums">
+                {feeSnapshot.total}
+              </p>
+            </div>
+            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+              <p className="text-[11px] text-muted-foreground">Paid</p>
+              <p className="text-lg font-semibold text-foreground tabular-nums">
+                {feeSnapshot.paid}
+              </p>
+            </div>
+            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+              <p className="text-[11px] text-muted-foreground">Pending</p>
+              <p className="text-lg font-semibold text-foreground tabular-nums">
+                {feeSnapshot.unpaid}
+              </p>
+            </div>
+            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+              <p className="text-[11px] text-muted-foreground">Total Due</p>
+              <p className="text-lg font-semibold text-foreground tabular-nums">
+                ₹{feeSnapshot.totalDue.toLocaleString()}
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <div className="admin-panel-body space-y-4 sm:space-y-6">
           {/* Analytics Chart */}
           <Suspense
             fallback={
@@ -383,7 +459,7 @@ export default function FeesManagerPanel() {
             </div>
 
             {/* View Controls */}
-            <div className="flex flex-wrap gap-2 sm:gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3 rounded-xl border border-border/70 bg-muted/20 p-2">
               {/* Bulk Mode Toggle */}
               <Button
                 variant={bulkMode ? 'default' : 'outline'}
@@ -399,7 +475,7 @@ export default function FeesManagerPanel() {
               </Button>
 
               {/* View Mode Toggle */}
-              <div className="flex gap-1 border rounded-full p-1 bg-muted/50">
+              <div className="admin-toggle border-border/70 bg-card">
                 <Button
                   variant={viewMode === 'cards' ? 'default' : 'ghost'}
                   size="sm"

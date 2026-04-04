@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/services/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -39,6 +39,8 @@ import {
   Table2,
   Trophy,
   CheckCircle2,
+  Sparkles,
+  Clock3,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import CompetitionCertificates from '@/components/admin/CompetitionCertificates';
@@ -50,6 +52,7 @@ import {
 } from '@/utils/studentCommunication';
 import { Checkbox } from '@/components/ui/checkbox';
 import AnnouncementDeliveryLogs from '@/components/admin/AnnouncementDeliveryLogs';
+import { usePersistentState } from '@/hooks/usePersistentState';
 
 interface Competition {
   id: string;
@@ -120,7 +123,12 @@ export default function Competitions() {
   const [regsOpen, setRegsOpen] = useState<Competition | null>(null);
   const [editing, setEditing] = useState<Competition | null>(null);
   const [search, setSearch] = useState('');
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [viewMode, setViewMode] = usePersistentState<'cards' | 'table'>(
+    'admin:layout:view-mode',
+    'cards',
+    ['cards', 'table']
+  );
   const [form, setForm] = useState({
     name: '',
     description: '',
@@ -324,8 +332,18 @@ export default function Competitions() {
     saveMutation.mutate({ ...form, id: editing?.id });
   };
 
-  const filtered = competitions.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase())
+  const filtered = useMemo(
+    () =>
+      competitions.filter((c) => {
+        const query = search.toLowerCase().trim();
+        const searchable =
+          `${c.name || ''} ${c.description || ''} ${c.location_text || ''}`.toLowerCase();
+        const matchesSearch = query ? searchable.includes(query) : true;
+        const matchesStatus =
+          statusFilter === 'all' ? true : c.status === statusFilter;
+        return matchesSearch && matchesStatus;
+      }),
+    [competitions, search, statusFilter]
   );
 
   const handleManualWhatsApp = async (competition: Competition) => {
@@ -362,24 +380,39 @@ export default function Competitions() {
   });
 
   return (
-    <div className="w-full p-4 sm:p-5 lg:p-6 space-y-4 max-w-[1600px] mx-auto">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2">
-            <Award className="w-6 h-6 text-primary" /> Competitions
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Manage tournaments, registrations & certificates
-          </p>
-        </div>
-        <Button onClick={openNew} className="gap-1.5 shadow-sm">
-          <Plus className="w-4 h-4" /> New Competition
-        </Button>
-      </div>
+    <div className="admin-page space-y-5 lg:space-y-6">
+      <section className="admin-panel overflow-hidden border-border/70 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-slate-100 shadow-md">
+        <div className="relative p-5 sm:p-6 lg:p-7">
+          <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10 blur-3xl" />
+          <div className="pointer-events-none absolute -left-20 -bottom-20 h-52 w-52 rounded-full bg-fuchsia-300/20 blur-3xl" />
 
-      {/* Stats Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="relative flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="space-y-3">
+              <Badge className="w-fit gap-1 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-slate-100 hover:bg-white/10">
+                <Sparkles className="h-3.5 w-3.5" />
+                Tournament Control Center
+              </Badge>
+              <div>
+                <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                  Competitions Management
+                </h1>
+                <p className="mt-2 max-w-2xl text-sm text-slate-200 sm:text-base">
+                  Manage tournaments, registrations, certificates, and campaign
+                  announcements in one modern workspace.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={openNew} className="gap-1.5">
+                <Plus className="w-4 h-4" /> New Competition
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">
         {[
           {
             label: 'Total',
@@ -405,8 +438,14 @@ export default function Competitions() {
             icon: CheckCircle2,
             color: 'text-green-500',
           },
+          {
+            label: 'Filtered',
+            value: filtered.length,
+            icon: Clock3,
+            color: 'text-indigo-500',
+          },
         ].map((stat) => (
-          <Card key={stat.label} className="border-border/50">
+          <Card key={stat.label} className="border-border/60 bg-card/90">
             <CardContent className="p-3 flex items-center gap-3">
               <stat.icon className={`w-5 h-5 ${stat.color} shrink-0`} />
               <div>
@@ -420,38 +459,73 @@ export default function Competitions() {
             </CardContent>
           </Card>
         ))}
-      </div>
+      </section>
 
-      {/* Search + View Toggle */}
-      <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Search competitions..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
+      <section className="admin-panel">
+        <div className="admin-panel-header">
+          <div className="admin-toolbar">
+            <div>
+              <h2 className="text-base font-semibold text-foreground sm:text-lg">
+                Competition Operations
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Search, filter, and switch layouts for faster tournament
+                actions.
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="flex gap-1 border rounded-lg p-1 bg-muted/30">
-          <Button
-            variant={viewMode === 'cards' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setViewMode('cards')}
-            className="h-7 px-2"
-          >
-            <Grid3X3 className="w-4 h-4" />
-          </Button>
-          <Button
-            variant={viewMode === 'table' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setViewMode('table')}
-            className="h-7 px-2"
-          >
-            <Table2 className="w-4 h-4" />
-          </Button>
+
+        <div className="admin-panel-body space-y-4">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <div className="relative xl:col-span-2">
+              <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search competitions, details, or location..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="all">All Status</option>
+              {STATUS_OPTIONS.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+
+            <div className="admin-toggle rounded-lg justify-self-start">
+              <Button
+                variant={viewMode === 'cards' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('cards')}
+                className="h-8 px-2"
+              >
+                <Grid3X3 className="w-4 h-4" />
+              </Button>
+              <Button
+                variant={viewMode === 'table' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('table')}
+                className="h-8 px-2"
+              >
+                <Table2 className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-border/70 bg-muted/20 px-3 py-2 text-xs text-muted-foreground sm:text-sm">
+            Showing {filtered.length} of {competitions.length} competitions.
+          </div>
         </div>
-      </div>
+      </section>
 
       {isLoading ? (
         <div className="flex justify-center py-12">
@@ -459,7 +533,7 @@ export default function Competitions() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
-          No competitions found.
+          No competitions match current filters.
         </div>
       ) : viewMode === 'cards' ? (
         /* Card View */

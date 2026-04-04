@@ -58,6 +58,13 @@ const enrollSchema = z.object({
     .optional()
     .or(z.literal('')),
   parentName: z.string().trim().min(2, 'Parent name is required').max(100),
+  parentEmail: z
+    .string()
+    .trim()
+    .email('Enter a valid parent email address')
+    .max(255)
+    .optional()
+    .or(z.literal('')),
   parentPhone: z
     .string()
     .regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian phone number'),
@@ -89,6 +96,8 @@ const steps = [
 const inputClass =
   'bg-white/[0.04] border-white/[0.08] text-white placeholder:text-gray-600 focus-visible:ring-yellow-500/30 focus-visible:border-yellow-500/40 h-11 text-sm rounded-xl';
 const labelClass = 'text-gray-400 text-xs font-medium';
+const ENROLLMENT_ADMIN_TO = 'ghatakgsai@gmai.com';
+const ENROLLMENT_ADMIN_CC = 'sarwanyadav6174@gmail.com';
 
 export default function EnrollPage() {
   const [searchParams] = useSearchParams();
@@ -164,6 +173,7 @@ export default function EnrollPage() {
           age: parseInt(data.age),
           gender: data.gender,
           parent_name: data.parentName,
+          parent_email: data.parentEmail || null,
           parent_phone: data.parentPhone,
           program: data.program,
           aadhar_number: data.aadharNumber,
@@ -174,16 +184,44 @@ export default function EnrollPage() {
 
       if (error) throw error;
 
-      if (data.studentEmail) {
-        await supabase.functions.invoke('send-enrollment-received-email', {
+      const emailTasks: Promise<unknown>[] = [
+        supabase.functions.invoke('send-enrollment-received-email', {
           body: {
-            to: data.studentEmail,
+            to: ENROLLMENT_ADMIN_TO,
+            cc: ENROLLMENT_ADMIN_CC,
             parentName: data.parentName,
+            parentEmail: data.parentEmail || 'Not provided',
             studentName: data.studentName,
             program: data.program,
+            parentPhone: data.parentPhone,
+            studentEmail: data.studentEmail || 'Not provided',
+            studentPhone: data.studentPhone || 'Not provided',
+            notificationType: 'admin',
           },
-        });
+        }),
+      ];
+
+      const confirmationEmail = data.studentEmail || data.parentEmail;
+      if (confirmationEmail) {
+        emailTasks.push(
+          supabase.functions.invoke('send-enrollment-received-email', {
+            body: {
+              to: confirmationEmail,
+              parentName: data.parentName,
+              studentName: data.studentName,
+              program: data.program,
+              notificationType: 'parent',
+            },
+          })
+        );
       }
+
+      const emailResults = await Promise.allSettled(emailTasks);
+      emailResults.forEach((result) => {
+        if (result.status === 'rejected') {
+          console.error('Enrollment email task failed:', result.reason);
+        }
+      });
 
       setSubmitted(true);
       toast.success('Enrollment request submitted successfully!');
@@ -579,6 +617,25 @@ export default function EnrollPage() {
                                 className={`mt-1.5 ${inputClass}`}
                               />
                               <FieldError field="parentName" />
+                            </div>
+                            <div>
+                              <Label
+                                htmlFor="parentEmail"
+                                className={labelClass}
+                              >
+                                Parent Email (Optional)
+                              </Label>
+                              <Input
+                                id="parentEmail"
+                                placeholder="parent@example.com"
+                                value={form.parentEmail || ''}
+                                onChange={(e) =>
+                                  handleChange('parentEmail', e.target.value)
+                                }
+                                className={`mt-1.5 ${inputClass}`}
+                                type="email"
+                              />
+                              <FieldError field="parentEmail" />
                             </div>
                             <div>
                               <Label

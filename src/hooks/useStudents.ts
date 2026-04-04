@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/services/supabase/client';
 import { toast } from '@/components/ui/sonner';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 type StudentRow = {
   id: string;
@@ -17,8 +18,7 @@ type StudentRow = {
 };
 
 export function useStudents() {
-  const [students, setStudents] = useState<StudentRow[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [programFilter, setProgramFilter] = useState<string>('all');
   const [sortCol, setSortCol] = useState<'name' | 'program' | 'join_date'>(
@@ -26,8 +26,7 @@ export function useStudents() {
   );
   const [sortAsc, setSortAsc] = useState(false);
 
-  const fetchStudents = useCallback(async () => {
-    setLoading(true);
+  const fetchStudents = useCallback(async (): Promise<StudentRow[]> => {
     const { data, error } = await supabase
       .from('students')
       .select(
@@ -36,35 +35,42 @@ export function useStudents() {
       .order('created_at', { ascending: false });
 
     if (error) {
-      toast.error('Failed to fetch students: ' + error.message);
+      throw error;
     }
-    setStudents((data || []) as StudentRow[]);
-    setLoading(false);
+    return (data || []) as StudentRow[];
   }, []);
 
-  useEffect(() => {
-    let ignore = false;
-    const runFetch = async () => {
-      if (!ignore) {
-        await fetchStudents();
-      }
-    };
-    runFetch();
+  const {
+    data: students = [],
+    isLoading: loading,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ['students'],
+    queryFn: fetchStudents,
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 60,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    placeholderData: (previousData) => previousData,
+  });
 
+  useEffect(() => {
     const channel = supabase
       .channel('gsai-students-admin-realtime-hook')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'students' },
-        fetchStudents
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['students'] });
+        }
       )
       .subscribe();
 
     return () => {
-      ignore = true;
       supabase.removeChannel(channel);
     };
-  }, [fetchStudents]);
+  }, [queryClient]);
 
   // Get unique programs for filter dropdown
   const programOptions = useMemo(() => {
@@ -121,7 +127,7 @@ export function useStudents() {
 
   return {
     students,
-    loading,
+    loading: loading && students.length === 0,
     filteredStudents,
     search,
     setSearch,
@@ -130,6 +136,15 @@ export function useStudents() {
     programOptions,
     sortConfig,
     requestSort,
-    refetchStudents: fetchStudents,
+    refetchStudents: async () => {
+      try {
+        await refetch();
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : 'Unknown error';
+        toast.error('Failed to refresh students: ' + message);
+      }
+    },
+    isBackgroundRefreshing: isFetching && students.length > 0,
   };
 }

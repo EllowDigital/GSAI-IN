@@ -8,6 +8,9 @@ const corsHeaders = {
 
 const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend';
 const ACADEMY_NAME = 'Ghatak Sports Academy India';
+const ACADEMY_EMAIL = 'ghatakgsai@gmail.com';
+const ACADEMY_PHONE = '+91 63941 35988';
+const ACADEMY_LOGO_URL = 'https://ghataksportsacademy.com/assets/images/logo.webp';
 
 interface Payload {
   type?: 'event' | 'competition';
@@ -53,28 +56,42 @@ function buildBody(kind: 'event' | 'competition', recipient: any, payload: Paylo
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0" />
 <style>
-  body{margin:0;padding:0;background:#f4f4f7;font-family:Arial,Helvetica,sans-serif}
-  .wrapper{max-width:600px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-  .header{background:#111827;color:#fff;padding:22px 28px;text-align:center}
-  .body{padding:24px 28px;color:#1f2937;line-height:1.6;font-size:15px}
-  .box{background:#f9fafb;border-left:4px solid #2563eb;padding:12px 14px;border-radius:0 6px 6px 0;margin:14px 0}
+  body{margin:0;padding:0;background:#eef2f7;font-family:Arial,Helvetica,sans-serif;color:#1f2937}
+  .wrapper{max-width:640px;margin:0 auto;padding:24px 14px}
+  .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;box-shadow:0 8px 30px rgba(15,23,42,.06)}
+  .header{background:#0f172a;padding:20px 26px;text-align:center}
+  .logo{height:46px;max-width:220px;object-fit:contain;display:block;margin:0 auto 8px}
+  .academy{color:#e2e8f0;font-size:14px;font-weight:600;letter-spacing:.2px}
+  .body{padding:26px;color:#1f2937;line-height:1.65;font-size:15px}
+  .box{background:#f8fafc;border:1px solid #dbeafe;border-left:4px solid #2563eb;padding:12px 14px;border-radius:10px;margin:14px 0}
   .box p{margin:4px 0;font-size:14px}
-  .btn{display:inline-block;background:#2563eb;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none;font-weight:600}
+  .btn{display:inline-block;background:#1d4ed8;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600}
+  .footer{background:#f8fafc;padding:16px 26px;text-align:center;font-size:12px;color:#64748b;border-top:1px solid #e5e7eb}
+  .footer a{color:#1d4ed8;text-decoration:none}
 </style>
 </head>
 <body>
 <div class="wrapper">
-  <div class="header"><strong>${ACADEMY_NAME}</strong></div>
-  <div class="body">
-    <p>Namaste <strong>${parentName}</strong> ji,</p>
-    <p>New ${label.toLowerCase()} update for <strong>${studentName}</strong>.</p>
-    <div class="box">
-      <p><strong>${label}:</strong> ${title}</p>
-      <p><strong>Date:</strong> ${date}${endDate ? ` to ${endDate}` : ''}</p>
-      ${location ? `<p><strong>Location:</strong> ${location}</p>` : ''}
+  <div class="card">
+    <div class="header">
+      <img class="logo" src="${ACADEMY_LOGO_URL}" alt="${ACADEMY_NAME} logo" />
+      <div class="academy">${ACADEMY_NAME}</div>
     </div>
-    ${description}
-    <p><a class="btn" href="${safeUrl}" rel="noopener noreferrer">View Update</a></p>
+    <div class="body">
+      <p>Namaste <strong>${parentName}</strong> ji,</p>
+      <p>New ${label.toLowerCase()} update for <strong>${studentName}</strong>.</p>
+      <div class="box">
+        <p><strong>${label}:</strong> ${title}</p>
+        <p><strong>Date:</strong> ${date}${endDate ? ` to ${endDate}` : ''}</p>
+        ${location ? `<p><strong>Location:</strong> ${location}</p>` : ''}
+      </div>
+      ${description}
+      <p><a class="btn" href="${safeUrl}" rel="noopener noreferrer">View Update</a></p>
+    </div>
+    <div class="footer">
+      <p>${ACADEMY_NAME}</p>
+      <p>Phone / WhatsApp: ${ACADEMY_PHONE} | Email: <a href="mailto:${ACADEMY_EMAIL}">${ACADEMY_EMAIL}</a></p>
+    </div>
   </div>
 </div>
 </body>

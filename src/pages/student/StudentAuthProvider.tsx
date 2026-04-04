@@ -1,6 +1,4 @@
 import React, {
-  createContext,
-  useContext,
   useEffect,
   useState,
   ReactNode,
@@ -13,35 +11,11 @@ import { Session } from '@supabase/supabase-js';
 import { AuthCelebration } from '@/components/admin/AuthCelebration';
 import { clearPersistedSupabaseSession } from '@/services/supabase/session';
 import { toast } from '@/components/ui/sonner';
+import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
+import { StudentAuthContext, StudentProfile } from './StudentAuthContext';
 
-interface StudentProfile {
-  studentId: string;
-  studentName: string;
-  loginId: string;
-  program: string;
-}
-
-interface StudentAuthContextType {
-  session: Session | null;
-  profile: StudentProfile | null;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  signIn: (loginId: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-}
-
-const StudentAuthContext = createContext<StudentAuthContextType>({
-  session: null,
-  profile: null,
-  isLoading: true,
-  isAuthenticated: false,
-  signIn: async () => {},
-  signOut: async () => {},
-});
-
-export function useStudentAuth() {
-  return useContext(StudentAuthContext);
-}
+const AUTH_TIMEOUT_MS = 15000;
+const STUDENT_PROFILE_STORAGE_KEY = 'gsai-student-profile-cache';
 
 export function StudentAuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -63,6 +37,31 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const getCachedStudentProfile = (): StudentProfile | null => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const raw = window.localStorage.getItem(STUDENT_PROFILE_STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw) as StudentProfile;
+      if (!parsed?.studentId || !parsed?.loginId) return null;
+      return parsed;
+    } catch {
+      return null;
+    }
+  };
+
+  const cacheStudentProfile = (nextProfile: StudentProfile | null) => {
+    if (typeof window === 'undefined') return;
+    if (!nextProfile) {
+      window.localStorage.removeItem(STUDENT_PROFILE_STORAGE_KEY);
+      return;
+    }
+    window.localStorage.setItem(
+      STUDENT_PROFILE_STORAGE_KEY,
+      JSON.stringify(nextProfile)
+    );
+  };
+
   const triggerAnimation = (
     type: 'login' | 'logout',
     message: string,
@@ -80,19 +79,25 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
   const loadProfile = useCallback(
     async (userId: string): Promise<StudentProfile | null> => {
       try {
-        const { data, error } = (await supabase
-          .from('student_portal_accounts')
-          .select('student_id, login_id, students(name, program)')
-          .eq('auth_user_id', userId)
-          .maybeSingle()) as any;
+        const { data, error } = (await withTimeout(
+          supabase
+            .from('student_portal_accounts')
+            .select('student_id, login_id, students(name, program)')
+            .eq('auth_user_id', userId)
+            .maybeSingle(),
+          AUTH_TIMEOUT_MS,
+          'Loading student profile timed out.'
+        )) as any;
 
         if (error || !data) return null;
-        return {
+        const nextProfile = {
           studentId: data.student_id,
           loginId: data.login_id,
           studentName: data.students?.name || '',
           program: data.students?.program || '',
         };
+        cacheStudentProfile(nextProfile);
+        return nextProfile;
       } catch {
         return null;
       }
@@ -105,7 +110,11 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
 
     const init = async () => {
       try {
-        const { data } = await supabase.auth.getSession();
+        const { data } = await withTimeout(
+          supabase.auth.getSession(),
+          AUTH_TIMEOUT_MS,
+          'Loading student session timed out.'
+        );
         const sess = data.session;
         if (!mounted) return;
         setSession(sess);
@@ -131,7 +140,27 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
             }
           } else {
             setProfile(null);
+            cacheStudentProfile(null);
           }
+        } else {
+          setProfile(null);
+          cacheStudentProfile(null);
+        }
+      } catch (error) {
+        if (isTimeoutError(error)) {
+          const cached = getCachedStudentProfile();
+          if (cached) {
+            setProfile(cached);
+            toast.warning('Using cached student session. Reconnecting...');
+          } else {
+            setSession(null);
+            setProfile(null);
+          }
+          toast.error('Student portal is responding slowly. Please try again.');
+        } else {
+          setSession(null);
+          setProfile(null);
+          cacheStudentProfile(null);
         }
       } finally {
         if (mounted) setIsLoading(false);
@@ -154,6 +183,7 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
           if (mounted) setProfile(prof);
         } else {
           if (mounted) setProfile(null);
+          cacheStudentProfile(null);
         }
       }
     );
@@ -165,14 +195,30 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
     };
   }, [loadProfile, navigate]);
 
+  useEffect(() => {
+    if (authAnimation?.type !== 'login') return;
+    if (location.pathname !== '/student/dashboard') return;
+
+    const settleTimer = setTimeout(() => {
+      setAuthAnimation(null);
+      clearAnimationTimeout();
+    }, 250);
+
+    return () => clearTimeout(settleTimer);
+  }, [authAnimation, location.pathname]);
+
   const signIn = async (loginId: string, password: string) => {
     setIsLoading(true);
     try {
       const email = `${loginId.toLowerCase().trim()}@student.gsai.app`;
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { data, error } = await withTimeout(
+        supabase.auth.signInWithPassword({
+          email,
+          password,
+        }),
+        AUTH_TIMEOUT_MS,
+        'Login request timed out. Please check your connection and try again.'
+      );
       if (error) throw new Error(error.message);
 
       if (requiresPasswordSetup(data.session)) {
@@ -186,8 +232,14 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
         throw new Error('No student account found for this ID.');
       }
       setProfile(prof);
-      triggerAnimation('login', `Welcome back, ${prof.studentName}!`, 900);
+      cacheStudentProfile(prof);
+      triggerAnimation('login', `Welcome back, ${prof.studentName}!`, 500);
       navigate('/student/dashboard', { replace: true });
+    } catch (error) {
+      if (isTimeoutError(error)) {
+        throw new Error('Login timed out. Please try again.');
+      }
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -209,6 +261,7 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
       clearPersistedSupabaseSession();
       setSession(null);
       setProfile(null);
+      cacheStudentProfile(null);
 
       setAuthAnimation(null);
       navigate('/student/login', { replace: true });

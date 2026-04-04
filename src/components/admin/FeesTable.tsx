@@ -121,7 +121,7 @@ export default function FeesTable({
                   </button>
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700">
+                  <span className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-100 to-indigo-100 px-2 py-1 text-[11px] font-semibold text-blue-700 sm:text-xs">
                     {student.program}
                   </span>
                 </TableCell>
@@ -156,7 +156,7 @@ export default function FeesTable({
                 <TableCell>
                   <span
                     className={clsx(
-                      'inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide',
+                      'inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide sm:px-3 sm:text-xs',
                       statusClass
                     )}
                   >
@@ -168,7 +168,7 @@ export default function FeesTable({
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-9 w-9 rounded-xl border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 group/btn"
+                      className="h-8 w-8 rounded-lg border-slate-200 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 group/btn sm:h-9 sm:w-9"
                       onClick={() => onShowHistory(student)}
                       title="Show payment history"
                     >
@@ -179,7 +179,7 @@ export default function FeesTable({
                       size="sm"
                       onClick={() => onEditFee({ student, fee })}
                       className={clsx(
-                        'h-9 w-9 rounded-xl transition-all duration-200 group/btn',
+                        'h-8 w-8 rounded-lg transition-all duration-200 group/btn sm:h-9 sm:w-9',
                         fee
                           ? 'border-slate-200 hover:border-amber-300 hover:bg-amber-50'
                           : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-md hover:shadow-lg'

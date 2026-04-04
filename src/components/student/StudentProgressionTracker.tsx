@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useStudentAuth } from '@/pages/student/StudentAuthProvider';
+import { useStudentAuth } from '@/pages/student/StudentAuthContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/services/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
@@ -38,6 +38,11 @@ export default function StudentProgressionTracker() {
       return data || [];
     },
     enabled: !!profile?.studentId,
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 60,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    placeholderData: (previousData) => previousData,
   });
 
   // Fetch student's primary program from students table as fallback
@@ -53,6 +58,11 @@ export default function StudentProgressionTracker() {
       return data;
     },
     enabled: !!profile?.studentId,
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 60,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    placeholderData: (previousData) => previousData,
   });
 
   // Fetch ALL belt-based progress records for this student
@@ -70,6 +80,13 @@ export default function StudentProgressionTracker() {
       return data || [];
     },
     enabled: !!profile?.studentId,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 8000),
+    placeholderData: (previousData) => previousData,
   });
 
   // Fetch ALL level-based progress
@@ -87,6 +104,13 @@ export default function StudentProgressionTracker() {
       return (data || []) as any[];
     },
     enabled: !!profile?.studentId,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 8000),
+    placeholderData: (previousData) => previousData,
   });
 
   // Fetch promotion history
@@ -106,6 +130,13 @@ export default function StudentProgressionTracker() {
       return data || [];
     },
     enabled: !!profile?.studentId,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 8000),
+    placeholderData: (previousData) => previousData,
   });
 
   const isLoading = progressLoading || levelLoading || promoLoading;

@@ -34,7 +34,7 @@ export default function BlogsTable({
         <Table className="min-w-[800px]">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-40">
+              <TableHead className="w-36 sm:w-40">
                 <div className="flex items-center gap-2">
                   <Image className="w-4 h-4 text-slate-500" />
                   Thumbnail
@@ -46,7 +46,7 @@ export default function BlogsTable({
                   Title
                 </div>
               </TableHead>
-              <TableHead className="w-32">
+              <TableHead className="w-28 sm:w-32">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-slate-500" />
                   Date
@@ -67,11 +67,10 @@ export default function BlogsTable({
                       <img
                         src={blog.image_url}
                         alt={blog.title}
-                        className="h-16 w-28 object-cover transition-transform duration-200 group-hover:scale-105"
-                        style={{ minWidth: '112px' }}
+                        className="h-14 w-24 min-w-[96px] object-cover transition-transform duration-200 group-hover:scale-105 sm:h-16 sm:w-28 sm:min-w-[112px]"
                       />
                     ) : (
-                      <div className="h-16 w-28 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center rounded-lg">
+                      <div className="flex h-14 w-24 items-center justify-center rounded-lg bg-gradient-to-br from-slate-100 to-slate-200 sm:h-16 sm:w-28">
                         <Image className="w-6 h-6 text-slate-400" />
                       </div>
                     )}
@@ -79,7 +78,7 @@ export default function BlogsTable({
                 </TableCell>
                 <TableCell>
                   <div className="space-y-1">
-                    <h3 className="font-bold text-slate-800 line-clamp-2 group-hover:text-blue-600 transition-colors duration-200">
+                    <h3 className="line-clamp-2 text-sm font-semibold text-slate-800 transition-colors duration-200 group-hover:text-blue-600 sm:text-[15px]">
                       {blog.title}
                     </h3>
                   </div>
@@ -87,14 +86,14 @@ export default function BlogsTable({
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-slate-600 whitespace-nowrap">
+                    <span className="whitespace-nowrap text-[13px] font-medium text-slate-600 sm:text-sm">
                       {blog.published_at ? formatDate(blog.published_at) : '--'}
                     </span>
                   </div>
                 </TableCell>
                 <TableCell>
                   <p
-                    className="text-slate-600 line-clamp-2 text-sm leading-relaxed"
+                    className="line-clamp-2 text-[13px] leading-relaxed text-slate-600 sm:text-sm"
                     title={blog.description ?? ''}
                   >
                     {blog.description || 'No description available'}
@@ -106,7 +105,7 @@ export default function BlogsTable({
                       variant="outline"
                       size="sm"
                       onClick={() => onEdit(blog)}
-                      className="h-9 w-9 rounded-xl border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 group/btn"
+                      className="h-8 w-8 rounded-lg border-slate-200 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 group/btn sm:h-9 sm:w-9"
                       aria-label="Edit blog"
                     >
                       <Edit className="w-4 h-4 text-slate-600 group-hover/btn:text-blue-600" />
@@ -115,7 +114,7 @@ export default function BlogsTable({
                       variant="outline"
                       size="sm"
                       onClick={() => onDelete(blog.id)}
-                      className="h-9 w-9 rounded-xl border-red-200 hover:border-red-300 hover:bg-red-50 transition-all duration-200 group/btn"
+                      className="h-8 w-8 rounded-lg border-red-200 transition-all duration-200 hover:border-red-300 hover:bg-red-50 group/btn sm:h-9 sm:w-9"
                       aria-label="Delete blog"
                       disabled={isDeleting(blog.id)}
                     >

@@ -63,6 +63,13 @@ export default function StudentAnnouncements() {
       if (error) throw error;
       return data || [];
     },
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 20,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 8000),
+    placeholderData: (previousData) => previousData,
   });
 
   const handleDismiss = useCallback((id: string) => {

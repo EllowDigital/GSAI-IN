@@ -17,6 +17,7 @@ import StudentsTable from './students/StudentsTable';
 import StudentsCards from './students/StudentsCards';
 import RefreshButton from './RefreshButton';
 import { useStudents } from '@/hooks/useStudents';
+import { usePersistentState } from '@/hooks/usePersistentState';
 
 type StudentRow = {
   id: string;
@@ -51,7 +52,11 @@ export default function StudentManager() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<StudentRow | null>(null);
   const [deleteStudent, setDeleteStudent] = useState<StudentRow | null>(null);
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = usePersistentState<'cards' | 'table'>(
+    'admin:layout:view-mode',
+    'cards',
+    ['cards', 'table']
+  );
 
   const handleEdit = (student: StudentRow) => {
     setEditingStudent(student);
@@ -71,9 +76,9 @@ export default function StudentManager() {
 
   return (
     <>
-      <div className="w-full p-0 max-w-full">
-        <Card className="bg-card border border-border/50 shadow-sm rounded-xl sm:rounded-2xl">
-          <CardHeader className="border-b border-border/50 p-4 sm:p-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="admin-page max-w-full p-0">
+        <Card className="admin-panel rounded-xl sm:rounded-2xl">
+          <CardHeader className="admin-panel-header bg-gradient-to-r from-primary/5 via-background to-background flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-foreground">
                 <Users className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500" />
@@ -91,7 +96,7 @@ export default function StudentManager() {
               />
               <Button
                 onClick={() => setIsModalOpen(true)}
-                className="gap-2 shadow"
+                className="gap-2"
                 size="sm"
               >
                 <Plus className="w-4 h-4" />
@@ -101,11 +106,11 @@ export default function StudentManager() {
             </div>
           </CardHeader>
 
-          <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+          <CardContent className="admin-panel-body space-y-4 sm:space-y-6">
             {/* Search and Filters */}
-            <Card className="border-border/50">
+            <Card className="border-border/70 bg-muted/[0.25]">
               <CardContent className="p-3 sm:p-4">
-                <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
+                <div className="flex flex-col gap-2 lg:flex-row lg:gap-3">
                   <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -115,7 +120,7 @@ export default function StudentManager() {
                       className="pl-9 h-9"
                     />
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <Select
                       value={programFilter}
                       onValueChange={setProgramFilter}
@@ -133,7 +138,7 @@ export default function StudentManager() {
                         ))}
                       </SelectContent>
                     </Select>
-                    <div className="flex gap-1 border rounded-lg p-1 bg-muted/30">
+                    <div className="admin-toggle rounded-lg border-border/70 bg-card">
                       <Button
                         variant={viewMode === 'cards' ? 'default' : 'ghost'}
                         size="sm"
@@ -201,7 +206,7 @@ export default function StudentManager() {
                   onDelete={setDeleteStudent}
                 />
               ) : (
-                <Card className="overflow-hidden border-border/50">
+                <Card className="overflow-hidden border-border/70 shadow-sm">
                   <CardHeader className="pb-3 sm:pb-4">
                     <CardTitle className="text-base sm:text-lg font-semibold text-foreground flex items-center gap-2">
                       <Users className="w-5 h-5" />

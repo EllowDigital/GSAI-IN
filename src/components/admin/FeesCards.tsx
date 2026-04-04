@@ -9,7 +9,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import FeeReminderButton from './FeeReminderButton';
 
 interface FeesCardsProps {
-  rows: { student: any; fee: any | null }[];
+  rows: { student: any; fee: any | null; reminderEmail?: string | null }[];
   onEditFee: (args: { student: any; fee?: any }) => void;
   onShowHistory: (student: any) => void;
   bulkMode?: boolean;
@@ -44,7 +44,7 @@ export default function FeesCards({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
-      {rows.map(({ student, fee }) => {
+      {rows.map(({ student, fee, reminderEmail }) => {
         const status = fee ? getFeeStatus(fee) : 'unpaid';
         const [statusText, statusClass] = getStatusTextAndColor(status);
         const isSelected = selectedIds.has(student.id);
@@ -175,6 +175,8 @@ export default function FeesCards({
                         studentName={student.name}
                         parentName={student.parent_name || 'Parent'}
                         parentContact={student.parent_contact || ''}
+                        studentEmail={reminderEmail || ''}
+                        parentEmail={student.parent_email || ''}
                         amount={
                           fee ? fee.balance_due : student.default_monthly_fee
                         }

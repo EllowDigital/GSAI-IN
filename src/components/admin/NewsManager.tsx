@@ -1,7 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Plus, Grid, List, Newspaper, AlertCircle } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import {
+  Plus,
+  Grid,
+  List,
+  Newspaper,
+  AlertCircle,
+  Search,
+  Sparkles,
+  CalendarDays,
+  CheckCircle2,
+  Clock3,
+  Loader2,
+} from 'lucide-react';
 import NewsEditorModal from './NewsEditorModal';
 import NewsDeleteDialog from './NewsDeleteDialog';
 import { exportNewsToCsv } from '@/utils/exportToCsv';
@@ -14,6 +29,7 @@ import {
   handleSupabaseError,
 } from '@/utils/errorHandling';
 import { supabase } from '@/services/supabase/client';
+import { usePersistentState } from '@/hooks/usePersistentState';
 
 type NewsRow = Tables<'news'>;
 
@@ -23,7 +39,15 @@ export default function NewsManager() {
   const [deleteNewsId, setDeleteNewsId] = useState<string | null>(null);
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<
+    'all' | 'Published' | 'Draft'
+  >('all');
+  const [viewMode, setViewMode] = usePersistentState<'cards' | 'table'>(
+    'admin:layout:view-mode',
+    'cards',
+    ['cards', 'table']
+  );
 
   const queryClient = useQueryClient();
 
@@ -35,9 +59,6 @@ export default function NewsManager() {
     refresh: refreshNews,
   } = useNewsQuery();
 
-  // Real-time updates are now handled by useNewsQuery hook
-
-  // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from('news').delete().eq('id', id);
@@ -88,10 +109,6 @@ export default function NewsManager() {
   const handleModalClose = () => {
     setModalOpen(false);
     setEditingNews(null);
-    // Auto-refresh after modal close
-    setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: ['news'] });
-    }, 100);
   };
 
   const handleRefresh = async () => {
@@ -115,6 +132,7 @@ export default function NewsManager() {
   };
 
   const formatDate = (dateString: string) => {
+    if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -124,67 +142,88 @@ export default function NewsManager() {
 
   const isDeleting = (id: string) => deletingIds.has(id);
 
+  const filteredNews = useMemo(() => {
+    return news.filter((item) => {
+      const searchable =
+        `${item.title || ''} ${item.short_description || ''}`.toLowerCase();
+      const matchesSearch = searchQuery.trim()
+        ? searchable.includes(searchQuery.toLowerCase().trim())
+        : true;
+      const matchesStatus =
+        statusFilter === 'all' ? true : item.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+  }, [news, searchQuery, statusFilter]);
+
+  const publishedCount = news.filter(
+    (item) => item.status === 'Published'
+  ).length;
+  const draftCount = news.filter((item) => item.status === 'Draft').length;
+
   const renderTableView = () => (
-    <div className="rounded-2xl shadow-lg overflow-x-auto bg-white">
+    <div className="admin-table-wrap">
       <table className="w-full min-w-[600px]">
-        <thead className="bg-gradient-to-r from-slate-50 to-slate-100/50 border-b border-slate-200/60">
+        <thead className="bg-muted/50 border-b border-border/60">
           <tr>
-            <th className="text-left p-4 font-bold text-slate-700 text-xs uppercase tracking-wide">
+            <th className="text-left p-4 font-semibold text-xs uppercase tracking-wide text-muted-foreground">
               Image
             </th>
-            <th className="text-left p-4 font-bold text-slate-700 text-xs uppercase tracking-wide">
+            <th className="text-left p-4 font-semibold text-xs uppercase tracking-wide text-muted-foreground">
               Title
             </th>
-            <th className="text-left p-4 font-bold text-slate-700 text-xs uppercase tracking-wide">
+            <th className="text-left p-4 font-semibold text-xs uppercase tracking-wide text-muted-foreground">
               Status
             </th>
-            <th className="text-left p-4 font-bold text-slate-700 text-xs uppercase tracking-wide">
+            <th className="text-left p-4 font-semibold text-xs uppercase tracking-wide text-muted-foreground">
               Date
             </th>
-            <th className="text-center p-4 font-bold text-slate-700 text-xs uppercase tracking-wide">
+            <th className="text-center p-4 font-semibold text-xs uppercase tracking-wide text-muted-foreground">
               Actions
             </th>
           </tr>
         </thead>
         <tbody>
-          {news.map((item) => (
+          {filteredNews.map((item) => (
             <tr
               key={item.id}
-              className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-slate-50/50 hover:to-orange-50/30 transition-all duration-200"
+              className="border-b border-border/50 hover:bg-muted/30 transition-colors"
             >
               <td className="p-4">
                 {item.image_url ? (
                   <img
                     src={item.image_url}
                     alt={item.title}
-                    className="w-16 h-12 object-cover rounded-lg"
+                    className="w-16 h-12 object-cover rounded-lg border"
                   />
                 ) : (
-                  <div className="w-16 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                    <span className="text-gray-400 text-xs">No Image</span>
+                  <div className="w-16 h-12 bg-muted rounded-lg flex items-center justify-center">
+                    <span className="text-muted-foreground text-xs">
+                      No Image
+                    </span>
                   </div>
                 )}
               </td>
               <td className="p-4">
-                <h3 className="font-semibold text-gray-800 line-clamp-2">
+                <h3 className="font-semibold text-foreground line-clamp-2">
                   {item.title}
                 </h3>
-                <p className="text-sm text-gray-600 line-clamp-1">
+                <p className="text-sm text-muted-foreground line-clamp-1">
                   {item.short_description}
                 </p>
               </td>
               <td className="p-4">
-                <span
-                  className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                <Badge
+                  variant="outline"
+                  className={`text-xs font-semibold ${
                     item.status === 'Published'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-yellow-100 text-yellow-800'
+                      ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20'
+                      : 'bg-amber-500/10 text-amber-700 border-amber-500/20'
                   }`}
                 >
                   {item.status}
-                </span>
+                </Badge>
               </td>
-              <td className="p-4 text-sm text-gray-600">
+              <td className="p-4 text-sm text-muted-foreground">
                 {formatDate(item.created_at)}
               </td>
               <td className="p-4">
@@ -193,7 +232,7 @@ export default function NewsManager() {
                     size="sm"
                     variant="outline"
                     onClick={() => handleEdit(item)}
-                    className="px-3 py-1.5 h-auto text-xs font-medium hover:bg-primary/10 hover:text-primary border-slate-300"
+                    className="px-3 py-1.5 h-auto text-xs font-medium"
                   >
                     Edit
                   </Button>
@@ -223,78 +262,143 @@ export default function NewsManager() {
   );
 
   const renderCardsView = () => (
-    <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {news.map((item) => (
-        <div
+    <div className="admin-card-grid">
+      {filteredNews.map((item) => (
+        <Card
           key={item.id}
-          className="bg-white rounded-lg shadow-md border p-4 hover:shadow-lg transition-shadow"
+          className="border-border/70 bg-card transition-colors hover:bg-muted/20"
         >
-          {item.image_url && (
-            <img
-              src={item.image_url}
-              alt={item.title}
-              className="w-full h-32 object-cover rounded-md mb-3"
-            />
-          )}
-          <h3 className="font-semibold text-gray-800 mb-2 line-clamp-2">
-            {item.title}
-          </h3>
-          <p className="text-sm text-gray-600 mb-3 line-clamp-3">
-            {item.short_description}
-          </p>
-          <div className="flex justify-between items-center mb-3">
-            <span className="text-xs text-gray-500">
-              {formatDate(item.created_at)}
-            </span>
-            <span
-              className={`px-2 py-1 rounded-full text-xs ${
-                item.status === 'Published'
-                  ? 'bg-green-100 text-green-800'
-                  : 'bg-yellow-100 text-yellow-800'
-              }`}
-            >
-              {item.status}
-            </span>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleEdit(item)}
-              className="flex-1"
-            >
-              Edit
-            </Button>
-            <Button
-              size="sm"
-              variant="destructive"
-              onClick={() => handleDelete(item.id)}
-              disabled={isDeleting(item.id)}
-              className="flex-1"
-            >
-              {isDeleting(item.id) ? 'Deleting...' : 'Delete'}
-            </Button>
-          </div>
-        </div>
+          <CardContent className="p-0">
+            {item.image_url ? (
+              <img
+                src={item.image_url}
+                alt={item.title}
+                className="h-36 w-full rounded-t-xl object-cover"
+              />
+            ) : (
+              <div className="h-36 w-full rounded-t-xl bg-muted flex items-center justify-center text-sm text-muted-foreground">
+                No Image
+              </div>
+            )}
+            <div className="space-y-3 p-4">
+              <h3 className="line-clamp-2 font-semibold text-foreground">
+                {item.title}
+              </h3>
+              <p className="line-clamp-3 text-sm text-muted-foreground">
+                {item.short_description}
+              </p>
+              <div className="flex items-center justify-between gap-2">
+                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                  <CalendarDays className="h-3.5 w-3.5" />
+                  {formatDate(item.created_at)}
+                </span>
+                <Badge
+                  variant="outline"
+                  className={
+                    item.status === 'Published'
+                      ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20'
+                      : 'bg-amber-500/10 text-amber-700 border-amber-500/20'
+                  }
+                >
+                  {item.status}
+                </Badge>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleEdit(item)}
+                  className="flex-1"
+                >
+                  Edit
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => handleDelete(item.id)}
+                  disabled={isDeleting(item.id)}
+                  className="flex-1"
+                >
+                  {isDeleting(item.id) ? 'Deleting...' : 'Delete'}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       ))}
     </div>
   );
 
   return (
-    <div className="w-full p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1400px] mx-auto space-y-6">
-      {/* Header Card */}
-      <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 shadow-sm rounded-none sm:rounded-2xl">
-        <div className="border-b border-slate-200/60 dark:border-slate-700/60 p-4 sm:p-6">
+    <div className="admin-page max-w-[1600px] space-y-5 lg:space-y-6">
+      <section className="admin-panel overflow-hidden border-border/70 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-slate-100 shadow-md">
+        <div className="relative p-5 sm:p-6 lg:p-7">
+          <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10 blur-3xl" />
+          <div className="pointer-events-none absolute -left-20 -bottom-20 h-52 w-52 rounded-full bg-rose-300/20 blur-3xl" />
+          <div className="relative flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="space-y-3">
+              <Badge className="w-fit gap-1 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-slate-100 hover:bg-white/10">
+                <Sparkles className="h-3.5 w-3.5" />
+                Publishing Workspace
+              </Badge>
+              <div>
+                <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                  News Management
+                </h1>
+                <p className="mt-2 max-w-2xl text-sm text-slate-200 sm:text-base">
+                  Create, schedule, and publish academy news with a cleaner
+                  editorial workflow.
+                </p>
+              </div>
+            </div>
+            <div className="grid w-full gap-2 sm:grid-cols-3 lg:w-auto lg:min-w-[460px]">
+              <Card className="border-white/20 bg-white/10 text-slate-100">
+                <CardContent className="p-3">
+                  <p className="text-xs uppercase tracking-wide text-slate-300">
+                    Total
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold">
+                    {isLoading ? '...' : news.length}
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-white/20 bg-white/10 text-slate-100">
+                <CardContent className="p-3">
+                  <p className="text-xs uppercase tracking-wide text-slate-300">
+                    Published
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold">
+                    {isLoading ? '...' : publishedCount}
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-white/20 bg-white/10 text-slate-100">
+                <CardContent className="p-3">
+                  <p className="text-xs uppercase tracking-wide text-slate-300">
+                    Drafts
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold">
+                    {isLoading ? '...' : draftCount}
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="admin-panel">
+        <div className="admin-panel-header">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800 dark:text-white">
+              <h2 className="text-lg sm:text-xl font-semibold flex items-center gap-2 text-foreground">
                 <Newspaper className="w-5 h-5 text-primary" />
-                <span>News Management</span>
+                <span>Editorial Operations</span>
               </h2>
 
-              <p className="mt-1 text-sm sm:text-base text-muted-foreground">
-                Create, edit, and manage news articles and announcements for
-                your academy.
+              <p className="mt-1 text-sm text-muted-foreground">
+                Maintain articles, update statuses, and keep public updates
+                current.
               </p>
             </div>
             <div className="flex gap-2 mt-2 sm:mt-0">
@@ -305,7 +409,7 @@ export default function NewsManager() {
               />
               <Button
                 onClick={() => setModalOpen(true)}
-                className="gap-2 shadow"
+                className="gap-2"
                 size="sm"
               >
                 <Plus className="w-4 h-4" />
@@ -316,23 +420,20 @@ export default function NewsManager() {
           </div>
         </div>
 
-        <div className="p-4 sm:p-6 space-y-6">
-          {/* Error State */}
+        <div className="admin-panel-body">
           {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
-              <div className="flex items-center gap-3 text-red-700">
+            <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-xl">
+              <div className="flex items-center gap-3 text-destructive">
                 <AlertCircle className="w-5 h-5 flex-shrink-0" />
                 <div className="flex-1">
                   <p className="font-medium">Failed to load news</p>
-                  <p className="text-sm text-red-600 mt-1">
-                    {formatErrorForDisplay(error)}
-                  </p>
+                  <p className="text-sm mt-1">{formatErrorForDisplay(error)}</p>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleRefresh}
-                  className="text-red-600 border-red-200 hover:bg-red-100"
+                  className="border-destructive/30 hover:bg-destructive/10"
                 >
                   Retry
                 </Button>
@@ -340,10 +441,34 @@ export default function NewsManager() {
             </div>
           )}
 
-          {/* View Controls */}
-          <div className="flex flex-wrap gap-2 sm:gap-3 justify-between">
-            {/* View Mode Toggle */}
-            <div className="flex gap-1 border rounded-full p-1 bg-muted/50 flex-1 sm:flex-initial">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <div className="relative xl:col-span-2">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search title or summary..."
+                className="pl-9"
+              />
+            </div>
+            <select
+              value={statusFilter}
+              onChange={(e) =>
+                setStatusFilter(e.target.value as 'all' | 'Published' | 'Draft')
+              }
+              className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="all">All Statuses</option>
+              <option value="Published">Published</option>
+              <option value="Draft">Draft</option>
+            </select>
+            <div className="rounded-md border border-border/70 bg-muted/20 px-3 py-2 text-xs text-muted-foreground sm:text-sm">
+              Showing {filteredNews.length} of {news.length} articles
+            </div>
+          </div>
+
+          <div className="admin-toolbar">
+            <div className="admin-toggle flex-1 sm:flex-initial">
               <Button
                 variant={viewMode === 'cards' ? 'default' : 'ghost'}
                 size="sm"
@@ -365,8 +490,8 @@ export default function NewsManager() {
             </div>
 
             <Button
-              onClick={() => exportNewsToCsv(news)}
-              disabled={news.length === 0}
+              onClick={() => exportNewsToCsv(filteredNews)}
+              disabled={filteredNews.length === 0}
               variant="outline"
               size="sm"
               className="flex-1 sm:flex-initial min-w-[100px]"
@@ -375,30 +500,49 @@ export default function NewsManager() {
             </Button>
           </div>
 
-          {/* Content */}
           <div className="w-full space-y-4">
             {isLoading || isRefreshing ? (
               <div className="flex flex-col items-center justify-center py-8 sm:py-12">
-                <div className="animate-spin h-8 w-8 sm:h-10 sm:w-10 border-4 border-primary border-t-transparent rounded-full" />
+                <Loader2 className="h-8 w-8 sm:h-10 sm:w-10 animate-spin text-primary" />
                 <p className="text-sm sm:text-base text-muted-foreground mt-4">
                   Loading news articles...
                 </p>
               </div>
-            ) : news.length === 0 ? (
+            ) : filteredNews.length === 0 ? (
               <div className="text-center py-8 sm:py-12 space-y-4">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-muted rounded-full flex items-center justify-center">
-                  <span className="text-2xl">📰</span>
+                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-muted rounded-full flex items-center justify-center text-muted-foreground">
+                  {news.length === 0 ? (
+                    <Newspaper className="h-8 w-8" />
+                  ) : (
+                    <Clock3 className="h-8 w-8" />
+                  )}
                 </div>
                 <h3 className="text-lg sm:text-xl font-semibold text-foreground">
-                  No news articles found
+                  {news.length === 0
+                    ? 'No news articles found'
+                    : 'No results found'}
                 </h3>
                 <p className="text-sm sm:text-base text-muted-foreground">
-                  Get started by creating your first news article.
+                  {news.length === 0
+                    ? 'Get started by creating your first news article.'
+                    : 'Try adjusting your search or status filter.'}
                 </p>
-                <Button onClick={() => setModalOpen(true)} className="gap-2">
-                  <Plus className="w-4 h-4" />
-                  Add First Article
-                </Button>
+                {news.length === 0 ? (
+                  <Button onClick={() => setModalOpen(true)} className="gap-2">
+                    <Plus className="w-4 h-4" />
+                    Add First Article
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSearchQuery('');
+                      setStatusFilter('all');
+                    }}
+                  >
+                    Reset Filters
+                  </Button>
+                )}
               </div>
             ) : viewMode === 'cards' ? (
               renderCardsView()
@@ -409,7 +553,6 @@ export default function NewsManager() {
         </div>
       </div>
 
-      {/* Modals */}
       <NewsEditorModal
         open={modalOpen}
         onOpenChange={handleModalClose}

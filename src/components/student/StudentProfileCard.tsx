@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useStudentAuth } from '@/pages/student/StudentAuthProvider';
+import { useStudentAuth } from '@/pages/student/StudentAuthContext';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/services/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -307,6 +308,10 @@ export default function StudentProfileCard() {
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>Edit Profile</DialogTitle>
+            <DialogDescription>
+              Update your personal details. Program and join date changes are
+              admin-managed.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>

@@ -34,7 +34,18 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { toast } from '@/hooks/useToast';
-import { Plus, Megaphone, Pencil, Trash2, Clock } from 'lucide-react';
+import {
+  Plus,
+  Megaphone,
+  Pencil,
+  Trash2,
+  Clock,
+  Sparkles,
+  BellRing,
+  CheckCircle2,
+  AlertTriangle,
+  Loader2,
+} from 'lucide-react';
 import { format } from 'date-fns';
 import Spinner from '@/components/ui/spinner';
 
@@ -54,7 +65,11 @@ export default function AnnouncementsManager() {
   const [editingAnn, setEditingAnn] = useState<Announcement | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const { data: announcements = [], isLoading } = useQuery({
+  const {
+    data: announcements = [],
+    isLoading,
+    dataUpdatedAt,
+  } = useQuery({
     queryKey: ['admin-announcements'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -64,6 +79,11 @@ export default function AnnouncementsManager() {
       if (error) throw error;
       return data as Announcement[];
     },
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 60,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    placeholderData: (previousData) => previousData,
   });
 
   const upsertMutation = useMutation({
@@ -99,7 +119,10 @@ export default function AnnouncementsManager() {
         editingAnn?.id ? 'Announcement updated' : 'Announcement created'
       );
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e) =>
+      toast.error(
+        e instanceof Error ? e.message : 'Failed to save announcement.'
+      ),
   });
 
   const deleteMutation = useMutation({
@@ -114,7 +137,10 @@ export default function AnnouncementsManager() {
       queryClient.invalidateQueries({ queryKey: ['admin-announcements'] });
       toast.success('Announcement deleted');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e) =>
+      toast.error(
+        e instanceof Error ? e.message : 'Failed to delete announcement.'
+      ),
   });
 
   const priorityColor = (p: string) => {
@@ -124,149 +150,278 @@ export default function AnnouncementsManager() {
     return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
   };
 
+  const activeAnnouncements = announcements.filter((item) => item.is_active);
+  const urgentAnnouncements = announcements.filter(
+    (item) => item.priority === 'urgent'
+  );
+  const now = dataUpdatedAt;
+  const expiringSoon = announcements.filter((item) => {
+    if (!item.expires_at) return false;
+    const expiry = new Date(item.expires_at).getTime();
+    const inThreeDays = now + 1000 * 60 * 60 * 24 * 3;
+    return expiry >= now && expiry <= inThreeDays;
+  });
+
   return (
-    <div className="w-full p-4 sm:p-5 lg:p-6 space-y-4 max-w-[1600px] mx-auto">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
-            <Megaphone className="w-5 h-5 text-primary" /> Announcements
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Manage notices visible to students
-          </p>
+    <div className="admin-page space-y-5 lg:space-y-6">
+      <section className="admin-panel overflow-hidden border-border/70 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-slate-100 shadow-md">
+        <div className="relative p-5 sm:p-6 lg:p-7">
+          <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/10 blur-3xl" />
+          <div className="pointer-events-none absolute -left-20 -bottom-20 h-52 w-52 rounded-full bg-emerald-300/20 blur-3xl" />
+
+          <div className="relative flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="space-y-3">
+              <Badge className="w-fit gap-1 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-slate-100 hover:bg-white/10">
+                <Sparkles className="h-3.5 w-3.5" />
+                Broadcast Center
+              </Badge>
+              <div>
+                <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                  Announcements Hub
+                </h1>
+                <p className="mt-2 max-w-2xl text-sm text-slate-200 sm:text-base">
+                  Publish timely updates with clear priority levels and
+                  expiration control for students.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid w-full gap-2 sm:grid-cols-3 lg:w-auto lg:min-w-[460px]">
+              <Card className="border-white/20 bg-white/10 text-slate-100">
+                <CardContent className="p-3">
+                  <p className="text-xs uppercase tracking-wide text-slate-300">
+                    Total
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold">
+                    {isLoading ? '...' : announcements.length}
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-white/20 bg-white/10 text-slate-100">
+                <CardContent className="p-3">
+                  <p className="text-xs uppercase tracking-wide text-slate-300">
+                    Active
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold">
+                    {isLoading ? '...' : activeAnnouncements.length}
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-white/20 bg-white/10 text-slate-100">
+                <CardContent className="p-3">
+                  <p className="text-xs uppercase tracking-wide text-slate-300">
+                    Urgent
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold">
+                    {isLoading ? '...' : urgentAnnouncements.length}
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </div>
-        <Dialog
-          open={modalOpen}
-          onOpenChange={(o) => {
-            setModalOpen(o);
-            if (!o) setEditingAnn(null);
-          }}
-        >
-          <DialogTrigger asChild>
-            <Button
-              size="sm"
-              className="gap-1.5"
-              onClick={() => {
-                setEditingAnn(null);
-                setModalOpen(true);
+      </section>
+
+      <section className="admin-panel">
+        <div className="admin-panel-header">
+          <div className="admin-toolbar">
+            <div>
+              <h2 className="text-base font-semibold text-foreground sm:text-lg">
+                Announcement Operations
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Create, edit, prioritize, and retire notices shown to students.
+              </p>
+            </div>
+
+            <Dialog
+              open={modalOpen}
+              onOpenChange={(o) => {
+                setModalOpen(o);
+                if (!o) setEditingAnn(null);
               }}
             >
-              <Plus className="w-4 h-4" /> New
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle>
-                {editingAnn?.id ? 'Edit' : 'Create'} Announcement
-              </DialogTitle>
-            </DialogHeader>
-            <AnnouncementForm
-              initial={editingAnn}
-              onSubmit={(data) => upsertMutation.mutate(data)}
-              isPending={upsertMutation.isPending}
-            />
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {isLoading ? (
-        <div className="flex justify-center py-12">
-          <Spinner size={20} />
+              <DialogTrigger asChild>
+                <Button
+                  size="sm"
+                  className="gap-1.5"
+                  onClick={() => {
+                    setEditingAnn(null);
+                    setModalOpen(true);
+                  }}
+                >
+                  <Plus className="w-4 h-4" /> New Announcement
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>
+                    {editingAnn?.id ? 'Edit' : 'Create'} Announcement
+                  </DialogTitle>
+                </DialogHeader>
+                <AnnouncementForm
+                  key={editingAnn?.id ?? 'new'}
+                  initial={editingAnn}
+                  onSubmit={(data) => upsertMutation.mutate(data)}
+                  isPending={upsertMutation.isPending}
+                />
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
-      ) : announcements.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
-            No announcements yet.
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-3">
-          {announcements.map((ann) => (
-            <Card
-              key={ann.id}
-              className={`border ${!ann.is_active ? 'opacity-50' : ''}`}
-            >
-              <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="space-y-1 min-w-0 flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-semibold text-foreground text-sm">
-                      {ann.title}
-                    </h3>
-                    <Badge
-                      variant="outline"
-                      className={`text-[10px] ${priorityColor(ann.priority)}`}
-                    >
-                      {ann.priority}
-                    </Badge>
-                    {!ann.is_active && (
-                      <Badge variant="secondary" className="text-[10px]">
-                        Inactive
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground line-clamp-2">
-                    {ann.content}
-                  </p>
-                  <div className="flex items-center gap-3 text-[10px] text-muted-foreground mt-1">
-                    <span>
-                      {format(new Date(ann.created_at), 'MMM d, yyyy')}
-                    </span>
-                    {ann.expires_at && (
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" /> Expires{' '}
-                        {format(new Date(ann.expires_at), 'MMM d, yyyy')}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => {
-                      setEditingAnn(ann);
-                      setModalOpen(true);
-                    }}
-                  >
-                    <Pencil className="w-3.5 h-3.5" />
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Delete Announcement?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This will permanently remove this announcement.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          className="bg-destructive text-destructive-foreground"
-                          onClick={() => deleteMutation.mutate(ann.id)}
-                        >
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
+
+        <div className="admin-panel-body space-y-4">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <Card className="border-border/70 bg-card/80">
+              <CardContent className="p-4">
+                <p className="text-xs text-muted-foreground">Published Now</p>
+                <p className="mt-1 text-xl font-semibold text-foreground">
+                  {isLoading ? '...' : activeAnnouncements.length}
+                </p>
               </CardContent>
             </Card>
-          ))}
+            <Card className="border-border/70 bg-card/80">
+              <CardContent className="p-4">
+                <p className="text-xs text-muted-foreground">Urgent Alerts</p>
+                <p className="mt-1 text-xl font-semibold text-foreground">
+                  {isLoading ? '...' : urgentAnnouncements.length}
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="border-border/70 bg-card/80">
+              <CardContent className="p-4">
+                <p className="text-xs text-muted-foreground">Expiring Soon</p>
+                <p className="mt-1 text-xl font-semibold text-foreground">
+                  {isLoading ? '...' : expiringSoon.length}
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="border-border/70 bg-card/80">
+              <CardContent className="p-4">
+                <p className="text-xs text-muted-foreground">Guideline</p>
+                <p className="mt-1 text-sm font-medium text-foreground">
+                  Keep messages short and action-oriented.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {isLoading ? (
+            <div className="flex justify-center py-12">
+              <Spinner size={20} />
+            </div>
+          ) : announcements.length === 0 ? (
+            <Card>
+              <CardContent className="py-12 text-center text-muted-foreground">
+                <Megaphone className="mx-auto mb-2 h-5 w-5" />
+                No announcements yet.
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {announcements.map((ann) => (
+                <Card
+                  key={ann.id}
+                  className={`border border-border/70 transition-colors hover:bg-muted/20 ${!ann.is_active ? 'opacity-60' : ''}`}
+                >
+                  <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="space-y-1 min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-semibold text-foreground text-sm">
+                          {ann.title}
+                        </h3>
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] ${priorityColor(ann.priority)}`}
+                        >
+                          {ann.priority}
+                        </Badge>
+                        {!ann.is_active && (
+                          <Badge variant="secondary" className="text-[10px]">
+                            Inactive
+                          </Badge>
+                        )}
+                        {ann.priority === 'urgent' && (
+                          <Badge className="text-[10px] bg-red-500/10 text-red-600 hover:bg-red-500/10">
+                            <AlertTriangle className="mr-1 h-3 w-3" />
+                            High Alert
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground line-clamp-2">
+                        {ann.content}
+                      </p>
+                      <div className="flex items-center gap-3 text-[10px] text-muted-foreground mt-1">
+                        <span className="inline-flex items-center gap-1">
+                          <BellRing className="h-3 w-3" />
+                          {format(new Date(ann.created_at), 'MMM d, yyyy')}
+                        </span>
+                        {ann.expires_at && (
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" /> Expires{' '}
+                            {format(new Date(ann.expires_at), 'MMM d, yyyy')}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-1.5"
+                        onClick={() => {
+                          setEditingAnn(ann);
+                          setModalOpen(true);
+                        }}
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Edit</span>
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-1.5 border-destructive/30 text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">Delete</span>
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Delete Announcement?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This will permanently remove this announcement.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-destructive text-destructive-foreground"
+                              onClick={() => deleteMutation.mutate(ann.id)}
+                              disabled={deleteMutation.isPending}
+                            >
+                              {deleteMutation.isPending ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              ) : (
+                                <CheckCircle2 className="mr-2 h-4 w-4" />
+                              )}
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </section>
     </div>
   );
 }
@@ -290,7 +445,10 @@ function AnnouncementForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !content.trim()) return;
+    if (!title.trim() || !content.trim()) {
+      toast.error('Title and content are required');
+      return;
+    }
     onSubmit({
       ...(initial?.id ? { id: initial.id } : {}),
       title: title.trim(),
@@ -319,8 +477,12 @@ function AnnouncementForm({
           onChange={(e) => setContent(e.target.value)}
           placeholder="Announcement content..."
           rows={3}
+          maxLength={1200}
           required
         />
+        <p className="mt-1 text-xs text-muted-foreground">
+          {content.length}/1200
+        </p>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>

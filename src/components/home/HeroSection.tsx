@@ -287,7 +287,6 @@ export default function HeroSection() {
             alt=""
             aria-hidden="true"
             loading="eager"
-            fetchPriority="high"
             className="absolute inset-0 w-full h-full object-cover"
           />
           <AnimatePresence mode="wait">
