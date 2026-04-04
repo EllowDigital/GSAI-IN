@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense, useMemo } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/services/supabase/client';
 import FeeSummaryCard from './FeeSummaryCard';
@@ -254,6 +254,24 @@ export default function FeesManagerPanel() {
 
   const isLoading = loadingStudents || loadingFees || isRefreshing;
 
+  const feeSnapshot = useMemo(() => {
+    const paid = rows.filter((r) => r.fee?.status === 'paid').length;
+    const unpaid = rows.filter((r) => !r.fee || r.fee.status !== 'paid').length;
+    const totalDue = rows.reduce((sum, r) => {
+      if (r.fee) {
+        return sum + Number(r.fee.balance_due || 0);
+      }
+      return sum + Number(r.student.default_monthly_fee || 0);
+    }, 0);
+
+    return {
+      paid,
+      unpaid,
+      totalDue,
+      total: rows.length,
+    };
+  }, [rows]);
+
   // Selection handlers
   const toggleSelection = (studentId: string) => {
     setSelectedStudentIds((prev) => {
@@ -360,8 +378,8 @@ export default function FeesManagerPanel() {
   return (
     <div className="admin-page">
       {/* Header Card */}
-      <div className="admin-panel rounded-xl sm:rounded-2xl">
-        <div className="admin-panel-header">
+      <div className="admin-panel rounded-xl sm:rounded-2xl overflow-hidden">
+        <div className="admin-panel-header bg-gradient-to-r from-primary/5 via-background to-background">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-foreground">
@@ -379,6 +397,25 @@ export default function FeesManagerPanel() {
                 isLoading={isLoading}
                 className="flex-shrink-0"
               />
+            </div>
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+              <p className="text-[11px] text-muted-foreground">Students</p>
+              <p className="text-lg font-semibold text-foreground tabular-nums">{feeSnapshot.total}</p>
+            </div>
+            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+              <p className="text-[11px] text-muted-foreground">Paid</p>
+              <p className="text-lg font-semibold text-foreground tabular-nums">{feeSnapshot.paid}</p>
+            </div>
+            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+              <p className="text-[11px] text-muted-foreground">Pending</p>
+              <p className="text-lg font-semibold text-foreground tabular-nums">{feeSnapshot.unpaid}</p>
+            </div>
+            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+              <p className="text-[11px] text-muted-foreground">Total Due</p>
+              <p className="text-lg font-semibold text-foreground tabular-nums">₹{feeSnapshot.totalDue.toLocaleString()}</p>
             </div>
           </div>
         </div>
@@ -414,7 +451,7 @@ export default function FeesManagerPanel() {
             </div>
 
             {/* View Controls */}
-            <div className="flex flex-wrap gap-2 sm:gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3 rounded-xl border border-border/70 bg-muted/20 p-2">
               {/* Bulk Mode Toggle */}
               <Button
                 variant={bulkMode ? 'default' : 'outline'}
@@ -430,7 +467,7 @@ export default function FeesManagerPanel() {
               </Button>
 
               {/* View Mode Toggle */}
-              <div className="admin-toggle">
+              <div className="admin-toggle border-border/70 bg-card">
                 <Button
                   variant={viewMode === 'cards' ? 'default' : 'ghost'}
                   size="sm"
