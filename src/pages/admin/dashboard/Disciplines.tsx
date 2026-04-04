@@ -7,9 +7,9 @@ import DisciplineLevelsManager from '@/components/admin/progression/DisciplineLe
 
 export default function Disciplines() {
   return (
-    <div className="w-full p-4 sm:p-5 lg:p-6 max-w-[1600px] mx-auto">
+    <div className="admin-page">
       <Tabs defaultValue="disciplines" className="space-y-4">
-        <TabsList className="grid w-full max-w-2xl grid-cols-3">
+        <TabsList className="grid w-full grid-cols-3 sm:max-w-2xl">
           <TabsTrigger value="disciplines" className="gap-2">
             <GraduationCap className="w-4 h-4" />
             <span className="hidden sm:inline">Disciplines</span>

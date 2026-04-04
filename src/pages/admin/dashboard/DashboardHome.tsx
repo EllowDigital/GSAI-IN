@@ -287,7 +287,7 @@ export default function DashboardHome() {
   ];
 
   return (
-    <div className="w-full p-4 sm:p-5 lg:p-6 space-y-6 max-w-[1600px] mx-auto">
+    <div className="admin-page">
       {/* Welcome Section */}
       <div>
         <h2 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">

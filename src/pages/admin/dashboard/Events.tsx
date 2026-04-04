@@ -156,9 +156,9 @@ const Events = () => {
   }
 
   return (
-    <div className="w-full p-4 sm:p-5 lg:p-6 space-y-4 max-w-[1600px] mx-auto">
-      <div className="bg-card border border-border shadow-sm rounded-xl">
-        <div className="border-b border-border p-4 sm:p-5">
+    <div className="admin-page">
+      <div className="admin-panel">
+        <div className="admin-panel-header">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2 text-foreground">
@@ -184,11 +184,11 @@ const Events = () => {
           </div>
         </div>
 
-        <div className="p-4 sm:p-6 space-y-6">
+        <div className="admin-panel-body">
           {/* View Controls */}
-          <div className="flex flex-wrap gap-2 sm:gap-3 justify-between">
+          <div className="admin-toolbar">
             {/* View Mode Toggle */}
-            <div className="flex gap-1 border rounded-full p-1 bg-muted/50 flex-1 sm:flex-initial">
+            <div className="admin-toggle flex-1 sm:flex-initial">
               <Button
                 variant={viewMode === 'cards' ? 'default' : 'ghost'}
                 size="sm"

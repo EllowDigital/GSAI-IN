@@ -358,10 +358,10 @@ export default function FeesManagerPanel() {
   };
 
   return (
-    <div className="w-full p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1600px] mx-auto space-y-4 sm:space-y-6">
+    <div className="admin-page">
       {/* Header Card */}
-      <div className="bg-card border border-border/50 shadow-sm rounded-xl sm:rounded-2xl">
-        <div className="border-b border-border/50 p-4 sm:p-6">
+      <div className="admin-panel rounded-xl sm:rounded-2xl">
+        <div className="admin-panel-header">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-foreground">
@@ -383,7 +383,7 @@ export default function FeesManagerPanel() {
           </div>
         </div>
 
-        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <div className="admin-panel-body space-y-4 sm:space-y-6">
           {/* Analytics Chart */}
           <Suspense
             fallback={
@@ -430,7 +430,7 @@ export default function FeesManagerPanel() {
               </Button>
 
               {/* View Mode Toggle */}
-              <div className="flex gap-1 border rounded-full p-1 bg-muted/50">
+              <div className="admin-toggle">
                 <Button
                   variant={viewMode === 'cards' ? 'default' : 'ghost'}
                   size="sm"

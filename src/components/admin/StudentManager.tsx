@@ -76,9 +76,9 @@ export default function StudentManager() {
 
   return (
     <>
-      <div className="w-full p-0 max-w-full">
-        <Card className="bg-card border border-border/50 shadow-sm rounded-xl sm:rounded-2xl">
-          <CardHeader className="border-b border-border/50 p-4 sm:p-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="admin-page max-w-full p-0">
+        <Card className="admin-panel rounded-xl sm:rounded-2xl">
+          <CardHeader className="admin-panel-header flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-foreground">
                 <Users className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500" />
@@ -106,7 +106,7 @@ export default function StudentManager() {
             </div>
           </CardHeader>
 
-          <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+          <CardContent className="admin-panel-body space-y-4 sm:space-y-6">
             {/* Search and Filters */}
             <Card className="border-border/50">
               <CardContent className="p-3 sm:p-4">
@@ -138,7 +138,7 @@ export default function StudentManager() {
                         ))}
                       </SelectContent>
                     </Select>
-                    <div className="flex gap-1 border rounded-lg p-1 bg-muted/30">
+                    <div className="admin-toggle rounded-lg">
                       <Button
                         variant={viewMode === 'cards' ? 'default' : 'ghost'}
                         size="sm"

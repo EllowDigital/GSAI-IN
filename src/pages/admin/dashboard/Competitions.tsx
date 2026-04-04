@@ -367,7 +367,7 @@ export default function Competitions() {
   });
 
   return (
-    <div className="w-full p-4 sm:p-5 lg:p-6 space-y-4 max-w-[1600px] mx-auto">
+    <div className="admin-page">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
@@ -438,7 +438,7 @@ export default function Competitions() {
             className="pl-9"
           />
         </div>
-        <div className="flex gap-1 border rounded-lg p-1 bg-muted/30">
+        <div className="admin-toggle rounded-lg">
           <Button
             variant={viewMode === 'cards' ? 'default' : 'ghost'}
             size="sm"

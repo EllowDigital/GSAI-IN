@@ -80,7 +80,7 @@ const AdminLayout: React.FC = () => {
   }
 
   return (
-    <div className="h-dvh w-full flex bg-muted/30 overflow-hidden">
+    <div className="admin-shell h-dvh w-full flex overflow-hidden">
       <AppSidebar
         open={sidebarOpen}
         setOpen={setSidebarOpen}

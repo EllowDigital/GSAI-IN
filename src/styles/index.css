@@ -281,6 +281,42 @@
 }
 
 @layer components {
+  .admin-shell {
+    @apply min-h-dvh bg-gradient-to-b from-slate-50/80 via-background to-slate-100/40;
+  }
+
+  .admin-page {
+    @apply mx-auto w-full max-w-[1600px] space-y-4 p-3 sm:space-y-5 sm:p-5 lg:space-y-6 lg:p-6;
+  }
+
+  .admin-panel {
+    @apply rounded-xl border border-border/70 bg-card shadow-sm;
+  }
+
+  .admin-panel-header {
+    @apply border-b border-border/60 p-4 sm:p-5;
+  }
+
+  .admin-panel-body {
+    @apply space-y-6 p-4 sm:p-6;
+  }
+
+  .admin-toolbar {
+    @apply flex flex-wrap items-center justify-between gap-2 sm:gap-3;
+  }
+
+  .admin-toggle {
+    @apply inline-flex items-center gap-1 rounded-full border border-border/70 bg-muted/50 p-1;
+  }
+
+  .admin-table-wrap {
+    @apply overflow-x-auto rounded-xl border border-border/70 bg-card;
+  }
+
+  .admin-card-grid {
+    @apply grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4;
+  }
+
   .nav-shell {
     width: min(var(--nav-shell-width), calc(100% - var(--page-gutter)));
     margin-inline: auto;
