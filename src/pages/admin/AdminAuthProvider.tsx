@@ -280,7 +280,9 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
             }, INIT_AUTH_RETRY_DELAY_MS * (attempt + 1));
             return;
           }
-          toast.error('Admin check timed out. Please retry.');
+          toast.warning('Admin auth is taking longer than expected. Keeping your current session.');
+          setIsLoading(false);
+          return;
         }
         console.error('Failed to initialize admin auth', error);
         clearState();

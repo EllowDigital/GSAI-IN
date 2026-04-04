@@ -451,7 +451,6 @@ export default function DashboardHome() {
             </ResponsiveContainer>
           </div>
         </div>
-          </div>
         </div>
 
         <div className="space-y-4 xl:col-span-4">

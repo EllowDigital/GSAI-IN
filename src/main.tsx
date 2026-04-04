@@ -69,17 +69,56 @@ try {
   document.body.appendChild(errorContainer);
 }
 
+const isHardReload = (): boolean => {
+  if (typeof window === 'undefined' || typeof performance === 'undefined') {
+    return false;
+  }
+  const [entry] = performance.getEntriesByType(
+    'navigation'
+  ) as PerformanceNavigationTiming[];
+  return entry?.type === 'reload';
+};
+
+const clearRuntimeCachesOnHardReload = async () => {
+  if (!('caches' in window) || !isHardReload()) return;
+
+  try {
+    const keys = await caches.keys();
+    await Promise.all(
+      keys.filter((key) => key.startsWith('gsai-')).map((key) => caches.delete(key))
+    );
+  } catch (error) {
+    console.warn('Unable to clear runtime caches on hard reload:', error);
+  }
+};
+
 // Register the service worker for PWA functionality with error handling
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
+  window.addEventListener('load', async () => {
+    if (import.meta.env.DEV) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map((registration) => registration.unregister()));
+      return;
+    }
+
+    await clearRuntimeCachesOnHardReload();
+
     navigator.serviceWorker
       .register('/sw.js')
-      .then((registration) => {
-        // Service Worker registered successfully
+      .then(async (registration) => {
+        // Proactively check for updates to ensure latest deployed assets are used.
+        await registration.update();
+
+        // Tell active service worker to purge runtime caches after hard reload.
+        if (isHardReload() && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({
+            type: 'PURGE_RUNTIME_CACHES',
+          });
+        }
+
         console.log('SW registered:', registration);
       })
       .catch((error) => {
-        // Service Worker registration failed silently
         console.warn('SW registration failed:', error);
       });
   });
