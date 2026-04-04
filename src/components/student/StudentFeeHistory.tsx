@@ -1,5 +1,5 @@
 import React from 'react';
-import { useStudentAuth } from '@/pages/student/StudentAuthProvider';
+import { useStudentAuth } from '@/pages/student/StudentAuthContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/services/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
@@ -66,6 +66,13 @@ export default function StudentFeeHistory() {
       return data;
     },
     enabled: !!profile?.studentId,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 8000),
+    placeholderData: (previousData) => previousData,
   });
 
   if (isLoading)

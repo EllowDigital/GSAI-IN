@@ -38,6 +38,13 @@ export default function StudentBeltExamNotifications({
       return (data || []) as BeltExamNotification[];
     },
     enabled: !!studentId,
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 20,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 8000),
+    placeholderData: (previousData) => previousData,
   });
 
   const markReadMutation = useMutation({

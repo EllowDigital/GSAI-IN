@@ -19,6 +19,13 @@ export default function StudentEventsView() {
       if (error) throw error;
       return data;
     },
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 8000),
+    placeholderData: (previousData) => previousData,
   });
 
   if (isLoading)

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useStudentAuth } from './StudentAuthProvider';
+import { useStudentAuth } from './StudentAuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -175,9 +175,20 @@ export default function StudentLogin() {
                 <ArrowLeft className="h-3.5 w-3.5" /> Back to Website
               </Link>
             </div>
+
+            <p className="mt-3 text-center text-[11px] text-muted-foreground/70">
+              Powered by{' '}
+              <a
+                href="https://ellodigital.space"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2 hover:text-foreground"
+              >
+                ellodigital.space
+              </a>
+            </p>
           </div>
         </section>
-        </div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useStudentAuth } from './StudentAuthProvider';
+import { useStudentAuth } from './StudentAuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/services/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -59,6 +59,11 @@ export default function StudentDashboard() {
       return data || [];
     },
     enabled: !!profile?.studentId,
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 60,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    placeholderData: (previousData) => previousData,
   });
 
   const { data: competitions = [], isLoading: compLoading } = useQuery({
@@ -72,6 +77,11 @@ export default function StudentDashboard() {
       return data;
     },
     enabled: isAuthenticated,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    placeholderData: (previousData) => previousData,
   });
 
   const { data: myRegistrations = [] } = useQuery({
@@ -85,6 +95,11 @@ export default function StudentDashboard() {
       return data || [];
     },
     enabled: !!profile?.studentId,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    placeholderData: (previousData) => previousData,
   });
 
   const { data: myCertificates = [] } = useQuery({
@@ -98,6 +113,11 @@ export default function StudentDashboard() {
       return data || [];
     },
     enabled: !!profile?.studentId,
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 60,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    placeholderData: (previousData) => previousData,
   });
 
   const regMap = new Map(
@@ -468,10 +488,16 @@ export default function StudentDashboard() {
       </main>
 
       <footer className="border-t border-border/50 py-3 text-center">
-        <p className="text-[10px] text-muted-foreground/50">
-          Built by{' '}
-          <span className="text-muted-foreground/70">Sarwan Yadav</span> ·{' '}
-          <span className="text-muted-foreground/70">EllowDigital</span>
+        <p className="text-[10px] text-muted-foreground/60">
+          Powered by{' '}
+          <a
+            href="https://ellodigital.space"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-muted-foreground hover:text-foreground underline underline-offset-2"
+          >
+            ellodigital.space
+          </a>
           <span className="inline-flex items-center gap-1 ml-2 text-muted-foreground/60">
             <ShieldCheck className="h-3 w-3" /> Secure Student Access
           </span>
