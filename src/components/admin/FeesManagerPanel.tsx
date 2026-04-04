@@ -76,6 +76,22 @@ export default function FeesManagerPanel() {
     },
   });
 
+  const { data: enrollmentEmails = [] } = useQuery({
+    queryKey: ['enrollment-request-emails'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('enrollment_requests')
+        .select('linked_student_id, student_email, created_at')
+        .not('linked_student_id', 'is', null)
+        .not('student_email', 'is', null)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 60_000,
+  });
+
   // Fetch fees for filtered month/year
   const { data: fees, isLoading: loadingFees } = useQuery({
     queryKey: ['fees', filterMonth, filterYear],
@@ -199,11 +215,20 @@ export default function FeesManagerPanel() {
   });
 
   // Compose filtered rows
+  const emailByStudentId = new Map<string, string>();
+  for (const row of enrollmentEmails) {
+    const studentId = (row.linked_student_id || '').toString();
+    const email = (row.student_email || '').toString().trim();
+    if (!studentId || !email || emailByStudentId.has(studentId)) continue;
+    emailByStudentId.set(studentId, email);
+  }
+
   const rows = Array.isArray(students)
     ? students
         .map((student) => {
           const fee = fees?.find((f) => f.student_id === student.id) || null;
-          return { student, fee };
+          const reminderEmail = emailByStudentId.get(student.id) || null;
+          return { student, fee, reminderEmail };
         })
         .filter((row) => {
           if (

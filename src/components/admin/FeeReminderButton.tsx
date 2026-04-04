@@ -22,7 +22,8 @@ interface FeeReminderButtonProps {
   amount: number;
   month: number;
   year: number;
-  recipientEmail?: string;
+  studentEmail?: string;
+  parentEmail?: string;
 }
 
 const MONTH_NAMES = [
@@ -47,11 +48,21 @@ export default function FeeReminderButton({
   amount,
   month,
   year,
-  recipientEmail = '',
+  studentEmail = '',
+  parentEmail = '',
 }: FeeReminderButtonProps) {
+  const normalizeEmail = (value?: string | null) => {
+    const trimmed = (value || '').trim();
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed) ? trimmed : '';
+  };
+
+  const fallbackParentEmail =
+    normalizeEmail(parentEmail) || normalizeEmail(parentContact);
+  const preferredEmail = normalizeEmail(studentEmail) || fallbackParentEmail;
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [sending, setSending] = useState(false);
-  const [email, setEmail] = useState(recipientEmail);
+  const [email, setEmail] = useState(preferredEmail);
   const [message, setMessage] = useState('');
 
   const defaultMessage = `Dear ${parentName},
@@ -64,18 +75,40 @@ Thank you,
 Ghatak Sports Academy`;
 
   const handleOpenDialog = () => {
-    setEmail(recipientEmail);
+    setEmail(preferredEmail);
     setMessage(defaultMessage);
     setDialogOpen(true);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const openWhatsAppReminder = () => {
+    const whatsappMsg = `Namaste ${parentName} ji,\n\nThis is a reminder that the fee of ₹${amount.toLocaleString()} for ${studentName}'s training for ${MONTH_NAMES[month - 1]} ${year} is pending.\n\nKindly clear the dues at your earliest convenience.\n\n📞 +91 63941 35988\n✉️ ghatakgsai@gmail.com\n\n- Ghatak Sports Academy India`;
+    const opened = openWhatsAppConversation(parentContact, whatsappMsg);
+
+    if (!opened) {
+      toast({
+        title: 'WhatsApp Unavailable',
+        description: 'Could not open WhatsApp for this parent contact.',
+        variant: 'error' as any,
+      });
+      return false;
+    }
+
+    toast({
+      title: 'WhatsApp Opened',
+      description: `Reminder opened for ${parentName}.`,
+    });
+    return true;
+  };
+
+  const handleSendEmail = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !email.includes('@')) {
+    const emailToUse = normalizeEmail(email);
+    if (!emailToUse) {
       toast({
         title: 'Invalid Email',
-        description: 'Please enter a valid recipient email address.',
+        description:
+          'No valid student/parent email found. Use WhatsApp reminder.',
         variant: 'error' as any,
       });
       return;
@@ -95,31 +128,36 @@ Ghatak Sports Academy`;
         month: MONTH_NAMES[month - 1],
         year,
       });
-      emailPayload.to = email;
+      emailPayload.to = emailToUse;
 
       const emailSent = await sendEmail(emailPayload);
 
-      // Also open WhatsApp as secondary channel
-      const whatsappMsg = `Namaste ${parentName} ji,\n\nThis is a reminder that the fee of ₹${amount.toLocaleString()} for ${studentName}'s training for ${MONTH_NAMES[month - 1]} ${year} is pending.\n\nKindly clear the dues at your earliest convenience.\n\n📞 +91 63941 35988\n✉️ ghatakgsai@gmail.com\n\n- Ghatak Sports Academy India`;
-      openWhatsAppConversation(parentContact, whatsappMsg);
-
       toast({
-        title: emailSent ? 'Reminder Sent' : 'Partial Success',
+        title: emailSent ? 'Email Sent' : 'Email Failed',
         description: emailSent
-          ? `Email sent to ${email}. WhatsApp also opened for ${parentName}.`
-          : `WhatsApp opened. Email could not be sent.`,
+          ? `Reminder email sent to ${emailToUse}.`
+          : `Could not send reminder email to ${emailToUse}.`,
+        variant: emailSent ? ('success' as any) : ('error' as any),
       });
-      setDialogOpen(false);
+
+      if (emailSent) {
+        setDialogOpen(false);
+      }
     } catch {
       toast({
-        title: 'Error',
-        description: 'Failed to send email. WhatsApp opened instead.',
+        title: 'Email Error',
+        description: 'Failed to send email. Please try again.',
         variant: 'error' as any,
       });
-      const whatsappMsg = `Namaste ${parentName} ji,\n\nThis is a reminder that the fee of ₹${amount.toLocaleString()} for ${studentName}'s training for ${MONTH_NAMES[month - 1]} ${year} is pending.\n\nKindly clear the dues.\n\n- Ghatak Sports Academy India`;
-      openWhatsAppConversation(parentContact, whatsappMsg);
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleWhatsAppClick = () => {
+    const opened = openWhatsAppReminder();
+    if (opened) {
+      setDialogOpen(false);
     }
   };
 
@@ -176,24 +214,23 @@ Ghatak Sports Academy`;
             </DialogTitle>
             <DialogDescription>
               Send a payment reminder to {parentName} for {studentName}'s
-              pending fees via email + WhatsApp.
+              pending fees via email or WhatsApp.
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSendEmail} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Parent/Student Email *</Label>
+              <Label htmlFor="email">Student/Parent Email</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="parent@email.com"
+                placeholder="student-or-parent@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
               />
               <p className="text-[10px] text-muted-foreground">
-                Email notification is sent to the academy. WhatsApp message
-                opens for the parent.
+                Default order: Student email, then Parent email. If no email is
+                available, use WhatsApp.
               </p>
             </div>
 
@@ -250,14 +287,24 @@ Ghatak Sports Academy`;
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={sending}>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleWhatsAppClick}
+              >
+                <Phone className="w-4 h-4 mr-2" /> WhatsApp
+              </Button>
+              <Button
+                type="submit"
+                disabled={sending || !normalizeEmail(email)}
+              >
                 {sending ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending...
                   </>
                 ) : (
                   <>
-                    <Send className="w-4 h-4 mr-2" /> Send Reminder
+                    <Send className="w-4 h-4 mr-2" /> Send Email
                   </>
                 )}
               </Button>
