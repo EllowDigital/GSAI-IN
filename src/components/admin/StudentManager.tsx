@@ -17,6 +17,7 @@ import StudentsTable from './students/StudentsTable';
 import StudentsCards from './students/StudentsCards';
 import RefreshButton from './RefreshButton';
 import { useStudents } from '@/hooks/useStudents';
+import { usePersistentState } from '@/hooks/usePersistentState';
 
 type StudentRow = {
   id: string;
@@ -51,7 +52,11 @@ export default function StudentManager() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<StudentRow | null>(null);
   const [deleteStudent, setDeleteStudent] = useState<StudentRow | null>(null);
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = usePersistentState<'cards' | 'table'>(
+    'admin:layout:view-mode',
+    'cards',
+    ['cards', 'table']
+  );
 
   const handleEdit = (student: StudentRow) => {
     setEditingStudent(student);

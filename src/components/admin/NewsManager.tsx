@@ -14,6 +14,7 @@ import {
   handleSupabaseError,
 } from '@/utils/errorHandling';
 import { supabase } from '@/services/supabase/client';
+import { usePersistentState } from '@/hooks/usePersistentState';
 
 type NewsRow = Tables<'news'>;
 
@@ -23,7 +24,11 @@ export default function NewsManager() {
   const [deleteNewsId, setDeleteNewsId] = useState<string | null>(null);
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = usePersistentState<'cards' | 'table'>(
+    'admin:layout:view-mode',
+    'cards',
+    ['cards', 'table']
+  );
 
   const queryClient = useQueryClient();
 

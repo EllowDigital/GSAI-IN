@@ -50,6 +50,7 @@ import {
 } from '@/utils/studentCommunication';
 import { Checkbox } from '@/components/ui/checkbox';
 import AnnouncementDeliveryLogs from '@/components/admin/AnnouncementDeliveryLogs';
+import { usePersistentState } from '@/hooks/usePersistentState';
 
 interface Competition {
   id: string;
@@ -120,7 +121,11 @@ export default function Competitions() {
   const [regsOpen, setRegsOpen] = useState<Competition | null>(null);
   const [editing, setEditing] = useState<Competition | null>(null);
   const [search, setSearch] = useState('');
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = usePersistentState<'cards' | 'table'>(
+    'admin:layout:view-mode',
+    'cards',
+    ['cards', 'table']
+  );
   const [form, setForm] = useState({
     name: '',
     description: '',

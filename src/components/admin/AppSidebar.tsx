@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { NavLink } from 'react-router-dom';
 import {
   Home,
   BadgeDollarSign,
@@ -17,11 +17,8 @@ import {
   Megaphone,
   UserPlus,
   Dumbbell,
-  ChevronLeft,
-  ChevronRight,
-  Search,
-  PanelLeftClose,
-  PanelLeft,
+  ChevronsLeft,
+  ChevronsRight,
 } from 'lucide-react';
 import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -116,6 +113,50 @@ interface AppSidebarProps {
   setCollapsed?: (collapsed: boolean) => void;
 }
 
+function FooterAction({
+  collapsed,
+  onClick,
+  icon: Icon,
+  label,
+  tone = 'default',
+}: {
+  collapsed: boolean;
+  onClick: () => void;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  tone?: 'default' | 'danger';
+}) {
+  const baseTone =
+    tone === 'danger'
+      ? 'text-destructive/80 hover:text-destructive hover:bg-destructive/10'
+      : 'text-sidebar-foreground/65 hover:text-sidebar-foreground hover:bg-sidebar-accent';
+
+  const button = (
+    <button
+      onClick={onClick}
+      className={cn(
+        'flex w-full items-center rounded-lg text-[12px] font-medium transition-colors',
+        baseTone,
+        collapsed ? 'justify-center p-2.5' : 'gap-2 px-3 py-2'
+      )}
+    >
+      <Icon className="h-4 w-4 flex-shrink-0" />
+      {!collapsed && <span>{label}</span>}
+    </button>
+  );
+
+  return (
+    <Tooltip delayDuration={0}>
+      <TooltipTrigger asChild>{button}</TooltipTrigger>
+      {collapsed && (
+        <TooltipContent side="right" className="text-xs">
+          {label}
+        </TooltipContent>
+      )}
+    </Tooltip>
+  );
+}
+
 function NavSection({
   label,
   items,
@@ -128,16 +169,16 @@ function NavSection({
   collapsed?: boolean;
 }) {
   return (
-    <div className="mb-1">
+    <div className="mb-2">
       {!collapsed && (
-        <p className="px-3 py-1.5 text-[10px] font-semibold text-sidebar-foreground/40 uppercase tracking-[0.12em]">
+        <p className="px-3 pb-1.5 pt-1 text-[10px] font-semibold text-sidebar-foreground/45 uppercase tracking-[0.14em]">
           {label}
         </p>
       )}
       {collapsed && (
-        <div className="mx-auto my-1.5 w-6 border-t border-sidebar-border/30" />
+        <div className="mx-auto my-2 w-5 border-t border-sidebar-border/35" />
       )}
-      <ul className="space-y-0.5 px-2">
+      <ul className="space-y-1 px-2">
         {items.map(({ title, url, icon: Icon }) => {
           const link = (
             <NavLink
@@ -148,8 +189,8 @@ function NavSection({
               }}
               className={({ isActive }) =>
                 cn(
-                  'group flex items-center gap-2.5 rounded-lg text-[13px] font-medium transition-all duration-150',
-                  collapsed ? 'justify-center p-2.5' : 'px-3 py-2',
+                  'group flex items-center rounded-lg text-[13px] font-medium transition-all duration-150',
+                  collapsed ? 'justify-center p-2.5' : 'gap-2.5 px-3 py-2.5',
                   isActive
                     ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm'
                     : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
@@ -203,7 +244,7 @@ export function AppSidebar({
           // Desktop behavior
           'lg:translate-x-0 lg:static',
           // Width
-          collapsed ? 'w-[60px]' : 'w-[240px]'
+          collapsed ? 'w-[68px]' : 'w-[248px]'
         )}
         aria-label="Sidebar"
       >
@@ -221,7 +262,7 @@ export function AppSidebar({
         {/* Logo */}
         <div
           className={cn(
-            'flex items-center border-b border-sidebar-border flex-shrink-0 h-14',
+            'flex h-14 flex-shrink-0 items-center border-b border-sidebar-border',
             collapsed ? 'justify-center px-2' : 'gap-3 px-4'
           )}
         >
@@ -244,7 +285,7 @@ export function AppSidebar({
 
         {/* Navigation */}
         <ScrollArea className="flex-1 min-h-0">
-          <div className="py-3 space-y-1">
+          <div className="space-y-1 py-3">
             <NavSection
               label="Overview"
               items={navItems.filter((i) => i.category === 'main')}
@@ -270,7 +311,7 @@ export function AppSidebar({
         <div
           className={cn(
             'border-t border-sidebar-border flex-shrink-0',
-            collapsed ? 'p-1.5 space-y-1' : 'p-3 space-y-1.5'
+            collapsed ? 'space-y-1 p-2' : 'space-y-1.5 p-3'
           )}
         >
           {/* Collapse toggle - desktop only */}
@@ -280,17 +321,17 @@ export function AppSidebar({
                 <button
                   onClick={() => setCollapsed(!collapsed)}
                   className={cn(
-                    'hidden lg:flex items-center gap-2 text-[12px] font-medium text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-colors',
+                    'hidden lg:flex items-center rounded-lg text-[12px] font-medium text-sidebar-foreground/65 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors',
                     collapsed
-                      ? 'justify-center p-2.5 w-full'
-                      : 'px-3 py-2 w-full'
+                      ? 'h-10 w-full justify-center'
+                      : 'w-full gap-2 px-3 py-2'
                   )}
                 >
                   {collapsed ? (
-                    <PanelLeft className="w-4 h-4" />
+                    <ChevronsRight className="h-4 w-4" />
                   ) : (
                     <>
-                      <PanelLeftClose className="w-4 h-4" />
+                      <ChevronsLeft className="h-4 w-4" />
                       <span>Collapse</span>
                     </>
                   )}
@@ -304,47 +345,20 @@ export function AppSidebar({
             </Tooltip>
           )}
 
-          {/* Website link */}
-          <Tooltip delayDuration={0}>
-            <TooltipTrigger asChild>
-              <button
-                onClick={() => window.open('/', '_blank')}
-                className={cn(
-                  'flex items-center gap-2 text-[12px] font-medium text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-colors',
-                  collapsed ? 'justify-center p-2.5 w-full' : 'px-3 py-2 w-full'
-                )}
-              >
-                <Globe className="w-4 h-4 flex-shrink-0" />
-                {!collapsed && <span>View Website</span>}
-              </button>
-            </TooltipTrigger>
-            {collapsed && (
-              <TooltipContent side="right" className="text-xs">
-                View Website
-              </TooltipContent>
-            )}
-          </Tooltip>
+          <FooterAction
+            collapsed={collapsed}
+            onClick={() => window.open('/', '_blank')}
+            icon={Globe}
+            label="View Website"
+          />
 
-          {/* Sign out */}
-          <Tooltip delayDuration={0}>
-            <TooltipTrigger asChild>
-              <button
-                onClick={() => signOut()}
-                className={cn(
-                  'flex items-center gap-2 text-[12px] font-medium text-destructive/80 hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors',
-                  collapsed ? 'justify-center p-2.5 w-full' : 'px-3 py-2 w-full'
-                )}
-              >
-                <LogOut className="w-4 h-4 flex-shrink-0" />
-                {!collapsed && <span>Sign Out</span>}
-              </button>
-            </TooltipTrigger>
-            {collapsed && (
-              <TooltipContent side="right" className="text-xs">
-                Sign Out
-              </TooltipContent>
-            )}
-          </Tooltip>
+          <FooterAction
+            collapsed={collapsed}
+            onClick={() => signOut()}
+            icon={LogOut}
+            label="Sign Out"
+            tone="danger"
+          />
 
           {!collapsed && (
             <p className="text-[9px] text-sidebar-foreground/25 text-center pt-1">

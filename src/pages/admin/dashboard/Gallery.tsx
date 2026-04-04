@@ -16,6 +16,7 @@ import { exportGalleryToCsv } from '@/utils/exportToCsv';
 import { Tables } from '@/services/supabase/types';
 import RefreshButton from '@/components/admin/RefreshButton';
 import { toast } from '@/hooks/useToast';
+import { usePersistentState } from '@/hooks/usePersistentState';
 
 type GalleryImage = Tables<'gallery_images'>;
 
@@ -23,7 +24,11 @@ export default function Gallery() {
   const [uploadDrawerOpen, setUploadDrawerOpen] = useState(false);
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [viewMode, setViewMode] = useState<'card' | 'table'>('card');
+  const [viewMode, setViewMode] = usePersistentState<'cards' | 'table'>(
+    'admin:layout:view-mode',
+    'cards',
+    ['cards', 'table']
+  );
   const [tagFilter, setTagFilter] = useState('');
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
     null,
@@ -219,9 +224,9 @@ export default function Gallery() {
               {/* View Mode Toggle */}
               <div className="flex gap-1 border rounded-full p-1 bg-muted/50 flex-1 sm:flex-initial">
                 <Button
-                  variant={viewMode === 'card' ? 'default' : 'ghost'}
+                  variant={viewMode === 'cards' ? 'default' : 'ghost'}
                   size="sm"
-                  onClick={() => setViewMode('card')}
+                  onClick={() => setViewMode('cards')}
                   className="rounded-full px-3 flex-1 sm:flex-initial"
                 >
                   <ImageIcon className="w-4 h-4" />
@@ -274,7 +279,7 @@ export default function Gallery() {
                 <ImageIcon className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 text-gray-300" />
                 <p className="text-sm sm:text-base">No images found.</p>
               </div>
-            ) : viewMode === 'card' ? (
+            ) : viewMode === 'cards' ? (
               <div className="grid gap-3 sm:gap-4 md:gap-6 grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6">
                 {paginatedImages.map((image) => (
                   <GalleryImageCard

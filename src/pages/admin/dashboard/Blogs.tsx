@@ -10,13 +10,18 @@ import { exportBlogsToCsv } from '@/utils/exportToCsv';
 import { Tables } from '@/services/supabase/types';
 import RefreshButton from '@/components/admin/RefreshButton';
 import { toast } from '@/hooks/useToast';
+import { usePersistentState } from '@/hooks/usePersistentState';
 
 type Blog = Tables<'blogs'>;
 
 export default function Blogs() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = usePersistentState<'cards' | 'table'>(
+    'admin:layout:view-mode',
+    'cards',
+    ['cards', 'table']
+  );
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
   const [isRefreshing, setIsRefreshing] = useState(false);
 

@@ -13,6 +13,7 @@ import Spinner from '@/components/ui/spinner';
 import RefreshButton from '@/components/admin/RefreshButton';
 import { openManualWhatsAppBroadcast } from '@/utils/studentCommunication';
 import AnnouncementDeliveryLogs from '@/components/admin/AnnouncementDeliveryLogs';
+import { usePersistentState } from '@/hooks/usePersistentState';
 
 type EventRow = Tables<'events'>;
 
@@ -43,7 +44,11 @@ const Events = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<EventRow | null>(null);
   const [deleteEvent, setDeleteEvent] = useState<EventRow | null>(null);
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = usePersistentState<'cards' | 'table'>(
+    'admin:layout:view-mode',
+    'cards',
+    ['cards', 'table']
+  );
 
   const fetchEvents = useCallback(async () => {
     setLoading(true);

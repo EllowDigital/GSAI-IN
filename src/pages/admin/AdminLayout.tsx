@@ -3,7 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { useAdminAuth } from './AdminAuthProvider';
 import { AppSidebar } from '@/components/admin/AppSidebar';
 import { useQueryClient } from '@tanstack/react-query';
-import { RefreshCw, Menu, Search, Bell } from 'lucide-react';
+import { RefreshCw, Menu, PanelLeftClose, PanelLeft } from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
 import { cn } from '@/lib/utils';
 import { useRealtime } from '@/hooks/useRealtime';
@@ -26,7 +26,7 @@ const PAGE_TITLES: Record<string, string> = {
 };
 
 const AdminLayout: React.FC = () => {
-  const { isAdmin, isLoading, signOut } = useAdminAuth();
+  const { isAdmin, isLoading } = useAdminAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -101,24 +101,35 @@ const AdminLayout: React.FC = () => {
 
       <div className="flex-1 flex flex-col h-dvh min-w-0">
         {/* Top Navigation Bar */}
-        <header className="sticky top-0 z-30 bg-background border-b border-border flex-shrink-0">
-          <div className="flex items-center justify-between h-14 px-4 lg:px-6">
-            {/* Left: Mobile menu + Page title */}
-            <div className="flex items-center gap-3">
+        <header className="sticky top-0 z-30 border-b border-border/70 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 flex-shrink-0">
+          <div className="flex h-14 items-center justify-between px-4 lg:px-6">
+            {/* Left: Mobile menu + Title */}
+            <div className="flex items-center gap-2.5">
               <button
-                className="lg:hidden p-2 -ml-2 rounded-lg hover:bg-muted transition-colors"
+                className="-ml-2 rounded-lg p-2 transition-colors hover:bg-muted lg:hidden"
                 onClick={() => setSidebarOpen(true)}
                 aria-label="Open sidebar"
               >
                 <Menu className="w-5 h-5 text-muted-foreground" />
               </button>
+
+              <button
+                className="hidden lg:inline-flex items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                {sidebarCollapsed ? (
+                  <PanelLeft className="h-4 w-4" />
+                ) : (
+                  <PanelLeftClose className="h-4 w-4" />
+                )}
+              </button>
+
               <div>
-                <h1 className="text-sm font-semibold text-foreground leading-none">
+                <h1 className="text-sm font-semibold text-foreground leading-none sm:text-[15px]">
                   {pageTitle}
                 </h1>
-                <p className="text-[11px] text-muted-foreground mt-0.5 hidden sm:block">
-                  GSAI Management Portal
-                </p>
               </div>
             </div>
 
@@ -127,7 +138,7 @@ const AdminLayout: React.FC = () => {
               <button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
-                className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+                className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
                 title="Refresh data"
               >
                 <RefreshCw
