@@ -165,34 +165,35 @@ export default function EnrollmentRequestsManager() {
 
     const didOpenWhatsApp = openWhatsAppConversation(req.parent_phone, message);
 
-    // Also send email if student email exists
+    // Send email via Resend if student email exists
     if (req.student_email) {
       try {
-        const { sendFormSubmitEmail } =
-          await import('@/utils/emailNotifications');
-        await sendFormSubmitEmail({
-          subject: `Enrollment Update - ${req.student_name}`,
-          message,
-          name: req.student_name,
-          replyTo: req.student_email,
+        const { sendEmail, buildEnrollmentRejectedEmail } = await import('@/utils/resendEmail');
+        const emailPayload = buildEnrollmentRejectedEmail({
+          parentName: req.parent_name,
+          studentName: req.student_name,
+          program: req.program,
+          gender: req.gender,
+          notes,
         });
+        await sendEmail({ ...emailPayload, to: req.student_email });
         toast.success(
           didOpenWhatsApp
-            ? 'Rejection notification sent via WhatsApp & email'
-            : 'Email sent, but WhatsApp could not be opened for this phone number'
+            ? 'Rejection sent via WhatsApp & email'
+            : 'Email sent (WhatsApp could not open)'
         );
       } catch {
         toast.success(
           didOpenWhatsApp
-            ? 'WhatsApp opened (email notification failed)'
-            : 'Email failed and WhatsApp could not be opened for this phone number'
+            ? 'WhatsApp opened (email failed)'
+            : 'Both WhatsApp and email failed'
         );
       }
     } else {
       toast.success(
         didOpenWhatsApp
           ? 'WhatsApp opened with rejection message'
-          : 'WhatsApp could not be opened for this phone number'
+          : 'WhatsApp could not open for this number'
       );
     }
   };
@@ -218,15 +219,35 @@ export default function EnrollmentRequestsManager() {
       if (error) throw error;
       return { id, status, notes };
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ['enrollment-requests'] });
       toast.success('Request updated');
 
-      // If rejected, auto-open WhatsApp with rejection message
-      if (data.status === 'rejected') {
-        const req = requests.find((r) => r.id === data.id);
-        if (req) {
-          sendRejectionNotification(req, data.notes || '');
+      const req = requests.find((r) => r.id === data.id);
+      if (req) {
+        // Send WhatsApp message for the stage
+        const stage = resolveEnrollmentMessageStage(data.status);
+        const whatsappMsg = buildEnrollmentStageMessage(
+          stage,
+          buildMessagePayload(req, data.notes)
+        );
+        openWhatsAppConversation(req.parent_phone, whatsappMsg);
+
+        // Send email via Resend if student email exists
+        if (req.student_email) {
+          try {
+            const { sendEmail, buildEnrollmentStageEmail } = await import('@/utils/resendEmail');
+            const emailPayload = buildEnrollmentStageEmail(stage, {
+              parentName: req.parent_name,
+              studentName: req.student_name,
+              program: req.program,
+              gender: req.gender,
+              notes: data.notes,
+            });
+            await sendEmail({ ...emailPayload, to: req.student_email });
+          } catch {
+            console.error('Email send failed for enrollment update');
+          }
         }
       }
       setViewReq(null);
@@ -376,6 +397,25 @@ export default function EnrollmentRequestsManager() {
       queryClient.invalidateQueries({ queryKey: ['portal-accounts'] });
       queryClient.invalidateQueries({ queryKey: ['students-without-portal'] });
       toast.success('Portal account created!');
+
+      // Send portal credentials via email if student email exists
+      if (approveReq?.student_email) {
+        try {
+          const { sendEmail, buildPortalCredentialsEmail } = await import('@/utils/resendEmail');
+          const emailPayload = buildPortalCredentialsEmail({
+            parentName: approveReq.parent_name,
+            studentName: approveReq.student_name,
+            program: approveReq.program,
+            loginId: loginId.trim(),
+            password: password.trim(),
+            portalUrl: `${window.location.origin}/student/login`,
+            gender: approveReq.gender,
+          });
+          await sendEmail({ ...emailPayload, to: approveReq.student_email });
+        } catch {
+          console.error('Failed to send portal credentials email');
+        }
+      }
     } catch (err: any) {
       toast.error(err.message || 'Failed to create portal account');
     } finally {
