@@ -23,6 +23,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/admin/dashboard/gallery': 'Gallery',
   '/admin/dashboard/testimonials': 'Testimonials',
   '/admin/dashboard/announcements': 'Announcements',
+  '/admin/dashboard/about': 'About',
 };
 
 const AdminLayout: React.FC = () => {

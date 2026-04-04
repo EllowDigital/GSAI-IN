@@ -19,6 +19,7 @@ import {
   Dumbbell,
   ChevronsLeft,
   ChevronsRight,
+  Info,
 } from 'lucide-react';
 import { useAdminAuth } from '@/pages/admin/AdminAuthProvider';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -103,6 +104,12 @@ const navItems = [
     url: '/admin/dashboard/announcements',
     icon: Megaphone,
     category: 'content',
+  },
+  {
+    title: 'About',
+    url: '/admin/dashboard/about',
+    icon: Info,
+    category: 'about',
   },
 ];
 
@@ -189,20 +196,31 @@ function NavSection({
               }}
               className={({ isActive }) =>
                 cn(
-                  'group flex items-center rounded-lg text-[13px] font-medium transition-all duration-150',
+                  'group flex w-full items-center rounded-lg text-[13px] font-medium transition-all duration-150',
                   collapsed ? 'justify-center p-2.5' : 'gap-2.5 px-3 py-2.5',
                   isActive
                     ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm'
-                    : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                    : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                 )
               }
             >
-              <Icon
+              <span
                 className={cn(
-                  'flex-shrink-0',
-                  collapsed ? 'w-[18px] h-[18px]' : 'w-4 h-4'
+                  'inline-flex flex-shrink-0 items-center justify-center rounded-md',
+                  collapsed
+                    ? 'h-8 w-8 bg-sidebar-accent/70 group-hover:bg-sidebar-accent'
+                    : 'h-5 w-5'
                 )}
-              />
+              >
+                <Icon
+                  className={cn(
+                    'flex-shrink-0',
+                    collapsed
+                      ? 'h-[18px] w-[18px] text-sidebar-foreground'
+                      : 'h-4 w-4'
+                  )}
+                />
+              </span>
               {!collapsed && <span className="truncate">{title}</span>}
             </NavLink>
           );
@@ -304,6 +322,12 @@ export function AppSidebar({
               setOpen={setOpen}
               collapsed={collapsed}
             />
+            <NavSection
+              label="About"
+              items={navItems.filter((i) => i.category === 'about')}
+              setOpen={setOpen}
+              collapsed={collapsed}
+            />
           </div>
         </ScrollArea>
 
@@ -362,7 +386,7 @@ export function AppSidebar({
 
           {!collapsed && (
             <p className="text-[9px] text-sidebar-foreground/25 text-center pt-1">
-              v1.0.0 · EllowDigital
+              v2.4.0 · EllowDigital
             </p>
           )}
         </div>
