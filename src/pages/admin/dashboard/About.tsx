@@ -12,7 +12,6 @@ import {
   Building2,
   UserCircle2,
   Link as LinkIcon,
-  Sparkles,
   Rocket,
   ArrowUpRight,
   CheckCircle2,
