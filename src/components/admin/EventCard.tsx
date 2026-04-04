@@ -33,7 +33,12 @@ function formatDateRange(from?: string | null, to?: string | null) {
     year: 'numeric',
   });
 }
-const EventCard: React.FC<Props> = ({ event, onEdit, onDelete, onWhatsApp }) => (
+const EventCard: React.FC<Props> = ({
+  event,
+  onEdit,
+  onDelete,
+  onWhatsApp,
+}) => (
   <Card className="rounded-xl lg:rounded-2xl shadow-sm hover:shadow-lg overflow-hidden flex flex-col justify-between h-full transition-all duration-300 hover:-translate-y-1 border border-border bg-card">
     {event.image_url && (
       <div className="relative overflow-hidden">

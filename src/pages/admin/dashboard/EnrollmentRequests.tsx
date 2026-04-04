@@ -291,11 +291,12 @@ export default function EnrollmentRequestsManager() {
       let linkedStudentId = req.linked_student_id || null;
 
       if (!linkedStudentId && req.aadhar_number) {
-        const { data: matchedStudent, error: studentLookupError } = await supabase
-          .from('students')
-          .select('id')
-          .eq('aadhar_number', req.aadhar_number)
-          .maybeSingle();
+        const { data: matchedStudent, error: studentLookupError } =
+          await supabase
+            .from('students')
+            .select('id')
+            .eq('aadhar_number', req.aadhar_number)
+            .maybeSingle();
 
         if (studentLookupError) throw studentLookupError;
         linkedStudentId = matchedStudent?.id ?? null;
@@ -326,14 +327,18 @@ export default function EnrollmentRequestsManager() {
       queryClient.invalidateQueries({ queryKey: ['student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['student-progress'] });
-      queryClient.invalidateQueries({ queryKey: ['discipline-progress-admin'] });
+      queryClient.invalidateQueries({
+        queryKey: ['discipline-progress-admin'],
+      });
       queryClient.invalidateQueries({ queryKey: ['fees'] });
       queryClient.invalidateQueries({ queryKey: ['attendance'] });
       queryClient.invalidateQueries({ queryKey: ['promotion-history'] });
       queryClient.invalidateQueries({ queryKey: ['students-portal-status'] });
       queryClient.invalidateQueries({ queryKey: ['portal-accounts'] });
       queryClient.invalidateQueries({ queryKey: ['belt-exam-notifications'] });
-      queryClient.invalidateQueries({ queryKey: ['competition-registrations'] });
+      queryClient.invalidateQueries({
+        queryKey: ['competition-registrations'],
+      });
       queryClient.invalidateQueries({ queryKey: ['competition-certificates'] });
       toast.success('Request deleted');
     },
@@ -457,7 +462,9 @@ export default function EnrollmentRequestsManager() {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       if (!data?.default_password) {
-        throw new Error('Account created but default password was not returned.');
+        throw new Error(
+          'Account created but default password was not returned.'
+        );
       }
 
       setCreatedCreds({
@@ -495,7 +502,9 @@ export default function EnrollmentRequestsManager() {
           }
         } catch (error) {
           console.error('Failed to send portal credentials email:', error);
-          toast.warning('Portal account created, but credentials email failed.');
+          toast.warning(
+            'Portal account created, but credentials email failed.'
+          );
         }
       }
     } catch (err: any) {
@@ -791,7 +800,10 @@ export default function EnrollmentRequestsManager() {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Delete Request?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Permanently remove this enrollment request. If it is approved, the linked student profile, login credentials, progression, fees, and all related records will also be deleted forever.
+                            Permanently remove this enrollment request. If it is
+                            approved, the linked student profile, login
+                            credentials, progression, fees, and all related
+                            records will also be deleted forever.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -1158,11 +1170,9 @@ export default function EnrollmentRequestsManager() {
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                Student will sign in using default password
-                {' '}
-                <span className="font-medium">GSAI-STUDENT-2026</span>
-                {' '}
-                and then update password from student portal.
+                Student will sign in using default password{' '}
+                <span className="font-medium">GSAI-STUDENT-2026</span> and then
+                update password from student portal.
               </p>
               <Button
                 onClick={handleCreatePortal}
@@ -1207,13 +1217,17 @@ export default function EnrollmentRequestsManager() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Default Password:</span>
+                    <span className="text-muted-foreground">
+                      Default Password:
+                    </span>
                     <div className="flex items-center gap-1.5">
                       <code className="font-mono text-foreground">
                         {createdCreds.defaultPassword}
                       </code>
                       <button
-                        onClick={() => copyToClipboard(createdCreds.defaultPassword)}
+                        onClick={() =>
+                          copyToClipboard(createdCreds.defaultPassword)
+                        }
                         className="text-muted-foreground hover:text-foreground"
                       >
                         <Copy className="w-3.5 h-3.5" />

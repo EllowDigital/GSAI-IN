@@ -21,7 +21,9 @@ function normalizeEmail(value: string): string {
   return value.trim().toLowerCase();
 }
 
-export async function getApprovedStudentRecipients(): Promise<StudentRecipient[]> {
+export async function getApprovedStudentRecipients(): Promise<
+  StudentRecipient[]
+> {
   const { data, error } = await supabase
     .from('enrollment_requests')
     .select('student_email, parent_name, student_name, parent_phone')

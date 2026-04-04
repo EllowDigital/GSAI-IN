@@ -25,10 +25,7 @@ function shortId(value: string | null): string {
   return `${value.slice(0, 8)}...`;
 }
 
-export default function AnnouncementDeliveryLogs({
-  typeFilter,
-  title,
-}: Props) {
+export default function AnnouncementDeliveryLogs({ typeFilter, title }: Props) {
   const { data: logs = [], isLoading } = useQuery({
     queryKey: ['announcement-delivery-logs', typeFilter],
     queryFn: async () => {

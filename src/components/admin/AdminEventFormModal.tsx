@@ -113,7 +113,9 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
     const title = (form.title || '').toString();
     const fromDate = (form.from_date || '').toString();
     const endDate = form.end_date ? ` to ${form.end_date}` : '';
-    const location = (form as any).location ? `\nLocation: ${(form as any).location}` : '';
+    const location = (form as any).location
+      ? `\nLocation: ${(form as any).location}`
+      : '';
     const description = form.description ? `\n${form.description}` : '';
 
     return [
