@@ -165,34 +165,35 @@ export default function EnrollmentRequestsManager() {
 
     const didOpenWhatsApp = openWhatsAppConversation(req.parent_phone, message);
 
-    // Also send email if student email exists
+    // Send email via Resend if student email exists
     if (req.student_email) {
       try {
-        const { sendFormSubmitEmail } =
-          await import('@/utils/emailNotifications');
-        await sendFormSubmitEmail({
-          subject: `Enrollment Update - ${req.student_name}`,
-          message,
-          name: req.student_name,
-          replyTo: req.student_email,
+        const { sendEmail, buildEnrollmentRejectedEmail } = await import('@/utils/resendEmail');
+        const emailPayload = buildEnrollmentRejectedEmail({
+          parentName: req.parent_name,
+          studentName: req.student_name,
+          program: req.program,
+          gender: req.gender,
+          notes,
         });
+        await sendEmail({ ...emailPayload, to: req.student_email });
         toast.success(
           didOpenWhatsApp
-            ? 'Rejection notification sent via WhatsApp & email'
-            : 'Email sent, but WhatsApp could not be opened for this phone number'
+            ? 'Rejection sent via WhatsApp & email'
+            : 'Email sent (WhatsApp could not open)'
         );
       } catch {
         toast.success(
           didOpenWhatsApp
-            ? 'WhatsApp opened (email notification failed)'
-            : 'Email failed and WhatsApp could not be opened for this phone number'
+            ? 'WhatsApp opened (email failed)'
+            : 'Both WhatsApp and email failed'
         );
       }
     } else {
       toast.success(
         didOpenWhatsApp
           ? 'WhatsApp opened with rejection message'
-          : 'WhatsApp could not be opened for this phone number'
+          : 'WhatsApp could not open for this number'
       );
     }
   };
