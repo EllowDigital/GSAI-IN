@@ -11,8 +11,30 @@ import EventDeleteDialog from '@/components/admin/EventDeleteDialog';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import Spinner from '@/components/ui/spinner';
 import RefreshButton from '@/components/admin/RefreshButton';
+import { openManualWhatsAppBroadcast } from '@/utils/studentCommunication';
+import AnnouncementDeliveryLogs from '@/components/admin/AnnouncementDeliveryLogs';
 
 type EventRow = Tables<'events'>;
+
+function buildEventWhatsAppMessage(event: EventRow): string {
+  const when = event.from_date || event.date;
+  const endDate = event.end_date ? ` to ${event.end_date}` : '';
+  const location = (event as any).location
+    ? `\nLocation: ${(event as any).location}`
+    : '';
+  const description = event.description ? `\n${event.description}` : '';
+
+  return [
+    `*${event.title}*`,
+    `Date: ${when}${endDate}`,
+    location,
+    description,
+    '',
+    'Shared by Ghatak Sports Academy India',
+  ]
+    .filter(Boolean)
+    .join('\n');
+}
 
 const Events = () => {
   const { isAdmin } = useAdminAuth();
@@ -70,6 +92,23 @@ const Events = () => {
 
   const handleDelete = (event: EventRow) => {
     setDeleteEvent(event);
+  };
+
+  const handleManualWhatsApp = async (event: EventRow) => {
+    const message = buildEventWhatsAppMessage(event);
+    try {
+      await navigator.clipboard.writeText(message);
+    } catch {
+      // Continue even if clipboard write fails.
+    }
+
+    const opened = openManualWhatsAppBroadcast(message);
+    toast({
+      title: opened ? 'WhatsApp opened' : 'Message ready',
+      description: opened
+        ? 'Broadcast message copied. Select recipients manually in WhatsApp.'
+        : 'Copy the message and send manually in WhatsApp.',
+    });
   };
 
   const handleModalClose = () => {
@@ -198,6 +237,7 @@ const Events = () => {
                   <div key={event.id} className="animate-fade-in">
                     <EventCard
                       event={event}
+                      onWhatsApp={() => handleManualWhatsApp(event)}
                       onEdit={() => handleEdit(event)}
                       onDelete={() => handleDelete(event)}
                     />
@@ -263,6 +303,13 @@ const Events = () => {
                             <td className="p-3 sm:p-4 text-right">
                               <div className="flex gap-1 sm:gap-2 justify-end">
                                 <Button
+                                  variant="secondary"
+                                  size="sm"
+                                  onClick={() => handleManualWhatsApp(event)}
+                                >
+                                  WhatsApp
+                                </Button>
+                                <Button
                                   variant="outline"
                                   size="sm"
                                   onClick={() => handleEdit(event)}
@@ -289,6 +336,11 @@ const Events = () => {
           </div>
         </div>
       </div>
+
+      <AnnouncementDeliveryLogs
+        typeFilter="event"
+        title="Event Campaign Delivery Logs"
+      />
 
       <AdminEventFormModal
         open={modalOpen}

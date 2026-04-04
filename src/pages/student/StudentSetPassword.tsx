@@ -6,6 +6,10 @@ import { Label } from '@/components/ui/label';
 import { supabase } from '@/services/supabase/client';
 import { Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/useToast';
+import {
+  MIN_PASSWORD_LENGTH,
+  validateStrongPassword,
+} from '@/utils/passwordPolicy';
 
 export default function StudentSetPassword() {
   const navigate = useNavigate();
@@ -23,7 +27,7 @@ export default function StudentSetPassword() {
       if (!mounted) return;
 
       if (!data.session) {
-        toast.error('Invalid or expired setup link. Please request a new one.');
+        toast.error('Please sign in first to update your password.');
         navigate('/student/login', { replace: true });
         return;
       }
@@ -43,8 +47,9 @@ export default function StudentSetPassword() {
 
     if (submitting) return;
 
-    if (password.length < 8) {
-      toast.error('Password must be at least 8 characters.');
+    const passwordError = validateStrongPassword(password);
+    if (passwordError) {
+      toast.error(passwordError);
       return;
     }
 
@@ -69,7 +74,8 @@ export default function StudentSetPassword() {
       toast.success('Password set successfully. Please sign in.');
       navigate('/student/login', { replace: true });
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to set password.';
+      const message =
+        error instanceof Error ? error.message : 'Failed to set password.';
       toast.error(message);
     } finally {
       setSubmitting(false);
@@ -102,7 +108,7 @@ export default function StudentSetPassword() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              minLength={8}
+              minLength={MIN_PASSWORD_LENGTH}
               autoComplete="new-password"
               required
             />
@@ -115,14 +121,18 @@ export default function StudentSetPassword() {
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              minLength={8}
+              minLength={MIN_PASSWORD_LENGTH}
               autoComplete="new-password"
               required
             />
           </div>
 
           <Button type="submit" className="w-full" disabled={submitting}>
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Set Password'}
+            {submitting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              'Set Password'
+            )}
           </Button>
         </form>
 

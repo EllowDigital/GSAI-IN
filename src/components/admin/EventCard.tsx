@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Pencil, Trash2, MapPin } from 'lucide-react';
+import { Pencil, Trash2, MapPin, MessageCircle } from 'lucide-react';
 import { Tables } from '@/services/supabase/types';
 
 type EventRow = Tables<'events'>;
@@ -10,6 +10,7 @@ interface Props {
   event: EventRow;
   onEdit: () => void;
   onDelete: () => void;
+  onWhatsApp?: () => void;
 }
 function formatDateRange(from?: string | null, to?: string | null) {
   if (!from) return '';
@@ -32,7 +33,12 @@ function formatDateRange(from?: string | null, to?: string | null) {
     year: 'numeric',
   });
 }
-const EventCard: React.FC<Props> = ({ event, onEdit, onDelete }) => (
+const EventCard: React.FC<Props> = ({
+  event,
+  onEdit,
+  onDelete,
+  onWhatsApp,
+}) => (
   <Card className="rounded-xl lg:rounded-2xl shadow-sm hover:shadow-lg overflow-hidden flex flex-col justify-between h-full transition-all duration-300 hover:-translate-y-1 border border-border bg-card">
     {event.image_url && (
       <div className="relative overflow-hidden">
@@ -74,6 +80,17 @@ const EventCard: React.FC<Props> = ({ event, onEdit, onDelete }) => (
           </span>
         )}
         <div className="flex gap-2 pt-2">
+          {onWhatsApp && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={onWhatsApp}
+              className="flex-1 gap-1.5 text-xs sm:text-sm"
+            >
+              <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">WhatsApp</span>
+            </Button>
+          )}
           <Button
             variant="outline"
             size="sm"

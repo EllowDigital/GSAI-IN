@@ -22,15 +22,7 @@ function validateHttpsUrl(value: string): string {
   return parsed.toString();
 }
 
-function generateTemporaryPassword(length = 32): string {
-  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*';
-  const random = crypto.getRandomValues(new Uint32Array(length));
-  let out = '';
-  for (let i = 0; i < length; i += 1) {
-    out += alphabet[random[i] % alphabet.length];
-  }
-  return out;
-}
+const DEFAULT_STUDENT_PASSWORD = 'GSAI-STUDENT-2026';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -74,8 +66,10 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Login ID must be 3-30 characters' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    const setupRedirectTo = redirect_to ? validateHttpsUrl(String(redirect_to)) : undefined;
-    const temporaryPassword = generateTemporaryPassword();
+    if (redirect_to) {
+      // Keep request compatibility while not using recovery/setup links anymore.
+      validateHttpsUrl(String(redirect_to));
+    }
 
     // Use service role to create auth user
     const supabaseAdmin = createClient(
@@ -112,7 +106,7 @@ Deno.serve(async (req) => {
 
     const { data: authData, error: authErr } = await supabaseAdmin.auth.admin.createUser({
       email,
-      password: temporaryPassword,
+      password: DEFAULT_STUDENT_PASSWORD,
       email_confirm: true,
       user_metadata: { role: 'student', login_id: sanitizedLoginId, require_password_setup: true },
     });
@@ -125,7 +119,7 @@ Deno.serve(async (req) => {
         if (existingUser) {
           // Update password and metadata for the existing orphaned user
           await supabaseAdmin.auth.admin.updateUserById(existingUser.id, {
-            password: temporaryPassword,
+            password: DEFAULT_STUDENT_PASSWORD,
             user_metadata: { role: 'student', login_id: sanitizedLoginId, require_password_setup: true },
           });
           authUserId = existingUser.id;
@@ -160,18 +154,11 @@ Deno.serve(async (req) => {
       role: 'student',
     }, { onConflict: 'user_id,role' });
 
-    const { data: linkData, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
-      type: 'recovery',
-      email,
-      ...(setupRedirectTo ? { options: { redirectTo: setupRedirectTo } } : {}),
-    });
-
-    if (linkErr || !linkData?.properties?.action_link) {
-      console.error('Failed to generate setup link:', linkErr);
-      return new Response(JSON.stringify({ error: 'Failed to generate setup link' }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-    }
-
-    return new Response(JSON.stringify({ success: true, login_id: sanitizedLoginId, setup_link: linkData.properties.action_link }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({
+      success: true,
+      login_id: sanitizedLoginId,
+      default_password: DEFAULT_STUDENT_PASSWORD,
+    }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Internal server error';
     return new Response(JSON.stringify({ error: message }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });

@@ -12,6 +12,10 @@ import { Label } from '@/components/ui/label';
 import { supabase } from '@/services/supabase/client';
 import { toast } from '@/hooks/useToast';
 import { KeyRound, Eye, EyeOff } from 'lucide-react';
+import {
+  MIN_PASSWORD_LENGTH,
+  validateStrongPassword,
+} from '@/utils/passwordPolicy';
 
 export default function ChangePasswordDialog() {
   const [open, setOpen] = useState(false);
@@ -30,12 +34,20 @@ export default function ChangePasswordDialog() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPassword.length < 6) {
-      toast.error('New password must be at least 6 characters');
+
+    const passwordError = validateStrongPassword(newPassword);
+    if (passwordError) {
+      toast.error(passwordError);
       return;
     }
+
     if (newPassword !== confirmPassword) {
       toast.error('Passwords do not match');
+      return;
+    }
+
+    if (currentPassword === newPassword) {
+      toast.error('New password must be different from current password');
       return;
     }
 
@@ -105,7 +117,7 @@ export default function ChangePasswordDialog() {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={MIN_PASSWORD_LENGTH}
               />
               <button
                 type="button"
@@ -128,7 +140,7 @@ export default function ChangePasswordDialog() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              minLength={6}
+              minLength={MIN_PASSWORD_LENGTH}
             />
           </div>
           <Button type="submit" disabled={loading} className="w-full">

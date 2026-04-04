@@ -67,6 +67,7 @@ interface EnrollmentRequest {
   admin_notes: string | null;
   created_at: string;
   reviewed_at: string | null;
+  linked_student_id?: string | null;
 }
 
 const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
@@ -124,7 +125,7 @@ export default function EnrollmentRequestsManager() {
   const [createdStudentId, setCreatedStudentId] = useState<string | null>(null);
   const [createdCreds, setCreatedCreds] = useState<{
     loginId: string;
-    setupLink: string;
+    defaultPassword: string;
     portalUrl: string;
   } | null>(null);
 
@@ -168,7 +169,8 @@ export default function EnrollmentRequestsManager() {
     // Send email via Resend if student email exists
     if (req.student_email) {
       try {
-        const { sendEmail, buildEnrollmentRejectedEmail } = await import('@/utils/resendEmail');
+        const { sendEmail, buildEnrollmentRejectedEmail } =
+          await import('@/utils/resendEmail');
         const emailPayload = buildEnrollmentRejectedEmail({
           parentName: req.parent_name,
           studentName: req.student_name,
@@ -176,7 +178,10 @@ export default function EnrollmentRequestsManager() {
           gender: req.gender,
           notes,
         });
-        const emailSent = await sendEmail({ ...emailPayload, to: req.student_email });
+        const emailSent = await sendEmail({
+          ...emailPayload,
+          to: req.student_email,
+        });
 
         if (didOpenWhatsApp && emailSent) {
           toast.success('Rejection sent via WhatsApp and email');
@@ -237,28 +242,30 @@ export default function EnrollmentRequestsManager() {
 
       const req = requests.find((r) => r.id === data.id);
       if (req) {
-        // Send WhatsApp message for the stage
         const stage = resolveEnrollmentMessageStage(data.status);
-        const whatsappMsg = buildEnrollmentStageMessage(
-          stage,
-          buildMessagePayload(req, data.notes)
-        );
-        openWhatsAppConversation(req.parent_phone, whatsappMsg);
 
         // Send email via Resend if student email exists
         if (req.student_email) {
           try {
-            const { sendEmail, buildEnrollmentStageEmail } = await import('@/utils/resendEmail');
+            const { sendEmail, buildEnrollmentStageEmail } =
+              await import('@/utils/resendEmail');
             const emailPayload = buildEnrollmentStageEmail(stage, {
               parentName: req.parent_name,
               studentName: req.student_name,
               program: req.program,
+              portalUrl: `${window.location.origin}/student/login`,
               gender: req.gender,
               notes: data.notes,
             });
-            const sent = await sendEmail({ ...emailPayload, to: req.student_email });
+            const sent = await sendEmail({
+              ...emailPayload,
+              to: req.student_email,
+            });
             if (!sent) {
-              console.error('Email send failed for enrollment update', { requestId: req.id, stage });
+              console.error('Email send failed for enrollment update', {
+                requestId: req.id,
+                stage,
+              });
             }
           } catch (error) {
             console.error('Email send failed for enrollment update', error);
@@ -271,15 +278,68 @@ export default function EnrollmentRequestsManager() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = (await supabase
-        .from('enrollment_requests' as any)
-        .delete()
-        .eq('id', id)) as any;
+    mutationFn: async (req: EnrollmentRequest) => {
+      if (req.status !== 'approved') {
+        const { error } = (await supabase
+          .from('enrollment_requests' as any)
+          .delete()
+          .eq('id', req.id)) as any;
+        if (error) throw error;
+        return;
+      }
+
+      let linkedStudentId = req.linked_student_id || null;
+
+      if (!linkedStudentId && req.aadhar_number) {
+        const { data: matchedStudent, error: studentLookupError } =
+          await supabase
+            .from('students')
+            .select('id')
+            .eq('aadhar_number', req.aadhar_number)
+            .maybeSingle();
+
+        if (studentLookupError) throw studentLookupError;
+        linkedStudentId = matchedStudent?.id ?? null;
+      }
+
+      if (!linkedStudentId) {
+        throw new Error(
+          'Approved request is not linked to a student record. Delete student from Student Management first.'
+        );
+      }
+
+      const { data, error } = await supabase.functions.invoke(
+        'delete-student-account',
+        {
+          body: {
+            student_id: linkedStudentId,
+            enrollment_request_id: req.id,
+          },
+        }
+      );
+
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['enrollment-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      queryClient.invalidateQueries({ queryKey: ['student-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['student-progress'] });
+      queryClient.invalidateQueries({
+        queryKey: ['discipline-progress-admin'],
+      });
+      queryClient.invalidateQueries({ queryKey: ['fees'] });
+      queryClient.invalidateQueries({ queryKey: ['attendance'] });
+      queryClient.invalidateQueries({ queryKey: ['promotion-history'] });
+      queryClient.invalidateQueries({ queryKey: ['students-portal-status'] });
+      queryClient.invalidateQueries({ queryKey: ['portal-accounts'] });
+      queryClient.invalidateQueries({ queryKey: ['belt-exam-notifications'] });
+      queryClient.invalidateQueries({
+        queryKey: ['competition-registrations'],
+      });
+      queryClient.invalidateQueries({ queryKey: ['competition-certificates'] });
       toast.success('Request deleted');
     },
     onError: (e: Error) => toast.error(e.message),
@@ -358,6 +418,7 @@ export default function EnrollmentRequestsManager() {
         .update({
           status: 'approved',
           admin_notes: adminNotes || null,
+          linked_student_id: student.id,
           reviewed_at: new Date().toISOString(),
         } as any)
         .eq('id', approveReq.id)) as any;
@@ -388,7 +449,6 @@ export default function EnrollmentRequestsManager() {
     }
     setApproving(true);
     try {
-      const setupRedirect = `${window.location.origin}/student/set-password`;
       const portalUrl = `${window.location.origin}/student/login`;
       const { data, error } = await supabase.functions.invoke(
         'create-student-account',
@@ -396,19 +456,20 @@ export default function EnrollmentRequestsManager() {
           body: {
             student_id: createdStudentId,
             login_id: loginId.trim(),
-            redirect_to: setupRedirect,
           },
         }
       );
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      if (!data?.setup_link) {
-        throw new Error('Account created but setup link was not generated.');
+      if (!data?.default_password) {
+        throw new Error(
+          'Account created but default password was not returned.'
+        );
       }
 
       setCreatedCreds({
         loginId: loginId.trim(),
-        setupLink: data.setup_link,
+        defaultPassword: data.default_password,
         portalUrl,
       });
       setApproveStep('done');
@@ -419,23 +480,31 @@ export default function EnrollmentRequestsManager() {
       // Send portal credentials via email if student email exists
       if (approveReq?.student_email) {
         try {
-          const { sendEmail, buildPortalCredentialsEmail } = await import('@/utils/resendEmail');
+          const { sendEmail, buildPortalCredentialsEmail } =
+            await import('@/utils/resendEmail');
           const emailPayload = buildPortalCredentialsEmail({
             parentName: approveReq.parent_name,
             studentName: approveReq.student_name,
             program: approveReq.program,
             loginId: loginId.trim(),
-            setupLink: data.setup_link,
             portalUrl,
+            defaultPassword: data.default_password,
             gender: approveReq.gender,
           });
-          const sent = await sendEmail({ ...emailPayload, to: approveReq.student_email });
+          const sent = await sendEmail({
+            ...emailPayload,
+            to: approveReq.student_email,
+          });
           if (!sent) {
-            toast.warning('Portal account created, but the email could not be sent.');
+            toast.warning(
+              'Portal account created, but the email could not be sent.'
+            );
           }
         } catch (error) {
-          console.error('Failed to send portal setup email:', error);
-          toast.warning('Portal account created, but setup email failed.');
+          console.error('Failed to send portal credentials email:', error);
+          toast.warning(
+            'Portal account created, but credentials email failed.'
+          );
         }
       }
     } catch (err: any) {
@@ -510,7 +579,7 @@ export default function EnrollmentRequestsManager() {
       ? buildEnrollmentPortalMessage({
           ...buildMessagePayload(approveReq),
           loginId: createdCreds.loginId,
-          setupLink: createdCreds.setupLink,
+          defaultPassword: createdCreds.defaultPassword,
           portalUrl: createdCreds.portalUrl,
         })
       : '';
@@ -731,14 +800,17 @@ export default function EnrollmentRequestsManager() {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Delete Request?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Permanently remove this enrollment request.
+                            Permanently remove this enrollment request. If it is
+                            approved, the linked student profile, login
+                            credentials, progression, fees, and all related
+                            records will also be deleted forever.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
                             className="bg-destructive text-destructive-foreground"
-                            onClick={() => deleteMutation.mutate(req.id)}
+                            onClick={() => deleteMutation.mutate(req)}
                           >
                             Delete
                           </AlertDialogAction>
@@ -1098,7 +1170,9 @@ export default function EnrollmentRequestsManager() {
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                A one-time secure password setup link will be generated and shared instead of a plaintext password.
+                Student will sign in using default password{' '}
+                <span className="font-medium">GSAI-STUDENT-2026</span> and then
+                update password from student portal.
               </p>
               <Button
                 onClick={handleCreatePortal}
@@ -1143,13 +1217,17 @@ export default function EnrollmentRequestsManager() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Setup Link:</span>
+                    <span className="text-muted-foreground">
+                      Default Password:
+                    </span>
                     <div className="flex items-center gap-1.5">
                       <code className="font-mono text-foreground">
-                        Generated securely
+                        {createdCreds.defaultPassword}
                       </code>
                       <button
-                        onClick={() => copyToClipboard(createdCreds.setupLink)}
+                        onClick={() =>
+                          copyToClipboard(createdCreds.defaultPassword)
+                        }
                         className="text-muted-foreground hover:text-foreground"
                       >
                         <Copy className="w-3.5 h-3.5" />
@@ -1158,7 +1236,8 @@ export default function EnrollmentRequestsManager() {
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Share the setup link privately. The student must set a password before signing in.
+                  Share these credentials privately. Student must change the
+                  default password after first sign-in.
                 </p>
               </div>
               {approveReq && credentialsWhatsAppUrl && (

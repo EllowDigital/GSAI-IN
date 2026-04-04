@@ -44,6 +44,12 @@ import { format } from 'date-fns';
 import CompetitionCertificates from '@/components/admin/CompetitionCertificates';
 import CompetitionRegistrations from '@/components/admin/CompetitionRegistrations';
 import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
+import {
+  openManualWhatsAppBroadcast,
+  sendQueuedAnnouncement,
+} from '@/utils/studentCommunication';
+import { Checkbox } from '@/components/ui/checkbox';
+import AnnouncementDeliveryLogs from '@/components/admin/AnnouncementDeliveryLogs';
 
 interface Competition {
   id: string;
@@ -90,6 +96,23 @@ const formatError = (error: unknown): string => {
   return 'Unexpected error occurred.';
 };
 
+const buildCompetitionWhatsAppMessage = (c: Competition): string => {
+  const endDate = c.end_date ? ` to ${c.end_date}` : '';
+  const location = c.location_text ? `\nLocation: ${c.location_text}` : '';
+  const description = c.description ? `\n${c.description}` : '';
+
+  return [
+    `*${c.name}*`,
+    `Date: ${c.date}${endDate}`,
+    location,
+    description,
+    '',
+    'Shared by Ghatak Sports Academy India',
+  ]
+    .filter(Boolean)
+    .join('\n');
+};
+
 export default function Competitions() {
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
@@ -110,6 +133,8 @@ export default function Competitions() {
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [sendEmailNotification, setSendEmailNotification] = useState(true);
+  const [prepareWhatsAppMessage, setPrepareWhatsAppMessage] = useState(true);
 
   const mapEmbedUrl = buildMapEmbedUrl(form.location_text);
   const mapOpenUrl = form.location_text.trim()
@@ -178,10 +203,52 @@ export default function Competitions() {
         );
         if (error) throw error;
       }
+
+      let emailStats = { total: 0, sent: 0, failed: 0 };
+      if (sendEmailNotification) {
+        emailStats = await sendQueuedAnnouncement({
+          type: 'competition',
+          title: payload.name,
+          date: payload.date,
+          endDate: payload.end_date,
+          location: payload.location_text,
+          description: payload.description,
+          pageUrl: `${window.location.origin}/student/dashboard`,
+        });
+      }
+
+      return emailStats;
     },
-    onSuccess: () => {
+    onSuccess: (emailStats) => {
       queryClient.invalidateQueries({ queryKey: ['competitions'] });
       toast.success(editing ? 'Competition updated.' : 'Competition created.');
+      if (emailStats.total > 0) {
+        toast.success(
+          `Competition email sent to ${emailStats.sent}/${emailStats.total} students${emailStats.failed ? ` (${emailStats.failed} failed)` : ''}.`
+        );
+      }
+
+      if (prepareWhatsAppMessage) {
+        const msg = buildCompetitionWhatsAppMessage({
+          id: editing?.id || 'new',
+          name: form.name,
+          description: form.description || null,
+          date: form.date,
+          end_date: form.end_date || null,
+          location_text: form.location_text || null,
+          location_lat: null,
+          location_lng: null,
+          max_participants: form.max_participants
+            ? parseInt(form.max_participants)
+            : null,
+          image_url: form.image_url || null,
+          status: form.status,
+          created_at: '',
+        });
+        navigator.clipboard.writeText(msg).catch(() => undefined);
+        openManualWhatsAppBroadcast(msg);
+      }
+
       closeForm();
     },
     onError: (e: Error) => toast.error('Failed: ' + formatError(e)),
@@ -217,6 +284,8 @@ export default function Competitions() {
     });
     setImageFile(null);
     setImagePreview(null);
+    setSendEmailNotification(true);
+    setPrepareWhatsAppMessage(true);
     setFormOpen(true);
   };
 
@@ -234,6 +303,8 @@ export default function Competitions() {
     });
     setImageFile(null);
     setImagePreview(c.image_url || null);
+    setSendEmailNotification(true);
+    setPrepareWhatsAppMessage(true);
     setFormOpen(true);
   };
 
@@ -256,6 +327,22 @@ export default function Competitions() {
   const filtered = competitions.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handleManualWhatsApp = async (competition: Competition) => {
+    const message = buildCompetitionWhatsAppMessage(competition);
+    try {
+      await navigator.clipboard.writeText(message);
+    } catch {
+      // Continue even if clipboard write fails.
+    }
+
+    const opened = openManualWhatsAppBroadcast(message);
+    toast.success(
+      opened
+        ? 'WhatsApp opened. Message copied, choose recipients manually.'
+        : 'Message copied. Send manually in WhatsApp.'
+    );
+  };
 
   const { data: regCounts = {} } = useQuery({
     queryKey: ['competition-reg-counts'],
@@ -442,6 +529,14 @@ export default function Competitions() {
                 )}
                 <div className="flex flex-wrap gap-1.5 pt-2 border-t border-border/30">
                   <Button
+                    variant="secondary"
+                    size="sm"
+                    className="gap-1 text-xs h-8"
+                    onClick={() => handleManualWhatsApp(c)}
+                  >
+                    WhatsApp
+                  </Button>
+                  <Button
                     variant="outline"
                     size="sm"
                     className="flex-1 gap-1 text-xs h-8"
@@ -555,6 +650,14 @@ export default function Competitions() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 px-2 text-xs"
+                            onClick={() => handleManualWhatsApp(c)}
+                          >
+                            WA
+                          </Button>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -761,6 +864,38 @@ export default function Competitions() {
                 </label>
               )}
             </div>
+            <div className="rounded-lg border border-border p-3 space-y-3 bg-muted/20">
+              <div className="flex items-center gap-3">
+                <Checkbox
+                  id="competition-send-email-toggle"
+                  checked={sendEmailNotification}
+                  onCheckedChange={(checked) =>
+                    setSendEmailNotification(Boolean(checked))
+                  }
+                />
+                <label
+                  htmlFor="competition-send-email-toggle"
+                  className="text-sm font-medium"
+                >
+                  Send Email Notification: On/Off
+                </label>
+              </div>
+              <div className="flex items-center gap-3">
+                <Checkbox
+                  id="competition-prepare-whatsapp-toggle"
+                  checked={prepareWhatsAppMessage}
+                  onCheckedChange={(checked) =>
+                    setPrepareWhatsAppMessage(Boolean(checked))
+                  }
+                />
+                <label
+                  htmlFor="competition-prepare-whatsapp-toggle"
+                  className="text-sm font-medium"
+                >
+                  Prepare WhatsApp Message: On/Off
+                </label>
+              </div>
+            </div>
             <Button
               type="submit"
               disabled={saveMutation.isPending}
@@ -796,6 +931,11 @@ export default function Competitions() {
           }}
         />
       )}
+
+      <AnnouncementDeliveryLogs
+        typeFilter="competition"
+        title="Competition Campaign Delivery Logs"
+      />
     </div>
   );
 }

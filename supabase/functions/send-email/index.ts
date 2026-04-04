@@ -1,11 +1,24 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
+function normalizeOrigin(origin: string): string | null {
+  const trimmed = origin.trim()
+  if (!trimmed) return null
+
+  try {
+    const parsed = new URL(trimmed)
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return null
+    return `${parsed.protocol}//${parsed.host}`.toLowerCase()
+  } catch {
+    return null
+  }
+}
+
 const ALLOWED_ORIGINS = new Set(
   (Deno.env.get('ALLOWED_EMAIL_ORIGINS') ?? '')
     .split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean)
-);
+    .map((origin) => normalizeOrigin(origin))
+    .filter((origin): origin is string => Boolean(origin))
+)
 
 const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend'
 const ACADEMY_NAME = 'Ghatak Sports Academy India'
@@ -35,8 +48,23 @@ interface ApiErrorResponse {
 
 function isOriginAllowed(origin: string | null): boolean {
   if (!origin) return true
-  if (ALLOWED_ORIGINS.size === 0) return false
-  return ALLOWED_ORIGINS.has(origin)
+
+  const normalizedOrigin = normalizeOrigin(origin)
+  if (!normalizedOrigin) return false
+
+  // Fail open if no allowlist is configured so production does not break.
+  if (ALLOWED_ORIGINS.size === 0) return true
+
+  if (ALLOWED_ORIGINS.has(normalizedOrigin)) return true
+
+  const url = new URL(normalizedOrigin)
+  if (url.hostname.startsWith('www.')) {
+    const withoutWww = `${url.protocol}//${url.host.replace(/^www\./, '')}`
+    return ALLOWED_ORIGINS.has(withoutWww)
+  }
+
+  const withWww = `${url.protocol}//www.${url.host}`
+  return ALLOWED_ORIGINS.has(withWww)
 }
 
 function getCorsHeaders(origin: string | null): Record<string, string> {
