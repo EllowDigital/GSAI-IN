@@ -25,7 +25,9 @@ import {
 import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
 
 const ADMIN_ROLE: Enums<'app_role'> = 'admin';
-const AUTH_REQUEST_TIMEOUT_MS = 12000;
+const AUTH_REQUEST_TIMEOUT_MS = 20000;
+const INIT_AUTH_MAX_RETRIES = 2;
+const INIT_AUTH_RETRY_DELAY_MS = 1500;
 const HARD_RELOAD_TYPES: PerformanceNavigationTiming['type'][] = [
   'navigate',
   'back_forward',
@@ -75,6 +77,9 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
   }>(null);
   const pendingLogoutRef = useRef(false);
   const authAnimationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+  const authRetryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null
   );
   const navigate = useNavigate();
@@ -243,7 +248,7 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    const initializeAuth = async () => {
+    const initializeAuth = async (attempt = 0) => {
       try {
         const { data } = await withTimeout(
           supabase.auth.getSession(),
@@ -268,6 +273,13 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
         }
       } catch (error) {
         if (isTimeoutError(error)) {
+          if (attempt < INIT_AUTH_MAX_RETRIES) {
+            toast.message('Admin auth is slow. Retrying...');
+            authRetryTimeoutRef.current = setTimeout(() => {
+              initializeAuth(attempt + 1);
+            }, INIT_AUTH_RETRY_DELAY_MS * (attempt + 1));
+            return;
+          }
           toast.error('Admin check timed out. Please retry.');
         }
         console.error('Failed to initialize admin auth', error);
@@ -297,7 +309,9 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
           }
         } catch (error) {
           if (isTimeoutError(error)) {
-            toast.error('Connection is slow. Please try again.');
+            toast.warning('Connection is slow. Retaining current session.');
+            setIsLoading(false);
+            return;
           }
           console.error('Auth state listener failed', error);
           clearState();
@@ -309,6 +323,9 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
 
     return () => {
       listener.subscription.unsubscribe();
+      if (authRetryTimeoutRef.current) {
+        clearTimeout(authRetryTimeoutRef.current);
+      }
       if (authAnimationTimeoutRef.current) {
         clearTimeout(authAnimationTimeoutRef.current);
       }

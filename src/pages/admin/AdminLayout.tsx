@@ -65,7 +65,7 @@ const AdminLayout: React.FC = () => {
     }
   };
 
-  if (isLoading || !isAdmin) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-dvh w-screen bg-background">
         <div className="flex flex-col items-center gap-4">
@@ -78,6 +78,10 @@ const AdminLayout: React.FC = () => {
         </div>
       </div>
     );
+  }
+
+  if (!isAdmin) {
+    return null;
   }
 
   return (
