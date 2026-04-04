@@ -19,6 +19,7 @@ export interface EnrollmentMessageData {
 const ACADEMY_NAME = 'Ghatak Sports Academy India';
 const ACADEMY_PHONE = '+91 63941 35988';
 const ACADEMY_EMAIL = 'ghatakgsai@gmail.com';
+const STUDENT_PORTAL_DEFAULT_PASSWORD = 'GSAI-STUDENT-2026';
 
 const compactLines = (lines: Array<string | null | undefined | false>) =>
   lines.filter((line): line is string => Boolean(line && line.trim()));
@@ -152,8 +153,8 @@ export const buildEnrollmentStageMessage = (
 export const buildEnrollmentPortalMessage = (
   data: EnrollmentMessageData & {
     loginId: string;
-    setupLink: string;
     portalUrl: string;
+    defaultPassword?: string;
   }
 ) => {
   const relation = getStudentRelation(data.gender);
@@ -166,9 +167,9 @@ export const buildEnrollmentPortalMessage = (
       'Student Portal Login',
       `• Portal: ${data.portalUrl}`,
       `• Login ID: ${data.loginId}`,
-      `• Password Setup Link: ${data.setupLink}`,
+      `• Default Password: ${data.defaultPassword || STUDENT_PORTAL_DEFAULT_PASSWORD}`,
     ].join('\n'),
-    'Use the setup link to create a secure password before first sign-in.',
+    'Sign in with the default password, then update password from inside the student portal.',
     buildAcademyContactDetails(),
     `Welcome to ${ACADEMY_NAME}.`,
   ].join('\n\n');

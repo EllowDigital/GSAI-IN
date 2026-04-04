@@ -124,7 +124,7 @@ export default function EnrollmentRequestsManager() {
   const [createdStudentId, setCreatedStudentId] = useState<string | null>(null);
   const [createdCreds, setCreatedCreds] = useState<{
     loginId: string;
-    setupLink: string;
+    defaultPassword: string;
     portalUrl: string;
   } | null>(null);
 
@@ -241,13 +241,7 @@ export default function EnrollmentRequestsManager() {
 
       const req = requests.find((r) => r.id === data.id);
       if (req) {
-        // Send WhatsApp message for the stage
         const stage = resolveEnrollmentMessageStage(data.status);
-        const whatsappMsg = buildEnrollmentStageMessage(
-          stage,
-          buildMessagePayload(req, data.notes)
-        );
-        openWhatsAppConversation(req.parent_phone, whatsappMsg);
 
         // Send email via Resend if student email exists
         if (req.student_email) {
@@ -258,6 +252,7 @@ export default function EnrollmentRequestsManager() {
               parentName: req.parent_name,
               studentName: req.student_name,
               program: req.program,
+              portalUrl: `${window.location.origin}/student/login`,
               gender: req.gender,
               notes: data.notes,
             });
@@ -399,7 +394,6 @@ export default function EnrollmentRequestsManager() {
     }
     setApproving(true);
     try {
-      const setupRedirect = `${window.location.origin}/student/set-password`;
       const portalUrl = `${window.location.origin}/student/login`;
       const { data, error } = await supabase.functions.invoke(
         'create-student-account',
@@ -407,19 +401,18 @@ export default function EnrollmentRequestsManager() {
           body: {
             student_id: createdStudentId,
             login_id: loginId.trim(),
-            redirect_to: setupRedirect,
           },
         }
       );
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      if (!data?.setup_link) {
-        throw new Error('Account created but setup link was not generated.');
+      if (!data?.default_password) {
+        throw new Error('Account created but default password was not returned.');
       }
 
       setCreatedCreds({
         loginId: loginId.trim(),
-        setupLink: data.setup_link,
+        defaultPassword: data.default_password,
         portalUrl,
       });
       setApproveStep('done');
@@ -437,8 +430,8 @@ export default function EnrollmentRequestsManager() {
             studentName: approveReq.student_name,
             program: approveReq.program,
             loginId: loginId.trim(),
-            setupLink: data.setup_link,
             portalUrl,
+            defaultPassword: data.default_password,
             gender: approveReq.gender,
           });
           const sent = await sendEmail({
@@ -451,8 +444,8 @@ export default function EnrollmentRequestsManager() {
             );
           }
         } catch (error) {
-          console.error('Failed to send portal setup email:', error);
-          toast.warning('Portal account created, but setup email failed.');
+          console.error('Failed to send portal credentials email:', error);
+          toast.warning('Portal account created, but credentials email failed.');
         }
       }
     } catch (err: any) {
@@ -527,7 +520,7 @@ export default function EnrollmentRequestsManager() {
       ? buildEnrollmentPortalMessage({
           ...buildMessagePayload(approveReq),
           loginId: createdCreds.loginId,
-          setupLink: createdCreds.setupLink,
+          defaultPassword: createdCreds.defaultPassword,
           portalUrl: createdCreds.portalUrl,
         })
       : '';
@@ -1115,8 +1108,11 @@ export default function EnrollmentRequestsManager() {
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                A one-time secure password setup link will be generated and
-                shared instead of a plaintext password.
+                Student will sign in using default password
+                {' '}
+                <span className="font-medium">GSAI-STUDENT-2026</span>
+                {' '}
+                and then update password from student portal.
               </p>
               <Button
                 onClick={handleCreatePortal}
@@ -1161,13 +1157,13 @@ export default function EnrollmentRequestsManager() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Setup Link:</span>
+                    <span className="text-muted-foreground">Default Password:</span>
                     <div className="flex items-center gap-1.5">
                       <code className="font-mono text-foreground">
-                        Generated securely
+                        {createdCreds.defaultPassword}
                       </code>
                       <button
-                        onClick={() => copyToClipboard(createdCreds.setupLink)}
+                        onClick={() => copyToClipboard(createdCreds.defaultPassword)}
                         className="text-muted-foreground hover:text-foreground"
                       >
                         <Copy className="w-3.5 h-3.5" />
@@ -1176,8 +1172,8 @@ export default function EnrollmentRequestsManager() {
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Share the setup link privately. The student must set a
-                  password before signing in.
+                  Share these credentials privately. Student must change the
+                  default password after first sign-in.
                 </p>
               </div>
               {approveReq && credentialsWhatsAppUrl && (

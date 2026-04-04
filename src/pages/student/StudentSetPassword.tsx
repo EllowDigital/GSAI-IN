@@ -23,7 +23,7 @@ export default function StudentSetPassword() {
       if (!mounted) return;
 
       if (!data.session) {
-        toast.error('Invalid or expired setup link. Please request a new one.');
+        toast.error('Please sign in first to update your password.');
         navigate('/student/login', { replace: true });
         return;
       }

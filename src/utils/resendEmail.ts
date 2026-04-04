@@ -3,6 +3,7 @@ import { supabase } from '@/services/supabase/client';
 const ACADEMY_NAME = 'Ghatak Sports Academy India';
 const ACADEMY_EMAIL = 'ghatakgsai@gmail.com';
 const ACADEMY_PHONE = '+91 63941 35988';
+const STUDENT_PORTAL_DEFAULT_PASSWORD = 'GSAI-STUDENT-2026';
 
 interface SendEmailParams {
   to: string;
@@ -182,6 +183,7 @@ export function buildEnrollmentApprovedEmail(params: {
   parentName: string;
   studentName: string;
   program: string;
+  portalUrl?: string;
   gender?: string | null;
   notes?: string | null;
 }): Omit<SendEmailParams, 'to'> {
@@ -191,6 +193,9 @@ export function buildEnrollmentApprovedEmail(params: {
   const safeProgram = escapeHtml(params.program);
   const safeRelation = escapeHtml(relation);
   const safeNotes = params.notes ? escapeHtml(params.notes) : null;
+  const safePortalUrl = params.portalUrl
+    ? validateHttpsUrl(params.portalUrl, 'portalUrl')
+    : 'https://ghataksportsacademy.com/student/login';
   return {
     subject: `🎉 Enrollment Approved - ${params.studentName} | ${ACADEMY_NAME}`,
     html: `
@@ -199,9 +204,15 @@ export function buildEnrollmentApprovedEmail(params: {
       ${infoBox(
         infoRow('Student', params.studentName) +
           infoRow('Program', params.program) +
-          infoRow('Status', '✅ Approved')
+          infoRow('Status', '✅ Approved') +
+          infoRow(
+            'Student Portal',
+            `<a href="${safePortalUrl}" rel="noopener noreferrer">${escapeHtml(safePortalUrl)}</a>`,
+            { valueIsHtml: true }
+          ) +
+          infoRow('Default Password', STUDENT_PORTAL_DEFAULT_PASSWORD)
       )}
-      <p>Our team will guide you for final joining formalities and student portal access. Please keep your registered mobile number active.</p>
+      <p>Please sign in to the student portal using your Login ID and the default password above, then change your password from inside the portal.</p>
       ${safeNotes ? `<p><strong>Note:</strong> ${safeNotes}</p>` : ''}
       <p style="margin-top:20px">📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
       <p style="margin-top:16px">Welcome to <strong>${ACADEMY_NAME}</strong>!</p>
@@ -244,8 +255,8 @@ export function buildPortalCredentialsEmail(params: {
   studentName: string;
   program: string;
   loginId: string;
-  setupLink: string;
   portalUrl: string;
+  defaultPassword?: string;
   gender?: string | null;
 }): Omit<SendEmailParams, 'to'> {
   const relation = getRelation(params.gender);
@@ -254,14 +265,16 @@ export function buildPortalCredentialsEmail(params: {
   const safeProgram = escapeHtml(params.program);
   const safeRelation = escapeHtml(relation);
   const safePortalUrl = validateHttpsUrl(params.portalUrl, 'portalUrl');
-  const safeSetupLink = validateHttpsUrl(params.setupLink, 'setupLink');
+  const safeDefaultPassword = escapeHtml(
+    params.defaultPassword?.trim() || STUDENT_PORTAL_DEFAULT_PASSWORD
+  );
 
   return {
     subject: `Student Portal Access - ${params.studentName} | ${ACADEMY_NAME}`,
     html: `
       <p>Namaste <strong>${safeParentName}</strong> ji,</p>
       <p>Admission has been completed for your ${safeRelation}, <strong>${safeStudentName}</strong>, in the <strong>${safeProgram}</strong> program.</p>
-      <p>Use the one-time secure link below to set the student portal password:</p>
+      <p>Use these credentials to sign in. After first login, update the password from inside the student portal.</p>
       ${infoBox(
         infoRow(
           'Portal URL',
@@ -271,15 +284,9 @@ export function buildPortalCredentialsEmail(params: {
           }
         ) +
           infoRow('Login ID', params.loginId) +
-          infoRow(
-            'Password Setup Link',
-            `<a href="${safeSetupLink}" rel="noopener noreferrer">Set Password Securely</a>`,
-            {
-              valueIsHtml: true,
-            }
-          )
+          infoRow('Default Password', safeDefaultPassword)
       )}
-      <p>⚠️ Do not share this setup link publicly. It should be used only once by the student/parent.</p>
+      <p>For security, change this default password immediately after sign-in.</p>
       <p style="margin-top:20px">📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
       <p style="margin-top:16px">Welcome to <strong>${ACADEMY_NAME}</strong>!</p>
     `,
@@ -300,6 +307,7 @@ export function buildEnrollmentStageEmail(
     parentName: string;
     studentName: string;
     program: string;
+    portalUrl?: string;
     gender?: string | null;
     notes?: string | null;
   }

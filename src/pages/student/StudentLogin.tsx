@@ -114,8 +114,8 @@ export default function StudentLogin() {
         </form>
 
         <p className="text-center text-xs text-muted-foreground">
-          Use the secure password setup link shared by the academy before first
-          sign-in.
+          First-time password: GSAI-STUDENT-2026. Change it from inside the
+          portal after signing in.
         </p>
 
         <div className="text-center">
