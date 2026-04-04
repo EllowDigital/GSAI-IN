@@ -587,6 +587,9 @@ export default function EnrollmentRequestsManager() {
   });
 
   const pendingCount = requests.filter((r) => r.status === 'pending').length;
+  const contactedCount = requests.filter((r) => r.status === 'contacted').length;
+  const approvedCount = requests.filter((r) => r.status === 'approved').length;
+  const rejectedCount = requests.filter((r) => r.status === 'rejected').length;
 
   const currentWhatsAppStage = viewReq
     ? resolveEnrollmentMessageStage(viewReq.status)
@@ -626,240 +629,267 @@ export default function EnrollmentRequestsManager() {
 
   return (
     <div className="admin-page">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
-            <UserPlus className="w-5 h-5 text-primary" /> Enrollment Requests
-            {pendingCount > 0 && (
-              <Badge variant="destructive" className="ml-2 text-xs">
-                {pendingCount} new
-              </Badge>
-            )}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Review enrollment requests → approve → create student → set login
-            credentials
-          </p>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-9 gap-2"
-          onClick={() =>
-            queryClient.invalidateQueries({ queryKey: ['enrollment-requests'] })
-          }
-        >
-          <RefreshCw className="w-4 h-4" />
-          <span className="hidden sm:inline">Refresh</span>
-        </Button>
-      </div>
+      <section className="admin-panel overflow-hidden">
+        <div className="admin-panel-body bg-gradient-to-r from-primary/5 via-background to-background">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h1 className="flex items-center gap-2 text-xl font-bold text-foreground sm:text-2xl">
+                <UserPlus className="h-5 w-5 text-primary" /> Enrollment Requests
+              </h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Review requests, approve admissions, and create student login credentials in one workflow.
+              </p>
+            </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Search by name or program..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 h-9"
-          />
-        </div>
-        <div className="flex gap-1.5 flex-wrap">
-          {['all', 'pending', 'contacted', 'approved', 'rejected'].map((s) => (
-            <Button
-              key={s}
-              variant={statusFilter === s ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setStatusFilter(s)}
-              className="text-xs h-8 capitalize"
-            >
-              {s === 'all' ? 'All' : s}
-              {s === 'pending' && pendingCount > 0 && (
-                <span className="ml-1 text-[10px] bg-white/20 px-1.5 py-0.5 rounded-full">
-                  {pendingCount}
-                </span>
-              )}
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      {isLoading ? (
-        <div className="flex justify-center py-12">
-          <Spinner size={20} />
-        </div>
-      ) : filtered.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center text-muted-foreground text-sm">
-            {requests.length === 0
-              ? 'No enrollment requests yet. Share the enrollment form on your website!'
-              : 'No requests match your filters.'}
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-2">
-          {filtered.map((req) => {
-            const config = STATUS_CONFIG[req.status] || STATUS_CONFIG.pending;
-            return (
-              <Card
-                key={req.id}
-                className="border border-border hover:border-border/80 transition-colors"
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 gap-2"
+                onClick={() =>
+                  queryClient.invalidateQueries({ queryKey: ['enrollment-requests'] })
+                }
               >
-                <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="min-w-0 flex-1 space-y-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-semibold text-foreground text-sm">
-                        {req.student_name}
-                      </h3>
-                      <Badge
-                        variant="outline"
-                        className={`text-[10px] ${config.className}`}
-                      >
-                        {config.label}
-                      </Badge>
-                      <Badge variant="secondary" className="text-[10px]">
-                        {req.program}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
-                      <span className="flex items-center gap-1">
-                        <User className="w-3 h-3" /> {req.parent_name}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Phone className="w-3 h-3" /> {req.parent_phone}
-                      </span>
-                      <span>
-                        Age: {req.age} • {req.gender}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />{' '}
-                        {format(new Date(req.created_at), 'MMM d, yyyy')}
-                      </span>
-                    </div>
-                    {/* Show admin notes if present */}
-                    {req.admin_notes && (
-                      <p className="text-xs text-muted-foreground italic mt-1 bg-muted/50 rounded px-2 py-1">
-                        📝 {req.admin_notes}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1.5 shrink-0 flex-wrap">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-xs h-8 gap-1"
-                      onClick={() => {
-                        setViewReq(req);
-                        setAdminNotes(req.admin_notes || '');
-                      }}
-                    >
-                      <Eye className="w-3 h-3" /> View
-                    </Button>
-                    {req.status !== 'approved' && req.status !== 'rejected' && (
-                      <Button
-                        size="sm"
-                        className="text-xs h-8 gap-1 bg-green-600 hover:bg-green-700"
-                        onClick={() => handleStartApprove(req)}
-                      >
-                        <Check className="w-3 h-3" /> Approve & Add
-                      </Button>
-                    )}
-                    {req.status === 'approved' && (
-                      <Badge
-                        variant="outline"
-                        className="text-[10px] h-7 px-2 border-green-500/30 text-green-600 bg-green-500/5"
-                      >
-                        ✓ Approved
-                      </Badge>
-                    )}
-                    {req.status === 'rejected' && (
-                      <Badge
-                        variant="outline"
-                        className="text-[10px] h-7 px-2 border-red-500/30 text-red-600 bg-red-500/5"
-                      >
-                        ✗ Rejected
-                      </Badge>
-                    )}
-                    {req.status === 'pending' && (
-                      <>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="text-xs h-8 gap-1"
-                          onClick={() =>
-                            updateMutation.mutate({
-                              id: req.id,
-                              status: 'contacted',
-                            })
-                          }
-                        >
-                          <Phone className="w-3 h-3" /> Contact
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          className="text-xs h-8 gap-1"
-                          onClick={() => {
-                            setViewReq(req);
-                            setAdminNotes(req.admin_notes || '');
-                          }}
-                        >
-                          <X className="w-3 h-3" /> Reject
-                        </Button>
-                      </>
-                    )}
-                    {req.status === 'contacted' && (
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        className="text-xs h-8 gap-1"
-                        onClick={() => {
-                          setViewReq(req);
-                          setAdminNotes(req.admin_notes || '');
-                        }}
-                      >
-                        <X className="w-3 h-3" /> Reject
-                      </Button>
-                    )}
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Request?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Permanently remove this enrollment request. If it is
-                            approved, the linked student profile, login
-                            credentials, progression, fees, and all related
-                            records will also be deleted forever.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            className="bg-destructive text-destructive-foreground"
-                            onClick={() => deleteMutation.mutate(req)}
-                          >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+                <RefreshCw className="w-4 h-4" />
+                <span>Refresh</span>
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:max-w-3xl">
+            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+              <p className="text-[11px] text-muted-foreground">Pending</p>
+              <p className="text-lg font-semibold text-foreground">{pendingCount}</p>
+            </div>
+            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+              <p className="text-[11px] text-muted-foreground">Contacted</p>
+              <p className="text-lg font-semibold text-foreground">{contactedCount}</p>
+            </div>
+            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+              <p className="text-[11px] text-muted-foreground">Approved</p>
+              <p className="text-lg font-semibold text-foreground">{approvedCount}</p>
+            </div>
+            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+              <p className="text-[11px] text-muted-foreground">Rejected</p>
+              <p className="text-lg font-semibold text-foreground">{rejectedCount}</p>
+            </div>
+          </div>
         </div>
-      )}
+      </section>
+
+      <section className="admin-panel">
+        <div className="admin-panel-body">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="relative w-full lg:max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by student, parent, or program"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="h-9 pl-9"
+              />
+            </div>
+
+            <div className="flex flex-wrap gap-1.5">
+              {['all', 'pending', 'contacted', 'approved', 'rejected'].map((s) => (
+                <Button
+                  key={s}
+                  variant={statusFilter === s ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setStatusFilter(s)}
+                  className="h-8 text-xs capitalize"
+                >
+                  {s === 'all' ? 'All' : s}
+                  {s === 'pending' && pendingCount > 0 && (
+                    <span className="ml-1 rounded-full bg-white/20 px-1.5 py-0.5 text-[10px]">
+                      {pendingCount}
+                    </span>
+                  )}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {isLoading ? (
+            <div className="flex justify-center py-12">
+              <Spinner size={20} />
+            </div>
+          ) : filtered.length === 0 ? (
+            <Card className="border-border/70">
+              <CardContent className="py-12 text-center text-sm text-muted-foreground">
+                {requests.length === 0
+                  ? 'No enrollment requests yet. Share the enrollment form on your website.'
+                  : 'No requests match your current search and filters.'}
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {filtered.map((req) => {
+                const config = STATUS_CONFIG[req.status] || STATUS_CONFIG.pending;
+                return (
+                  <Card
+                    key={req.id}
+                    className="border-border/70 transition-all hover:border-primary/25 hover:shadow-sm"
+                  >
+                    <CardContent className="p-4 sm:p-5">
+                      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+                        <div className="min-w-0 flex-1 space-y-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h3 className="text-sm font-semibold text-foreground sm:text-base">
+                              {req.student_name}
+                            </h3>
+                            <Badge variant="outline" className={`text-[10px] ${config.className}`}>
+                              {config.label}
+                            </Badge>
+                            <Badge variant="secondary" className="text-[10px]">
+                              {req.program}
+                            </Badge>
+                          </div>
+
+                          <div className="grid gap-2 text-xs text-muted-foreground sm:grid-cols-2 xl:grid-cols-4">
+                            <span className="inline-flex items-center gap-1">
+                              <User className="h-3 w-3" /> {req.parent_name}
+                            </span>
+                            <span className="inline-flex items-center gap-1">
+                              <Phone className="h-3 w-3" /> {req.parent_phone}
+                            </span>
+                            <span>
+                              Age {req.age} • {req.gender}
+                            </span>
+                            <span className="inline-flex items-center gap-1">
+                              <Clock className="h-3 w-3" /> {format(new Date(req.created_at), 'MMM d, yyyy')}
+                            </span>
+                          </div>
+
+                          {req.admin_notes && (
+                            <div className="rounded-lg border border-border/60 bg-muted/40 px-2.5 py-1.5 text-xs text-muted-foreground">
+                              Note: {req.admin_notes}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-1.5 xl:justify-end">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 gap-1 text-xs"
+                            onClick={() => {
+                              setViewReq(req);
+                              setAdminNotes(req.admin_notes || '');
+                            }}
+                          >
+                            <Eye className="w-3 h-3" /> View
+                          </Button>
+
+                          {req.status !== 'approved' && req.status !== 'rejected' && (
+                            <Button
+                              size="sm"
+                              className="h-8 gap-1 bg-green-600 text-xs hover:bg-green-700"
+                              onClick={() => handleStartApprove(req)}
+                            >
+                              <Check className="w-3 h-3" /> Approve & Add
+                            </Button>
+                          )}
+
+                          {req.status === 'approved' && (
+                            <Badge
+                              variant="outline"
+                              className="h-7 border-green-500/30 bg-green-500/5 px-2 text-[10px] text-green-600"
+                            >
+                              ✓ Approved
+                            </Badge>
+                          )}
+
+                          {req.status === 'rejected' && (
+                            <Badge
+                              variant="outline"
+                              className="h-7 border-red-500/30 bg-red-500/5 px-2 text-[10px] text-red-600"
+                            >
+                              ✗ Rejected
+                            </Badge>
+                          )}
+
+                          {req.status === 'pending' && (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-8 gap-1 text-xs"
+                                onClick={() =>
+                                  updateMutation.mutate({
+                                    id: req.id,
+                                    status: 'contacted',
+                                  })
+                                }
+                              >
+                                <Phone className="w-3 h-3" /> Contact
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                className="h-8 gap-1 text-xs"
+                                onClick={() => {
+                                  setViewReq(req);
+                                  setAdminNotes(req.admin_notes || '');
+                                }}
+                              >
+                                <X className="w-3 h-3" /> Reject
+                              </Button>
+                            </>
+                          )}
+
+                          {req.status === 'contacted' && (
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="h-8 gap-1 text-xs"
+                              onClick={() => {
+                                setViewReq(req);
+                                setAdminNotes(req.admin_notes || '');
+                              }}
+                            >
+                              <X className="w-3 h-3" /> Reject
+                            </Button>
+                          )}
+
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Request?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Permanently remove this enrollment request. If it is approved, the linked student profile, login credentials, progression, fees, and all related records will also be deleted forever.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  className="bg-destructive text-destructive-foreground"
+                                  onClick={() => deleteMutation.mutate(req)}
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Detail Modal */}
       <Dialog
