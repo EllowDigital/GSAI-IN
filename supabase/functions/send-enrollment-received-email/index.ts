@@ -15,6 +15,7 @@ interface RequestBody {
   to?: string;
   cc?: string;
   parentName?: string;
+  parentEmail?: string;
   studentName?: string;
   program?: string;
   parentPhone?: string;
@@ -84,6 +85,7 @@ function buildParentHtml(parentName: string, studentName: string, program: strin
 function buildAdminHtml(details: {
   studentName: string;
   parentName: string;
+  parentEmail: string;
   program: string;
   parentPhone: string;
   studentEmail: string;
@@ -121,6 +123,7 @@ function buildAdminHtml(details: {
           <p><strong>Student:</strong> ${escapeHtml(details.studentName)}</p>
           <p><strong>Program:</strong> ${escapeHtml(details.program)}</p>
           <p><strong>Parent:</strong> ${escapeHtml(details.parentName)}</p>
+          <p><strong>Parent Email:</strong> ${escapeHtml(details.parentEmail)}</p>
           <p><strong>Parent Phone:</strong> ${escapeHtml(details.parentPhone)}</p>
           <p><strong>Student Email:</strong> ${escapeHtml(details.studentEmail)}</p>
           <p><strong>Student Phone:</strong> ${escapeHtml(details.studentPhone)}</p>
@@ -165,6 +168,7 @@ Deno.serve(async (req) => {
     const to = (body.to || '').trim().toLowerCase();
     const cc = (body.cc || '').trim().toLowerCase();
     const parentName = (body.parentName || 'Parent').trim();
+    const parentEmail = (body.parentEmail || 'Not provided').trim();
     const studentName = (body.studentName || 'Student').trim();
     const program = (body.program || 'Selected Program').trim();
     const parentPhone = (body.parentPhone || 'Not provided').trim();
@@ -196,6 +200,7 @@ Deno.serve(async (req) => {
         ? buildAdminHtml({
             studentName,
             parentName,
+            parentEmail,
             program,
             parentPhone,
             studentEmail,

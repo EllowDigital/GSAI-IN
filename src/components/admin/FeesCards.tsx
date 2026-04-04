@@ -175,9 +175,7 @@ export default function FeesCards({
                         studentName={student.name}
                         parentName={student.parent_name || 'Parent'}
                         parentContact={student.parent_contact || ''}
-                        studentEmail={
-                          student.student_email || reminderEmail || ''
-                        }
+                        studentEmail={reminderEmail || ''}
                         parentEmail={student.parent_email || ''}
                         amount={
                           fee ? fee.balance_due : student.default_monthly_fee

@@ -557,6 +557,7 @@ export type Database = {
           id: string;
           message: string | null;
           parent_name: string;
+          parent_email: string | null;
           parent_phone: string;
           program: string;
           reviewed_at: string | null;
@@ -575,6 +576,7 @@ export type Database = {
           id?: string;
           message?: string | null;
           parent_name: string;
+          parent_email?: string | null;
           parent_phone: string;
           program: string;
           reviewed_at?: string | null;
@@ -593,6 +595,7 @@ export type Database = {
           id?: string;
           message?: string | null;
           parent_name?: string;
+          parent_email?: string | null;
           parent_phone?: string;
           program?: string;
           reviewed_at?: string | null;
@@ -1110,6 +1113,7 @@ export type Database = {
           join_date: string;
           name: string;
           parent_contact: string;
+          parent_email: string | null;
           parent_name: string;
           profile_image_url: string | null;
           program: string;
@@ -1126,6 +1130,7 @@ export type Database = {
           join_date: string;
           name: string;
           parent_contact: string;
+          parent_email?: string | null;
           parent_name: string;
           profile_image_url?: string | null;
           program: string;
@@ -1142,6 +1147,7 @@ export type Database = {
           join_date?: string;
           name?: string;
           parent_contact?: string;
+          parent_email?: string | null;
           parent_name?: string;
           profile_image_url?: string | null;
           program?: string;

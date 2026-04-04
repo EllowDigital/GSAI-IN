@@ -69,7 +69,7 @@ export default function FeesManagerPanel() {
       const { data, error } = await supabase
         .from('students')
         .select(
-          'id, name, program, default_monthly_fee, profile_image_url, discount_percent'
+          'id, name, program, default_monthly_fee, profile_image_url, discount_percent, parent_email'
         );
       if (error) throw error;
       return data || [];
@@ -81,9 +81,8 @@ export default function FeesManagerPanel() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('enrollment_requests')
-        .select('linked_student_id, student_email, created_at')
+        .select('linked_student_id, student_email, parent_email, created_at')
         .not('linked_student_id', 'is', null)
-        .not('student_email', 'is', null)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -218,7 +217,9 @@ export default function FeesManagerPanel() {
   const emailByStudentId = new Map<string, string>();
   for (const row of enrollmentEmails) {
     const studentId = (row.linked_student_id || '').toString();
-    const email = (row.student_email || '').toString().trim();
+    const email = ((row.student_email || row.parent_email || '') as string)
+      .toString()
+      .trim();
     if (!studentId || !email || emailByStudentId.has(studentId)) continue;
     emailByStudentId.set(studentId, email);
   }

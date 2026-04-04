@@ -57,6 +57,7 @@ interface EnrollmentRequest {
   age: number;
   gender: string;
   parent_name: string;
+  parent_email: string | null;
   parent_phone: string;
   program: string;
   aadhar_number: string | null;
@@ -111,8 +112,7 @@ function normalizeEmail(value?: string | null): string {
 }
 
 function resolveEnrollmentRecipientEmail(req: EnrollmentRequest): string {
-  // Parent email is not a dedicated column yet; fall back to parent_phone only if it is actually an email string.
-  return normalizeEmail(req.student_email) || normalizeEmail(req.parent_phone);
+  return normalizeEmail(req.student_email) || normalizeEmail(req.parent_email);
 }
 
 export default function EnrollmentRequestsManager() {
@@ -434,6 +434,7 @@ export default function EnrollmentRequestsManager() {
           program: approveReq.program,
           join_date: joinDate,
           parent_name: approveReq.parent_name,
+          parent_email: approveReq.parent_email,
           parent_contact: approveReq.parent_phone,
         })
         .select()
@@ -895,6 +896,19 @@ export default function EnrollmentRequestsManager() {
                     <p className="text-xs text-muted-foreground">Parent</p>
                     <p className="font-medium">{viewReq.parent_name}</p>
                   </div>
+                  {viewReq.parent_email && (
+                    <div>
+                      <p className="text-xs text-muted-foreground">
+                        Parent Email
+                      </p>
+                      <a
+                        href={`mailto:${viewReq.parent_email}`}
+                        className="font-medium text-primary hover:underline"
+                      >
+                        {viewReq.parent_email}
+                      </a>
+                    </div>
+                  )}
                   <div>
                     <p className="text-xs text-muted-foreground">Phone</p>
                     <a

@@ -58,6 +58,13 @@ const enrollSchema = z.object({
     .optional()
     .or(z.literal('')),
   parentName: z.string().trim().min(2, 'Parent name is required').max(100),
+  parentEmail: z
+    .string()
+    .trim()
+    .email('Enter a valid parent email address')
+    .max(255)
+    .optional()
+    .or(z.literal('')),
   parentPhone: z
     .string()
     .regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian phone number'),
@@ -166,6 +173,7 @@ export default function EnrollPage() {
           age: parseInt(data.age),
           gender: data.gender,
           parent_name: data.parentName,
+          parent_email: data.parentEmail || null,
           parent_phone: data.parentPhone,
           program: data.program,
           aadhar_number: data.aadharNumber,
@@ -182,6 +190,7 @@ export default function EnrollPage() {
             to: ENROLLMENT_ADMIN_TO,
             cc: ENROLLMENT_ADMIN_CC,
             parentName: data.parentName,
+            parentEmail: data.parentEmail || 'Not provided',
             studentName: data.studentName,
             program: data.program,
             parentPhone: data.parentPhone,
@@ -192,11 +201,12 @@ export default function EnrollPage() {
         }),
       ];
 
-      if (data.studentEmail) {
+      const confirmationEmail = data.studentEmail || data.parentEmail;
+      if (confirmationEmail) {
         emailTasks.push(
           supabase.functions.invoke('send-enrollment-received-email', {
             body: {
-              to: data.studentEmail,
+              to: confirmationEmail,
               parentName: data.parentName,
               studentName: data.studentName,
               program: data.program,
@@ -607,6 +617,25 @@ export default function EnrollPage() {
                                 className={`mt-1.5 ${inputClass}`}
                               />
                               <FieldError field="parentName" />
+                            </div>
+                            <div>
+                              <Label
+                                htmlFor="parentEmail"
+                                className={labelClass}
+                              >
+                                Parent Email (Optional)
+                              </Label>
+                              <Input
+                                id="parentEmail"
+                                placeholder="parent@example.com"
+                                value={form.parentEmail || ''}
+                                onChange={(e) =>
+                                  handleChange('parentEmail', e.target.value)
+                                }
+                                className={`mt-1.5 ${inputClass}`}
+                                type="email"
+                              />
+                              <FieldError field="parentEmail" />
                             </div>
                             <div>
                               <Label
