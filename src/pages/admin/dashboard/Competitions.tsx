@@ -210,6 +210,18 @@ export default function Competitions() {
           'Creating competition timed out.'
         );
         if (error) throw error;
+
+        // Auto-create portal announcement for students
+        try {
+          await supabase.from('announcements').insert({
+            title: `New Competition: ${payload.name}`,
+            content: `${payload.description || ''}${payload.location_text ? `\nLocation: ${payload.location_text}` : ''}\nDate: ${payload.date}${payload.end_date ? ` to ${payload.end_date}` : ''}`,
+            priority: 'normal',
+            is_active: true,
+          });
+        } catch {
+          // Non-critical
+        }
       }
 
       let emailStats = { total: 0, sent: 0, failed: 0 };
