@@ -84,14 +84,14 @@ export default function FeesManagerPanel() {
   const { data: enrollmentEmails = [] } = useQuery({
     queryKey: ['enrollment-request-emails'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('enrollment_requests')
+      const { data, error } = (await supabase
+        .from('enrollment_requests' as any)
         .select('linked_student_id, student_email, parent_email, created_at')
         .not('linked_student_id', 'is', null)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })) as any;
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as Array<{ linked_student_id: string; student_email: string | null; parent_email: string | null; created_at: string }>;
     },
     staleTime: 60_000,
   });
