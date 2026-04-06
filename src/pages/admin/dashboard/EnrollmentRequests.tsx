@@ -42,6 +42,10 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
+import {
+  EnrollmentStatsSkeleton,
+  EnrollmentListSkeleton,
+} from '@/components/admin/EnrollmentSkeletons';
 import { createWhatsAppUrl, openWhatsAppConversation } from '@/utils/whatsapp';
 import {
   buildEnrollmentPortalMessage,
