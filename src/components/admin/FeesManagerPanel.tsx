@@ -17,6 +17,7 @@ import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useProgramFees } from './FeeSettingsCard';
 import { usePersistentState } from '@/hooks/usePersistentState';
+import { STUDENTS_QUERY_KEY, STUDENTS_SHARED_SELECT } from '@/constants/studentsQuery';
 import {
   Grid,
   List,
@@ -69,13 +70,9 @@ export default function FeesManagerPanel() {
 
   // Fetch students
   const { data: students, isLoading: loadingStudents } = useQuery({
-    queryKey: ['students'],
+    queryKey: STUDENTS_QUERY_KEY,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('students')
-        .select(
-          'id, name, program, default_monthly_fee, profile_image_url, discount_percent, parent_email'
-        );
+      const { data, error } = await supabase.from('students').select(STUDENTS_SHARED_SELECT);
       if (error) throw error;
       return data || [];
     },
@@ -84,14 +81,19 @@ export default function FeesManagerPanel() {
   const { data: enrollmentEmails = [] } = useQuery({
     queryKey: ['enrollment-request-emails'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('enrollment_requests')
+      const { data, error } = (await supabase
+        .from('enrollment_requests' as any)
         .select('linked_student_id, student_email, parent_email, created_at')
         .not('linked_student_id', 'is', null)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })) as any;
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as Array<{
+        linked_student_id: string;
+        student_email: string | null;
+        parent_email: string | null;
+        created_at: string;
+      }>;
     },
     staleTime: 60_000,
   });
@@ -325,9 +327,9 @@ export default function FeesManagerPanel() {
     setIsRefreshing(true);
     try {
       await queryClient.invalidateQueries({ queryKey: ['fees'] });
-      await queryClient.invalidateQueries({ queryKey: ['students'] });
+      await queryClient.invalidateQueries({ queryKey: STUDENTS_QUERY_KEY });
       await queryClient.refetchQueries({ queryKey: ['fees'] });
-      await queryClient.refetchQueries({ queryKey: ['students'] });
+      await queryClient.refetchQueries({ queryKey: STUDENTS_QUERY_KEY });
       toast({ title: 'Success', description: 'Fees refreshed successfully' });
     } catch (error: any) {
       toast({

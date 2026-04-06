@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/useToast';
 import { cn } from '@/lib/utils';
 import { useRealtime } from '@/hooks/useRealtime';
 import { supabase } from '@/services/supabase/client';
+import { STUDENTS_QUERY_KEY, STUDENTS_SHARED_SELECT } from '@/constants/studentsQuery';
 
 const PAGE_TITLES: Record<string, string> = {
   '/admin/dashboard': 'Dashboard',
@@ -55,13 +56,11 @@ const AdminLayout: React.FC = () => {
     const warmAdminData = async () => {
       await Promise.allSettled([
         queryClient.prefetchQuery({
-          queryKey: ['students'],
+          queryKey: STUDENTS_QUERY_KEY,
           queryFn: async () => {
             const { data, error } = await supabase
               .from('students')
-              .select(
-                'id, name, aadhar_number, program, join_date, parent_name, parent_contact, profile_image_url, created_at, default_monthly_fee, discount_percent'
-              )
+              .select(STUDENTS_SHARED_SELECT)
               .order('created_at', { ascending: false });
             if (error) throw error;
             return data ?? [];
