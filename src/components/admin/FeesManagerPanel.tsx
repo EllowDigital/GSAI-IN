@@ -17,6 +17,7 @@ import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useProgramFees } from './FeeSettingsCard';
 import { usePersistentState } from '@/hooks/usePersistentState';
+import { STUDENTS_QUERY_KEY, STUDENTS_SHARED_SELECT } from '@/constants/studentsQuery';
 import {
   Grid,
   List,
@@ -69,13 +70,9 @@ export default function FeesManagerPanel() {
 
   // Fetch students
   const { data: students, isLoading: loadingStudents } = useQuery({
-    queryKey: ['students'],
+    queryKey: STUDENTS_QUERY_KEY,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('students')
-        .select(
-          'id, name, program, default_monthly_fee, profile_image_url, discount_percent, parent_email'
-        );
+      const { data, error } = await supabase.from('students').select(STUDENTS_SHARED_SELECT);
       if (error) throw error;
       return data || [];
     },
@@ -330,9 +327,9 @@ export default function FeesManagerPanel() {
     setIsRefreshing(true);
     try {
       await queryClient.invalidateQueries({ queryKey: ['fees'] });
-      await queryClient.invalidateQueries({ queryKey: ['students'] });
+      await queryClient.invalidateQueries({ queryKey: STUDENTS_QUERY_KEY });
       await queryClient.refetchQueries({ queryKey: ['fees'] });
-      await queryClient.refetchQueries({ queryKey: ['students'] });
+      await queryClient.refetchQueries({ queryKey: STUDENTS_QUERY_KEY });
       toast({ title: 'Success', description: 'Fees refreshed successfully' });
     } catch (error: any) {
       toast({

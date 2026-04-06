@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/services/supabase/client';
 import { toast } from '@/components/ui/sonner';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { STUDENTS_QUERY_KEY, STUDENTS_SHARED_SELECT } from '@/constants/studentsQuery';
 
 type StudentRow = {
   id: string;
@@ -11,6 +12,7 @@ type StudentRow = {
   join_date: string;
   parent_name: string;
   parent_contact: string;
+  parent_email: string | null;
   profile_image_url: string | null;
   created_at: string | null;
   default_monthly_fee: number;
@@ -29,9 +31,7 @@ export function useStudents() {
   const fetchStudents = useCallback(async (): Promise<StudentRow[]> => {
     const { data, error } = await supabase
       .from('students')
-      .select(
-        'id, name, aadhar_number, program, join_date, parent_name, parent_contact, profile_image_url, created_at, default_monthly_fee, discount_percent'
-      )
+      .select(STUDENTS_SHARED_SELECT)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -46,7 +46,7 @@ export function useStudents() {
     isFetching,
     refetch,
   } = useQuery({
-    queryKey: ['students'],
+    queryKey: STUDENTS_QUERY_KEY,
     queryFn: fetchStudents,
     staleTime: 1000 * 60 * 10,
     gcTime: 1000 * 60 * 60,
@@ -62,7 +62,7 @@ export function useStudents() {
         'postgres_changes',
         { event: '*', schema: 'public', table: 'students' },
         () => {
-          queryClient.invalidateQueries({ queryKey: ['students'] });
+          queryClient.invalidateQueries({ queryKey: STUDENTS_QUERY_KEY });
         }
       )
       .subscribe();
