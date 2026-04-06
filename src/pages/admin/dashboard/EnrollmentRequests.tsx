@@ -727,17 +727,36 @@ export default function EnrollmentRequestsManager() {
           </div>
 
           {isLoading ? (
-            <div className="flex justify-center py-12">
-              <Spinner size={20} />
-            </div>
+            <EnrollmentListSkeleton count={5} />
           ) : filtered.length === 0 ? (
-            <Card className="border-border/70">
-              <CardContent className="py-12 text-center text-sm text-muted-foreground">
-                {requests.length === 0
-                  ? 'No enrollment requests yet. Share the enrollment form on your website.'
-                  : 'No requests match your current search and filters.'}
-              </CardContent>
-            </Card>
+            <div className="flex flex-col items-center justify-center py-12 sm:py-16 space-y-4">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-muted flex items-center justify-center">
+                {requests.length === 0 ? (
+                  <UserPlus className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground" />
+                ) : (
+                  <Search className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground" />
+                )}
+              </div>
+              <div className="text-center space-y-1.5">
+                <h3 className="text-lg font-semibold text-foreground">
+                  {requests.length === 0 ? 'No enrollment requests yet' : 'No matching requests'}
+                </h3>
+                <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                  {requests.length === 0
+                    ? 'Enrollment requests will appear here when parents submit the form on your website.'
+                    : 'Try adjusting your search or status filter to find the request you\'re looking for.'}
+                </p>
+              </div>
+              {requests.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => { setSearch(''); setStatusFilter('all'); }}
+                >
+                  Reset Filters
+                </Button>
+              )}
+            </div>
           ) : (
             <div className="space-y-3">
               {filtered.map((req) => {
