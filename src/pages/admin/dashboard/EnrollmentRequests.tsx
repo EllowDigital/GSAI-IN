@@ -666,32 +666,28 @@ export default function EnrollmentRequestsManager() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:max-w-3xl">
-            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
-              <p className="text-[11px] text-muted-foreground">Pending</p>
-              <p className="text-lg font-semibold text-foreground">
-                {pendingCount}
-              </p>
+          {isLoading ? (
+            <EnrollmentStatsSkeleton />
+          ) : (
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:max-w-3xl">
+              {[
+                { label: 'Pending', count: pendingCount, color: 'text-yellow-600' },
+                { label: 'Contacted', count: contactedCount, color: 'text-blue-600' },
+                { label: 'Approved', count: approvedCount, color: 'text-green-600' },
+                { label: 'Rejected', count: rejectedCount, color: 'text-red-600' },
+              ].map((stat) => (
+                <div
+                  key={stat.label}
+                  className="rounded-lg border border-border/70 bg-card px-3 py-2 transition-shadow hover:shadow-sm"
+                >
+                  <p className="text-[11px] text-muted-foreground">{stat.label}</p>
+                  <p className={`text-lg font-semibold ${stat.color}`}>
+                    {stat.count}
+                  </p>
+                </div>
+              ))}
             </div>
-            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
-              <p className="text-[11px] text-muted-foreground">Contacted</p>
-              <p className="text-lg font-semibold text-foreground">
-                {contactedCount}
-              </p>
-            </div>
-            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
-              <p className="text-[11px] text-muted-foreground">Approved</p>
-              <p className="text-lg font-semibold text-foreground">
-                {approvedCount}
-              </p>
-            </div>
-            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
-              <p className="text-[11px] text-muted-foreground">Rejected</p>
-              <p className="text-lg font-semibold text-foreground">
-                {rejectedCount}
-              </p>
-            </div>
-          </div>
+          )}
         </div>
       </section>
 
