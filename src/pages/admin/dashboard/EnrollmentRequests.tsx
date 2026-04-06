@@ -671,16 +671,34 @@ export default function EnrollmentRequestsManager() {
           ) : (
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:max-w-3xl">
               {[
-                { label: 'Pending', count: pendingCount, color: 'text-yellow-600' },
-                { label: 'Contacted', count: contactedCount, color: 'text-blue-600' },
-                { label: 'Approved', count: approvedCount, color: 'text-green-600' },
-                { label: 'Rejected', count: rejectedCount, color: 'text-red-600' },
+                {
+                  label: 'Pending',
+                  count: pendingCount,
+                  color: 'text-yellow-600',
+                },
+                {
+                  label: 'Contacted',
+                  count: contactedCount,
+                  color: 'text-blue-600',
+                },
+                {
+                  label: 'Approved',
+                  count: approvedCount,
+                  color: 'text-green-600',
+                },
+                {
+                  label: 'Rejected',
+                  count: rejectedCount,
+                  color: 'text-red-600',
+                },
               ].map((stat) => (
                 <div
                   key={stat.label}
                   className="rounded-lg border border-border/70 bg-card px-3 py-2 transition-shadow hover:shadow-sm"
                 >
-                  <p className="text-[11px] text-muted-foreground">{stat.label}</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {stat.label}
+                  </p>
                   <p className={`text-lg font-semibold ${stat.color}`}>
                     {stat.count}
                   </p>
@@ -739,19 +757,24 @@ export default function EnrollmentRequestsManager() {
               </div>
               <div className="text-center space-y-1.5">
                 <h3 className="text-lg font-semibold text-foreground">
-                  {requests.length === 0 ? 'No enrollment requests yet' : 'No matching requests'}
+                  {requests.length === 0
+                    ? 'No enrollment requests yet'
+                    : 'No matching requests'}
                 </h3>
                 <p className="text-sm text-muted-foreground max-w-sm mx-auto">
                   {requests.length === 0
                     ? 'Enrollment requests will appear here when parents submit the form on your website.'
-                    : 'Try adjusting your search or status filter to find the request you\'re looking for.'}
+                    : "Try adjusting your search or status filter to find the request you're looking for."}
                 </p>
               </div>
               {requests.length > 0 && (
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => { setSearch(''); setStatusFilter('all'); }}
+                  onClick={() => {
+                    setSearch('');
+                    setStatusFilter('all');
+                  }}
                 >
                   Reset Filters
                 </Button>

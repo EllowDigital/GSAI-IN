@@ -91,7 +91,12 @@ export default function FeesManagerPanel() {
         .order('created_at', { ascending: false })) as any;
 
       if (error) throw error;
-      return (data || []) as Array<{ linked_student_id: string; student_email: string | null; parent_email: string | null; created_at: string }>;
+      return (data || []) as Array<{
+        linked_student_id: string;
+        student_email: string | null;
+        parent_email: string | null;
+        created_at: string;
+      }>;
     },
     staleTime: 60_000,
   });
