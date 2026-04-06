@@ -180,7 +180,7 @@ export default function Gallery() {
   }, [query, tagFilter, dateFrom, dateTo, viewMode]);
 
   const activeDateRange = useMemo(
-    () => [dateFrom || null, dateTo || null] as [Date | null, Date | null],
+    () => [dateFrom || null, dateTo || null] as [string | null, string | null],
     [dateFrom, dateTo]
   );
 

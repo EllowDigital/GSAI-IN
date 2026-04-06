@@ -269,6 +269,17 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
         }
         toast.success('Event created.');
 
+        // Auto-create portal announcement for students
+        try {
+          await supabase.from('announcements').insert({
+            title: `New Event: ${form.title}`,
+            content: `${form.description || ''}${(form as any).location ? `\nLocation: ${(form as any).location}` : ''}\nDate: ${form.from_date}${form.end_date ? ` to ${form.end_date}` : ''}`,
+            priority: 'normal',
+            is_active: true,
+          });
+        } catch {
+          // Non-critical — don't block the flow
+        }
         if (sendEmailNotification) {
           const stats = await sendQueuedAnnouncement({
             type: 'event',
