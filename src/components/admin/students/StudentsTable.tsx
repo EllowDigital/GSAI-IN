@@ -269,7 +269,7 @@ export default function StudentsTable({
                   </h3>
                 </TableCell>
                 <TableCell>
-                  <span className="font-mono text-sm text-slate-600">
+                  <span className="font-mono text-sm text-muted-foreground">
                     {stu.aadhar_number}
                   </span>
                 </TableCell>
