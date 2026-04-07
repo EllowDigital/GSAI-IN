@@ -306,7 +306,7 @@ export default function StudentsTable({
                   </span>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm font-medium text-slate-700 line-clamp-1">
+                  <span className="text-sm font-medium text-foreground line-clamp-1">
                     {stu.parent_name}
                   </span>
                 </TableCell>
