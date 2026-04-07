@@ -344,16 +344,16 @@ export default function FeesManagerPanel() {
 
   const renderContent = () => {
     if (isLoading) {
-      return (
-        <div className="w-full py-10 flex items-center justify-center">
-          <div className="animate-spin h-8 w-8 border-4 border-yellow-400 rounded-full border-t-transparent" />
-        </div>
+      return viewMode === 'table' ? (
+        <FeeTableSkeleton />
+      ) : (
+        <FeeCardsGridSkeleton />
       );
     }
 
     if (viewMode === 'table') {
       return (
-        <div className="rounded-2xl shadow-lg overflow-x-auto bg-card animate-fade-in">
+        <div className="rounded-xl shadow-sm overflow-x-auto bg-card animate-fade-in border border-border/50">
           <FeesTable
             rows={rows}
             isLoading={false}
