@@ -192,6 +192,7 @@ const AdminLayout: React.FC = () => {
 
             {/* Right: Actions */}
             <div className="flex items-center gap-1">
+              <AdminNotificationBell />
               <button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
