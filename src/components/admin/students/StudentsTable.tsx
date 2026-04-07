@@ -253,7 +253,7 @@ export default function StudentsTable({
                         className="object-cover"
                       />
                     ) : (
-                      <AvatarFallback className="bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 font-bold">
+                      <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-bold">
                         {stu.name
                           .split(' ')
                           .map((n) => n[0])
