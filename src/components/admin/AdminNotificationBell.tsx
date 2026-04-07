@@ -24,6 +24,10 @@ export default function AdminNotificationBell() {
           .select('id', { count: 'exact', head: true })
           .eq('status', 'unpaid'),
       ]);
+
+      if (enrollRes.error) throw enrollRes.error;
+      if (feesRes.error) throw feesRes.error;
+
       return {
         pendingEnrollments: enrollRes.count ?? 0,
         unpaidFees: feesRes.count ?? 0,
@@ -54,8 +58,10 @@ export default function AdminNotificationBell() {
     <Popover>
       <PopoverTrigger asChild>
         <button
+          type="button"
           className="relative rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           title="Notifications"
+          aria-label="Open notifications"
         >
           <Bell className="w-4 h-4" />
           {total > 0 && (

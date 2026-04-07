@@ -261,6 +261,8 @@ export default function FeesManagerPanel() {
     : [];
 
   const isLoading = loadingStudents || loadingFees || isRefreshing;
+  const hasActiveFilters = Boolean(filterName.trim() || filterStatus);
+  const shouldShowGenerateCta = (fees?.length ?? 0) === 0 && !hasActiveFilters;
 
   const feeSnapshot = useMemo(() => {
     const paid = rows.filter((r) => r.fee?.status === 'paid').length;
@@ -589,17 +591,32 @@ export default function FeesManagerPanel() {
                   No fee records found
                 </h3>
                 <p className="text-sm sm:text-base text-muted-foreground">
-                  Try adjusting your filters or generate fees for this month.
+                  {hasActiveFilters
+                    ? 'Try adjusting or clearing your filters to see matching fee records.'
+                    : 'No fee records exist for this month yet. Generate fee records to get started.'}
                 </p>
-                <Button
-                  onClick={() => batchGenerateMutation.mutate()}
-                  disabled={batchGenerateMutation.isPending}
-                  size="sm"
-                  className="gap-1.5"
-                >
-                  <Zap className="w-4 h-4" />
-                  Generate Fee Records
-                </Button>
+                {shouldShowGenerateCta ? (
+                  <Button
+                    onClick={() => batchGenerateMutation.mutate()}
+                    disabled={batchGenerateMutation.isPending}
+                    size="sm"
+                    className="gap-1.5"
+                  >
+                    <Zap className="w-4 h-4" />
+                    Generate Fee Records
+                  </Button>
+                ) : hasActiveFilters ? (
+                  <Button
+                    onClick={() => {
+                      setFilterName('');
+                      setFilterStatus('');
+                    }}
+                    variant="outline"
+                    size="sm"
+                  >
+                    Clear Filters
+                  </Button>
+                ) : null}
               </div>
             ) : (
               renderContent()
