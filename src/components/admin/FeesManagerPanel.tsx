@@ -570,24 +570,31 @@ export default function FeesManagerPanel() {
           {/* Content */}
           <div className="w-full space-y-4">
             {isLoading ? (
-              <div className="flex flex-col items-center justify-center py-8 sm:py-12">
-                <div className="animate-spin h-8 w-8 sm:h-10 sm:w-10 border-4 border-primary border-t-transparent rounded-full" />
-                <p className="text-sm sm:text-base text-muted-foreground mt-4">
-                  Loading fees data...
-                </p>
-              </div>
+              viewMode === 'table' ? (
+                <FeeTableSkeleton />
+              ) : (
+                <FeeCardsGridSkeleton />
+              )
             ) : rows.length === 0 ? (
               <div className="text-center py-8 sm:py-12 space-y-4">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-muted rounded-full flex items-center justify-center">
-                  <span className="text-2xl">💰</span>
+                  <DollarSign className="w-8 h-8 text-muted-foreground" />
                 </div>
                 <h3 className="text-lg sm:text-xl font-semibold text-foreground">
                   No fee records found
                 </h3>
                 <p className="text-sm sm:text-base text-muted-foreground">
-                  Try adjusting your filters or add students to begin tracking
-                  fees.
+                  Try adjusting your filters or generate fees for this month.
                 </p>
+                <Button
+                  onClick={() => batchGenerateMutation.mutate()}
+                  disabled={batchGenerateMutation.isPending}
+                  size="sm"
+                  className="gap-1.5"
+                >
+                  <Zap className="w-4 h-4" />
+                  Generate Fee Records
+                </Button>
               </div>
             ) : (
               renderContent()
