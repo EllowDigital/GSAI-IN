@@ -9,7 +9,10 @@ import { useToast } from '@/hooks/useToast';
 import { cn } from '@/lib/utils';
 import { useRealtime } from '@/hooks/useRealtime';
 import { supabase } from '@/services/supabase/client';
-import { STUDENTS_QUERY_KEY, STUDENTS_SHARED_SELECT } from '@/constants/studentsQuery';
+import {
+  STUDENTS_QUERY_KEY,
+  STUDENTS_SHARED_SELECT,
+} from '@/constants/studentsQuery';
 
 const PAGE_TITLES: Record<string, string> = {
   '/admin/dashboard': 'Dashboard',

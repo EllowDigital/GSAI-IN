@@ -17,7 +17,10 @@ import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useProgramFees } from './FeeSettingsCard';
 import { usePersistentState } from '@/hooks/usePersistentState';
-import { STUDENTS_QUERY_KEY, STUDENTS_SHARED_SELECT } from '@/constants/studentsQuery';
+import {
+  STUDENTS_QUERY_KEY,
+  STUDENTS_SHARED_SELECT,
+} from '@/constants/studentsQuery';
 import {
   Grid,
   List,
@@ -73,7 +76,9 @@ export default function FeesManagerPanel() {
   const { data: students, isLoading: loadingStudents } = useQuery({
     queryKey: STUDENTS_QUERY_KEY,
     queryFn: async () => {
-      const { data, error } = await supabase.from('students').select(STUDENTS_SHARED_SELECT);
+      const { data, error } = await supabase
+        .from('students')
+        .select(STUDENTS_SHARED_SELECT);
       if (error) throw error;
       return data || [];
     },

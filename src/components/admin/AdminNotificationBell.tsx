@@ -68,7 +68,9 @@ export default function AdminNotificationBell() {
       <PopoverContent align="end" className="w-72 p-0">
         <div className="border-b border-border/70 px-4 py-3">
           <p className="text-sm font-semibold text-foreground">Notifications</p>
-          <p className="text-xs text-muted-foreground">Items needing attention</p>
+          <p className="text-xs text-muted-foreground">
+            Items needing attention
+          </p>
         </div>
         <div className="divide-y divide-border/50">
           {items.map((item) => (

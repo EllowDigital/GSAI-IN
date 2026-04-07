@@ -69,7 +69,9 @@ export default function DashboardHome() {
           .limit(5) as any,
         supabase
           .from('fees')
-          .select('id, student_id, paid_amount, status, month, year, updated_at')
+          .select(
+            'id, student_id, paid_amount, status, month, year, updated_at'
+          )
           .eq('status', 'paid')
           .order('updated_at', { ascending: false })
           .limit(5),
@@ -753,11 +755,9 @@ export default function DashboardHome() {
               };
 
               const colorMap = {
-                enrollment:
-                  'bg-amber-500/10 text-amber-600',
+                enrollment: 'bg-amber-500/10 text-amber-600',
                 fee: 'bg-emerald-500/10 text-emerald-600',
-                student:
-                  'bg-primary/10 text-primary',
+                student: 'bg-primary/10 text-primary',
               };
 
               return top8.map((item) => {

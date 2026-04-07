@@ -2,7 +2,10 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/services/supabase/client';
 import { toast } from '@/components/ui/sonner';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { STUDENTS_QUERY_KEY, STUDENTS_SHARED_SELECT } from '@/constants/studentsQuery';
+import {
+  STUDENTS_QUERY_KEY,
+  STUDENTS_SHARED_SELECT,
+} from '@/constants/studentsQuery';
 
 type StudentRow = {
   id: string;

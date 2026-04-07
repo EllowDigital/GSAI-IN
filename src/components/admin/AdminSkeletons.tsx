@@ -54,7 +54,10 @@ export function StudentTableSkeleton({ rows = 6 }: { rows?: number }) {
       </div>
       {/* Rows */}
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex items-center gap-4 px-4 py-3 border-b border-border/30 last:border-b-0">
+        <div
+          key={i}
+          className="flex items-center gap-4 px-4 py-3 border-b border-border/30 last:border-b-0"
+        >
           <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
           <Skeleton className="h-4 w-28" />
           <Skeleton className="h-4 w-24 font-mono" />
@@ -119,7 +122,10 @@ export function FeeTableSkeleton({ rows = 6 }: { rows?: number }) {
         ))}
       </div>
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex items-center gap-4 px-4 py-3 border-b border-border/30 last:border-b-0">
+        <div
+          key={i}
+          className="flex items-center gap-4 px-4 py-3 border-b border-border/30 last:border-b-0"
+        >
           <Skeleton className="h-4 w-28" />
           <Skeleton className="h-4 w-16" />
           <Skeleton className="h-4 w-16" />
@@ -141,7 +147,10 @@ export function AdminStatsSkeleton({ count = 4 }: { count?: number }) {
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="rounded-lg border border-border/70 bg-card px-3 py-2 space-y-1.5">
+        <div
+          key={i}
+          className="rounded-lg border border-border/70 bg-card px-3 py-2 space-y-1.5"
+        >
           <Skeleton className="h-3 w-14" />
           <Skeleton className="h-6 w-10" />
         </div>

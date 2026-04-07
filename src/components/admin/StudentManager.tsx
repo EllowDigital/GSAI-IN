@@ -18,7 +18,10 @@ import StudentsCards from './students/StudentsCards';
 import RefreshButton from './RefreshButton';
 import { useStudents } from '@/hooks/useStudents';
 import { usePersistentState } from '@/hooks/usePersistentState';
-import { StudentCardsGridSkeleton, StudentTableSkeleton } from './AdminSkeletons';
+import {
+  StudentCardsGridSkeleton,
+  StudentTableSkeleton,
+} from './AdminSkeletons';
 
 type StudentRow = {
   id: string;
