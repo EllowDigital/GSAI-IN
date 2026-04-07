@@ -18,6 +18,10 @@ import StudentsCards from './students/StudentsCards';
 import RefreshButton from './RefreshButton';
 import { useStudents } from '@/hooks/useStudents';
 import { usePersistentState } from '@/hooks/usePersistentState';
+import {
+  StudentCardsGridSkeleton,
+  StudentTableSkeleton,
+} from './AdminSkeletons';
 
 type StudentRow = {
   id: string;
@@ -190,14 +194,11 @@ export default function StudentManager() {
             {/* Student List */}
             <div className="space-y-4">
               {loading || isRefreshing ? (
-                <Card className="p-8 sm:p-12 border-border/50">
-                  <div className="flex flex-col items-center justify-center gap-4">
-                    <div className="animate-spin h-8 w-8 sm:h-10 sm:w-10 border-4 border-primary border-t-transparent rounded-full" />
-                    <p className="text-sm sm:text-base text-muted-foreground">
-                      Loading students...
-                    </p>
-                  </div>
-                </Card>
+                viewMode === 'cards' ? (
+                  <StudentCardsGridSkeleton />
+                ) : (
+                  <StudentTableSkeleton />
+                )
               ) : viewMode === 'cards' ? (
                 <StudentsCards
                   students={filteredStudents}

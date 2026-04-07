@@ -17,7 +17,10 @@ import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useProgramFees } from './FeeSettingsCard';
 import { usePersistentState } from '@/hooks/usePersistentState';
-import { STUDENTS_QUERY_KEY, STUDENTS_SHARED_SELECT } from '@/constants/studentsQuery';
+import {
+  STUDENTS_QUERY_KEY,
+  STUDENTS_SHARED_SELECT,
+} from '@/constants/studentsQuery';
 import {
   Grid,
   List,
@@ -27,6 +30,7 @@ import {
   Zap,
   Loader2,
 } from 'lucide-react';
+import { FeeCardsGridSkeleton, FeeTableSkeleton } from './AdminSkeletons';
 
 export default function FeesManagerPanel() {
   const now = new Date();
@@ -72,7 +76,9 @@ export default function FeesManagerPanel() {
   const { data: students, isLoading: loadingStudents } = useQuery({
     queryKey: STUDENTS_QUERY_KEY,
     queryFn: async () => {
-      const { data, error } = await supabase.from('students').select(STUDENTS_SHARED_SELECT);
+      const { data, error } = await supabase
+        .from('students')
+        .select(STUDENTS_SHARED_SELECT);
       if (error) throw error;
       return data || [];
     },
@@ -344,16 +350,16 @@ export default function FeesManagerPanel() {
 
   const renderContent = () => {
     if (isLoading) {
-      return (
-        <div className="w-full py-10 flex items-center justify-center">
-          <div className="animate-spin h-8 w-8 border-4 border-yellow-400 rounded-full border-t-transparent" />
-        </div>
+      return viewMode === 'table' ? (
+        <FeeTableSkeleton />
+      ) : (
+        <FeeCardsGridSkeleton />
       );
     }
 
     if (viewMode === 'table') {
       return (
-        <div className="rounded-2xl shadow-lg overflow-x-auto bg-card animate-fade-in">
+        <div className="rounded-xl shadow-sm overflow-x-auto bg-card animate-fade-in border border-border/50">
           <FeesTable
             rows={rows}
             isLoading={false}
@@ -569,24 +575,31 @@ export default function FeesManagerPanel() {
           {/* Content */}
           <div className="w-full space-y-4">
             {isLoading ? (
-              <div className="flex flex-col items-center justify-center py-8 sm:py-12">
-                <div className="animate-spin h-8 w-8 sm:h-10 sm:w-10 border-4 border-primary border-t-transparent rounded-full" />
-                <p className="text-sm sm:text-base text-muted-foreground mt-4">
-                  Loading fees data...
-                </p>
-              </div>
+              viewMode === 'table' ? (
+                <FeeTableSkeleton />
+              ) : (
+                <FeeCardsGridSkeleton />
+              )
             ) : rows.length === 0 ? (
               <div className="text-center py-8 sm:py-12 space-y-4">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-muted rounded-full flex items-center justify-center">
-                  <span className="text-2xl">💰</span>
+                  <DollarSign className="w-8 h-8 text-muted-foreground" />
                 </div>
                 <h3 className="text-lg sm:text-xl font-semibold text-foreground">
                   No fee records found
                 </h3>
                 <p className="text-sm sm:text-base text-muted-foreground">
-                  Try adjusting your filters or add students to begin tracking
-                  fees.
+                  Try adjusting your filters or generate fees for this month.
                 </p>
+                <Button
+                  onClick={() => batchGenerateMutation.mutate()}
+                  disabled={batchGenerateMutation.isPending}
+                  size="sm"
+                  className="gap-1.5"
+                >
+                  <Zap className="w-4 h-4" />
+                  Generate Fee Records
+                </Button>
               </div>
             ) : (
               renderContent()

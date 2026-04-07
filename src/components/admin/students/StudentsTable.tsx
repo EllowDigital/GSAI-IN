@@ -79,13 +79,13 @@ const SortableHeader = ({
   onClick: () => void;
 }) => (
   <TableHead
-    className="cursor-pointer hover:bg-slate-100/50 transition-colors duration-200"
+    className="cursor-pointer hover:bg-muted/50 transition-colors duration-200"
     onClick={onClick}
   >
     <div className="flex items-center gap-2">
       {children}
       <ChevronsUpDown
-        className={`h-4 w-4 transition-all duration-200 ${active ? 'opacity-100 text-blue-600 scale-110' : 'opacity-40'}`}
+        className={`h-4 w-4 transition-all duration-200 ${active ? 'opacity-100 text-primary scale-110' : 'opacity-40'}`}
       />
     </div>
   </TableHead>
@@ -141,10 +141,10 @@ export default function StudentsTable({
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/50 overflow-hidden">
+      <div className="rounded-xl border border-border/50 bg-card overflow-hidden">
         <div className="py-16 flex flex-col items-center justify-center space-y-4">
-          <div className="animate-spin h-12 w-12 border-4 border-blue-200 border-t-blue-600 rounded-full"></div>
-          <p className="text-slate-600 font-medium">Loading students...</p>
+          <div className="animate-spin h-10 w-10 border-[3px] border-primary/20 border-t-primary rounded-full" />
+          <p className="text-sm text-muted-foreground">Loading students…</p>
         </div>
       </div>
     );
@@ -152,15 +152,15 @@ export default function StudentsTable({
 
   if (studentsWithBelts.length === 0 && !loading) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/50 overflow-hidden">
+      <div className="rounded-xl border border-border/50 bg-card overflow-hidden">
         <div className="py-16 text-center">
-          <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-full flex items-center justify-center">
-            <User className="w-8 h-8 text-slate-400" />
+          <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center">
+            <User className="w-8 h-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-semibold text-slate-600 mb-2">
+          <h3 className="text-lg font-semibold text-foreground mb-2">
             No students found
           </h3>
-          <p className="text-slate-500">
+          <p className="text-sm text-muted-foreground">
             Add your first student to get started
           </p>
         </div>
@@ -169,7 +169,7 @@ export default function StudentsTable({
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200/50 overflow-hidden">
+    <div className="rounded-xl border border-border/50 bg-card overflow-hidden">
       <Table className="min-w-[900px]">
         <TableHeader>
           <TableRow>
@@ -240,12 +240,12 @@ export default function StudentsTable({
                 key={stu.id}
                 className={clsx(
                   'group transition-all duration-200',
-                  'hover:bg-gradient-to-r hover:from-blue-50/30 hover:to-indigo-50/20',
-                  index % 2 === 1 ? 'bg-slate-50/30' : 'bg-white'
+                  'hover:bg-muted/50',
+                  index % 2 === 1 ? 'bg-muted/20' : 'bg-card'
                 )}
               >
                 <TableCell>
-                  <Avatar className="h-10 w-10 ring-2 ring-slate-200 transition-all duration-200 group-hover:ring-blue-300 sm:h-11 sm:w-11">
+                  <Avatar className="h-10 w-10 ring-2 ring-border transition-all duration-200 group-hover:ring-primary/30 sm:h-11 sm:w-11">
                     {stu.profile_image_url ? (
                       <AvatarImage
                         src={stu.profile_image_url}
@@ -253,7 +253,7 @@ export default function StudentsTable({
                         className="object-cover"
                       />
                     ) : (
-                      <AvatarFallback className="bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 font-bold">
+                      <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-bold">
                         {stu.name
                           .split(' ')
                           .map((n) => n[0])
@@ -264,12 +264,12 @@ export default function StudentsTable({
                   </Avatar>
                 </TableCell>
                 <TableCell>
-                  <h3 className="font-bold text-slate-800 group-hover:text-blue-700 transition-colors">
+                  <h3 className="font-bold text-foreground group-hover:text-primary transition-colors">
                     {stu.name}
                   </h3>
                 </TableCell>
                 <TableCell>
-                  <span className="font-mono text-sm text-slate-600">
+                  <span className="font-mono text-sm text-muted-foreground">
                     {stu.aadhar_number}
                   </span>
                 </TableCell>
@@ -295,7 +295,7 @@ export default function StudentsTable({
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm font-medium text-slate-600">
+                  <span className="text-sm font-medium text-muted-foreground">
                     {stu.join_date
                       ? new Date(stu.join_date).toLocaleDateString('en-US', {
                           year: 'numeric',
@@ -306,12 +306,12 @@ export default function StudentsTable({
                   </span>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm font-medium text-slate-700 line-clamp-1">
+                  <span className="text-sm font-medium text-foreground line-clamp-1">
                     {stu.parent_name}
                   </span>
                 </TableCell>
                 <TableCell>
-                  <span className="font-mono text-sm text-slate-600">
+                  <span className="font-mono text-sm text-muted-foreground">
                     {stu.parent_contact}
                   </span>
                 </TableCell>
@@ -321,9 +321,9 @@ export default function StudentsTable({
                       size="sm"
                       variant="outline"
                       onClick={() => onEdit(stu)}
-                      className="h-9 w-9 rounded-xl border-slate-200 hover:border-blue-300 hover:bg-blue-50"
+                      className="h-9 w-9 rounded-xl border-border hover:border-primary/30 hover:bg-primary/5"
                     >
-                      <Edit className="w-4 h-4 text-slate-600" />
+                      <Edit className="w-4 h-4 text-muted-foreground" />
                     </Button>
                     <Button
                       size="sm"
