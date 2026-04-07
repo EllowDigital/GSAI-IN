@@ -4,6 +4,7 @@ import { useAdminAuth } from './AdminAuthProvider';
 import { AppSidebar } from '@/components/admin/AppSidebar';
 import { useQueryClient } from '@tanstack/react-query';
 import { RefreshCw, Menu, PanelLeftClose, PanelLeft } from 'lucide-react';
+import AdminNotificationBell from '@/components/admin/AdminNotificationBell';
 import { useToast } from '@/hooks/useToast';
 import { cn } from '@/lib/utils';
 import { useRealtime } from '@/hooks/useRealtime';
@@ -73,7 +74,7 @@ const AdminLayout: React.FC = () => {
             const { data, error } = await supabase
               .from('fees')
               .select('*')
-              .order('due_date', { ascending: false });
+              .order('created_at', { ascending: false });
             if (error) throw error;
             return data ?? [];
           },
@@ -191,6 +192,7 @@ const AdminLayout: React.FC = () => {
 
             {/* Right: Actions */}
             <div className="flex items-center gap-1">
+              <AdminNotificationBell />
               <button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
