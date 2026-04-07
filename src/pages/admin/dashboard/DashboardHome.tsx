@@ -2,6 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/services/supabase/client';
 import { Link } from 'react-router-dom';
+import { formatDistanceToNow } from 'date-fns';
 import {
   Users,
   DollarSign,
