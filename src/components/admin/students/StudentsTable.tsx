@@ -311,7 +311,7 @@ export default function StudentsTable({
                   </span>
                 </TableCell>
                 <TableCell>
-                  <span className="font-mono text-sm text-slate-600">
+                  <span className="font-mono text-sm text-muted-foreground">
                     {stu.parent_contact}
                   </span>
                 </TableCell>
