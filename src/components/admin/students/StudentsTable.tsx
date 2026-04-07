@@ -152,15 +152,15 @@ export default function StudentsTable({
 
   if (studentsWithBelts.length === 0 && !loading) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/50 overflow-hidden">
+      <div className="rounded-xl border border-border/50 bg-card overflow-hidden">
         <div className="py-16 text-center">
-          <div className="w-16 h-16 mx-auto mb-4 bg-slate-100 rounded-full flex items-center justify-center">
-            <User className="w-8 h-8 text-slate-400" />
+          <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center">
+            <User className="w-8 h-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-semibold text-slate-600 mb-2">
+          <h3 className="text-lg font-semibold text-foreground mb-2">
             No students found
           </h3>
-          <p className="text-slate-500">
+          <p className="text-sm text-muted-foreground">
             Add your first student to get started
           </p>
         </div>
