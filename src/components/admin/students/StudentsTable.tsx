@@ -245,7 +245,7 @@ export default function StudentsTable({
                 )}
               >
                 <TableCell>
-                  <Avatar className="h-10 w-10 ring-2 ring-slate-200 transition-all duration-200 group-hover:ring-blue-300 sm:h-11 sm:w-11">
+                  <Avatar className="h-10 w-10 ring-2 ring-border transition-all duration-200 group-hover:ring-primary/30 sm:h-11 sm:w-11">
                     {stu.profile_image_url ? (
                       <AvatarImage
                         src={stu.profile_image_url}
