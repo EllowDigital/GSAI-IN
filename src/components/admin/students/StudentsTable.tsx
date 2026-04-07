@@ -169,7 +169,7 @@ export default function StudentsTable({
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200/50 overflow-hidden">
+    <div className="rounded-xl border border-border/50 bg-card overflow-hidden">
       <Table className="min-w-[900px]">
         <TableHeader>
           <TableRow>
