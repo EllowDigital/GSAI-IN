@@ -43,6 +43,9 @@ export default function DashboardHome() {
         galleryRes,
         enrollRes,
         announcementsRes,
+        recentEnrollRes,
+        recentFeesRes,
+        recentStudentsRes,
       ] = await Promise.all([
         supabase
           .from('students')
@@ -58,6 +61,22 @@ export default function DashboardHome() {
         supabase.from('gallery_images').select('id'),
         supabase.from('enrollment_requests' as any).select('id, status') as any,
         supabase.from('announcements').select('id, is_active'),
+        supabase
+          .from('enrollment_requests' as any)
+          .select('id, student_name, program, status, created_at')
+          .order('created_at', { ascending: false })
+          .limit(5) as any,
+        supabase
+          .from('fees')
+          .select('id, student_id, paid_amount, status, month, year, updated_at')
+          .eq('status', 'paid')
+          .order('updated_at', { ascending: false })
+          .limit(5),
+        supabase
+          .from('students')
+          .select('id, name, program, created_at')
+          .order('created_at', { ascending: false })
+          .limit(5),
       ]);
 
       const firstError = [
