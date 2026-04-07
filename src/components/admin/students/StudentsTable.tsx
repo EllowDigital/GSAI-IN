@@ -141,10 +141,10 @@ export default function StudentsTable({
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/50 overflow-hidden">
+      <div className="rounded-xl border border-border/50 bg-card overflow-hidden">
         <div className="py-16 flex flex-col items-center justify-center space-y-4">
-          <div className="animate-spin h-12 w-12 border-4 border-blue-200 border-t-blue-600 rounded-full"></div>
-          <p className="text-slate-600 font-medium">Loading students...</p>
+          <div className="animate-spin h-10 w-10 border-[3px] border-primary/20 border-t-primary rounded-full" />
+          <p className="text-sm text-muted-foreground">Loading students…</p>
         </div>
       </div>
     );
