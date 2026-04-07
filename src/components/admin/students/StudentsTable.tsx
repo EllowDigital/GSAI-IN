@@ -240,8 +240,8 @@ export default function StudentsTable({
                 key={stu.id}
                 className={clsx(
                   'group transition-all duration-200',
-                  'hover:bg-gradient-to-r hover:from-blue-50/30 hover:to-indigo-50/20',
-                  index % 2 === 1 ? 'bg-slate-50/30' : 'bg-white'
+                  'hover:bg-muted/50',
+                  index % 2 === 1 ? 'bg-muted/20' : 'bg-card'
                 )}
               >
                 <TableCell>
