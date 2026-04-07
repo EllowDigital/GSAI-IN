@@ -85,7 +85,7 @@ const SortableHeader = ({
     <div className="flex items-center gap-2">
       {children}
       <ChevronsUpDown
-        className={`h-4 w-4 transition-all duration-200 ${active ? 'opacity-100 text-blue-600 scale-110' : 'opacity-40'}`}
+        className={`h-4 w-4 transition-all duration-200 ${active ? 'opacity-100 text-primary scale-110' : 'opacity-40'}`}
       />
     </div>
   </TableHead>
