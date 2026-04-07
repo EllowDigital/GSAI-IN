@@ -295,7 +295,7 @@ export default function StudentsTable({
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm font-medium text-slate-600">
+                  <span className="text-sm font-medium text-muted-foreground">
                     {stu.join_date
                       ? new Date(stu.join_date).toLocaleDateString('en-US', {
                           year: 'numeric',
