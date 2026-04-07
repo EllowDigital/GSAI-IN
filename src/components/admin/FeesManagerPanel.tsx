@@ -27,6 +27,7 @@ import {
   Zap,
   Loader2,
 } from 'lucide-react';
+import { FeeCardsGridSkeleton, FeeTableSkeleton } from './AdminSkeletons';
 
 export default function FeesManagerPanel() {
   const now = new Date();
