@@ -4,6 +4,7 @@ import { useAdminAuth } from './AdminAuthProvider';
 import { AppSidebar } from '@/components/admin/AppSidebar';
 import { useQueryClient } from '@tanstack/react-query';
 import { RefreshCw, Menu, PanelLeftClose, PanelLeft } from 'lucide-react';
+import AdminNotificationBell from '@/components/admin/AdminNotificationBell';
 import { useToast } from '@/hooks/useToast';
 import { cn } from '@/lib/utils';
 import { useRealtime } from '@/hooks/useRealtime';
