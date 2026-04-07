@@ -88,6 +88,9 @@ export default function DashboardHome() {
         galleryRes,
         enrollRes,
         announcementsRes,
+        recentEnrollRes,
+        recentFeesRes,
+        recentStudentsRes,
       ].find((response) => response.error)?.error;
 
       if (firstError) throw firstError;
