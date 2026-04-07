@@ -74,7 +74,7 @@ const AdminLayout: React.FC = () => {
             const { data, error } = await supabase
               .from('fees')
               .select('*')
-              .order('due_date', { ascending: false });
+              .order('created_at', { ascending: false });
             if (error) throw error;
             return data ?? [];
           },
