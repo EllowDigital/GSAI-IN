@@ -668,6 +668,130 @@ export default function DashboardHome() {
           ))}
         </div>
       </section>
+
+      {/* Recent Activity Feed */}
+      <section className="admin-panel">
+        <div className="admin-panel-body">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-semibold text-foreground sm:text-base flex items-center gap-2">
+                <Activity className="h-4 w-4 text-primary" />
+                Recent Activity
+              </h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Latest actions across the academy
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            {(() => {
+              if (!data) return null;
+
+              type ActivityItem = {
+                id: string;
+                type: 'enrollment' | 'fee' | 'student';
+                title: string;
+                detail: string;
+                time: string;
+              };
+
+              const items: ActivityItem[] = [];
+
+              data.recentEnrollments.forEach((e: any) => {
+                items.push({
+                  id: `enroll-${e.id}`,
+                  type: 'enrollment',
+                  title: `New enrollment: ${e.student_name}`,
+                  detail: `${e.program} · ${e.status}`,
+                  time: e.created_at,
+                });
+              });
+
+              data.recentFees.forEach((f: any) => {
+                items.push({
+                  id: `fee-${f.id}`,
+                  type: 'fee',
+                  title: `Fee paid: ₹${(f.paid_amount || 0).toLocaleString()}`,
+                  detail: `${f.month}/${f.year}`,
+                  time: f.updated_at,
+                });
+              });
+
+              data.recentStudents.forEach((s: any) => {
+                items.push({
+                  id: `student-${s.id}`,
+                  type: 'student',
+                  title: `Student registered: ${s.name}`,
+                  detail: s.program,
+                  time: s.created_at,
+                });
+              });
+
+              items.sort(
+                (a, b) =>
+                  new Date(b.time).getTime() - new Date(a.time).getTime()
+              );
+
+              const top8 = items.slice(0, 8);
+
+              if (top8.length === 0) {
+                return (
+                  <div className="text-center py-8">
+                    <Activity className="w-10 h-10 mx-auto text-muted-foreground/30 mb-2" />
+                    <p className="text-sm text-muted-foreground">
+                      No recent activity to display
+                    </p>
+                  </div>
+                );
+              }
+
+              const iconMap = {
+                enrollment: UserPlus,
+                fee: DollarSign,
+                student: Users,
+              };
+
+              const colorMap = {
+                enrollment:
+                  'bg-amber-500/10 text-amber-600',
+                fee: 'bg-emerald-500/10 text-emerald-600',
+                student:
+                  'bg-primary/10 text-primary',
+              };
+
+              return top8.map((item) => {
+                const Icon = iconMap[item.type];
+                return (
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/40"
+                  >
+                    <div
+                      className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg ${colorMap[item.type]}`}
+                    >
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">
+                        {item.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.detail}
+                      </p>
+                    </div>
+                    <span className="text-[11px] text-muted-foreground/70 flex-shrink-0 tabular-nums">
+                      {formatDistanceToNow(new Date(item.time), {
+                        addSuffix: true,
+                      })}
+                    </span>
+                  </div>
+                );
+              });
+            })()}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
