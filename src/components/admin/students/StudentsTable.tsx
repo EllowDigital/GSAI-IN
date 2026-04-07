@@ -321,7 +321,7 @@ export default function StudentsTable({
                       size="sm"
                       variant="outline"
                       onClick={() => onEdit(stu)}
-                      className="h-9 w-9 rounded-xl border-slate-200 hover:border-blue-300 hover:bg-blue-50"
+                      className="h-9 w-9 rounded-xl border-border hover:border-primary/30 hover:bg-primary/5"
                     >
                       <Edit className="w-4 h-4 text-slate-600" />
                     </Button>
