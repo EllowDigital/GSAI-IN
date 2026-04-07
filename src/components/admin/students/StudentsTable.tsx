@@ -264,7 +264,7 @@ export default function StudentsTable({
                   </Avatar>
                 </TableCell>
                 <TableCell>
-                  <h3 className="font-bold text-slate-800 group-hover:text-blue-700 transition-colors">
+                  <h3 className="font-bold text-foreground group-hover:text-primary transition-colors">
                     {stu.name}
                   </h3>
                 </TableCell>
