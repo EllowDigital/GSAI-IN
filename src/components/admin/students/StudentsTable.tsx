@@ -323,7 +323,7 @@ export default function StudentsTable({
                       onClick={() => onEdit(stu)}
                       className="h-9 w-9 rounded-xl border-border hover:border-primary/30 hover:bg-primary/5"
                     >
-                      <Edit className="w-4 h-4 text-slate-600" />
+                      <Edit className="w-4 h-4 text-muted-foreground" />
                     </Button>
                     <Button
                       size="sm"
