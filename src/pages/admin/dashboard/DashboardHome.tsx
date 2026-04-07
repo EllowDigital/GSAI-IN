@@ -104,6 +104,9 @@ export default function DashboardHome() {
         gallery: galleryRes.data || [],
         enrollments: (enrollRes.data || []) as any[],
         announcements: (announcementsRes.data || []) as any[],
+        recentEnrollments: (recentEnrollRes.data || []) as any[],
+        recentFees: (recentFeesRes.data || []) as any[],
+        recentStudents: (recentStudentsRes.data || []) as any[],
       };
     },
     staleTime: 1000 * 15,
