@@ -79,7 +79,7 @@ const SortableHeader = ({
   onClick: () => void;
 }) => (
   <TableHead
-    className="cursor-pointer hover:bg-slate-100/50 transition-colors duration-200"
+    className="cursor-pointer hover:bg-muted/50 transition-colors duration-200"
     onClick={onClick}
   >
     <div className="flex items-center gap-2">
