@@ -846,6 +846,8 @@ export default function EnrollmentRequestsManager() {
     ? getEnrollmentStageActionLabel(currentWhatsAppStage)
     : 'WhatsApp Parent';
 
+  const canRejectFromModal = adminNotes.trim().length > 0;
+
   const parentWhatsAppUrl = viewReq
     ? createWhatsAppUrl(viewReq.parent_phone, currentWhatsAppMessage)
     : null;
@@ -1316,7 +1318,7 @@ export default function EnrollmentRequestsManager() {
                 {/* Admin Notes */}
                 <div className="rounded-xl border border-border bg-card p-4">
                   <label className="text-xs font-medium text-muted-foreground">
-                    Admin Notes
+                    Admin Notes {viewReq.status !== 'approved' && viewReq.status !== 'rejected' ? '(required for rejection)' : ''}
                   </label>
                   <Textarea
                     value={adminNotes}
@@ -1329,11 +1331,6 @@ export default function EnrollmentRequestsManager() {
                       viewReq.status === 'rejected'
                     }
                   />
-                  {viewReq.status === 'rejected' && viewReq.admin_notes && (
-                    <p className="text-xs text-red-500 mt-1 italic">
-                      Rejection reason: {viewReq.admin_notes}
-                    </p>
-                  )}
                 </div>
 
                 {/* Save notes button for any status */}
@@ -1389,21 +1386,29 @@ export default function EnrollmentRequestsManager() {
                           handleStartApprove(viewReq);
                         }}
                       >
-                        <Check className="w-3 h-3" /> Approve & Add Student
+                        <Check className="w-3 h-3" /> Approve & Create Student
                       </Button>
                       <Button
                         size="sm"
                         variant="destructive"
                         className="gap-1 text-xs"
                         disabled={
+                          !canRejectFromModal ||
                           isActionLocked(viewReq.id, 'rejected') ||
                           updateMutation.isPending
                         }
                         onClick={() => handleRejectWithNotes(viewReq)}
                       >
-                        <X className="w-3 h-3" /> Reject & Notify
+                        <X className="w-3 h-3" /> Reject & Notify Parent
                       </Button>
                     </div>
+                  )}
+                {viewReq.status !== 'approved' &&
+                  viewReq.status !== 'rejected' &&
+                  !canRejectFromModal && (
+                    <p className="text-xs text-muted-foreground">
+                      Add a rejection reason in Admin Notes to enable the reject action.
+                    </p>
                   )}
                 {viewReq.status === 'approved' && (
                   <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-3 text-sm text-green-700 dark:text-green-400 font-medium">
@@ -1412,13 +1417,8 @@ export default function EnrollmentRequestsManager() {
                   </div>
                 )}
                 {viewReq.status === 'rejected' && (
-                  <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive font-medium space-y-2">
-                    <p>❌ This enrollment has been rejected.</p>
-                    {viewReq.admin_notes && (
-                      <p className="text-xs opacity-80">
-                        Reason: {viewReq.admin_notes}
-                      </p>
-                    )}
+                  <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive font-medium">
+                    ❌ This enrollment has been rejected.
                   </div>
                 )}
                 {parentWhatsAppUrl ? (
