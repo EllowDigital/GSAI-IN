@@ -143,7 +143,11 @@ export function sanitizeHtmlForClient(
   html: string,
   options: SanitizeOptions = {}
 ): string {
-  if (!html || typeof window === 'undefined' || typeof DOMParser === 'undefined') {
+  if (
+    !html ||
+    typeof window === 'undefined' ||
+    typeof DOMParser === 'undefined'
+  ) {
     return html || '';
   }
 
@@ -151,9 +155,12 @@ export function sanitizeHtmlForClient(
   const doc = parser.parseFromString(html, 'text/html');
 
   const allowedTags = new Set(
-    (options.allowedTags || DEFAULT_ALLOWED_TAGS).map((tag) => tag.toLowerCase())
+    (options.allowedTags || DEFAULT_ALLOWED_TAGS).map((tag) =>
+      tag.toLowerCase()
+    )
   );
-  const allowedAttributes = options.allowedAttributes || DEFAULT_ALLOWED_ATTRIBUTES;
+  const allowedAttributes =
+    options.allowedAttributes || DEFAULT_ALLOWED_ATTRIBUTES;
 
   sanitizeElementTree(doc.body, allowedTags, allowedAttributes);
 

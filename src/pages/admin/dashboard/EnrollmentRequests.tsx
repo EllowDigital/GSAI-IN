@@ -293,7 +293,10 @@ export default function EnrollmentRequestsManager() {
       .eq('id', eventId)) as any;
 
     if (eventUpdateError) {
-      console.error('Failed to update enrollment email event', eventUpdateError);
+      console.error(
+        'Failed to update enrollment email event',
+        eventUpdateError
+      );
     }
 
     if (sent) {
@@ -324,13 +327,14 @@ export default function EnrollmentRequestsManager() {
   }) => {
     const recipientEmail = resolveEnrollmentRecipientEmail(req);
     if (!recipientEmail) {
-      toast.info('No valid email found for this enrollment. Use WhatsApp only.');
+      toast.info(
+        'No valid email found for this enrollment. Use WhatsApp only.'
+      );
       return;
     }
 
-    const { buildEnrollmentStageEmail, sendEmail } = await import(
-      '@/utils/resendEmail'
-    );
+    const { buildEnrollmentStageEmail, sendEmail } =
+      await import('@/utils/resendEmail');
 
     const emailStage =
       action === 'contacted'
@@ -1347,7 +1351,10 @@ export default function EnrollmentRequestsManager() {
                             updateMutation.isPending
                           }
                           onClick={() =>
-                            handleMarkContacted(viewReq, adminNotes || undefined)
+                            handleMarkContacted(
+                              viewReq,
+                              adminNotes || undefined
+                            )
                           }
                         >
                           <Phone className="w-3 h-3" /> Mark Contacted
@@ -1356,7 +1363,9 @@ export default function EnrollmentRequestsManager() {
                       <Button
                         size="sm"
                         className="gap-1 text-xs bg-primary text-primary-foreground hover:bg-primary/90"
-                        disabled={approving || isActionLocked(viewReq.id, 'approved')}
+                        disabled={
+                          approving || isActionLocked(viewReq.id, 'approved')
+                        }
                         onClick={() => {
                           setViewReq(null);
                           handleStartApprove(viewReq);

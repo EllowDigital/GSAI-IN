@@ -7,7 +7,8 @@ const ACADEMY_NAME = 'Ghatak Sports Academy India';
 const ACADEMY_EMAIL = 'ghatakgsai@gmail.com';
 const ACADEMY_PHONE = '+91 63941 35988';
 const STUDENT_PORTAL_DEFAULT_PASSWORD = 'GSAI-STUDENT-2026';
-const ACADEMY_LOGO_URL = 'https://ghataksportsacademy.com/assets/images/logo.webp';
+const ACADEMY_LOGO_URL =
+  'https://ghataksportsacademy.com/assets/images/logo.webp';
 
 interface SendEmailParams {
   to: string;
@@ -139,7 +140,11 @@ export async function sendEmail(params: SendEmailParams): Promise<boolean> {
 
 // ── HTML BUILDERS ──
 
-function infoRow(label: string, value: string, options?: { valueIsHtml?: boolean }): string {
+function infoRow(
+  label: string,
+  value: string,
+  options?: { valueIsHtml?: boolean }
+): string {
   const safeLabel = escapeHtml(label);
   const safeValue = options?.valueIsHtml ? value : escapeHtml(value);
   return `<p><strong>${safeLabel}:</strong> ${safeValue}</p>`;
@@ -167,7 +172,7 @@ export function buildFeeReminderEmail(params: {
 }): SendEmailParams & { to: string } {
   const { parentName, studentName, amount, month, year } = params;
   return {
-    to: '', 
+    to: '',
     subject: `Fee Reminder: ${studentName} - ${month} ${year}`,
     html: `
       <p>Namaste <strong>${escapeHtml(parentName)}</strong> ji,</p>
@@ -175,8 +180,8 @@ export function buildFeeReminderEmail(params: {
       <span class="hindi-text">आपके बच्चे की ट्रेनिंग फीस अभी पेंडिंग है।</span>
       ${infoBox(
         infoRow('Student', studentName) +
-        infoRow('Amount Due', `₹${amount.toLocaleString('en-IN')}`) +
-        infoRow('Period', `${month} ${year}`)
+          infoRow('Amount Due', `₹${amount.toLocaleString('en-IN')}`) +
+          infoRow('Period', `${month} ${year}`)
       )}
       <p>Kindly clear the dues at your earliest convenience. If already paid, please ignore this message.</p>
       <p style="margin-top:20px">For any queries, contact us:</p>
@@ -201,8 +206,8 @@ export function buildEnrollmentReceivedEmail(params: {
       <span class="hindi-text">हमने आपका नामांकन अनुरोध (Enrollment request) प्राप्त कर लिया है।</span>
       ${infoBox(
         infoRow('Student', params.studentName) +
-        infoRow('Program', params.program) +
-        infoRow('Parent', params.parentName)
+          infoRow('Program', params.program) +
+          infoRow('Parent', params.parentName)
       )}
       <p>Our team will contact you within 24 hours regarding the trial class and batch timings.</p>
       <span class="hindi-text">हमारी टीम 24 घंटे में आपको ट्रायल क्लास और बैच की जानकारी के लिए कॉल करेगी।</span>
@@ -228,7 +233,7 @@ export function buildEnrollmentContactedEmail(params: {
       <span class="hindi-text">आपके बच्चे का एडमिशन प्रोसेस शुरू हो चुका है।</span>
       ${infoBox(
         infoRow('Student', params.studentName) +
-        infoRow('Program', params.program)
+          infoRow('Program', params.program)
       )}
       <p>Please call or WhatsApp us to confirm the trial class timing.</p>
       <span class="hindi-text">ट्रायल क्लास का समय कन्फर्म करने के लिए हमें कॉल या व्हाट्सएप करें।</span>
@@ -251,7 +256,7 @@ export function buildEnrollmentApprovedEmail(params: {
   const safePortalUrl = params.portalUrl
     ? validateHttpsUrl(params.portalUrl, 'portalUrl')
     : 'https://ghataksportsacademy.com/student/login';
-    
+
   return {
     subject: `Enrollment Approved - Welcome to ${ACADEMY_NAME}`,
     html: `
@@ -260,14 +265,14 @@ export function buildEnrollmentApprovedEmail(params: {
       <span class="hindi-text">खुशखबरी, आपका नामांकन स्वीकार (Approve) कर लिया गया है।</span>
       ${infoBox(
         infoRow('Student', params.studentName) +
-        infoRow('Program', params.program) +
-        infoRow('Status', '✅ Approved') +
-        infoRow(
-          'Student Portal',
-          `<a href="${safePortalUrl}" rel="noopener noreferrer">${escapeHtml(safePortalUrl)}</a>`,
-          { valueIsHtml: true }
-        ) +
-        infoRow('Default Password', STUDENT_PORTAL_DEFAULT_PASSWORD)
+          infoRow('Program', params.program) +
+          infoRow('Status', '✅ Approved') +
+          infoRow(
+            'Student Portal',
+            `<a href="${safePortalUrl}" rel="noopener noreferrer">${escapeHtml(safePortalUrl)}</a>`,
+            { valueIsHtml: true }
+          ) +
+          infoRow('Default Password', STUDENT_PORTAL_DEFAULT_PASSWORD)
       )}
       <p><strong>Important:</strong> Please login and change your password after the first sign-in.</p>
       <span class="hindi-text">महत्वपूर्ण: पहली बार लॉगिन करने के बाद पासवर्ड तुरंत बदलें।</span>
@@ -294,7 +299,7 @@ export function buildEnrollmentRejectedEmail(params: {
       <span class="hindi-text">समीक्षा के बाद, अभी हम नामांकन प्रक्रिया को आगे नहीं बढ़ा पाएंगे।</span>
       ${infoBox(
         infoRow('Student', params.studentName) +
-        infoRow('Program', params.program)
+          infoRow('Program', params.program)
       )}
       ${params.notes ? `<p><strong>Reason:</strong> ${escapeHtml(params.notes)}</p>` : ''}
       <p>Please contact us if you need any guidance regarding future options.</p>
@@ -315,7 +320,9 @@ export function buildPortalCredentialsEmail(params: {
 }): Omit<SendEmailParams, 'to'> {
   const relation = getRelation(params.gender);
   const safePortalUrl = validateHttpsUrl(params.portalUrl, 'portalUrl');
-  const safeDefaultPassword = escapeHtml(params.defaultPassword?.trim() || STUDENT_PORTAL_DEFAULT_PASSWORD);
+  const safeDefaultPassword = escapeHtml(
+    params.defaultPassword?.trim() || STUDENT_PORTAL_DEFAULT_PASSWORD
+  );
 
   return {
     subject: `Admission Complete - Login Details | ${ACADEMY_NAME}`,
@@ -330,8 +337,8 @@ export function buildPortalCredentialsEmail(params: {
           `<a href="${safePortalUrl}" rel="noopener noreferrer">${escapeHtml(safePortalUrl)}</a>`,
           { valueIsHtml: true }
         ) +
-        infoRow('Login ID', params.loginId) +
-        infoRow('Default Password', safeDefaultPassword)
+          infoRow('Login ID', params.loginId) +
+          infoRow('Default Password', safeDefaultPassword)
       )}
       <p><strong>Note:</strong> Security के लिए पहली लॉगिन के बाद पासवर्ड जरूर बदलें।</p>
       <p><a href="${safePortalUrl}" class="btn">Login Now</a></p>
@@ -361,9 +368,9 @@ export function buildEventAnnouncementEmail(params: {
       <p>We are excited to announce a new academy event for our students.</p>
       ${infoBox(
         infoRow('Event', params.title) +
-        infoRow('Starts On', params.fromDate) +
-        (params.endDate ? infoRow('Ends On', params.endDate) : '') +
-        (params.location ? infoRow('Location', params.location) : '')
+          infoRow('Starts On', params.fromDate) +
+          (params.endDate ? infoRow('Ends On', params.endDate) : '') +
+          (params.location ? infoRow('Location', params.location) : '')
       )}
       ${params.description ? `<p><strong>Details:</strong> ${escapeHtml(params.description)}</p>` : ''}
       <p>View complete details on our events page:</p>
@@ -394,9 +401,9 @@ export function buildCompetitionAnnouncementEmail(params: {
       <p>A new competition update is available for <strong>${escapeHtml(params.studentName || 'Student')}</strong>.</p>
       ${infoBox(
         infoRow('Competition', params.name) +
-        infoRow('Date', params.date) +
-        (params.endDate ? infoRow('End Date', params.endDate) : '') +
-        (params.location ? infoRow('Location', params.location) : '')
+          infoRow('Date', params.date) +
+          (params.endDate ? infoRow('End Date', params.endDate) : '') +
+          (params.location ? infoRow('Location', params.location) : '')
       )}
       ${params.description ? `<p><strong>Details:</strong> ${escapeHtml(params.description)}</p>` : ''}
       <p>Check the student portal for registration details:</p>
@@ -408,7 +415,11 @@ export function buildCompetitionAnnouncementEmail(params: {
 
 // ── DISPATCHER ──
 
-export type EnrollmentEmailStage = 'pending' | 'contacted' | 'approved' | 'rejected';
+export type EnrollmentEmailStage =
+  | 'pending'
+  | 'contacted'
+  | 'approved'
+  | 'rejected';
 
 export function buildEnrollmentStageEmail(
   stage: EnrollmentEmailStage,
