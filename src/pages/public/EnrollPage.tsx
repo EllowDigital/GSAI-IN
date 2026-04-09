@@ -291,7 +291,9 @@ export default function EnrollPage() {
       toast.error(message);
     };
 
-    const parseEnrollmentInsertError = (errorMessage: string): string | null => {
+    const parseEnrollmentInsertError = (
+      errorMessage: string
+    ): string | null => {
       const normalized = errorMessage.toLowerCase();
 
       if (normalized.includes('already registered')) {
@@ -328,7 +330,9 @@ export default function EnrollPage() {
         } as any);
 
       if (insertError) {
-        const aadharMessage = parseEnrollmentInsertError(insertError.message || '');
+        const aadharMessage = parseEnrollmentInsertError(
+          insertError.message || ''
+        );
         if (aadharMessage) {
           blockWithAadhaarMessage(aadharMessage);
           return;
