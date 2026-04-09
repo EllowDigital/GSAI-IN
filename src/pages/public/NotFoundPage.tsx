@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Home, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Seo from '@/components/seo/Seo';
 
 const NotFound = () => {
   const location = useLocation();
@@ -16,6 +17,13 @@ const NotFound = () => {
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center relative overflow-hidden px-4">
+      <Seo
+        title="Page Not Found | Ghatak Sports Academy India"
+        description="The requested page was not found. Return to Ghatak Sports Academy India homepage for programs, events, and enrollment details."
+        canonical="/404"
+        noIndex
+      />
+
       {/* Decorative Background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-yellow-600/20 rounded-full blur-[100px]" />

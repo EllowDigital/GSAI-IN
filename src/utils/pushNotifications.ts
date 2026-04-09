@@ -1,4 +1,8 @@
+import { supabase } from '@/integrations/supabase/client';
+
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_WEB_PUSH_PUBLIC_KEY || '';
+
+export type PushPortalScope = 'admin' | 'student';
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -51,4 +55,36 @@ export async function ensurePushSubscription() {
     userVisibleOnly: true,
     applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
   });
+}
+
+export async function syncPushSubscriptionWithBackend(
+  portalScope: PushPortalScope
+) {
+  const subscription = await ensurePushSubscription();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  // Allow browser-level subscription even before login; sync later after auth exists.
+  if (!session?.access_token) {
+    return { synced: false, reason: 'no_session', subscription };
+  }
+
+  const { error } = await supabase.functions.invoke('save-push-subscription', {
+    body: {
+      portal_scope: portalScope,
+      subscription: subscription.toJSON(),
+      user_agent: navigator.userAgent,
+      metadata: {
+        source: 'web_app',
+        path: window.location.pathname,
+      },
+    },
+  });
+
+  if (error) {
+    throw new Error(error.message || 'Failed to sync push subscription.');
+  }
+
+  return { synced: true, subscription };
 }

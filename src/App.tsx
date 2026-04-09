@@ -21,6 +21,7 @@ import OfflineBanner from '@/components/common/OfflineBanner';
 import PWAInstallToast from '@/components/common/PWAInstallToast';
 import EnhancedErrorBoundary from '@/components/feedback/EnhancedErrorBoundary';
 import PageTracker from '@/components/layout/PageTracker';
+import RouteTitleManager from '@/components/layout/RouteTitleManager';
 import ScrollToTop from '@/components/layout/ScrollToTop';
 import {
   getPortalPwaScope,
@@ -29,7 +30,7 @@ import {
 } from '@/utils/pwa';
 import {
   canEnablePushNotifications,
-  ensurePushSubscription,
+  syncPushSubscriptionWithBackend,
 } from '@/utils/pushNotifications';
 
 // Lazy load components for better performance
@@ -250,12 +251,23 @@ const App = () => {
   }, [installPrompt]);
 
   const handleEnableNotifications = useCallback(async () => {
+    if (activePortalScope === 'public') return;
+
     try {
-      await ensurePushSubscription();
+      await syncPushSubscriptionWithBackend(activePortalScope);
     } catch (error) {
       console.warn('Push subscription setup failed:', error);
     }
-  }, []);
+  }, [activePortalScope]);
+
+  useEffect(() => {
+    if (!pushSupported || activePortalScope === 'public') return;
+    if (Notification.permission !== 'granted') return;
+
+    void syncPushSubscriptionWithBackend(activePortalScope).catch((error) => {
+      console.warn('Push subscription auto-sync skipped:', error);
+    });
+  }, [activePortalScope, pushSupported]);
 
   // Show install toast only on login entry points of admin/student portals.
   const shouldShowInstallToast =
@@ -271,6 +283,7 @@ const App = () => {
         <QueryClientProvider client={queryClient}>
           <TooltipProvider>
             {/* GTM PageTracker for SPA routing - tracks all route changes */}
+            <RouteTitleManager />
             <PageTracker />
             <ScrollToTop />
 
