@@ -98,6 +98,18 @@ export default function PushNotificationHistoryPanel({
     staleTime: 1000 * 30,
   });
 
+  const totals = React.useMemo(() => {
+    return logs.reduce(
+      (acc, log) => {
+        acc.sent += log.sent_count || 0;
+        acc.failed += log.failed_count || 0;
+        acc.targets += log.total_targets || 0;
+        return acc;
+      },
+      { sent: 0, failed: 0, targets: 0 }
+    );
+  }, [logs]);
+
   return (
     <Card className="border-border/70 bg-card/80">
       <CardHeader className="pb-3">
@@ -196,6 +208,33 @@ export default function PushNotificationHistoryPanel({
         </div>
       </CardHeader>
       <CardContent className="p-0">
+        <div className="grid grid-cols-3 gap-2 border-b border-border/50 bg-muted/10 px-4 py-3">
+          <div>
+            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+              Sent
+            </p>
+            <p className="text-sm font-semibold text-foreground">
+              {totals.sent}
+            </p>
+          </div>
+          <div>
+            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+              Failed
+            </p>
+            <p className="text-sm font-semibold text-destructive">
+              {totals.failed}
+            </p>
+          </div>
+          <div>
+            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+              Total Targets
+            </p>
+            <p className="text-sm font-semibold text-foreground">
+              {totals.targets}
+            </p>
+          </div>
+        </div>
+
         {isLoading ? (
           <div className="px-4 py-6 text-sm text-muted-foreground">Loading push logs...</div>
         ) : logs.length === 0 ? (
