@@ -25,7 +25,15 @@ BEGIN
     SELECT 1
     FROM public.enrollment_requests
     WHERE aadhar_number = NEW.aadhar_number
-      AND lower(status) IN ('pending', 'contacted')
+      AND lower(status) = 'contacted'
+  ) THEN
+    RAISE EXCEPTION 'Your request has already been processed and contacted. Please check your status or wait for further updates.'
+      USING ERRCODE = 'P0001';
+  ELSIF EXISTS (
+    SELECT 1
+    FROM public.enrollment_requests
+    WHERE aadhar_number = NEW.aadhar_number
+      AND lower(status) = 'pending'
   ) OR EXISTS (
     SELECT 1
     FROM public.enrollment_requests
