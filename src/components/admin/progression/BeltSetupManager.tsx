@@ -55,6 +55,7 @@ import { toast } from '@/components/ui/sonner';
 import { supabase } from '@/services/supabase/client';
 import { useBeltLevels } from '@/hooks/useBeltLevels';
 import { useDisciplineLevels } from '@/hooks/useDisciplineLevels';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 const BELT_PRESETS: Record<
   string,
@@ -138,6 +139,13 @@ export default function BeltSetupManager() {
   });
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
+  const getFriendlySupabaseMessage = (error: unknown, fallback: string) => {
+    const friendly = mapSupabaseErrorToFriendly(error);
+    if (friendly?.message) return friendly.message;
+    if (error instanceof Error && error.message) return error.message;
+    return fallback;
+  };
+
   // Auto-setup mutation
   const autoSetupMutation = useMutation({
     mutationFn: async (discipline: string) => {
@@ -178,9 +186,7 @@ export default function BeltSetupManager() {
     },
     onError: (error) => {
       toast.error(
-        error instanceof Error
-          ? error.message
-          : 'Failed to create belt hierarchy'
+        getFriendlySupabaseMessage(error, 'Failed to create belt hierarchy')
       );
     },
   });
@@ -224,7 +230,7 @@ export default function BeltSetupManager() {
     },
     onError: (error) => {
       toast.error(
-        error instanceof Error ? error.message : 'Failed to create levels'
+        getFriendlySupabaseMessage(error, 'Failed to create levels')
       );
     },
   });
@@ -272,7 +278,7 @@ export default function BeltSetupManager() {
     },
     onError: (error) => {
       toast.error(
-        error instanceof Error ? error.message : 'Failed to save belt'
+        getFriendlySupabaseMessage(error, 'Failed to save belt')
       );
     },
   });
@@ -294,7 +300,7 @@ export default function BeltSetupManager() {
     },
     onError: (error) => {
       toast.error(
-        error instanceof Error ? error.message : 'Failed to delete belt'
+        getFriendlySupabaseMessage(error, 'Failed to delete belt')
       );
     },
   });

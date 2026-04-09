@@ -831,7 +831,10 @@ export default function ProgressionBoard() {
       toast.success('Level progress updated');
     },
     onError: (err) =>
-      toast.error(err instanceof Error ? err.message : 'Update failed'),
+      toast.error(
+        mapSupabaseErrorToFriendly(err)?.message ||
+          (err instanceof Error ? err.message : 'Update failed')
+      ),
   });
 
   const deleteLevelProgressMutation = useMutation({
@@ -849,7 +852,10 @@ export default function ProgressionBoard() {
       toast.success('Level progress deleted');
     },
     onError: (err) =>
-      toast.error(err instanceof Error ? err.message : 'Delete failed'),
+      toast.error(
+        mapSupabaseErrorToFriendly(err)?.message ||
+          (err instanceof Error ? err.message : 'Delete failed')
+      ),
   });
 
   // Fetch actual programs from junction table for each student
