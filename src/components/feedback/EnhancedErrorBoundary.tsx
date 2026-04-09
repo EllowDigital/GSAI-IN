@@ -62,9 +62,44 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
 
   private handleCopyId = () => {
     if (this.state.errorId) {
-      navigator.clipboard.writeText(this.state.errorId);
-      this.setState({ copied: true });
-      setTimeout(() => this.setState({ copied: false }), 2000);
+      const copyWithFallback = () => {
+        const textArea = document.createElement('textarea');
+        textArea.value = this.state.errorId;
+        textArea.setAttribute('readonly', 'true');
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        textArea.style.pointerEvents = 'none';
+        document.body.appendChild(textArea);
+        textArea.select();
+        const copied = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        return copied;
+      };
+
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(this.state.errorId).then(
+            () => {
+              this.setState({ copied: true });
+              setTimeout(() => this.setState({ copied: false }), 2000);
+            },
+            () => {
+              if (copyWithFallback()) {
+                this.setState({ copied: true });
+                setTimeout(() => this.setState({ copied: false }), 2000);
+              }
+            }
+          );
+          return;
+        }
+
+        if (copyWithFallback()) {
+          this.setState({ copied: true });
+          setTimeout(() => this.setState({ copied: false }), 2000);
+        }
+      } catch {
+        // If copy fails, leave button state unchanged so ID remains visible for manual copy.
+      }
     }
   };
 
@@ -74,6 +109,7 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
       error: null,
       errorInfo: null,
       errorId: '',
+      copied: false,
     });
   };
 
