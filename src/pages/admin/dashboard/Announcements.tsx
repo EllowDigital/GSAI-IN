@@ -48,6 +48,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import Spinner from '@/components/ui/spinner';
+import PushNotificationHistoryPanel from '@/components/admin/PushNotificationHistoryPanel';
 
 interface Announcement {
   id: string;
@@ -64,6 +65,8 @@ export default function AnnouncementsManager() {
   const queryClient = useQueryClient();
   const [editingAnn, setEditingAnn] = useState<Announcement | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [pushScope, setPushScope] = useState<'admin' | 'student'>('student');
+  const [pushUrl, setPushUrl] = useState('/student/dashboard');
 
   const {
     data: announcements = [],
@@ -140,6 +143,76 @@ export default function AnnouncementsManager() {
     onError: (e) =>
       toast.error(
         e instanceof Error ? e.message : 'Failed to delete announcement.'
+      ),
+  });
+
+  const sendPushMutation = useMutation({
+    mutationFn: async (announcement: Announcement) => {
+      const message = announcement.content.trim();
+      const title = announcement.title.trim();
+
+      const { data, error } = await supabase.functions.invoke(
+        'send-push-notification',
+        {
+          body: {
+            title,
+            message,
+            portal_scope: pushScope,
+            url: pushUrl.trim() || undefined,
+          },
+        }
+      );
+
+      if (error) throw error;
+      return data as {
+        total?: number;
+        sent?: number;
+        failed?: number;
+        deactivated?: number;
+      };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ['push-notification-delivery-logs'],
+      });
+
+      const sent = data?.sent ?? 0;
+      const failed = data?.failed ?? 0;
+      const total = data?.total ?? 0;
+      const deactivated = data?.deactivated ?? 0;
+
+      toast.success('Push notification sent', `Sent ${sent}/${total}, failed ${failed}${deactivated ? `, deactivated ${deactivated}` : ''}`);
+    },
+    onError: (e) =>
+      toast.error(
+        e instanceof Error ? e.message : 'Failed to send push notification.'
+      ),
+  });
+
+  const cleanupSubscriptionsMutation = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await (supabase.rpc(
+        'clean_stale_push_subscriptions' as any,
+        {
+          p_inactive_days: 60,
+          p_max_fail_count: 3,
+        } as any
+      ) as any);
+
+      if (error) throw error;
+      return Number(data || 0);
+    },
+    onSuccess: (count) => {
+      queryClient.invalidateQueries({
+        queryKey: ['push-notification-delivery-logs'],
+      });
+      toast.success('Stale subscription cleanup complete', `${count} subscriptions marked inactive.`);
+    },
+    onError: (e) =>
+      toast.error(
+        e instanceof Error
+          ? e.message
+          : 'Failed to cleanup stale push subscriptions.'
       ),
   });
 
@@ -271,6 +344,52 @@ export default function AnnouncementsManager() {
         </div>
 
         <div className="admin-panel-body space-y-4">
+          <Card className="border-border/70 bg-card/80">
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">
+                    Push Broadcast Settings
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Per-announcement push action uses these settings.
+                  </p>
+                </div>
+                <Badge variant="outline" className="text-[11px]">
+                  Free-tier optimized delivery
+                </Badge>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label>Target Portal Scope</Label>
+                  <Select
+                    value={pushScope}
+                    onValueChange={(value) =>
+                      setPushScope(value as 'admin' | 'student')
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="student">Student</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Target URL</Label>
+                  <Input
+                    value={pushUrl}
+                    onChange={(e) => setPushUrl(e.target.value)}
+                    placeholder="/student/dashboard"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <Card className="border-border/70 bg-card/80">
               <CardContent className="p-4">
@@ -369,6 +488,20 @@ export default function AnnouncementsManager() {
                         variant="outline"
                         size="sm"
                         className="gap-1.5"
+                        disabled={sendPushMutation.isPending}
+                        onClick={() => sendPushMutation.mutate(ann)}
+                      >
+                        {sendPushMutation.isPending ? (
+                          <Spinner size={14} />
+                        ) : (
+                          <BellRing className="w-3.5 h-3.5" />
+                        )}
+                        <span className="hidden sm:inline">Send Push</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-1.5"
                         onClick={() => {
                           setEditingAnn(ann);
                           setModalOpen(true);
@@ -420,6 +553,12 @@ export default function AnnouncementsManager() {
               ))}
             </div>
           )}
+
+          <PushNotificationHistoryPanel
+            title="Push Notification Delivery Logs"
+            cleanupLoading={cleanupSubscriptionsMutation.isPending}
+            onCleanup={() => cleanupSubscriptionsMutation.mutate()}
+          />
         </div>
       </section>
     </div>
