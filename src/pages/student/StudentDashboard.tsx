@@ -34,8 +34,7 @@ import StudentAnnouncements from '@/components/student/StudentAnnouncements';
 import StudentBeltExamNotifications from '@/components/student/StudentBeltExamNotifications';
 import { downloadCertificateFile } from '@/utils/certificateDownload';
 
-const PASSWORD_REDIRECT_METRIC_KEY =
-  'gsai-student-password-redirect-start-ms';
+const PASSWORD_REDIRECT_METRIC_KEY = 'gsai-student-password-redirect-start-ms';
 
 // --- Types ---
 interface Program {

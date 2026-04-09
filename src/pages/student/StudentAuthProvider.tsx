@@ -183,9 +183,11 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
             if (cached) {
               setProfile(cached);
               if (
-                ['/student/login', '/student', '/student/set-password'].includes(
-                  currentPath
-                )
+                [
+                  '/student/login',
+                  '/student',
+                  '/student/set-password',
+                ].includes(currentPath)
               ) {
                 navigate('/student/dashboard', { replace: true });
               }

@@ -25,8 +25,7 @@ import { useStudentAuth } from './StudentAuthContext';
 
 const SESSION_CHECK_TIMEOUT_MS = 10000;
 const PASSWORD_UPDATE_TIMEOUT_MS = 15000;
-const PASSWORD_REDIRECT_METRIC_KEY =
-  'gsai-student-password-redirect-start-ms';
+const PASSWORD_REDIRECT_METRIC_KEY = 'gsai-student-password-redirect-start-ms';
 
 export default function StudentSetPassword() {
   const navigate = useNavigate();
