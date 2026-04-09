@@ -138,5 +138,6 @@ BEGIN
 END;
 $$;
 
-GRANT SELECT ON public.vw_duplicate_active_enrollment_aadhar TO authenticated;
+REVOKE ALL ON public.vw_duplicate_active_enrollment_aadhar FROM anon, authenticated;
+GRANT SELECT ON public.vw_duplicate_active_enrollment_aadhar TO service_role;
 GRANT EXECUTE ON FUNCTION public.clean_duplicate_active_enrollment_aadhar(text, uuid, text) TO authenticated;

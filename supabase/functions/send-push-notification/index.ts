@@ -146,8 +146,8 @@ Deno.serve(async (req) => {
       title,
       body: message,
       url: targetUrl || '/student/dashboard',
-      icon: '/icons/icon-192x192.png',
-      badge: '/icons/icon-96x96.png',
+      icon: '/icons/android-chrome-192x192.png',
+      badge: '/icons/favicon-32x32.png',
       data: body.data || {},
       sent_at: new Date().toISOString(),
     });
@@ -155,6 +155,7 @@ Deno.serve(async (req) => {
     let sent = 0;
     let failed = 0;
     const deactivateIds: string[] = [];
+    const failedIds: string[] = [];
 
     // Keep concurrency low to stay reliable on free-tier function compute limits.
     const chunks = chunk(targets, 10);
@@ -177,6 +178,8 @@ Deno.serve(async (req) => {
 
             if (statusCode === 404 || statusCode === 410) {
               deactivateIds.push(entry.id);
+            } else {
+              failedIds.push(entry.id);
             }
 
             return { ok: false, id: entry.id };
@@ -203,10 +206,6 @@ Deno.serve(async (req) => {
         })
         .in('id', deactivateIds);
     }
-
-    const failedIds = targets
-      .filter((entry) => !deactivateIds.includes(entry.id))
-      .map((entry) => entry.id);
 
     if (failedIds.length > 0) {
       await supabaseAdmin.rpc('increment_push_failures', {

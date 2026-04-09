@@ -36,15 +36,18 @@ function sanitizeSubject(value: string): string {
 
 function validateHttpsUrl(value: string, fieldName: string): string {
   const trimmed = value.trim();
+  let parsed: URL;
   try {
-    const parsed = new URL(trimmed);
-    if (parsed.protocol !== 'https:') {
-      throw new Error(`${fieldName} must use HTTPS`);
-    }
-    return parsed.toString();
+    parsed = new URL(trimmed);
   } catch {
     throw new Error(`${fieldName} must be a valid URL`);
   }
+
+  if (parsed.protocol !== 'https:') {
+    throw new Error(`${fieldName} must use HTTPS`);
+  }
+
+  return parsed.toString();
 }
 
 function isFullHtmlDocument(value: string): boolean {
