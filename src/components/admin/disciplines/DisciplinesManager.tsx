@@ -44,6 +44,7 @@ import {
   GripVertical,
 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 interface Discipline {
   id: string;
@@ -68,6 +69,13 @@ export default function DisciplinesManager() {
   const [description, setDescription] = useState('');
   const [isActive, setIsActive] = useState(true);
   const [displayOrder, setDisplayOrder] = useState(0);
+
+  const getFriendlySupabaseMessage = (error: unknown, fallback: string) => {
+    const friendly = mapSupabaseErrorToFriendly(error);
+    if (friendly?.message) return friendly.message;
+    if (error instanceof Error && error.message) return error.message;
+    return fallback;
+  };
 
   const { data: disciplines = [], isLoading } = useQuery({
     queryKey: ['disciplines-admin'],
@@ -114,8 +122,7 @@ export default function DisciplinesManager() {
       toast.success(editing ? 'Discipline updated' : 'Discipline added');
       closeForm();
     },
-    onError: (err) =>
-      toast.error(err instanceof Error ? err.message : 'Failed'),
+    onError: (err) => toast.error(getFriendlySupabaseMessage(err, 'Failed')),
   });
 
   const deleteMutation = useMutation({
@@ -133,7 +140,7 @@ export default function DisciplinesManager() {
       setDeleteTarget(null);
     },
     onError: (err) =>
-      toast.error(err instanceof Error ? err.message : 'Delete failed'),
+      toast.error(getFriendlySupabaseMessage(err, 'Delete failed')),
   });
 
   const toggleActiveMutation = useMutation({
@@ -155,7 +162,7 @@ export default function DisciplinesManager() {
       queryClient.invalidateQueries({ queryKey: ['disciplines'] });
     },
     onError: (err) =>
-      toast.error(err instanceof Error ? err.message : 'Update failed'),
+      toast.error(getFriendlySupabaseMessage(err, 'Update failed')),
   });
 
   const closeForm = () => {

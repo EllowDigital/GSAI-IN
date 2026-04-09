@@ -25,6 +25,7 @@ import RefreshButton from '@/components/admin/RefreshButton';
 import { openManualWhatsAppBroadcast } from '@/utils/studentCommunication';
 import AnnouncementDeliveryLogs from '@/components/admin/AnnouncementDeliveryLogs';
 import { usePersistentState } from '@/hooks/usePersistentState';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 type EventRow = Tables<'events'>;
 
@@ -73,9 +74,12 @@ const Events = () => {
       if (error) throw error;
       setEvents(data ?? []);
     } catch (err: any) {
+      const friendly = mapSupabaseErrorToFriendly(err);
       toast({
         title: 'Error',
-        description: 'Failed to load events: ' + err.message,
+        description:
+          'Failed to load events: ' +
+          (friendly?.message || err?.message || 'Unexpected error'),
         variant: 'error',
       });
     }

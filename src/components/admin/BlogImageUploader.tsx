@@ -3,6 +3,7 @@ import { supabase } from '@/services/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 type Props = {
   url: string;
@@ -25,7 +26,10 @@ export default function BlogImageUploader({ url, disabled, onUpload }: Props) {
         upsert: true,
       });
     if (error) {
-      toast.error('Failed to upload image: ' + error.message);
+      const friendly = mapSupabaseErrorToFriendly(error);
+      toast.error(
+        'Failed to upload image: ' + (friendly?.message || error.message)
+      );
       setUploading(false);
       return;
     }

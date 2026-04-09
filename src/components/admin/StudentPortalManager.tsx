@@ -28,10 +28,13 @@ import {
   UserCheck,
 } from 'lucide-react';
 import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 const REQUEST_TIMEOUT_MS = 15000;
 
 const getErrorMessage = (error: unknown): string => {
+  const friendly = mapSupabaseErrorToFriendly(error);
+  if (friendly?.message) return friendly.message;
   if (isTimeoutError(error)) return 'Connection is slow. Please try again.';
   if (error instanceof Error) return error.message;
   return 'Unexpected error occurred.';

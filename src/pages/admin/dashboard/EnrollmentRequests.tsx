@@ -54,6 +54,7 @@ import {
   getEnrollmentStageActionLabel,
   type EnrollmentMessageStage,
 } from '@/utils/enrollmentMessages';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 interface EnrollmentRequest {
   id: string;
@@ -119,6 +120,16 @@ function normalizeEmail(value?: string | null): string {
 
 function resolveEnrollmentRecipientEmail(req: EnrollmentRequest): string {
   return normalizeEmail(req.student_email) || normalizeEmail(req.parent_email);
+}
+
+function getFriendlySupabaseMessage(error: unknown, fallback: string): string {
+  const friendly = mapSupabaseErrorToFriendly(error);
+  if (friendly?.message) return friendly.message;
+  if (error instanceof Error && error.message) return error.message;
+  if (error && typeof error === 'object' && 'message' in error) {
+    return String((error as { message?: unknown }).message || fallback);
+  }
+  return fallback;
 }
 
 export default function EnrollmentRequestsManager() {
@@ -457,7 +468,8 @@ export default function EnrollmentRequestsManager() {
       queryClient.invalidateQueries({ queryKey: ['enrollment-requests'] });
       toast.success('Request updated');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) =>
+      toast.error(getFriendlySupabaseMessage(e, 'Failed to update request')),
   });
 
   const deleteMutation = useMutation({
@@ -525,7 +537,8 @@ export default function EnrollmentRequestsManager() {
       queryClient.invalidateQueries({ queryKey: ['competition-certificates'] });
       toast.success('Request deleted');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) =>
+      toast.error(getFriendlySupabaseMessage(e, 'Failed to delete request')),
   });
 
   const [approving, setApproving] = useState(false);
@@ -611,7 +624,10 @@ export default function EnrollmentRequestsManager() {
         console.error('Failed to update enrollment status:', updateError);
         toast.error(
           'Student created but enrollment status update failed: ' +
-            updateError.message
+            getFriendlySupabaseMessage(
+              updateError,
+              'Unable to update enrollment status'
+            )
         );
       }
 
@@ -621,7 +637,7 @@ export default function EnrollmentRequestsManager() {
       queryClient.invalidateQueries({ queryKey: ['students'] });
       toast.success(`Student "${student.name}" created!`);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to create student');
+      toast.error(getFriendlySupabaseMessage(err, 'Failed to create student'));
     } finally {
       setApproving(false);
     }
@@ -725,7 +741,9 @@ export default function EnrollmentRequestsManager() {
         );
       }
     } catch (err: any) {
-      toast.error(err.message || 'Failed to create portal account');
+      toast.error(
+        getFriendlySupabaseMessage(err, 'Failed to create portal account')
+      );
     } finally {
       setApproving(false);
       setActionLocked(approveReq.id, 'approved', false);
@@ -827,6 +845,8 @@ export default function EnrollmentRequestsManager() {
   const currentWhatsAppLabel = viewReq
     ? getEnrollmentStageActionLabel(currentWhatsAppStage)
     : 'WhatsApp Parent';
+
+  const canRejectFromModal = adminNotes.trim().length > 0;
 
   const parentWhatsAppUrl = viewReq
     ? createWhatsAppUrl(viewReq.parent_phone, currentWhatsAppMessage)
@@ -1298,7 +1318,11 @@ export default function EnrollmentRequestsManager() {
                 {/* Admin Notes */}
                 <div className="rounded-xl border border-border bg-card p-4">
                   <label className="text-xs font-medium text-muted-foreground">
-                    Admin Notes
+                    Admin Notes{' '}
+                    {viewReq.status !== 'approved' &&
+                    viewReq.status !== 'rejected'
+                      ? '(required for rejection)'
+                      : ''}
                   </label>
                   <Textarea
                     value={adminNotes}
@@ -1311,11 +1335,6 @@ export default function EnrollmentRequestsManager() {
                       viewReq.status === 'rejected'
                     }
                   />
-                  {viewReq.status === 'rejected' && viewReq.admin_notes && (
-                    <p className="text-xs text-red-500 mt-1 italic">
-                      Rejection reason: {viewReq.admin_notes}
-                    </p>
-                  )}
                 </div>
 
                 {/* Save notes button for any status */}
@@ -1371,21 +1390,30 @@ export default function EnrollmentRequestsManager() {
                           handleStartApprove(viewReq);
                         }}
                       >
-                        <Check className="w-3 h-3" /> Approve & Add Student
+                        <Check className="w-3 h-3" /> Approve & Create Student
                       </Button>
                       <Button
                         size="sm"
                         variant="destructive"
                         className="gap-1 text-xs"
                         disabled={
+                          !canRejectFromModal ||
                           isActionLocked(viewReq.id, 'rejected') ||
                           updateMutation.isPending
                         }
                         onClick={() => handleRejectWithNotes(viewReq)}
                       >
-                        <X className="w-3 h-3" /> Reject & Notify
+                        <X className="w-3 h-3" /> Reject & Notify Parent
                       </Button>
                     </div>
+                  )}
+                {viewReq.status !== 'approved' &&
+                  viewReq.status !== 'rejected' &&
+                  !canRejectFromModal && (
+                    <p className="text-xs text-muted-foreground">
+                      Add a rejection reason in Admin Notes to enable the reject
+                      action.
+                    </p>
                   )}
                 {viewReq.status === 'approved' && (
                   <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-3 text-sm text-green-700 dark:text-green-400 font-medium">
@@ -1394,13 +1422,8 @@ export default function EnrollmentRequestsManager() {
                   </div>
                 )}
                 {viewReq.status === 'rejected' && (
-                  <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive font-medium space-y-2">
-                    <p>❌ This enrollment has been rejected.</p>
-                    {viewReq.admin_notes && (
-                      <p className="text-xs opacity-80">
-                        Reason: {viewReq.admin_notes}
-                      </p>
-                    )}
+                  <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive font-medium">
+                    ❌ This enrollment has been rejected.
                   </div>
                 )}
                 {parentWhatsAppUrl ? (

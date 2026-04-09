@@ -30,6 +30,7 @@ import { supabase } from '@/services/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/hooks/useToast';
 import FeeEditModal from './FeeEditModal';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 const MONTH_NAMES = [
   'Jan',
@@ -63,6 +64,13 @@ export default function FeeHistoryDrawer({
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  const getFriendlySupabaseMessage = (error: unknown, fallback: string) => {
+    const friendly = mapSupabaseErrorToFriendly(error);
+    if (friendly?.message) return friendly.message;
+    if (error instanceof Error && error.message) return error.message;
+    return fallback;
+  };
+
   const rows = (allFees || [])
     .filter((f) => f.student_id === student?.id)
     .sort((a, b) => (b.year !== a.year ? b.year - a.year : b.month - a.month));
@@ -90,7 +98,14 @@ export default function FeeHistoryDrawer({
         description: 'Fee record removed successfully.',
       });
     } catch (err: any) {
-      toast({ title: 'Error', description: err.message, variant: 'error' });
+      toast({
+        title: 'Error',
+        description: getFriendlySupabaseMessage(
+          err,
+          'Failed to delete fee record'
+        ),
+        variant: 'error',
+      });
     } finally {
       setDeleting(false);
       setDeleteId(null);

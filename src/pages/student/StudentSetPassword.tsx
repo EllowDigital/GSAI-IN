@@ -19,6 +19,7 @@ import {
   MIN_PASSWORD_LENGTH,
   validateStrongPassword,
 } from '@/utils/passwordPolicy';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 export default function StudentSetPassword() {
   const navigate = useNavigate();
@@ -105,12 +106,14 @@ export default function StudentSetPassword() {
       );
       navigate('/student/login', { replace: true });
     } catch (error: unknown) {
+      const friendlyError = mapSupabaseErrorToFriendly(error);
       const message =
-        error instanceof Error
+        friendlyError?.message ||
+        (error instanceof Error
           ? error.message
-          : 'Failed to set password. Please try again.';
+          : 'Failed to set password. Please try again.');
       setFormError(message);
-      toast.error('An error occurred while saving your password.');
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }

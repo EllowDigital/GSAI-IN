@@ -11,6 +11,7 @@ import { toast } from '@/hooks/useToast';
 import { supabase } from '@/services/supabase/client';
 import { Tables } from '@/services/supabase/types';
 import Spinner from '@/components/ui/spinner';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 type EventRow = Tables<'events'>;
 
@@ -21,6 +22,13 @@ interface Props {
 
 const EventDeleteDialog: React.FC<Props> = ({ event, onClose }) => {
   const [loading, setLoading] = useState(false);
+
+  const getFriendlySupabaseMessage = (error: unknown, fallback: string) => {
+    const friendly = mapSupabaseErrorToFriendly(error);
+    if (friendly?.message) return friendly.message;
+    if (error instanceof Error && error.message) return error.message;
+    return fallback;
+  };
 
   const handleDelete = async () => {
     if (!event) return;
@@ -34,7 +42,9 @@ const EventDeleteDialog: React.FC<Props> = ({ event, onClose }) => {
       toast.success('Event deleted.');
       onClose();
     } catch (err: any) {
-      toast.error('Delete failed', err.message);
+      toast.error(
+        `Delete failed: ${getFriendlySupabaseMessage(err, 'Unexpected error')}`
+      );
     }
     setLoading(false);
   };

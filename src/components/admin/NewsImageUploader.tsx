@@ -2,6 +2,7 @@ import React from 'react';
 import { supabase } from '@/services/supabase/client';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 type Props = {
   imageUrl: string | null;
@@ -30,7 +31,10 @@ export default function NewsImageUploader({
           upsert: false,
         });
       if (uploadError) {
-        toast.error(`Image upload failed: ${uploadError.message}`);
+        const friendly = mapSupabaseErrorToFriendly(uploadError);
+        toast.error(
+          `Image upload failed: ${friendly?.message || uploadError.message}`
+        );
         setUploading(false);
         return;
       }
@@ -47,7 +51,8 @@ export default function NewsImageUploader({
       onUpload(urlData.publicUrl);
       toast.success('Image uploaded.');
     } catch (ex: any) {
-      toast.error('Unexpected error during upload.');
+      const friendly = mapSupabaseErrorToFriendly(ex);
+      toast.error(friendly?.message || 'Unexpected error during upload.');
     }
     setUploading(false);
   }

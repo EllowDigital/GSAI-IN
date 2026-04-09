@@ -12,6 +12,7 @@ import {
 import { supabase } from '@/services/supabase/client';
 import { toast } from '@/components/ui/sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 interface Props {
   student: any;
@@ -63,7 +64,10 @@ export default function StudentDeleteDialog({ student, onClose }: Props) {
 
       onClose();
     } catch (err: any) {
-      toast.error('Error deleting student: ' + err.message);
+      const friendly = mapSupabaseErrorToFriendly(err);
+      toast.error(
+        'Error deleting student: ' + (friendly?.message || err.message)
+      );
     }
     setLoading(false);
   };

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { User, Plus } from 'lucide-react';
 import { supabase } from '@/services/supabase/client';
 import { toast } from '@/components/ui/sonner';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 interface StudentAvatarUploaderProps {
   url: string | null | undefined;
@@ -38,7 +39,8 @@ export default function StudentAvatarUploader({
         throw new Error('Unable to get public URL.');
       onUploaded(_data.publicUrl);
     } catch (err: any) {
-      toast.error('Upload error: ' + err.message);
+      const friendly = mapSupabaseErrorToFriendly(err);
+      toast.error('Upload error: ' + (friendly?.message || err.message));
     } finally {
       setUploading(false);
     }

@@ -22,6 +22,7 @@ import {
 import { toast } from '@/hooks/useToast';
 import { Users, Trophy, Medal, X, UserMinus, Search } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 interface Registration {
   id: string;
@@ -62,6 +63,13 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
+
+const getFriendlySupabaseMessage = (error: unknown, fallback: string) => {
+  const friendly = mapSupabaseErrorToFriendly(error);
+  if (friendly?.message) return friendly.message;
+  if (error instanceof Error && error.message) return error.message;
+  return fallback;
+};
 
 export default function CompetitionRegistrations({
   competition,
@@ -105,7 +113,8 @@ export default function CompetitionRegistrations({
       });
       toast.success('Position updated');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) =>
+      toast.error(getFriendlySupabaseMessage(e, 'Failed to update position')),
   });
 
   const unregisterMutation = useMutation({
@@ -123,7 +132,10 @@ export default function CompetitionRegistrations({
       queryClient.invalidateQueries({ queryKey: ['competition-reg-counts'] });
       toast.success('Student unregistered');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) =>
+      toast.error(
+        getFriendlySupabaseMessage(e, 'Failed to unregister student')
+      ),
   });
 
   const filtered = registrations.filter(

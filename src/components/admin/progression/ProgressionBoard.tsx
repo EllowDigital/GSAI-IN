@@ -74,6 +74,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from '@/components/ui/sonner';
 import { supabase } from '@/services/supabase/client';
 import { useDisciplines } from '@/hooks/useDisciplines';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 const STATUS_CONFIG: Record<
   ProgressStatus,
@@ -831,7 +832,10 @@ export default function ProgressionBoard() {
       toast.success('Level progress updated');
     },
     onError: (err) =>
-      toast.error(err instanceof Error ? err.message : 'Update failed'),
+      toast.error(
+        mapSupabaseErrorToFriendly(err)?.message ||
+          (err instanceof Error ? err.message : 'Update failed')
+      ),
   });
 
   const deleteLevelProgressMutation = useMutation({
@@ -849,7 +853,10 @@ export default function ProgressionBoard() {
       toast.success('Level progress deleted');
     },
     onError: (err) =>
-      toast.error(err instanceof Error ? err.message : 'Delete failed'),
+      toast.error(
+        mapSupabaseErrorToFriendly(err)?.message ||
+          (err instanceof Error ? err.message : 'Delete failed')
+      ),
   });
 
   // Fetch actual programs from junction table for each student

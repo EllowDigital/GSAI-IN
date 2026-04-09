@@ -3,6 +3,7 @@ import { supabase } from '@/services/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Loader2, UploadCloud, Trash2 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 // Allowed file types and max size for security
 const ALLOWED_FILE_TYPES = [
@@ -86,7 +87,10 @@ export function FeeReceiptUploader({ feeId, initialUrl, onUploaded }: Props) {
       .upload(filePath, file, { upsert: true });
 
     if (error) {
-      toast.error('Error uploading file: ' + error.message);
+      const friendly = mapSupabaseErrorToFriendly(error);
+      toast.error(
+        'Error uploading file: ' + (friendly?.message || error.message)
+      );
       setUploading(false);
       return;
     }
@@ -97,7 +101,10 @@ export function FeeReceiptUploader({ feeId, initialUrl, onUploaded }: Props) {
       .createSignedUrl(filePath, 1800); // 30 min expiry
 
     if (signedError) {
-      toast.error('Error getting file URL: ' + signedError.message);
+      const friendly = mapSupabaseErrorToFriendly(signedError);
+      toast.error(
+        'Error getting file URL: ' + (friendly?.message || signedError.message)
+      );
       setUploading(false);
       return;
     }

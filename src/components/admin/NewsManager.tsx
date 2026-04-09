@@ -75,9 +75,10 @@ export default function NewsManager() {
       });
     },
     onError: (error: any) => {
+      const appError = handleSupabaseError(error);
       toast({
         title: 'Error',
-        description: error.message,
+        description: appError.message,
         variant: 'error',
       });
     },

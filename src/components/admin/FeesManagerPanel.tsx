@@ -31,6 +31,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { FeeCardsGridSkeleton, FeeTableSkeleton } from './AdminSkeletons';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 export default function FeesManagerPanel() {
   const now = new Date();
@@ -56,6 +57,13 @@ export default function FeesManagerPanel() {
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
   const { data: programFees } = useProgramFees();
+
+  const getFriendlySupabaseMessage = (error: unknown, fallback: string) => {
+    const friendly = mapSupabaseErrorToFriendly(error);
+    if (friendly?.message) return friendly.message;
+    if (error instanceof Error && error.message) return error.message;
+    return fallback;
+  };
 
   useEffect(() => {
     const channel = supabase
@@ -172,7 +180,14 @@ export default function FeesManagerPanel() {
       });
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message, variant: 'error' });
+      toast({
+        title: 'Error',
+        description: getFriendlySupabaseMessage(
+          error,
+          'Failed to mark selected students as paid'
+        ),
+        variant: 'error',
+      });
     },
   });
 
@@ -222,7 +237,14 @@ export default function FeesManagerPanel() {
       });
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message, variant: 'error' });
+      toast({
+        title: 'Error',
+        description: getFriendlySupabaseMessage(
+          error,
+          'Failed to generate fee records'
+        ),
+        variant: 'error',
+      });
     },
   });
 

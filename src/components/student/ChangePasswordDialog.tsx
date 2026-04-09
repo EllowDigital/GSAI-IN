@@ -17,6 +17,7 @@ import {
   MIN_PASSWORD_LENGTH,
   validateStrongPassword,
 } from '@/utils/passwordPolicy';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 export default function ChangePasswordDialog() {
   const [open, setOpen] = useState(false);
@@ -75,7 +76,10 @@ export default function ChangePasswordDialog() {
       reset();
       setOpen(false);
     } catch (err: any) {
-      toast.error(err.message);
+      const friendlyError = mapSupabaseErrorToFriendly(err);
+      toast.error(
+        friendlyError?.message || err.message || 'Failed to update password'
+      );
     } finally {
       setLoading(false);
     }

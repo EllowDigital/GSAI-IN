@@ -46,6 +46,7 @@ import {
 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { LEVEL_DISCIPLINES } from '@/config/disciplineConfig';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 const LEVEL_PRESETS: Record<string, string[]> = {
   Boxing: ['Beginner', 'Novice', 'Intermediate', 'Advanced', 'Elite'],
@@ -84,6 +85,13 @@ export default function DisciplineLevelsManager() {
   const [levelName, setLevelName] = useState('');
   const [levelOrder, setLevelOrder] = useState(0);
   const [description, setDescription] = useState('');
+
+  const getFriendlySupabaseMessage = (error: unknown, fallback: string) => {
+    const friendly = mapSupabaseErrorToFriendly(error);
+    if (friendly?.message) return friendly.message;
+    if (error instanceof Error && error.message) return error.message;
+    return fallback;
+  };
 
   const { data: levels = [], isLoading } = useQuery({
     queryKey: ['discipline-levels-admin'],
@@ -136,7 +144,7 @@ export default function DisciplineLevelsManager() {
       closeForm();
     },
     onError: (err) =>
-      toast.error(err instanceof Error ? err.message : 'Save failed'),
+      toast.error(getFriendlySupabaseMessage(err, 'Save failed')),
   });
 
   const deleteMutation = useMutation({
@@ -154,7 +162,7 @@ export default function DisciplineLevelsManager() {
       setDeleteTarget(null);
     },
     onError: (err) =>
-      toast.error(err instanceof Error ? err.message : 'Delete failed'),
+      toast.error(getFriendlySupabaseMessage(err, 'Delete failed')),
   });
 
   const autoSetupMutation = useMutation({
@@ -185,7 +193,7 @@ export default function DisciplineLevelsManager() {
       setAutoSetupDiscipline('');
     },
     onError: (err) =>
-      toast.error(err instanceof Error ? err.message : 'Auto setup failed'),
+      toast.error(getFriendlySupabaseMessage(err, 'Auto setup failed')),
   });
 
   const closeForm = () => {
