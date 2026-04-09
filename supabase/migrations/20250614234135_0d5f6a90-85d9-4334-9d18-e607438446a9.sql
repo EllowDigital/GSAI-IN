@@ -1,8 +1,6 @@
-
 -- 1. Add 'default_monthly_fee' column to students
 ALTER TABLE public.students
 ADD COLUMN IF NOT EXISTS default_monthly_fee integer NOT NULL DEFAULT 2000;
-
 -- 2. Create fees table 
 CREATE TABLE public.fees (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -23,13 +21,10 @@ CREATE TABLE public.fees (
     END
   ) STORED
 );
-
 -- 3. Enforce unique month/year/student combo
 CREATE UNIQUE INDEX fees_student_month_year_idx ON public.fees(student_id, month, year);
-
 -- 4. Enable RLS on fees table
 ALTER TABLE public.fees ENABLE ROW LEVEL SECURITY;
-
 -- 5. Read/write policy: only admins (role checked by email domain for now, adapt to your auth)
 CREATE POLICY "Admin can manage fees"
   ON public.fees

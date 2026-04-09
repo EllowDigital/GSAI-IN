@@ -1,4 +1,3 @@
-
 -- Allow students to read their own discipline progress records
 CREATE POLICY "student_read_own_discipline_progress"
 ON public.student_discipline_progress

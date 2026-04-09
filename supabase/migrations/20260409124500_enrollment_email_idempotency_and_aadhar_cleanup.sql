@@ -7,7 +7,6 @@ ALTER TABLE public.enrollment_requests
   ADD COLUMN IF NOT EXISTS contacted_email_sent_at timestamptz,
   ADD COLUMN IF NOT EXISTS approved_email_sent_at timestamptz,
   ADD COLUMN IF NOT EXISTS rejected_email_sent_at timestamptz;
-
 CREATE TABLE IF NOT EXISTS public.enrollment_email_events (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   enrollment_request_id uuid NOT NULL REFERENCES public.enrollment_requests(id) ON DELETE CASCADE,
@@ -23,30 +22,23 @@ CREATE TABLE IF NOT EXISTS public.enrollment_email_events (
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
-
 CREATE UNIQUE INDEX IF NOT EXISTS idx_enrollment_email_events_idempotency_key
   ON public.enrollment_email_events (idempotency_key);
-
 -- Ensure only one active sender per request/action and at most one successful send.
 CREATE UNIQUE INDEX IF NOT EXISTS idx_enrollment_email_events_active_action
   ON public.enrollment_email_events (enrollment_request_id, action)
   WHERE status IN ('processing', 'sent');
-
 CREATE INDEX IF NOT EXISTS idx_enrollment_email_events_request_action
   ON public.enrollment_email_events (enrollment_request_id, action, created_at DESC);
-
 ALTER TABLE public.enrollment_email_events ENABLE ROW LEVEL SECURITY;
-
 DROP POLICY IF EXISTS "admin_manage_enrollment_email_events" ON public.enrollment_email_events;
 DROP POLICY IF EXISTS "admin_users_manage_enrollment_email_events" ON public.enrollment_email_events;
-
 CREATE POLICY "admin_manage_enrollment_email_events"
 ON public.enrollment_email_events
 FOR ALL
 TO authenticated
 USING (has_role('admin'::text))
 WITH CHECK (has_role('admin'::text));
-
 CREATE POLICY "admin_users_manage_enrollment_email_events"
 ON public.enrollment_email_events
 FOR ALL
@@ -57,7 +49,6 @@ USING (EXISTS (
 WITH CHECK (EXISTS (
   SELECT 1 FROM public.admin_users WHERE admin_users.email = auth.email()
 ));
-
 CREATE OR REPLACE FUNCTION public.sync_enrollment_email_sent_flags()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -81,13 +72,11 @@ BEGIN
   RETURN NEW;
 END;
 $$;
-
 DROP TRIGGER IF EXISTS trg_sync_enrollment_email_sent_flags ON public.enrollment_email_events;
 CREATE TRIGGER trg_sync_enrollment_email_sent_flags
 BEFORE INSERT OR UPDATE ON public.enrollment_email_events
 FOR EACH ROW
 EXECUTE FUNCTION public.sync_enrollment_email_sent_flags();
-
 -- Detect active-status Aadhaar duplicates.
 CREATE OR REPLACE VIEW public.vw_duplicate_active_enrollment_aadhar AS
 SELECT
@@ -103,7 +92,6 @@ WHERE aadhar_number IS NOT NULL
   AND lower(status) IN ('pending', 'contacted', 'approved')
 GROUP BY aadhar_number
 HAVING COUNT(*) > 1;
-
 CREATE OR REPLACE FUNCTION public.clean_duplicate_active_enrollment_aadhar(
   p_aadhar_number text,
   p_keep_request_id uuid,
@@ -137,7 +125,6 @@ BEGIN
   RETURN updated_count;
 END;
 $$;
-
 REVOKE ALL ON public.vw_duplicate_active_enrollment_aadhar FROM anon, authenticated;
 GRANT SELECT ON public.vw_duplicate_active_enrollment_aadhar TO service_role;
 GRANT EXECUTE ON FUNCTION public.clean_duplicate_active_enrollment_aadhar(text, uuid, text) TO authenticated;

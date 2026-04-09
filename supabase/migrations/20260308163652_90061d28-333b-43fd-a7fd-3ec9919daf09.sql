@@ -1,4 +1,3 @@
-
 -- Program testimonials table
 CREATE TABLE public.program_testimonials (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -10,22 +9,18 @@ CREATE TABLE public.program_testimonials (
   created_by text,
   is_published boolean NOT NULL DEFAULT true
 );
-
 -- Enable RLS
 ALTER TABLE public.program_testimonials ENABLE ROW LEVEL SECURITY;
-
 -- Public can read published testimonials
 CREATE POLICY "Public can read published testimonials"
   ON public.program_testimonials FOR SELECT
   USING (is_published = true);
-
 -- Admins can manage testimonials
 CREATE POLICY "Admin roles manage testimonials"
   ON public.program_testimonials FOR ALL
   TO authenticated
   USING (has_role('admin'::text))
   WITH CHECK (has_role('admin'::text));
-
 -- Admins via admin_users table
 CREATE POLICY "Admins can manage testimonials"
   ON public.program_testimonials FOR ALL

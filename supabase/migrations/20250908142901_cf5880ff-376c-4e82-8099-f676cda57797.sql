@@ -3,11 +3,9 @@
 
 -- 1. Create encrypted storage for Aadhar numbers using pgcrypto
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
 -- 2. Add new encrypted column for Aadhar numbers
 ALTER TABLE public.students 
 ADD COLUMN encrypted_aadhar_number bytea;
-
 -- 3. Create security functions for data protection
 CREATE OR REPLACE FUNCTION public.encrypt_aadhar(aadhar_text text) 
 RETURNS bytea
@@ -16,7 +14,6 @@ SECURITY DEFINER
 AS $$
   SELECT pgp_sym_encrypt(aadhar_text, current_setting('app.settings.encryption_key', true));
 $$;
-
 CREATE OR REPLACE FUNCTION public.decrypt_aadhar(encrypted_data bytea) 
 RETURNS text
 LANGUAGE sql
@@ -24,7 +21,6 @@ SECURITY DEFINER
 AS $$
   SELECT pgp_sym_decrypt(encrypted_data, current_setting('app.settings.encryption_key', true));
 $$;
-
 -- 4. Create data masking functions for UI display
 CREATE OR REPLACE FUNCTION public.mask_aadhar(aadhar_text text) 
 RETURNS text
@@ -38,7 +34,6 @@ AS $$
       'XXXX-XXXX-XXXX'
   END;
 $$;
-
 CREATE OR REPLACE FUNCTION public.mask_phone(phone_text text) 
 RETURNS text
 LANGUAGE sql
@@ -51,7 +46,6 @@ AS $$
       'XXXXXXXXXX'
   END;
 $$;
-
 -- 5. Create audit log table for sensitive data access
 CREATE TABLE IF NOT EXISTS public.sensitive_data_audit (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -64,16 +58,13 @@ CREATE TABLE IF NOT EXISTS public.sensitive_data_audit (
   ip_address inet,
   user_agent text
 );
-
 -- Enable RLS on audit table
 ALTER TABLE public.sensitive_data_audit ENABLE ROW LEVEL SECURITY;
-
 -- Only admins can view audit logs
 CREATE POLICY "Only admins can view audit logs" ON public.sensitive_data_audit
 FOR SELECT USING (
   EXISTS (SELECT 1 FROM admin_users WHERE admin_users.email = auth.email())
 );
-
 -- 6. Create audit trigger function
 CREATE OR REPLACE FUNCTION public.audit_sensitive_access()
 RETURNS trigger
@@ -98,12 +89,10 @@ BEGIN
   RETURN COALESCE(NEW, OLD);
 END;
 $$;
-
 -- 7. Add audit triggers to students table
 CREATE TRIGGER audit_students_access
   AFTER SELECT OR INSERT OR UPDATE OR DELETE ON public.students
   FOR EACH ROW EXECUTE FUNCTION public.audit_sensitive_access();
-
 -- 8. Create secure view for student data with masking
 CREATE OR REPLACE VIEW public.students_secure AS 
 SELECT 
@@ -120,10 +109,8 @@ SELECT
   program,
   fee_status
 FROM public.students;
-
 -- Enable RLS on the secure view
 ALTER VIEW public.students_secure SET (security_invoker = on);
-
 -- 9. Create additional RLS policies with more granular controls
 CREATE POLICY "Admin audit trail required" ON public.students
 FOR ALL USING (
@@ -134,7 +121,6 @@ FOR ALL USING (
   -- Ensure audit logging is enabled
   current_setting('app.settings.audit_enabled', true)::boolean = true
 );
-
 -- 10. Create function to validate Aadhar format
 CREATE OR REPLACE FUNCTION public.validate_aadhar(aadhar_text text) 
 RETURNS boolean
@@ -143,12 +129,10 @@ SECURITY DEFINER
 AS $$
   SELECT aadhar_text ~ '^[0-9]{12}$' AND length(aadhar_text) = 12;
 $$;
-
 -- 11. Add check constraint for Aadhar validation
 ALTER TABLE public.students 
 ADD CONSTRAINT valid_aadhar_format 
 CHECK (validate_aadhar(aadhar_number));
-
 -- 12. Create function for secure data migration (to be used in application)
 CREATE OR REPLACE FUNCTION public.migrate_aadhar_encryption() 
 RETURNS void
@@ -162,7 +146,6 @@ BEGIN
   WHERE encrypted_aadhar_number IS NULL AND aadhar_number IS NOT NULL;
 END;
 $$;
-
 -- 13. Set default encryption key (should be changed in production)
 -- Note: In production, this should be set via environment variables
 ALTER DATABASE postgres SET app.settings.encryption_key = 'your-secret-encryption-key-change-in-production';

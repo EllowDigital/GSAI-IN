@@ -24,6 +24,9 @@ storybook-static/
 .parcel-cache/
 tmp/
 temp/
+.temp/
+.cache/
+
 
 # Tool caches
 coverage/

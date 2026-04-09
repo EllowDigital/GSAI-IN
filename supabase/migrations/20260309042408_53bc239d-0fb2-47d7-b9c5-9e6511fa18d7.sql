@@ -1,4 +1,3 @@
-
 -- Belt exam notifications table
 CREATE TABLE public.belt_exam_notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -11,20 +10,16 @@ CREATE TABLE public.belt_exam_notifications (
   is_read BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
 ALTER TABLE public.belt_exam_notifications ENABLE ROW LEVEL SECURITY;
-
 -- Admin can manage all notifications
 CREATE POLICY "admin_manage_belt_exam_notifications" ON public.belt_exam_notifications
   FOR ALL TO authenticated
   USING (EXISTS (SELECT 1 FROM admin_users WHERE admin_users.email = auth.email()))
   WITH CHECK (EXISTS (SELECT 1 FROM admin_users WHERE admin_users.email = auth.email()));
-
 CREATE POLICY "admin_role_manage_belt_exam_notifications" ON public.belt_exam_notifications
   FOR ALL TO authenticated
   USING (has_role('admin'::text))
   WITH CHECK (has_role('admin'::text));
-
 -- Students can read their own notifications
 CREATE POLICY "student_read_own_belt_exam_notifications" ON public.belt_exam_notifications
   FOR SELECT TO authenticated
@@ -32,7 +27,6 @@ CREATE POLICY "student_read_own_belt_exam_notifications" ON public.belt_exam_not
     SELECT 1 FROM student_portal_accounts spa
     WHERE spa.auth_user_id = auth.uid() AND spa.student_id = belt_exam_notifications.student_id
   ));
-
 -- Students can mark their own notifications as read
 CREATE POLICY "student_update_own_belt_exam_notifications" ON public.belt_exam_notifications
   FOR UPDATE TO authenticated
@@ -44,7 +38,6 @@ CREATE POLICY "student_update_own_belt_exam_notifications" ON public.belt_exam_n
     SELECT 1 FROM student_portal_accounts spa
     WHERE spa.auth_user_id = auth.uid() AND spa.student_id = belt_exam_notifications.student_id
   ));
-
 -- Disciplines management table
 CREATE TABLE public.disciplines (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -57,22 +50,17 @@ CREATE TABLE public.disciplines (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
 ALTER TABLE public.disciplines ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "public_read_disciplines" ON public.disciplines
   FOR SELECT USING (true);
-
 CREATE POLICY "admin_manage_disciplines" ON public.disciplines
   FOR ALL TO authenticated
   USING (EXISTS (SELECT 1 FROM admin_users WHERE admin_users.email = auth.email()))
   WITH CHECK (EXISTS (SELECT 1 FROM admin_users WHERE admin_users.email = auth.email()));
-
 CREATE POLICY "admin_role_manage_disciplines" ON public.disciplines
   FOR ALL TO authenticated
   USING (has_role('admin'::text))
   WITH CHECK (has_role('admin'::text));
-
 -- Seed default disciplines
 INSERT INTO public.disciplines (name, type, has_stripes, description, display_order) VALUES
   ('Taekwondo', 'belt', false, 'Korean martial art with belt progression', 1),

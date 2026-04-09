@@ -48,15 +48,12 @@ BEGIN
   RETURN NEW;
 END;
 $$;
-
 DROP FUNCTION IF EXISTS public.get_enrollment_aadhar_state(text);
-
 DROP TRIGGER IF EXISTS trg_enrollment_aadhar_guardrails ON public.enrollment_requests;
 CREATE TRIGGER trg_enrollment_aadhar_guardrails
 BEFORE INSERT ON public.enrollment_requests
 FOR EACH ROW
 EXECUTE FUNCTION public.enforce_enrollment_aadhar_guardrails();
-
 -- Strong uniqueness guarantee for active (non-rejected) requests.
 DO $$
 BEGIN

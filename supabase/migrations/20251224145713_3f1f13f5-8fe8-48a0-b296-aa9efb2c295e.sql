@@ -9,7 +9,6 @@ AS $$
          AND aadhar_text ~ '^[0-9]{12}$'
          AND length(aadhar_text) = 12;
 $$;
-
 -- Fix validate_phone with search_path
 CREATE OR REPLACE FUNCTION public.validate_phone(phone_text text)
 RETURNS boolean

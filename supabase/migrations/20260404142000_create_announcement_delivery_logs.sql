@@ -9,22 +9,17 @@ CREATE TABLE IF NOT EXISTS public.announcement_delivery_logs (
   metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
   created_at timestamptz NOT NULL DEFAULT now()
 );
-
 CREATE INDEX IF NOT EXISTS idx_announcement_delivery_logs_created_at
   ON public.announcement_delivery_logs(created_at DESC);
-
 CREATE INDEX IF NOT EXISTS idx_announcement_delivery_logs_type_created_at
   ON public.announcement_delivery_logs(announcement_type, created_at DESC);
-
 ALTER TABLE public.announcement_delivery_logs ENABLE ROW LEVEL SECURITY;
-
 DROP POLICY IF EXISTS "admin_read_delivery_logs" ON public.announcement_delivery_logs;
 CREATE POLICY "admin_read_delivery_logs"
   ON public.announcement_delivery_logs
   FOR SELECT
   TO authenticated
   USING (has_role('admin'::text));
-
 DROP POLICY IF EXISTS "admin_insert_delivery_logs" ON public.announcement_delivery_logs;
 CREATE POLICY "admin_insert_delivery_logs"
   ON public.announcement_delivery_logs
