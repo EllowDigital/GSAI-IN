@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useAdminAuth } from './AdminAuthProvider';
 import { AppSidebar } from '@/components/admin/AppSidebar';
@@ -14,6 +14,7 @@ import {
   STUDENTS_SHARED_SELECT,
 } from '@/constants/studentsQuery';
 
+// --- Constants ---
 const PAGE_TITLES: Record<string, string> = {
   '/admin/dashboard': 'Dashboard',
   '/admin/dashboard/enrollments': 'Enrollment Requests',
@@ -21,7 +22,6 @@ const PAGE_TITLES: Record<string, string> = {
   '/admin/dashboard/fees': 'Fee Management',
   '/admin/dashboard/progression': 'Student Progression',
   '/admin/dashboard/disciplines': 'Disciplines',
-
   '/admin/dashboard/events': 'Events',
   '/admin/dashboard/competitions': 'Competitions',
   '/admin/dashboard/blogs': 'Blog Management',
@@ -37,14 +37,25 @@ const AdminLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const location = useLocation();
 
   useRealtime();
 
-  const pageTitle = PAGE_TITLES[location.pathname] || 'Admin';
+  // --- Derived State ---
+  const pageTitle = useMemo(
+    () => PAGE_TITLES[location.pathname] || 'Admin',
+    [location.pathname]
+  );
 
+  // --- Dynamic Page Title ---
+  useEffect(() => {
+    document.title = `${pageTitle} | GSAI Admin Portal`;
+  }, [pageTitle]);
+
+  // --- Mobile Scroll Lock ---
   useEffect(() => {
     if (window.innerWidth < 1024) {
       document.body.style.overflow = sidebarOpen ? 'hidden' : '';
@@ -54,6 +65,7 @@ const AdminLayout: React.FC = () => {
     };
   }, [sidebarOpen]);
 
+  // --- Data Prefetching (Cache Warming) ---
   useEffect(() => {
     if (!isAdmin) return;
 
@@ -101,32 +113,35 @@ const AdminLayout: React.FC = () => {
     void warmAdminData();
   }, [isAdmin, queryClient]);
 
+  // --- Handlers ---
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
       await queryClient.invalidateQueries();
       await queryClient.refetchQueries();
-      toast({ title: 'Refreshed', description: 'All data updated.' });
+      toast({ title: 'Refreshed', description: 'All data has been updated.' });
     } catch {
       toast({
         title: 'Refresh Failed',
-        description: 'Please try again.',
-        variant: 'error' as any,
+        description: 'Unable to refresh data. Please check your connection.',
+        variant: 'destructive',
       });
     } finally {
       setTimeout(() => setIsRefreshing(false), 500);
     }
   };
 
+  // --- Render States ---
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-dvh w-screen bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative">
-            <div className="animate-spin h-10 w-10 border-[3px] border-primary/20 border-t-primary rounded-full" />
+      <div className="flex items-center justify-center h-dvh w-screen bg-background text-foreground">
+        <div className="flex flex-col items-center gap-5">
+          <div className="relative flex items-center justify-center">
+            <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
+            <div className="animate-spin h-12 w-12 border-[3px] border-primary/20 border-t-primary rounded-full relative z-10" />
           </div>
-          <p className="text-sm text-muted-foreground animate-pulse">
-            Loading admin portal…
+          <p className="text-sm font-medium text-muted-foreground animate-pulse tracking-wide">
+            Loading Secure Environment...
           </p>
         </div>
       </div>
@@ -138,7 +153,9 @@ const AdminLayout: React.FC = () => {
   }
 
   return (
-    <div className="admin-shell h-dvh w-full flex overflow-hidden">
+    <div className="admin-shell h-dvh w-full flex overflow-hidden bg-background text-foreground selection:bg-primary/20">
+
+      {/* Sidebar Navigation */}
       <AppSidebar
         open={sidebarOpen}
         setOpen={setSidebarOpen}
@@ -146,10 +163,11 @@ const AdminLayout: React.FC = () => {
         setCollapsed={setSidebarCollapsed}
       />
 
-      {/* Mobile overlay */}
+      {/* Mobile Sidebar Overlay */}
       <div
+        aria-hidden="true"
         className={cn(
-          'fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px] lg:hidden transition-opacity duration-200',
+          'fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden transition-all duration-300',
           sidebarOpen
             ? 'opacity-100 pointer-events-auto'
             : 'opacity-0 pointer-events-none'
@@ -157,26 +175,27 @@ const AdminLayout: React.FC = () => {
         onClick={() => setSidebarOpen(false)}
       />
 
-      <div className="flex-1 flex flex-col h-dvh min-w-0">
+      {/* Main Layout Area */}
+      <div className="flex-1 flex flex-col h-dvh min-w-0 transition-all duration-300">
+
         {/* Top Navigation Bar */}
-        <header className="sticky top-0 z-30 border-b border-border/70 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 flex-shrink-0">
-          <div className="flex h-14 items-center justify-between px-4 lg:px-6">
-            {/* Left: Mobile menu + Title */}
-            <div className="flex items-center gap-2.5">
+        <header className="sticky top-0 z-30 border-b border-border/60 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/70 flex-shrink-0 shadow-sm transition-colors">
+          <div className="flex h-16 items-center justify-between px-4 lg:px-8">
+
+            {/* Left: Mobile menu + Page Title */}
+            <div className="flex items-center gap-3">
               <button
-                className="-ml-2 rounded-lg p-2 transition-colors hover:bg-muted lg:hidden"
+                className="-ml-2 rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                 onClick={() => setSidebarOpen(true)}
-                aria-label="Open sidebar"
+                aria-label="Open sidebar menu"
               >
-                <Menu className="w-5 h-5 text-muted-foreground" />
+                <Menu className="w-5 h-5" />
               </button>
 
               <button
-                className="hidden lg:inline-flex items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="hidden lg:inline-flex items-center justify-center rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                aria-label={
-                  sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'
-                }
+                aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
                 title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               >
                 {sidebarCollapsed ? (
@@ -186,32 +205,36 @@ const AdminLayout: React.FC = () => {
                 )}
               </button>
 
-              <div>
-                <h1 className="text-sm font-semibold text-foreground leading-none sm:text-[15px]">
+              <div className="ml-1 sm:ml-2">
+                <h1 className="text-base font-bold text-foreground tracking-tight leading-none sm:text-lg">
                   {pageTitle}
                 </h1>
               </div>
             </div>
 
             {/* Right: Actions */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <AdminNotificationBell />
+
+              <div className="h-6 w-px bg-border/60 mx-1 hidden sm:block" />
+
               <button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
-                className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
-                title="Refresh data"
+                className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                title="Refresh dashboard data"
+                aria-label="Refresh data"
               >
                 <RefreshCw
-                  className={cn('w-4 h-4', isRefreshing && 'animate-spin')}
+                  className={cn('w-4 h-4', isRefreshing && 'animate-spin text-primary')}
                 />
               </button>
             </div>
           </div>
         </header>
 
-        {/* Main content */}
-        <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+        {/* Main Content Area */}
+        <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain bg-slate-50/50 dark:bg-slate-950/20">
           <Outlet />
         </main>
       </div>
