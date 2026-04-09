@@ -432,8 +432,8 @@ export default function EnrollPage() {
                           </>
                         ) : (
                           <>
-                            <ChevronsUpDown className="mr-2 h-4 w-4" /> Expand all
-                            sections
+                            <ChevronsUpDown className="mr-2 h-4 w-4" /> Expand
+                            all sections
                           </>
                         )}
                       </Button>
