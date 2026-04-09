@@ -4,6 +4,7 @@ import './styles/index.css';
 import { initializeBuildOptimizations } from './utils/buildOptimization';
 import { validateSupabaseConfig } from '@/services/supabase/constants';
 import { BrowserRouter } from 'react-router-dom';
+import { syncManifestForPath } from '@/utils/pwa';
 
 // Initialize build optimizations
 try {
@@ -34,6 +35,8 @@ if (!rootElement) {
 }
 
 try {
+  syncManifestForPath(window.location.pathname);
+
   createRoot(rootElement).render(
     <BrowserRouter
       future={{

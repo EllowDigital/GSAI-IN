@@ -22,6 +22,15 @@ import PWAInstallToast from '@/components/common/PWAInstallToast';
 import EnhancedErrorBoundary from '@/components/feedback/EnhancedErrorBoundary';
 import PageTracker from '@/components/layout/PageTracker';
 import ScrollToTop from '@/components/layout/ScrollToTop';
+import {
+  getPortalPwaScope,
+  isPortalLoginPath,
+  syncManifestForPath,
+} from '@/utils/pwa';
+import {
+  canEnablePushNotifications,
+  ensurePushSubscription,
+} from '@/utils/pushNotifications';
 
 // Lazy load components for better performance
 const HomePageWrapper = lazy(() => import('@/pages/public/HomePageWrapper'));
@@ -83,13 +92,13 @@ const App = () => {
   const [installPrompt, setInstallPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [dismissedInstallToast, setDismissedInstallToast] = useState(() => {
-    // Check if user previously dismissed the prompt
+    // Backward compatibility: if legacy dismissal exists, treat as admin dismissal.
     try {
-      const dismissed = localStorage.getItem('pwa-install-dismissed');
-      if (dismissed) {
-        const { timestamp } = JSON.parse(dismissed);
-        // Reset after 7 days
+      const legacyDismissed = localStorage.getItem('pwa-install-dismissed');
+      if (legacyDismissed) {
+        const { timestamp } = JSON.parse(legacyDismissed);
         if (Date.now() - timestamp < 7 * 24 * 60 * 60 * 1000) {
+          localStorage.setItem('pwa-install-dismissed-admin', legacyDismissed);
           return true;
         }
       }
@@ -102,6 +111,37 @@ const App = () => {
   const location = useLocation();
   const interceptInstallPromptRef = useRef(true);
   const installPromptRef = useRef<BeforeInstallPromptEvent | null>(null);
+
+  const activePortalScope = getPortalPwaScope(location.pathname);
+  const isLoginPortalPage = isPortalLoginPath(location.pathname);
+  const pushSupported = canEnablePushNotifications();
+
+  useEffect(() => {
+    syncManifestForPath(location.pathname);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!isLoginPortalPage) {
+      setDismissedInstallToast(true);
+      return;
+    }
+
+    const key = `pwa-install-dismissed-${activePortalScope}`;
+    try {
+      const dismissed = localStorage.getItem(key);
+      if (!dismissed) {
+        setDismissedInstallToast(false);
+        return;
+      }
+
+      const { timestamp } = JSON.parse(dismissed);
+      const isStillDismissed =
+        Date.now() - timestamp < 7 * 24 * 60 * 60 * 1000;
+      setDismissedInstallToast(isStillDismissed);
+    } catch {
+      setDismissedInstallToast(false);
+    }
+  }, [activePortalScope, isLoginPortalPage]);
 
   // Check if already installed as PWA
   const isPWAInstalled = useCallback(
@@ -173,14 +213,15 @@ const App = () => {
 
     // Persist dismissal for 7 days
     try {
+      const key = `pwa-install-dismissed-${activePortalScope}`;
       localStorage.setItem(
-        'pwa-install-dismissed',
+        key,
         JSON.stringify({ timestamp: Date.now() })
       );
     } catch {
       // Ignore localStorage errors
     }
-  }, []);
+  }, [activePortalScope]);
 
   const handleInstallClick = useCallback(async () => {
     const promptEvent = installPromptRef.current ?? installPrompt;
@@ -201,11 +242,19 @@ const App = () => {
     }
   }, [installPrompt]);
 
-  // Only show install toast on the admin login page.
+  const handleEnableNotifications = useCallback(async () => {
+    try {
+      await ensurePushSubscription();
+    } catch (error) {
+      console.warn('Push subscription setup failed:', error);
+    }
+  }, []);
+
+  // Show install toast only on login entry points of admin/student portals.
   const shouldShowInstallToast =
     showInstallCTA &&
     !isPWAInstalled() &&
-    location.pathname === '/admin/login' &&
+    isLoginPortalPage &&
     !dismissedInstallToast &&
     !!installPrompt;
 
@@ -229,6 +278,11 @@ const App = () => {
                   <PWAInstallToast
                     onInstall={handleInstallClick}
                     onDismiss={dismissInstallToast}
+                    portalType={
+                      activePortalScope === 'student' ? 'student' : 'admin'
+                    }
+                    onEnableNotifications={handleEnableNotifications}
+                    pushReady={pushSupported}
                   />
                 )}
 
