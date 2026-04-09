@@ -128,7 +128,9 @@ export default function CompetitionCertificates({
       .delete()
       .eq('id', certId)) as any;
     if (error) {
-      toast.error(getFriendlySupabaseMessage(error, 'Failed to remove certificate'));
+      toast.error(
+        getFriendlySupabaseMessage(error, 'Failed to remove certificate')
+      );
       return;
     }
     queryClient.invalidateQueries({

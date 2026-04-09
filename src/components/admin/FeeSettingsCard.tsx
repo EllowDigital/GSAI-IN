@@ -108,7 +108,10 @@ export default function FeeSettingsCard() {
     } catch (err: any) {
       toast({
         title: 'Error',
-        description: getFriendlySupabaseMessage(err, 'Failed to save program fees'),
+        description: getFriendlySupabaseMessage(
+          err,
+          'Failed to save program fees'
+        ),
         variant: 'error',
       });
     } finally {

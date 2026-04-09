@@ -77,7 +77,9 @@ export default function ChangePasswordDialog() {
       setOpen(false);
     } catch (err: any) {
       const friendlyError = mapSupabaseErrorToFriendly(err);
-      toast.error(friendlyError?.message || err.message || 'Failed to update password');
+      toast.error(
+        friendlyError?.message || err.message || 'Failed to update password'
+      );
     } finally {
       setLoading(false);
     }

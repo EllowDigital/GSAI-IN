@@ -122,8 +122,7 @@ export default function DisciplinesManager() {
       toast.success(editing ? 'Discipline updated' : 'Discipline added');
       closeForm();
     },
-    onError: (err) =>
-      toast.error(getFriendlySupabaseMessage(err, 'Failed')),
+    onError: (err) => toast.error(getFriendlySupabaseMessage(err, 'Failed')),
   });
 
   const deleteMutation = useMutation({

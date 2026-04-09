@@ -105,7 +105,9 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
       const friendly = mapSupabaseErrorToFriendly(error);
       const message =
         friendly?.message ||
-        (error instanceof Error ? error.message : 'Upload failed unexpectedly.');
+        (error instanceof Error
+          ? error.message
+          : 'Upload failed unexpectedly.');
       toast.error(message);
     } finally {
       setUploading(false);

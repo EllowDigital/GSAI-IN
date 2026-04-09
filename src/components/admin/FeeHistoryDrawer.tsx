@@ -100,7 +100,10 @@ export default function FeeHistoryDrawer({
     } catch (err: any) {
       toast({
         title: 'Error',
-        description: getFriendlySupabaseMessage(err, 'Failed to delete fee record'),
+        description: getFriendlySupabaseMessage(
+          err,
+          'Failed to delete fee record'
+        ),
         variant: 'error',
       });
     } finally {

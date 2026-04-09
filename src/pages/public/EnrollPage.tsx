@@ -341,7 +341,10 @@ export default function EnrollPage() {
           }
         })
         .catch((invokeError) => {
-          console.error('Failed to invoke enrollment admin email function:', invokeError);
+          console.error(
+            'Failed to invoke enrollment admin email function:',
+            invokeError
+          );
         });
 
       setIsSubmitted(true);

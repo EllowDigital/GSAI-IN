@@ -133,7 +133,9 @@ export default function CompetitionRegistrations({
       toast.success('Student unregistered');
     },
     onError: (e: Error) =>
-      toast.error(getFriendlySupabaseMessage(e, 'Failed to unregister student')),
+      toast.error(
+        getFriendlySupabaseMessage(e, 'Failed to unregister student')
+      ),
   });
 
   const filtered = registrations.filter(

@@ -88,7 +88,9 @@ export function FeeReceiptUploader({ feeId, initialUrl, onUploaded }: Props) {
 
     if (error) {
       const friendly = mapSupabaseErrorToFriendly(error);
-      toast.error('Error uploading file: ' + (friendly?.message || error.message));
+      toast.error(
+        'Error uploading file: ' + (friendly?.message || error.message)
+      );
       setUploading(false);
       return;
     }
@@ -100,7 +102,9 @@ export function FeeReceiptUploader({ feeId, initialUrl, onUploaded }: Props) {
 
     if (signedError) {
       const friendly = mapSupabaseErrorToFriendly(signedError);
-      toast.error('Error getting file URL: ' + (friendly?.message || signedError.message));
+      toast.error(
+        'Error getting file URL: ' + (friendly?.message || signedError.message)
+      );
       setUploading(false);
       return;
     }

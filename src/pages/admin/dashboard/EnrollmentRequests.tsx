@@ -1318,7 +1318,11 @@ export default function EnrollmentRequestsManager() {
                 {/* Admin Notes */}
                 <div className="rounded-xl border border-border bg-card p-4">
                   <label className="text-xs font-medium text-muted-foreground">
-                    Admin Notes {viewReq.status !== 'approved' && viewReq.status !== 'rejected' ? '(required for rejection)' : ''}
+                    Admin Notes{' '}
+                    {viewReq.status !== 'approved' &&
+                    viewReq.status !== 'rejected'
+                      ? '(required for rejection)'
+                      : ''}
                   </label>
                   <Textarea
                     value={adminNotes}
@@ -1407,7 +1411,8 @@ export default function EnrollmentRequestsManager() {
                   viewReq.status !== 'rejected' &&
                   !canRejectFromModal && (
                     <p className="text-xs text-muted-foreground">
-                      Add a rejection reason in Admin Notes to enable the reject action.
+                      Add a rejection reason in Admin Notes to enable the reject
+                      action.
                     </p>
                   )}
                 {viewReq.status === 'approved' && (

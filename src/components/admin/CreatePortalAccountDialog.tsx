@@ -98,7 +98,9 @@ export default function CreatePortalAccountDialog({
       toast.success('Portal account created!');
     } catch (err: any) {
       const friendlyError = mapSupabaseErrorToFriendly(err);
-      toast.error(friendlyError?.message || err.message || 'Failed to create account');
+      toast.error(
+        friendlyError?.message || err.message || 'Failed to create account'
+      );
     } finally {
       setIsPending(false);
     }

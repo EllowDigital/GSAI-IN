@@ -229,9 +229,7 @@ export default function BeltSetupManager() {
       setSelectedDiscipline('');
     },
     onError: (error) => {
-      toast.error(
-        getFriendlySupabaseMessage(error, 'Failed to create levels')
-      );
+      toast.error(getFriendlySupabaseMessage(error, 'Failed to create levels'));
     },
   });
 
@@ -277,9 +275,7 @@ export default function BeltSetupManager() {
       });
     },
     onError: (error) => {
-      toast.error(
-        getFriendlySupabaseMessage(error, 'Failed to save belt')
-      );
+      toast.error(getFriendlySupabaseMessage(error, 'Failed to save belt'));
     },
   });
 
@@ -299,9 +295,7 @@ export default function BeltSetupManager() {
       setDeleteTarget(null);
     },
     onError: (error) => {
-      toast.error(
-        getFriendlySupabaseMessage(error, 'Failed to delete belt')
-      );
+      toast.error(getFriendlySupabaseMessage(error, 'Failed to delete belt'));
     },
   });
 

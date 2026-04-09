@@ -182,7 +182,10 @@ export default function FeesManagerPanel() {
     onError: (error: any) => {
       toast({
         title: 'Error',
-        description: getFriendlySupabaseMessage(error, 'Failed to mark selected students as paid'),
+        description: getFriendlySupabaseMessage(
+          error,
+          'Failed to mark selected students as paid'
+        ),
         variant: 'error',
       });
     },
@@ -236,7 +239,10 @@ export default function FeesManagerPanel() {
     onError: (error: any) => {
       toast({
         title: 'Error',
-        description: getFriendlySupabaseMessage(error, 'Failed to generate fee records'),
+        description: getFriendlySupabaseMessage(
+          error,
+          'Failed to generate fee records'
+        ),
         variant: 'error',
       });
     },

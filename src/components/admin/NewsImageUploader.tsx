@@ -32,7 +32,9 @@ export default function NewsImageUploader({
         });
       if (uploadError) {
         const friendly = mapSupabaseErrorToFriendly(uploadError);
-        toast.error(`Image upload failed: ${friendly?.message || uploadError.message}`);
+        toast.error(
+          `Image upload failed: ${friendly?.message || uploadError.message}`
+        );
         setUploading(false);
         return;
       }
