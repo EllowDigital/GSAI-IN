@@ -53,6 +53,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import AnnouncementDeliveryLogs from '@/components/admin/AnnouncementDeliveryLogs';
 import { usePersistentState } from '@/hooks/usePersistentState';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 interface Competition {
   id: string;
@@ -94,6 +95,8 @@ const buildMapsOpenUrl = (locationText: string): string =>
   `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locationText.trim())}`;
 
 const formatError = (error: unknown): string => {
+  const friendly = mapSupabaseErrorToFriendly(error);
+  if (friendly?.message) return friendly.message;
   if (isTimeoutError(error)) return 'Connection is slow. Please try again.';
   if (error instanceof Error) return error.message;
   return 'Unexpected error occurred.';

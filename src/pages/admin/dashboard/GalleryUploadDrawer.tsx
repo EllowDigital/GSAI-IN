@@ -13,6 +13,7 @@ import { toast } from '@/hooks/useToast';
 import { useQueryClient } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
 import { Image as ImageIcon, UploadCloud, X } from 'lucide-react';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 type Props = {
   open: boolean;
@@ -101,8 +102,10 @@ export default function GalleryUploadDrawer({ open, onClose }: Props) {
       resetForm();
       onClose();
     } catch (error) {
+      const friendly = mapSupabaseErrorToFriendly(error);
       const message =
-        error instanceof Error ? error.message : 'Upload failed unexpectedly.';
+        friendly?.message ||
+        (error instanceof Error ? error.message : 'Upload failed unexpectedly.');
       toast.error(message);
     } finally {
       setUploading(false);

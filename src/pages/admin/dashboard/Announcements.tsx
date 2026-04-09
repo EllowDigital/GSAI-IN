@@ -49,6 +49,7 @@ import {
 import { format } from 'date-fns';
 import Spinner from '@/components/ui/spinner';
 import PushNotificationHistoryPanel from '@/components/admin/PushNotificationHistoryPanel';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 interface Announcement {
   id: string;
@@ -59,6 +60,13 @@ interface Announcement {
   expires_at: string | null;
   created_at: string;
   created_by: string | null;
+}
+
+function getFriendlySupabaseMessage(error: unknown, fallback: string): string {
+  const friendly = mapSupabaseErrorToFriendly(error);
+  if (friendly?.message) return friendly.message;
+  if (error instanceof Error && error.message) return error.message;
+  return fallback;
 }
 
 export default function AnnouncementsManager() {
@@ -125,7 +133,7 @@ export default function AnnouncementsManager() {
     },
     onError: (e) =>
       toast.error(
-        e instanceof Error ? e.message : 'Failed to save announcement.'
+        getFriendlySupabaseMessage(e, 'Failed to save announcement.')
       ),
   });
 
@@ -143,7 +151,7 @@ export default function AnnouncementsManager() {
     },
     onError: (e) =>
       toast.error(
-        e instanceof Error ? e.message : 'Failed to delete announcement.'
+        getFriendlySupabaseMessage(e, 'Failed to delete announcement.')
       ),
   });
 
@@ -189,7 +197,7 @@ export default function AnnouncementsManager() {
     },
     onError: (e) =>
       toast.error(
-        e instanceof Error ? e.message : 'Failed to send push notification.'
+        getFriendlySupabaseMessage(e, 'Failed to send push notification.')
       ),
   });
 
@@ -228,9 +236,10 @@ export default function AnnouncementsManager() {
     },
     onError: (e) =>
       toast.error(
-        e instanceof Error
-          ? e.message
-          : 'Failed to cleanup stale push subscriptions.'
+        getFriendlySupabaseMessage(
+          e,
+          'Failed to cleanup stale push subscriptions.'
+        )
       ),
   });
 

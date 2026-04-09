@@ -54,6 +54,7 @@ import {
   getEnrollmentStageActionLabel,
   type EnrollmentMessageStage,
 } from '@/utils/enrollmentMessages';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 interface EnrollmentRequest {
   id: string;
@@ -119,6 +120,16 @@ function normalizeEmail(value?: string | null): string {
 
 function resolveEnrollmentRecipientEmail(req: EnrollmentRequest): string {
   return normalizeEmail(req.student_email) || normalizeEmail(req.parent_email);
+}
+
+function getFriendlySupabaseMessage(error: unknown, fallback: string): string {
+  const friendly = mapSupabaseErrorToFriendly(error);
+  if (friendly?.message) return friendly.message;
+  if (error instanceof Error && error.message) return error.message;
+  if (error && typeof error === 'object' && 'message' in error) {
+    return String((error as { message?: unknown }).message || fallback);
+  }
+  return fallback;
 }
 
 export default function EnrollmentRequestsManager() {
@@ -457,7 +468,8 @@ export default function EnrollmentRequestsManager() {
       queryClient.invalidateQueries({ queryKey: ['enrollment-requests'] });
       toast.success('Request updated');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) =>
+      toast.error(getFriendlySupabaseMessage(e, 'Failed to update request')),
   });
 
   const deleteMutation = useMutation({
@@ -525,7 +537,8 @@ export default function EnrollmentRequestsManager() {
       queryClient.invalidateQueries({ queryKey: ['competition-certificates'] });
       toast.success('Request deleted');
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) =>
+      toast.error(getFriendlySupabaseMessage(e, 'Failed to delete request')),
   });
 
   const [approving, setApproving] = useState(false);
@@ -611,7 +624,10 @@ export default function EnrollmentRequestsManager() {
         console.error('Failed to update enrollment status:', updateError);
         toast.error(
           'Student created but enrollment status update failed: ' +
-            updateError.message
+            getFriendlySupabaseMessage(
+              updateError,
+              'Unable to update enrollment status'
+            )
         );
       }
 
@@ -621,7 +637,7 @@ export default function EnrollmentRequestsManager() {
       queryClient.invalidateQueries({ queryKey: ['students'] });
       toast.success(`Student "${student.name}" created!`);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to create student');
+      toast.error(getFriendlySupabaseMessage(err, 'Failed to create student'));
     } finally {
       setApproving(false);
     }
@@ -725,7 +741,9 @@ export default function EnrollmentRequestsManager() {
         );
       }
     } catch (err: any) {
-      toast.error(err.message || 'Failed to create portal account');
+      toast.error(
+        getFriendlySupabaseMessage(err, 'Failed to create portal account')
+      );
     } finally {
       setApproving(false);
       setActionLocked(approveReq.id, 'approved', false);
