@@ -4,6 +4,7 @@ import { supabase } from '@/services/supabase/client';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 import {
   Dialog,
   DialogContent,
@@ -141,7 +142,12 @@ export default function BeltTestCalendar() {
       handleCloseDialog();
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message, variant: 'error' });
+      toast({
+        title: 'Error',
+        description:
+          mapSupabaseErrorToFriendly(error)?.message || error.message,
+        variant: 'error',
+      });
     },
   });
 
@@ -159,7 +165,12 @@ export default function BeltTestCalendar() {
       });
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message, variant: 'error' });
+      toast({
+        title: 'Error',
+        description:
+          mapSupabaseErrorToFriendly(error)?.message || error.message,
+        variant: 'error',
+      });
     },
   });
 
@@ -198,7 +209,12 @@ export default function BeltTestCalendar() {
       setNotifyTest(null);
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message, variant: 'error' });
+      toast({
+        title: 'Error',
+        description:
+          mapSupabaseErrorToFriendly(error)?.message || error.message,
+        variant: 'error',
+      });
     },
   });
 
