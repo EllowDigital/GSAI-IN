@@ -52,7 +52,7 @@ export function StudentTableSkeleton({ rows = 6 }: { rows?: number }) {
           <Skeleton key={i} className="h-3 rounded-sm" style={{ width: w }} />
         ))}
       </div>
-      
+
       {/* Rows */}
       <div className="divide-y divide-border/40">
         {Array.from({ length: rows }).map((_, i) => (
@@ -67,7 +67,7 @@ export function StudentTableSkeleton({ rows = 6 }: { rows?: number }) {
                 <Skeleton className="h-3 w-20 rounded-md sm:hidden" />
               </div>
             </div>
-            
+
             <div className="hidden sm:flex items-center gap-4 flex-1">
               <Skeleton className="h-4 w-24 rounded-md" />
               <Skeleton className="h-5 w-16 rounded-full" />
@@ -104,12 +104,12 @@ export function FeeCardSkeleton() {
           </div>
           <Skeleton className="h-5 w-16 rounded-full shrink-0" />
         </div>
-        
+
         <div className="grid grid-cols-2 gap-3">
           <Skeleton className="h-14 rounded-xl" />
           <Skeleton className="h-14 rounded-xl" />
         </div>
-        
+
         <div className="flex gap-2 pt-1">
           <Skeleton className="h-9 flex-1 rounded-lg" />
           <Skeleton className="h-9 w-12 rounded-lg shrink-0" />
@@ -139,7 +139,7 @@ export function FeeTableSkeleton({ rows = 6 }: { rows?: number }) {
           <Skeleton key={i} className="h-3 rounded-sm" style={{ width: w }} />
         ))}
       </div>
-      
+
       {/* Rows */}
       <div className="divide-y divide-border/40">
         {Array.from({ length: rows }).map((_, i) => (
@@ -151,7 +151,7 @@ export function FeeTableSkeleton({ rows = 6 }: { rows?: number }) {
               <Skeleton className="h-4 w-32 rounded-md" />
               <Skeleton className="h-3 w-20 rounded-md sm:hidden" />
             </div>
-            
+
             <div className="hidden sm:flex items-center gap-6 flex-1">
               <Skeleton className="h-4 w-16 rounded-md" />
               <Skeleton className="h-4 w-16 rounded-md" />

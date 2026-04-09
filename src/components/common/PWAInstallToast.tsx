@@ -14,11 +14,12 @@ const PWAInstallToast: React.FC<PWAInstallToastProps> = ({
 }) => {
   return (
     <div className="fixed bottom-6 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-sm z-[9999] animate-in slide-in-from-bottom-8 fade-in duration-500 ease-out">
-      <div className={cn(
-        "relative overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/90 p-5 shadow-2xl backdrop-blur-xl",
-        "after:absolute after:inset-0 after:bg-gradient-to-tr after:from-orange-500/5 after:to-transparent after:pointer-events-none"
-      )}>
-        
+      <div
+        className={cn(
+          'relative overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/90 p-5 shadow-2xl backdrop-blur-xl',
+          'after:absolute after:inset-0 after:bg-gradient-to-tr after:from-orange-500/5 after:to-transparent after:pointer-events-none'
+        )}
+      >
         {/* Animated Accent line at the top */}
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-orange-500/50 to-transparent" />
 
@@ -53,7 +54,9 @@ const PWAInstallToast: React.FC<PWAInstallToastProps> = ({
 
           {/* Description */}
           <p className="text-xs font-medium leading-relaxed text-slate-400 px-1">
-            Install the academy portal to your home screen for <span className="text-slate-200">lightning-fast access</span>, offline training views, and instant notifications.
+            Install the academy portal to your home screen for{' '}
+            <span className="text-slate-200">lightning-fast access</span>,
+            offline training views, and instant notifications.
           </p>
 
           {/* Action Buttons */}
@@ -70,8 +73,8 @@ const PWAInstallToast: React.FC<PWAInstallToastProps> = ({
               size="sm"
               onClick={onInstall}
               className={cn(
-                "flex-1 h-11 rounded-xl text-xs font-black uppercase tracking-wider",
-                "bg-orange-600 text-white shadow-lg shadow-orange-900/20 hover:bg-orange-500 hover:-translate-y-0.5 active:scale-95 transition-all"
+                'flex-1 h-11 rounded-xl text-xs font-black uppercase tracking-wider',
+                'bg-orange-600 text-white shadow-lg shadow-orange-900/20 hover:bg-orange-500 hover:-translate-y-0.5 active:scale-95 transition-all'
               )}
             >
               <DownloadCloud className="mr-2 h-4 w-4 stroke-[2.5]" />

@@ -72,14 +72,14 @@ export default function StudentDashboard() {
     isLoading: authLoading,
     signOut,
   } = useStudentAuth();
-  
+
   const queryClient = useQueryClient();
   const studentId = profile?.studentId;
 
   // --- Dynamic Page Title ---
   useEffect(() => {
-    document.title = profile?.studentName 
-      ? `${profile.studentName} | GSAI Portal` 
+    document.title = profile?.studentName
+      ? `${profile.studentName} | GSAI Portal`
       : 'Student Dashboard | GSAI Portal';
   }, [profile?.studentName]);
 
@@ -101,7 +101,9 @@ export default function StudentDashboard() {
     refetchOnWindowFocus: false,
   });
 
-  const { data: competitions = [], isLoading: compLoading } = useQuery<Competition[]>({
+  const { data: competitions = [], isLoading: compLoading } = useQuery<
+    Competition[]
+  >({
     queryKey: ['student-competitions'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -168,7 +170,9 @@ export default function StudentDashboard() {
   }, [myRegistrations]);
 
   const upcomingComps = useMemo(() => {
-    return competitions.filter((c) => c.status === 'upcoming' || c.status === 'ongoing');
+    return competitions.filter(
+      (c) => c.status === 'upcoming' || c.status === 'ongoing'
+    );
   }, [competitions]);
 
   const pastComps = useMemo(() => {
@@ -188,20 +192,18 @@ export default function StudentDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-background to-indigo-50/40 flex flex-col font-sans text-slate-900">
-      
       {/* --- ENHANCED NAVBAR --- */}
       <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm transition-all">
         <div className="flex h-16 items-center justify-between px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full gap-2 sm:gap-4">
-          
           {/* Left: Logo & Portal Name */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg overflow-hidden bg-white flex items-center justify-center border border-border/50 shadow-sm shrink-0">
-              <img 
-                src="/assets/images/logo.webp" 
-                alt="GSAI Logo" 
+              <img
+                src="/assets/images/logo.webp"
+                alt="GSAI Logo"
                 className="h-full w-full object-contain p-1"
                 onError={(e) => {
-                   (e.target as HTMLImageElement).style.display = 'none';
+                  (e.target as HTMLImageElement).style.display = 'none';
                 }}
               />
             </div>
@@ -249,7 +251,9 @@ export default function StudentDashboard() {
               className="gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors px-2 sm:px-3 h-9"
             >
               <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline font-semibold text-sm">Sign Out</span>
+              <span className="hidden sm:inline font-semibold text-sm">
+                Sign Out
+              </span>
             </Button>
           </div>
         </div>
@@ -272,10 +276,11 @@ export default function StudentDashboard() {
                 {profile?.studentName || 'Student Dashboard'}
               </h2>
               <p className="text-sm text-slate-300 max-w-md leading-relaxed">
-                Track your progression, view upcoming events, manage fees, and monitor your competition activity all in one place.
+                Track your progression, view upcoming events, manage fees, and
+                monitor your competition activity all in one place.
               </p>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-3 sm:min-w-[280px]">
               <div className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm transition-colors hover:bg-white/10">
                 <p className="text-xs uppercase tracking-wider text-slate-400 font-medium">
@@ -306,30 +311,49 @@ export default function StudentDashboard() {
         <Tabs defaultValue="competitions" className="w-full">
           <div className="rounded-xl border border-border/60 bg-card/50 p-1.5 shadow-sm backdrop-blur-sm">
             <TabsList className="h-auto w-full grid grid-cols-2 gap-1.5 sm:grid-cols-4 bg-transparent">
-              <TabsTrigger value="competitions" className="gap-2 text-xs sm:text-sm py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all">
-                <Trophy className="w-4 h-4 text-primary hidden sm:block" /> Competitions
+              <TabsTrigger
+                value="competitions"
+                className="gap-2 text-xs sm:text-sm py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all"
+              >
+                <Trophy className="w-4 h-4 text-primary hidden sm:block" />{' '}
+                Competitions
               </TabsTrigger>
-              <TabsTrigger value="progression" className="gap-2 text-xs sm:text-sm py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all">
-                <Award className="w-4 h-4 text-primary hidden sm:block" /> Progression
+              <TabsTrigger
+                value="progression"
+                className="gap-2 text-xs sm:text-sm py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all"
+              >
+                <Award className="w-4 h-4 text-primary hidden sm:block" />{' '}
+                Progression
               </TabsTrigger>
-              <TabsTrigger value="fees" className="gap-2 text-xs sm:text-sm py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all">
-                <IndianRupee className="w-4 h-4 text-primary hidden sm:block" /> Fees
+              <TabsTrigger
+                value="fees"
+                className="gap-2 text-xs sm:text-sm py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all"
+              >
+                <IndianRupee className="w-4 h-4 text-primary hidden sm:block" />{' '}
+                Fees
               </TabsTrigger>
-              <TabsTrigger value="events" className="gap-2 text-xs sm:text-sm py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all">
-                <Calendar className="w-4 h-4 text-primary hidden sm:block" /> Events
+              <TabsTrigger
+                value="events"
+                className="gap-2 text-xs sm:text-sm py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all"
+              >
+                <Calendar className="w-4 h-4 text-primary hidden sm:block" />{' '}
+                Events
               </TabsTrigger>
             </TabsList>
           </div>
 
           {/* Competitions Tab */}
-          <TabsContent value="competitions" className="space-y-8 mt-6 focus-visible:outline-none focus-visible:ring-0">
-            
+          <TabsContent
+            value="competitions"
+            className="space-y-8 mt-6 focus-visible:outline-none focus-visible:ring-0"
+          >
             {/* Certificates Section */}
             {myCertificates.length > 0 && (
               <Card className="border-border/60 shadow-sm overflow-hidden">
                 <CardHeader className="bg-muted/30 pb-4 border-b border-border/40">
                   <CardTitle className="text-base font-semibold flex items-center gap-2">
-                    <Award className="w-5 h-5 text-yellow-500" /> My Certificates
+                    <Award className="w-5 h-5 text-yellow-500" /> My
+                    Certificates
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 grid gap-3">
@@ -343,7 +367,8 @@ export default function StudentDashboard() {
                           {cert.competitions?.name || 'Competition'}
                         </p>
                         <p className="text-xs text-muted-foreground mt-0.5">
-                          Issued: {format(new Date(cert.uploaded_at), 'MMM d, yyyy')}
+                          Issued:{' '}
+                          {format(new Date(cert.uploaded_at), 'MMM d, yyyy')}
                         </p>
                       </div>
                       <Button
@@ -361,7 +386,7 @@ export default function StudentDashboard() {
                           }
                         }}
                       >
-                        <Download className="w-3.5 h-3.5" /> 
+                        <Download className="w-3.5 h-3.5" />
                         <span className="hidden sm:inline">Download</span>
                       </Button>
                     </div>
@@ -373,9 +398,10 @@ export default function StudentDashboard() {
             {/* Upcoming Competitions Section */}
             <div className="space-y-4">
               <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-                <Swords className="w-5 h-5 text-primary" /> Upcoming Competitions
+                <Swords className="w-5 h-5 text-primary" /> Upcoming
+                Competitions
               </h3>
-              
+
               {compLoading ? (
                 <div className="flex justify-center py-12">
                   <Spinner size={24} className="text-primary/60" />
@@ -386,8 +412,12 @@ export default function StudentDashboard() {
                     <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto mb-3">
                       <Trophy className="w-6 h-6 text-muted-foreground/50" />
                     </div>
-                    <p className="text-sm font-medium text-foreground">No upcoming competitions</p>
-                    <p className="text-xs text-muted-foreground mt-1">Check back later for new events.</p>
+                    <p className="text-sm font-medium text-foreground">
+                      No upcoming competitions
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Check back later for new events.
+                    </p>
                   </CardContent>
                 </Card>
               ) : (
@@ -410,8 +440,8 @@ export default function StudentDashboard() {
                             />
                             <Badge
                               className={`absolute bottom-3 left-3 z-20 text-[10px] font-semibold tracking-wider uppercase border-none ${
-                                c.status === 'ongoing' 
-                                  ? 'bg-green-500 text-white' 
+                                c.status === 'ongoing'
+                                  ? 'bg-green-500 text-white'
                                   : 'bg-blue-500 text-white'
                               }`}
                             >
@@ -425,40 +455,47 @@ export default function StudentDashboard() {
                               <Badge
                                 variant="outline"
                                 className={`w-fit text-[10px] font-semibold tracking-wider uppercase ${
-                                  c.status === 'ongoing' 
-                                    ? 'bg-green-500/10 text-green-700 border-green-200' 
+                                  c.status === 'ongoing'
+                                    ? 'bg-green-500/10 text-green-700 border-green-200'
                                     : 'bg-blue-500/10 text-blue-700 border-blue-200'
                                 }`}
                               >
-                                {c.status === 'ongoing' ? 'Live Now' : 'Upcoming'}
+                                {c.status === 'ongoing'
+                                  ? 'Live Now'
+                                  : 'Upcoming'}
                               </Badge>
                             )}
                             <h4 className="font-bold text-base leading-tight text-foreground line-clamp-2">
                               {c.name}
                             </h4>
-                            
+
                             <div className="grid gap-2 mt-2">
                               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <Calendar className="w-4 h-4 text-muted-foreground/70 shrink-0" />
                                 <span className="truncate">
                                   {format(new Date(c.date), 'MMM d, yyyy')}
-                                  {c.end_date && ` – ${format(new Date(c.end_date), 'MMM d')}`}
+                                  {c.end_date &&
+                                    ` – ${format(new Date(c.end_date), 'MMM d')}`}
                                 </span>
                               </div>
                               {c.location_text && (
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                   <MapPin className="w-4 h-4 text-muted-foreground/70 shrink-0" />
-                                  <span className="truncate">{c.location_text}</span>
+                                  <span className="truncate">
+                                    {c.location_text}
+                                  </span>
                                 </div>
                               )}
                               {c.max_participants && (
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                   <User className="w-4 h-4 text-muted-foreground/70 shrink-0" />
-                                  <span>Max {c.max_participants} Participants</span>
+                                  <span>
+                                    Max {c.max_participants} Participants
+                                  </span>
                                 </div>
                               )}
                             </div>
-                            
+
                             {c.description && (
                               <p className="text-sm text-muted-foreground line-clamp-2 pt-2 border-t border-border/40 mt-3">
                                 {c.description}
@@ -483,7 +520,8 @@ export default function StudentDashboard() {
                           <div className="pt-2 mt-auto">
                             {isRegistered ? (
                               <div className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-green-500/10 text-green-700 font-semibold text-sm border border-green-500/20">
-                                <UserCheck className="w-4 h-4" /> You are Registered
+                                <UserCheck className="w-4 h-4" /> You are
+                                Registered
                               </div>
                             ) : (
                               <Button
@@ -491,7 +529,9 @@ export default function StudentDashboard() {
                                 onClick={() => registerMutation.mutate(c.id)}
                                 disabled={registerMutation.isPending}
                               >
-                                {registerMutation.isPending ? 'Registering...' : 'Register Now'}
+                                {registerMutation.isPending
+                                  ? 'Registering...'
+                                  : 'Register Now'}
                               </Button>
                             )}
                           </div>
@@ -522,10 +562,17 @@ export default function StudentDashboard() {
                         <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1.5">
                           <Calendar className="w-3 h-3" />
                           {format(new Date(c.date), 'MMM d, yyyy')}
-                          {c.location_text && <span className="truncate">· {c.location_text}</span>}
+                          {c.location_text && (
+                            <span className="truncate">
+                              · {c.location_text}
+                            </span>
+                          )}
                         </p>
                       </div>
-                      <Badge variant="secondary" className="text-[10px] shrink-0 font-medium">
+                      <Badge
+                        variant="secondary"
+                        className="text-[10px] shrink-0 font-medium"
+                      >
                         Completed
                       </Badge>
                     </div>
@@ -536,13 +583,19 @@ export default function StudentDashboard() {
           </TabsContent>
 
           {/* Remaining Tabs */}
-          <TabsContent value="progression" className="mt-6 focus-visible:outline-none">
+          <TabsContent
+            value="progression"
+            className="mt-6 focus-visible:outline-none"
+          >
             <StudentProgressionTracker />
           </TabsContent>
           <TabsContent value="fees" className="mt-6 focus-visible:outline-none">
             <StudentFeeHistory />
           </TabsContent>
-          <TabsContent value="events" className="mt-6 focus-visible:outline-none">
+          <TabsContent
+            value="events"
+            className="mt-6 focus-visible:outline-none"
+          >
             <StudentEventsView />
           </TabsContent>
         </Tabs>
@@ -563,7 +616,7 @@ export default function StudentDashboard() {
             </a>
           </p>
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background border border-border/50 shadow-sm">
-            <ShieldCheck className="h-3.5 w-3.5 text-green-600" /> 
+            <ShieldCheck className="h-3.5 w-3.5 text-green-600" />
             <span className="font-medium">Secure Connection</span>
           </div>
         </div>

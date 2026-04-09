@@ -154,7 +154,6 @@ const AdminLayout: React.FC = () => {
 
   return (
     <div className="admin-shell h-dvh w-full flex overflow-hidden bg-background text-foreground selection:bg-primary/20">
-
       {/* Sidebar Navigation */}
       <AppSidebar
         open={sidebarOpen}
@@ -177,11 +176,9 @@ const AdminLayout: React.FC = () => {
 
       {/* Main Layout Area */}
       <div className="flex-1 flex flex-col h-dvh min-w-0 transition-all duration-300">
-
         {/* Top Navigation Bar */}
         <header className="sticky top-0 z-30 border-b border-border/60 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/70 flex-shrink-0 shadow-sm transition-colors">
           <div className="flex h-16 items-center justify-between px-4 lg:px-8">
-
             {/* Left: Mobile menu + Page Title */}
             <div className="flex items-center gap-3">
               <button
@@ -195,7 +192,9 @@ const AdminLayout: React.FC = () => {
               <button
                 className="hidden lg:inline-flex items-center justify-center rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                aria-label={
+                  sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'
+                }
                 title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               >
                 {sidebarCollapsed ? (
@@ -226,7 +225,10 @@ const AdminLayout: React.FC = () => {
                 aria-label="Refresh data"
               >
                 <RefreshCw
-                  className={cn('w-4 h-4', isRefreshing && 'animate-spin text-primary')}
+                  className={cn(
+                    'w-4 h-4',
+                    isRefreshing && 'animate-spin text-primary'
+                  )}
                 />
               </button>
             </div>

@@ -2,7 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAdminAuth } from './AdminAuthProvider';
 import { Button } from '@/components/ui/button';
-import { Loader2, WifiOff, Eye, EyeOff, AlertCircle, ShieldAlert } from 'lucide-react';
+import {
+  Loader2,
+  WifiOff,
+  Eye,
+  EyeOff,
+  AlertCircle,
+  ShieldAlert,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
@@ -23,7 +30,7 @@ type LoginValues = Yup.InferType<typeof LoginSchema>;
 export default function AdminLogin() {
   const { signIn, isLoading, isAdmin } = useAdminAuth();
   const navigate = useNavigate();
-  
+
   // --- State ---
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [showPassword, setShowPassword] = useState(false);
@@ -48,10 +55,10 @@ export default function AdminLogin() {
       setError(null); // Clear offline error when connection returns
     };
     const handleOffline = () => setIsOnline(false);
-    
+
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
@@ -60,7 +67,7 @@ export default function AdminLogin() {
 
   // --- Submit Handler ---
   const handleSubmit = async (
-    values: LoginValues, 
+    values: LoginValues,
     { setSubmitting }: FormikHelpers<LoginValues>
   ) => {
     if (!isOnline) {
@@ -68,13 +75,16 @@ export default function AdminLogin() {
       setSubmitting(false);
       return;
     }
-    
+
     setError(null);
-    
+
     try {
       await signIn(values.email.trim(), values.password);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Authentication failed. Please verify your credentials.';
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Authentication failed. Please verify your credentials.';
       setError(message);
     } finally {
       setSubmitting(false);
@@ -83,7 +93,6 @@ export default function AdminLogin() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#050505] relative overflow-hidden px-4 py-8 font-sans selection:bg-yellow-500/20">
-      
       {/* Background Ambient Effects */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-yellow-600/10 rounded-full blur-[120px]" />
@@ -96,7 +105,6 @@ export default function AdminLogin() {
         transition={{ duration: 0.5, ease: 'easeOut' }}
         className="relative z-10 w-full max-w-md bg-[#0f0f0f]/90 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl shadow-black p-8 flex flex-col gap-8"
       >
-        
         {/* Logo & Header */}
         <div className="text-center space-y-4">
           <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto">
@@ -131,10 +139,12 @@ export default function AdminLogin() {
 
             return (
               <Form className="flex flex-col gap-5" noValidate>
-                
                 {/* Email Field */}
                 <div className="space-y-1.5">
-                  <label htmlFor="email" className="text-sm font-medium text-gray-300 ml-1">
+                  <label
+                    htmlFor="email"
+                    className="text-sm font-medium text-gray-300 ml-1"
+                  >
                     Email Address
                   </label>
                   <Field
@@ -159,7 +169,10 @@ export default function AdminLogin() {
 
                 {/* Password Field */}
                 <div className="space-y-1.5">
-                  <label htmlFor="password" className="text-sm font-medium text-gray-300 ml-1">
+                  <label
+                    htmlFor="password"
+                    className="text-sm font-medium text-gray-300 ml-1"
+                  >
                     Password
                   </label>
                   <div className="relative">
@@ -179,7 +192,9 @@ export default function AdminLogin() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      aria-label={
+                        showPassword ? 'Hide password' : 'Show password'
+                      }
                       className="absolute top-1/2 -translate-y-1/2 right-3 p-1.5 text-gray-500 hover:text-white rounded-md hover:bg-white/5 transition-colors"
                       tabIndex={-1}
                     >
@@ -197,7 +212,9 @@ export default function AdminLogin() {
                 {!isOnline && (
                   <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3 text-red-400 text-sm animate-in fade-in slide-in-from-top-1">
                     <WifiOff className="w-5 h-5 shrink-0" />
-                    <span className="font-medium">Connection lost. Please check your internet.</span>
+                    <span className="font-medium">
+                      Connection lost. Please check your internet.
+                    </span>
                   </div>
                 )}
 
@@ -249,7 +266,6 @@ export default function AdminLogin() {
             © {new Date().getFullYear()} Ghatak Sports Academy India
           </p>
         </div>
-        
       </motion.div>
     </div>
   );

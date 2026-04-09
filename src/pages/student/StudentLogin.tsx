@@ -19,7 +19,6 @@ import { Link } from 'react-router-dom';
 const BrandingPanel = React.memo(() => (
   <section className="hidden lg:flex flex-col justify-center h-full">
     <div className="relative overflow-hidden rounded-[2rem] border border-slate-700/50 bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 p-12 text-slate-100 shadow-2xl transition-all hover:shadow-indigo-500/10">
-      
       {/* Decorative Blur Effects */}
       <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-indigo-400/20 blur-3xl pointer-events-none" />
       <div className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-blue-500/20 blur-3xl pointer-events-none" />
@@ -35,7 +34,8 @@ const BrandingPanel = React.memo(() => (
             Track Progress, Fees, Events & Competitions.
           </h1>
           <p className="max-w-md text-base text-slate-300 leading-relaxed">
-            Securely log in to view your personal dashboard, manage upcoming events, and stay updated in one modern workspace.
+            Securely log in to view your personal dashboard, manage upcoming
+            events, and stay updated in one modern workspace.
           </p>
         </div>
 
@@ -45,14 +45,18 @@ const BrandingPanel = React.memo(() => (
               <ShieldCheck className="h-5 w-5 text-green-400" />
               <p className="text-sm font-semibold text-slate-200">Security</p>
             </div>
-            <p className="text-xs text-slate-400 font-medium">End-to-End Encrypted</p>
+            <p className="text-xs text-slate-400 font-medium">
+              End-to-End Encrypted
+            </p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm transition-colors hover:bg-white/10">
             <div className="flex items-center gap-2 mb-2">
               <GraduationCap className="h-5 w-5 text-blue-400" />
               <p className="text-sm font-semibold text-slate-200">Access</p>
             </div>
-            <p className="text-xs text-slate-400 font-medium">24x7 Availability</p>
+            <p className="text-xs text-slate-400 font-medium">
+              24x7 Availability
+            </p>
           </div>
         </div>
       </div>
@@ -64,7 +68,7 @@ BrandingPanel.displayName = 'BrandingPanel';
 
 export default function StudentLogin() {
   const { signIn, isLoading, isAuthenticated } = useStudentAuth();
-  
+
   const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -81,14 +85,15 @@ export default function StudentLogin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (submitting || isLoading) return;
-    
+
     setError(null);
     setSubmitting(true);
-    
+
     try {
       await signIn(loginId.trim(), password);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Login failed. Please try again.';
+      const message =
+        err instanceof Error ? err.message : 'Login failed. Please try again.';
       setError(message);
     } finally {
       setSubmitting(false);
@@ -99,16 +104,13 @@ export default function StudentLogin() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-indigo-50/80 font-sans text-slate-900 selection:bg-primary/20">
-      
       <div className="mx-auto grid min-h-screen w-full max-w-7xl items-center gap-8 px-4 py-8 sm:px-6 lg:grid-cols-2 lg:px-12">
-        
         {/* Left Side: Static Branding */}
         <BrandingPanel />
 
         {/* Right Side: Interactive Form */}
         <section className="mx-auto w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="rounded-[2rem] border border-border/50 bg-background/80 p-6 sm:p-10 shadow-2xl shadow-indigo-500/5 backdrop-blur-xl">
-            
             {/* Header */}
             <div className="mb-8 text-center space-y-3">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 shadow-inner">
@@ -124,9 +126,11 @@ export default function StudentLogin() {
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-              
               <div className="space-y-2">
-                <label htmlFor="loginId" className="text-sm font-semibold text-foreground">
+                <label
+                  htmlFor="loginId"
+                  className="text-sm font-semibold text-foreground"
+                >
                   Student ID
                 </label>
                 <Input
@@ -145,7 +149,10 @@ export default function StudentLogin() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="text-sm font-semibold text-foreground">
+                  <label
+                    htmlFor="password"
+                    className="text-sm font-semibold text-foreground"
+                  >
                     Password
                   </label>
                 </div>
@@ -164,10 +171,16 @@ export default function StudentLogin() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword ? 'Hide password' : 'Show password'
+                    }
                     className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -204,7 +217,10 @@ export default function StudentLogin() {
             <div className="mt-8 rounded-xl bg-blue-50/50 p-4 border border-blue-100/50 flex gap-3 items-start">
               <Info className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
               <div className="text-sm text-blue-900/80">
-                <span className="font-semibold text-blue-900">First time here?</span> Your default password is{' '}
+                <span className="font-semibold text-blue-900">
+                  First time here?
+                </span>{' '}
+                Your default password is{' '}
                 <code className="bg-blue-100 text-blue-900 px-1.5 py-0.5 rounded font-bold tracking-wide">
                   GSAI-STUDENT-2026
                 </code>
@@ -234,7 +250,6 @@ export default function StudentLogin() {
                 </a>
               </p>
             </div>
-
           </div>
         </section>
       </div>

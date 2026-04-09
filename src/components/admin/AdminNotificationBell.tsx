@@ -41,20 +41,23 @@ export default function AdminNotificationBell() {
   const total = (data?.pendingEnrollments ?? 0) + (data?.unpaidFees ?? 0);
   const hasNotifications = total > 0;
 
-  const items = useMemo(() => [
-    {
-      label: 'Pending Enrollments',
-      count: data?.pendingEnrollments ?? 0,
-      path: '/admin/dashboard/enrollments',
-      color: 'bg-amber-500',
-    },
-    {
-      label: 'Unpaid Fees',
-      count: data?.unpaidFees ?? 0,
-      path: '/admin/dashboard/fees',
-      color: 'bg-destructive',
-    },
-  ], [data]);
+  const items = useMemo(
+    () => [
+      {
+        label: 'Pending Enrollments',
+        count: data?.pendingEnrollments ?? 0,
+        path: '/admin/dashboard/enrollments',
+        color: 'bg-amber-500',
+      },
+      {
+        label: 'Unpaid Fees',
+        count: data?.unpaidFees ?? 0,
+        path: '/admin/dashboard/fees',
+        color: 'bg-destructive',
+      },
+    ],
+    [data]
+  );
 
   return (
     <Popover>
@@ -63,16 +66,26 @@ export default function AdminNotificationBell() {
           type="button"
           className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
           title="Notifications"
-          aria-label={hasNotifications ? `You have ${total} unread notifications` : "No new notifications"}
+          aria-label={
+            hasNotifications
+              ? `You have ${total} unread notifications`
+              : 'No new notifications'
+          }
         >
           {isLoading ? (
             <Loader2 className="w-4 h-4 animate-spin text-muted-foreground/50" />
           ) : isError ? (
             <AlertCircle className="w-4 h-4 text-destructive/70" />
           ) : (
-            <Bell className={cn("w-[18px] h-[18px] transition-transform", hasNotifications && "text-foreground animate-[ring_4s_ease-in-out_infinite] origin-top")} />
+            <Bell
+              className={cn(
+                'w-[18px] h-[18px] transition-transform',
+                hasNotifications &&
+                  'text-foreground animate-[ring_4s_ease-in-out_infinite] origin-top'
+              )}
+            />
           )}
-          
+
           {hasNotifications && !isLoading && !isError && (
             <span className="absolute right-1 top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full border-2 border-background bg-destructive px-1 text-[9px] font-bold text-destructive-foreground shadow-sm">
               {total > 99 ? '99+' : total}
@@ -80,9 +93,9 @@ export default function AdminNotificationBell() {
           )}
         </button>
       </PopoverTrigger>
-      
-      <PopoverContent 
-        align="end" 
+
+      <PopoverContent
+        align="end"
         sideOffset={8}
         className="w-72 p-0 rounded-2xl overflow-hidden border-border/60 shadow-lg shadow-black/5"
       >
@@ -111,8 +124,8 @@ export default function AdminNotificationBell() {
                 to={item.path}
                 className={cn(
                   'group flex items-center justify-between rounded-xl px-3 py-2.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
-                  isZero 
-                    ? 'opacity-60 grayscale hover:opacity-100 hover:grayscale-0' 
+                  isZero
+                    ? 'opacity-60 grayscale hover:opacity-100 hover:grayscale-0'
                     : 'hover:bg-muted/50 hover:shadow-sm'
                 )}
               >
@@ -122,7 +135,9 @@ export default function AdminNotificationBell() {
                 <span
                   className={cn(
                     'inline-flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[11px] font-bold text-white shadow-sm transition-transform group-hover:scale-110',
-                    !isZero ? item.color : 'bg-muted-foreground/30 text-foreground shadow-none'
+                    !isZero
+                      ? item.color
+                      : 'bg-muted-foreground/30 text-foreground shadow-none'
                   )}
                 >
                   {item.count}
@@ -138,8 +153,12 @@ export default function AdminNotificationBell() {
             <div className="mx-auto mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/10">
               <Bell className="h-4 w-4 text-emerald-600" />
             </div>
-            <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">All caught up!</p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">No pending tasks found.</p>
+            <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+              All caught up!
+            </p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              No pending tasks found.
+            </p>
           </div>
         )}
       </PopoverContent>

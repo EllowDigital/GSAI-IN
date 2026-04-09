@@ -29,16 +29,16 @@ export const PageTracker: React.FC = () => {
 
     /**
      * 3. Sync Delay
-     * We wrap this in a small timeout/requestAnimationFrame because 
+     * We wrap this in a small timeout/requestAnimationFrame because
      * document.title often updates slightly AFTER the route change completes.
      * This ensures GA4 doesn't log the title of the previous page.
      */
     const trackingTimeout = setTimeout(() => {
       const pageTitle = document.title || 'GSAI Portal';
-      
+
       // Execute the GTM Push
       trackPageView(currentPath, pageTitle);
-      
+
       // Update the reference
       lastTrackedPath.current = currentPath;
     }, 100);

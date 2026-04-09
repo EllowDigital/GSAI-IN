@@ -34,19 +34,84 @@ import {
 // --- Static Data ---
 const navItems = [
   { title: 'Dashboard', url: '/admin/dashboard', icon: Home, category: 'main' },
-  { title: 'Enrollments', url: '/admin/dashboard/enrollments', icon: UserPlus, category: 'manage' },
-  { title: 'Students', url: '/admin/dashboard/students', icon: Users, category: 'manage' },
-  { title: 'Fees', url: '/admin/dashboard/fees', icon: BadgeDollarSign, category: 'manage' },
-  { title: 'Progression', url: '/admin/dashboard/progression', icon: Trophy, category: 'manage' },
-  { title: 'Disciplines', url: '/admin/dashboard/disciplines', icon: Dumbbell, category: 'manage' },
-  { title: 'Events', url: '/admin/dashboard/events', icon: Calendar, category: 'content' },
-  { title: 'Competitions', url: '/admin/dashboard/competitions', icon: Swords, category: 'content' },
-  { title: 'Blogs', url: '/admin/dashboard/blogs', icon: BookOpen, category: 'content' },
-  { title: 'News', url: '/admin/dashboard/news', icon: Newspaper, category: 'content' },
-  { title: 'Gallery', url: '/admin/dashboard/gallery', icon: GalleryIcon, category: 'content' },
-  { title: 'Testimonials', url: '/admin/dashboard/testimonials', icon: MessageSquare, category: 'content' },
-  { title: 'Announcements', url: '/admin/dashboard/announcements', icon: Megaphone, category: 'content' },
-  { title: 'About', url: '/admin/dashboard/about', icon: Info, category: 'about' },
+  {
+    title: 'Enrollments',
+    url: '/admin/dashboard/enrollments',
+    icon: UserPlus,
+    category: 'manage',
+  },
+  {
+    title: 'Students',
+    url: '/admin/dashboard/students',
+    icon: Users,
+    category: 'manage',
+  },
+  {
+    title: 'Fees',
+    url: '/admin/dashboard/fees',
+    icon: BadgeDollarSign,
+    category: 'manage',
+  },
+  {
+    title: 'Progression',
+    url: '/admin/dashboard/progression',
+    icon: Trophy,
+    category: 'manage',
+  },
+  {
+    title: 'Disciplines',
+    url: '/admin/dashboard/disciplines',
+    icon: Dumbbell,
+    category: 'manage',
+  },
+  {
+    title: 'Events',
+    url: '/admin/dashboard/events',
+    icon: Calendar,
+    category: 'content',
+  },
+  {
+    title: 'Competitions',
+    url: '/admin/dashboard/competitions',
+    icon: Swords,
+    category: 'content',
+  },
+  {
+    title: 'Blogs',
+    url: '/admin/dashboard/blogs',
+    icon: BookOpen,
+    category: 'content',
+  },
+  {
+    title: 'News',
+    url: '/admin/dashboard/news',
+    icon: Newspaper,
+    category: 'content',
+  },
+  {
+    title: 'Gallery',
+    url: '/admin/dashboard/gallery',
+    icon: GalleryIcon,
+    category: 'content',
+  },
+  {
+    title: 'Testimonials',
+    url: '/admin/dashboard/testimonials',
+    icon: MessageSquare,
+    category: 'content',
+  },
+  {
+    title: 'Announcements',
+    url: '/admin/dashboard/announcements',
+    icon: Megaphone,
+    category: 'content',
+  },
+  {
+    title: 'About',
+    url: '/admin/dashboard/about',
+    icon: Info,
+    category: 'about',
+  },
 ];
 
 // Pre-filter to avoid unnecessary recalculations on render
@@ -83,9 +148,10 @@ function FooterAction({
   label,
   tone = 'default',
 }: FooterActionProps) {
-  const baseTone = tone === 'danger'
-    ? 'text-destructive/80 hover:text-destructive hover:bg-destructive/10 focus-visible:ring-destructive/50'
-    : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent focus-visible:ring-sidebar-ring';
+  const baseTone =
+    tone === 'danger'
+      ? 'text-destructive/80 hover:text-destructive hover:bg-destructive/10 focus-visible:ring-destructive/50'
+      : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent focus-visible:ring-sidebar-ring';
 
   const classes = cn(
     'flex w-full items-center rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2',
@@ -101,11 +167,21 @@ function FooterAction({
   );
 
   const trigger = href ? (
-    <a href={href} target="_blank" rel="noreferrer" className={classes} aria-label={collapsed ? label : undefined}>
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className={classes}
+      aria-label={collapsed ? label : undefined}
+    >
       {content}
     </a>
   ) : (
-    <button onClick={onClick} className={classes} aria-label={collapsed ? label : undefined}>
+    <button
+      onClick={onClick}
+      className={classes}
+      aria-label={collapsed ? label : undefined}
+    >
       {content}
     </button>
   );
@@ -176,8 +252,12 @@ function NavSection({
                     <Icon
                       className={cn(
                         'shrink-0 transition-colors',
-                        collapsed ? 'h-4 w-4 text-sidebar-foreground/70 group-hover:text-sidebar-foreground' : 'h-4 w-4',
-                        isActive && collapsed && 'text-sidebar-primary-foreground'
+                        collapsed
+                          ? 'h-4 w-4 text-sidebar-foreground/70 group-hover:text-sidebar-foreground'
+                          : 'h-4 w-4',
+                        isActive &&
+                          collapsed &&
+                          'text-sidebar-primary-foreground'
                       )}
                     />
                   </span>
@@ -269,10 +349,30 @@ export function AppSidebar({
 
         {/* Scrollable Navigation */}
         <ScrollArea className="flex-1 min-h-0 pt-4">
-          <NavSection label="Overview" items={NAV_GROUPS.main} setOpen={setOpen} collapsed={collapsed} />
-          <NavSection label="Management" items={NAV_GROUPS.manage} setOpen={setOpen} collapsed={collapsed} />
-          <NavSection label="Content" items={NAV_GROUPS.content} setOpen={setOpen} collapsed={collapsed} />
-          <NavSection label="System" items={NAV_GROUPS.about} setOpen={setOpen} collapsed={collapsed} />
+          <NavSection
+            label="Overview"
+            items={NAV_GROUPS.main}
+            setOpen={setOpen}
+            collapsed={collapsed}
+          />
+          <NavSection
+            label="Management"
+            items={NAV_GROUPS.manage}
+            setOpen={setOpen}
+            collapsed={collapsed}
+          />
+          <NavSection
+            label="Content"
+            items={NAV_GROUPS.content}
+            setOpen={setOpen}
+            collapsed={collapsed}
+          />
+          <NavSection
+            label="System"
+            items={NAV_GROUPS.about}
+            setOpen={setOpen}
+            collapsed={collapsed}
+          />
         </ScrollArea>
 
         {/* Footer Area */}

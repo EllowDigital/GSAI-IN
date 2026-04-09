@@ -4,15 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/services/supabase/client';
-import { 
-  Loader2, 
-  Lock, 
-  Eye, 
-  EyeOff, 
-  ShieldCheck, 
+import {
+  Loader2,
+  Lock,
+  Eye,
+  EyeOff,
+  ShieldCheck,
   ArrowLeft,
   AlertCircle,
-  Info
+  Info,
 } from 'lucide-react';
 import { toast } from '@/hooks/useToast';
 import {
@@ -22,13 +22,13 @@ import {
 
 export default function StudentSetPassword() {
   const navigate = useNavigate();
-  
+
   // State
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   const [checkingSession, setCheckingSession] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -97,10 +97,15 @@ export default function StudentSetPassword() {
       if (error) throw error;
 
       await supabase.auth.signOut();
-      toast.success('Password set successfully. Please sign in with your new password.');
+      toast.success(
+        'Password set successfully. Please sign in with your new password.'
+      );
       navigate('/student/login', { replace: true });
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to set password. Please try again.';
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Failed to set password. Please try again.';
       setFormError(message);
       toast.error('An error occurred while saving your password.');
     } finally {
@@ -115,7 +120,9 @@ export default function StudentSetPassword() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50/50 space-y-4">
         <Loader2 className="h-8 w-8 animate-spin text-primary/60" />
-        <p className="text-sm font-medium text-muted-foreground animate-pulse">Verifying secure session...</p>
+        <p className="text-sm font-medium text-muted-foreground animate-pulse">
+          Verifying secure session...
+        </p>
       </div>
     );
   }
@@ -125,7 +132,6 @@ export default function StudentSetPassword() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-slate-100 to-indigo-50/80 px-4 py-8 font-sans selection:bg-primary/20">
       <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="rounded-[2rem] border border-border/50 bg-background/80 p-6 sm:p-10 shadow-2xl shadow-indigo-500/5 backdrop-blur-xl">
-          
           {/* Header */}
           <div className="mb-8 text-center space-y-3">
             <div className="mx-auto flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-indigo-500/10 shadow-inner">
@@ -135,16 +141,19 @@ export default function StudentSetPassword() {
               Set Your Password
             </h1>
             <p className="text-sm text-muted-foreground font-medium max-w-[16rem] mx-auto">
-              Create a strong, permanent password to secure your student account.
+              Create a strong, permanent password to secure your student
+              account.
             </p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-            
             {/* New Password Input */}
             <div className="space-y-2">
-              <Label htmlFor="new-password" className="text-sm font-semibold text-foreground">
+              <Label
+                htmlFor="new-password"
+                className="text-sm font-semibold text-foreground"
+              >
                 New Password
               </Label>
               <div className="relative">
@@ -167,17 +176,24 @@ export default function StudentSetPassword() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
 
             {/* Confirm Password Input */}
             <div className="space-y-2">
-              <Label htmlFor="confirm-password" className="text-sm font-semibold text-foreground">
+              <Label
+                htmlFor="confirm-password"
+                className="text-sm font-semibold text-foreground"
+              >
                 Confirm Password
               </Label>
               <div className="relative">
@@ -199,10 +215,16 @@ export default function StudentSetPassword() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  aria-label={
+                    showConfirmPassword ? 'Hide password' : 'Show password'
+                  }
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
                 >
-                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -211,7 +233,12 @@ export default function StudentSetPassword() {
             <div className="rounded-xl bg-slate-50 p-3 border border-border/50 flex gap-2.5 items-start">
               <Info className="h-4 w-4 text-slate-500 shrink-0 mt-0.5" />
               <p className="text-[11px] sm:text-xs text-slate-600 font-medium leading-relaxed">
-                Password must be at least <strong className="text-slate-800">{MIN_PASSWORD_LENGTH} characters</strong> long. We recommend using a mix of letters, numbers, and symbols for better security.
+                Password must be at least{' '}
+                <strong className="text-slate-800">
+                  {MIN_PASSWORD_LENGTH} characters
+                </strong>{' '}
+                long. We recommend using a mix of letters, numbers, and symbols
+                for better security.
               </p>
             </div>
 
@@ -224,9 +251,9 @@ export default function StudentSetPassword() {
             )}
 
             {/* Submit Button */}
-            <Button 
-              type="submit" 
-              className="h-12 w-full rounded-xl gap-2 font-semibold text-base shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0" 
+            <Button
+              type="submit"
+              className="h-12 w-full rounded-xl gap-2 font-semibold text-base shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
               disabled={isDisabled}
             >
               {submitting ? (

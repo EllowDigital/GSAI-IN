@@ -10,7 +10,9 @@ interface AdminBackToTopButtonProps {
   targetId?: string;
 }
 
-export default function AdminBackToTopButton({ targetId }: AdminBackToTopButtonProps) {
+export default function AdminBackToTopButton({
+  targetId,
+}: AdminBackToTopButtonProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -30,7 +32,7 @@ export default function AdminBackToTopButton({ targetId }: AdminBackToTopButtonP
 
     // Passive listener improves scrolling performance
     target.addEventListener('scroll', handleScroll, { passive: true });
-    
+
     // Initial check in case the page loads already scrolled
     handleScroll();
 

@@ -43,7 +43,7 @@ interface UnpaidFeeDB {
   year: number;
   monthly_fee: number | null;
   paid_amount: number | null;
-  students: StudentDB; 
+  students: StudentDB;
 }
 
 interface StudentProgressDB {
@@ -66,7 +66,8 @@ export default function DashboardNotifications() {
       // 1. Fetch unpaid fees with student names
       const { data: unpaidFees, error: feesError } = await supabase
         .from('fees')
-        .select(`
+        .select(
+          `
           id, 
           student_id,
           month,
@@ -74,7 +75,8 @@ export default function DashboardNotifications() {
           monthly_fee,
           paid_amount,
           students!inner(name)
-        `)
+        `
+        )
         .or('status.eq.unpaid,status.eq.partial')
         .order('year', { ascending: false })
         .order('month', { ascending: false })
@@ -84,17 +86,21 @@ export default function DashboardNotifications() {
 
       if (unpaidFees && unpaidFees.length > 0) {
         const typedUnpaidFees = unpaidFees as unknown as UnpaidFeeDB[];
-        
+
         // Group by student
-        const studentUnpaid = typedUnpaidFees.reduce((acc, fee) => {
-          const studentName = fee.students?.name || 'Unknown Student';
-          if (!acc[fee.student_id]) {
-            acc[fee.student_id] = { name: studentName, count: 0, total: 0 };
-          }
-          acc[fee.student_id].count += 1;
-          acc[fee.student_id].total += (fee.monthly_fee || 0) - (fee.paid_amount || 0);
-          return acc;
-        }, {} as Record<string, { name: string; count: number; total: number }>);
+        const studentUnpaid = typedUnpaidFees.reduce(
+          (acc, fee) => {
+            const studentName = fee.students?.name || 'Unknown Student';
+            if (!acc[fee.student_id]) {
+              acc[fee.student_id] = { name: studentName, count: 0, total: 0 };
+            }
+            acc[fee.student_id].count += 1;
+            acc[fee.student_id].total +=
+              (fee.monthly_fee || 0) - (fee.paid_amount || 0);
+            return acc;
+          },
+          {} as Record<string, { name: string; count: number; total: number }>
+        );
 
         const studentsWithUnpaid = Object.entries(studentUnpaid);
 
@@ -125,14 +131,16 @@ export default function DashboardNotifications() {
       // 2. Fetch students ready for belt tests
       const { data: readyForTest, error: testError } = await supabase
         .from('student_progress')
-        .select(`
+        .select(
+          `
           id,
           student_id,
           status,
           stripe_count,
           students!inner(name),
           belt_levels!inner(color, rank)
-        `)
+        `
+        )
         .eq('status', 'ready')
         .limit(20);
 
@@ -146,7 +154,8 @@ export default function DashboardNotifications() {
             id: 'belt-test-summary',
             type: 'belt_test',
             title: `${typedTests.length} students ready for belt tests`,
-            description: 'Schedule assessments for students who have completed requirements',
+            description:
+              'Schedule assessments for students who have completed requirements',
             link: '/admin/dashboard/progression',
             severity: 'info',
             count: typedTests.length,
@@ -170,13 +179,15 @@ export default function DashboardNotifications() {
       // 3. Check for students with 4 stripes (max before promotion)
       const { data: maxStripes, error: stripesError } = await supabase
         .from('student_progress')
-        .select(`
+        .select(
+          `
           id,
           student_id,
           stripe_count,
           students!inner(name),
           belt_levels!inner(color)
-        `)
+        `
+        )
         .gte('stripe_count', 4)
         .neq('status', 'completed')
         .limit(10);
@@ -201,10 +212,12 @@ export default function DashboardNotifications() {
 
       return notifs;
     },
-    refetchInterval: 60000, 
+    refetchInterval: 60000,
   });
 
-  const visibleNotifications = notifications.filter((n) => !dismissedIds.has(n.id));
+  const visibleNotifications = notifications.filter(
+    (n) => !dismissedIds.has(n.id)
+  );
 
   const handleDismiss = (id: string) => {
     setDismissedIds((prev) => new Set([...prev, id]));
@@ -251,8 +264,12 @@ export default function DashboardNotifications() {
               <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-foreground">Inbox Zero</p>
-              <p className="text-xs text-muted-foreground mt-1">You are all caught up on notifications!</p>
+              <p className="text-sm font-semibold text-foreground">
+                Inbox Zero
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                You are all caught up on notifications!
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -270,7 +287,10 @@ export default function DashboardNotifications() {
             <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5 rounded-full bg-destructive border-2 border-background" />
           </div>
           Action Center
-          <Badge variant="secondary" className="ml-1 text-[11px] px-2 font-bold">
+          <Badge
+            variant="secondary"
+            className="ml-1 text-[11px] px-2 font-bold"
+          >
             {visibleNotifications.length}
           </Badge>
         </h2>
@@ -289,7 +309,7 @@ export default function DashboardNotifications() {
           <Card
             key={notification.id}
             className={cn(
-              "group relative overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md rounded-2xl border",
+              'group relative overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md rounded-2xl border',
               notification.severity === 'warning'
                 ? 'border-amber-200/50 bg-amber-50/30 dark:border-amber-900/30 dark:bg-amber-950/10 hover:border-amber-300/50'
                 : 'border-blue-200/50 bg-blue-50/30 dark:border-blue-900/30 dark:bg-blue-950/10 hover:border-blue-300/50'
@@ -297,11 +317,10 @@ export default function DashboardNotifications() {
           >
             <CardContent className="p-4 sm:p-5">
               <div className="flex items-start gap-3 sm:gap-4">
-                
                 {/* Icon */}
                 <div
                   className={cn(
-                    "shrink-0 p-2.5 rounded-xl shadow-sm",
+                    'shrink-0 p-2.5 rounded-xl shadow-sm',
                     notification.severity === 'warning'
                       ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400'
                       : 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400'
@@ -335,18 +354,21 @@ export default function DashboardNotifications() {
                         <ChevronRight className="w-3.5 h-3.5 ml-1 -mr-1 opacity-60" />
                       </Link>
                     </Button>
-                    
+
                     {notification.count && notification.count > 1 && (
                       <Badge
                         variant="outline"
                         className={cn(
-                          "text-[10px] font-bold uppercase tracking-wider",
+                          'text-[10px] font-bold uppercase tracking-wider',
                           notification.severity === 'warning'
                             ? 'border-amber-300 text-amber-700 dark:border-amber-700 dark:text-amber-400'
                             : 'border-blue-300 text-blue-700 dark:border-blue-700 dark:text-blue-400'
                         )}
                       >
-                        {notification.count} {notification.type === 'unpaid_fee' ? 'Students' : 'Ready'}
+                        {notification.count}{' '}
+                        {notification.type === 'unpaid_fee'
+                          ? 'Students'
+                          : 'Ready'}
                       </Badge>
                     )}
                   </div>

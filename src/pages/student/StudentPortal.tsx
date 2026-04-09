@@ -30,7 +30,7 @@ export default function StudentPortal() {
           <Route path="login" element={<StudentLogin />} />
           <Route path="set-password" element={<StudentSetPassword />} />
           <Route path="dashboard" element={<StudentDashboard />} />
-          
+
           {/* Redirects */}
           {/* If the user is logged in, the StudentAuthProvider will intercept 
               this login redirect and securely send them to the dashboard. */}

@@ -23,11 +23,11 @@ export interface StudentAuthContextType {
   signOut: () => Promise<void>;
 }
 
-// We initialize with `undefined` instead of mock functions. 
+// We initialize with `undefined` instead of mock functions.
 // This forces the app to fail loudly if the Provider is missing, rather than failing silently.
-export const StudentAuthContext = createContext<StudentAuthContextType | undefined>(
-  undefined
-);
+export const StudentAuthContext = createContext<
+  StudentAuthContextType | undefined
+>(undefined);
 
 /**
  * Custom hook to access the Student Authentication Context.
@@ -36,13 +36,13 @@ export const StudentAuthContext = createContext<StudentAuthContextType | undefin
  */
 export function useStudentAuth(): StudentAuthContextType {
   const context = useContext(StudentAuthContext);
-  
+
   if (context === undefined) {
     throw new Error(
       'useStudentAuth must be used within a <StudentAuthProvider>. ' +
-      'Please ensure your component tree is wrapped with the provider.'
+        'Please ensure your component tree is wrapped with the provider.'
     );
   }
-  
+
   return context;
 }

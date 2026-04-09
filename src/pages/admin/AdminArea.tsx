@@ -47,10 +47,10 @@ const AdminArea = () => {
         <Routes>
           {/* Base Redirect */}
           <Route index element={<Navigate to="dashboard" replace />} />
-          
+
           {/* Public/Auth Route */}
           <Route path="login" element={<AdminLogin />} />
-          
+
           {/* Protected Dashboard Routes */}
           <Route path="dashboard" element={<AdminLayout />}>
             <Route index element={<DashboardHome />} />
@@ -59,7 +59,7 @@ const AdminArea = () => {
             <Route path="fees" element={<FeesManager />} />
             <Route path="progression" element={<Progression />} />
             <Route path="disciplines" element={<Disciplines />} />
-            
+
             <Route path="events" element={<Events />} />
             <Route path="competitions" element={<Competitions />} />
             <Route path="blogs" element={<Blogs />} />

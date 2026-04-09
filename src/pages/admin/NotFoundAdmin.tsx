@@ -3,7 +3,6 @@ import { AlertTriangle, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function NotFoundAdmin() {
-  
   // --- Dynamic Page Title ---
   useEffect(() => {
     document.title = 'Page Not Found | GSAI Admin';
@@ -12,7 +11,6 @@ export default function NotFoundAdmin() {
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 px-4 font-sans selection:bg-amber-500/20">
       <div className="text-center max-w-md animate-in fade-in slide-in-from-bottom-4 duration-500">
-        
         {/* Icon Container with Pulse Effect */}
         <div className="mb-8 flex justify-center">
           <div className="relative">
@@ -31,7 +29,8 @@ export default function NotFoundAdmin() {
           Page Not Found
         </h2>
         <p className="text-base text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
-          Sorry, the admin page you are looking for doesn't exist, requires different permissions, or has been moved.
+          Sorry, the admin page you are looking for doesn't exist, requires
+          different permissions, or has been moved.
         </p>
 
         {/* Action Button */}
@@ -42,7 +41,6 @@ export default function NotFoundAdmin() {
           <ArrowLeft className="w-4 h-4" />
           Return to Dashboard
         </Link>
-        
       </div>
     </div>
   );

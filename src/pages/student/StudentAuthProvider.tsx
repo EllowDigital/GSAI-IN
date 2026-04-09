@@ -38,11 +38,11 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [authAnimation, setAuthAnimation] = useState<AuthAnimationState>(null);
-  
+
   // --- Refs ---
   const authTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isSigningOut = useRef(false);
-  
+
   // --- Hooks ---
   const navigate = useNavigate();
   const location = useLocation();
@@ -110,7 +110,10 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
         );
 
         // Safely cast the response now that we know it didn't time out
-        const { data, error } = response as { data: StudentPortalAccount | null; error: any };
+        const { data, error } = response as {
+          data: StudentPortalAccount | null;
+          error: any;
+        };
 
         if (error || !data) {
           console.error('Failed to load profile:', error);
@@ -123,7 +126,7 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
           studentName: data.students?.name || 'Student',
           program: data.students?.program || 'Unassigned',
         };
-        
+
         cacheStudentProfile(nextProfile);
         return nextProfile;
       } catch (err) {
@@ -145,15 +148,15 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
           AUTH_TIMEOUT_MS,
           'Loading student session timed out.'
         );
-        
+
         if (!mounted) return;
-        
+
         const sess = data.session;
         setSession(sess);
 
         if (sess) {
           const currentPath = window.location.pathname;
-          
+
           if (requiresPasswordSetup(sess)) {
             if (currentPath !== '/student/set-password') {
               navigate('/student/set-password', { replace: true });
@@ -166,7 +169,11 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
 
           if (prof) {
             setProfile(prof);
-            if (['/student/login', '/student', '/student/set-password'].includes(currentPath)) {
+            if (
+              ['/student/login', '/student', '/student/set-password'].includes(
+                currentPath
+              )
+            ) {
               navigate('/student/dashboard', { replace: true });
             }
           } else {
@@ -179,7 +186,7 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
         }
       } catch (error) {
         if (!mounted) return;
-        
+
         if (isTimeoutError(error)) {
           const cached = getCachedStudentProfile();
           if (cached) {
@@ -206,9 +213,9 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
     const { data: listener } = supabase.auth.onAuthStateChange(
       async (_event, newSession) => {
         if (!mounted || isSigningOut.current) return;
-        
+
         setSession(newSession);
-        
+
         if (newSession) {
           const currentPath = window.location.pathname;
           if (requiresPasswordSetup(newSession)) {
@@ -217,7 +224,7 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
             }
             return; // Stop execution here if password setup is needed
           }
-          
+
           const prof = await loadProfile(newSession.user.id);
           if (mounted) setProfile(prof);
         } else {
@@ -252,16 +259,17 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     try {
       const email = `${loginId.toLowerCase().trim()}@student.gsai.app`;
-      
+
       const response = await withTimeout(
         supabase.auth.signInWithPassword({ email, password }),
         AUTH_TIMEOUT_MS,
         'Login request timed out. Please check your connection and try again.'
       );
-      
+
       const { data, error } = response;
       if (error) throw new Error(error.message);
-      if (!data.session || !data.user) throw new Error('Failed to establish session.');
+      if (!data.session || !data.user)
+        throw new Error('Failed to establish session.');
 
       if (requiresPasswordSetup(data.session)) {
         navigate('/student/set-password', { replace: true });
@@ -273,15 +281,16 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
         await supabase.auth.signOut();
         throw new Error('No student account linked to this login.');
       }
-      
+
       setProfile(prof);
       cacheStudentProfile(prof);
       triggerAnimation('login', `Welcome back, ${prof.studentName}!`, 1000);
       navigate('/student/dashboard', { replace: true });
-      
     } catch (error) {
       if (isTimeoutError(error)) {
-        throw new Error('Login timed out. Please check your internet connection.');
+        throw new Error(
+          'Login timed out. Please check your internet connection.'
+        );
       }
       throw error;
     } finally {
@@ -305,10 +314,11 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
       setProfile(null);
       cacheStudentProfile(null);
       setAuthAnimation(null);
-      
+
       navigate('/student/login', { replace: true });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unexpected error';
+      const message =
+        error instanceof Error ? error.message : 'Unexpected error';
       toast.error(`Sign out failed: ${message}`);
     } finally {
       setIsLoading(false);

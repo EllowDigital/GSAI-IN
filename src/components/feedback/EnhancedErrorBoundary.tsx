@@ -1,12 +1,12 @@
 import React, { Component, ReactNode, ErrorInfo } from 'react';
-import { 
-  AlertTriangle, 
-  RefreshCw, 
-  Home, 
-  Bug, 
-  Copy, 
-  CheckCircle2, 
-  PhoneCall 
+import {
+  AlertTriangle,
+  RefreshCw,
+  Home,
+  Bug,
+  Copy,
+  CheckCircle2,
+  PhoneCall,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -44,7 +44,7 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     const errorId = `ERR-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
-    
+
     this.setState({ errorInfo, errorId });
 
     // Custom error logging (e.g., Sentry, Datadog)
@@ -88,14 +88,17 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
       return (
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans">
           <div className="max-w-2xl w-full bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-500">
-            
             {/* Visual Indicator */}
             <div className="bg-gradient-to-br from-rose-500 to-orange-500 p-10 text-center text-white">
               <div className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center mx-auto mb-6 rotate-3">
                 <AlertTriangle className="w-10 h-10 stroke-[2.5px]" />
               </div>
-              <h1 className="text-3xl font-extrabold tracking-tight mb-2">Unexpected Error</h1>
-              <p className="text-rose-100 font-medium">The application encountered a runtime exception.</p>
+              <h1 className="text-3xl font-extrabold tracking-tight mb-2">
+                Unexpected Error
+              </h1>
+              <p className="text-rose-100 font-medium">
+                The application encountered a runtime exception.
+              </p>
             </div>
 
             <div className="p-10">
@@ -111,7 +114,7 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => window.location.href = '/'}
+                    onClick={() => (window.location.href = '/')}
                     className="h-14 rounded-2xl border-2 border-slate-200 hover:bg-slate-50 font-bold transition-all active:scale-95"
                   >
                     <Home className="w-5 h-5 mr-2" />
@@ -122,25 +125,37 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
                 {/* Support Info */}
                 <div className="bg-slate-50 rounded-[1.5rem] p-6 border border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="text-center sm:text-left">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Support Identifier</p>
-                    <code className="text-lg font-mono font-bold text-slate-700">{errorId || 'GENERATING...'}</code>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
+                      Support Identifier
+                    </p>
+                    <code className="text-lg font-mono font-bold text-slate-700">
+                      {errorId || 'GENERATING...'}
+                    </code>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={this.handleCopyId}
                     className={cn(
-                      "rounded-xl px-4 font-semibold transition-all",
-                      copied ? "text-emerald-600 bg-emerald-50" : "text-slate-500 hover:bg-slate-200/50"
+                      'rounded-xl px-4 font-semibold transition-all',
+                      copied
+                        ? 'text-emerald-600 bg-emerald-50'
+                        : 'text-slate-500 hover:bg-slate-200/50'
                     )}
                   >
-                    {copied ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
+                    {copied ? (
+                      <CheckCircle2 className="w-4 h-4 mr-2" />
+                    ) : (
+                      <Copy className="w-4 h-4 mr-2" />
+                    )}
                     {copied ? 'Copied' : 'Copy ID'}
                   </Button>
                 </div>
 
                 <div className="pt-4 border-t border-slate-100 flex flex-col items-center gap-4">
-                  <p className="text-sm font-medium text-slate-500">Need urgent help?</p>
+                  <p className="text-sm font-medium text-slate-500">
+                    Need urgent help?
+                  </p>
                   <a
                     href="tel:+916394135988"
                     className="group flex items-center gap-3 px-6 py-3 rounded-full bg-rose-50 text-rose-600 font-bold hover:bg-rose-100 transition-colors"
