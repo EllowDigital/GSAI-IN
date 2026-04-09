@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, memo, useEffect } from 'react';
+import React, { useState, useCallback, memo, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { z } from 'zod';
@@ -17,14 +17,15 @@ import {
   ChevronRight,
   Info,
   Mail,
-  Send,
   ChevronDown,
+  ChevronsDownUp,
+  ChevronsUpDown,
   Lock,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Select,
@@ -62,6 +63,16 @@ const enrollSchema = z.object({
 
 type EnrollFormData = z.infer<typeof enrollSchema>;
 
+const isStep1Ready = (form: Partial<EnrollFormData>) =>
+  (form.studentName?.trim().length || 0) >= 2 && !!form.age && !!form.gender;
+
+const isStep2Ready = (form: Partial<EnrollFormData>) =>
+  (form.aadharNumber?.length || 0) === 12 &&
+  (form.parentName?.trim().length || 0) >= 2 &&
+  (form.parentPhone?.length || 0) === 10;
+
+const isStep3Ready = (form: Partial<EnrollFormData>) => !!form.program;
+
 const HIGHLIGHTS = [
   { icon: Trophy, label: 'Govt. Recognized' },
   { icon: Star, label: 'ISO 9001 Certified' },
@@ -74,33 +85,148 @@ const INPUT_CLASSES =
 const LABEL_CLASSES =
   'text-zinc-400 text-[11px] font-bold uppercase tracking-wider mb-1.5 ml-1';
 
+const FieldError = memo(({ error }: { error?: string }) => (
+  <AnimatePresence>
+    {error && (
+      <motion.p
+        initial={{ opacity: 0, height: 0 }}
+        animate={{ opacity: 1, height: 'auto' }}
+        exit={{ opacity: 0, height: 0 }}
+        className="text-red-400 text-[10px] font-bold mt-1.5 flex items-center gap-1 ml-1"
+      >
+        <Info className="w-3.5 h-3.5" /> {error}
+      </motion.p>
+    )}
+  </AnimatePresence>
+));
+
+type FormSectionProps = {
+  step: number;
+  title: string;
+  icon: any;
+  completed: boolean;
+  expandAll: boolean;
+  activeStep: number;
+  onStepChange: (step: number) => void;
+  children: React.ReactNode;
+};
+
+const FormSection = ({
+  step,
+  title,
+  icon: Icon,
+  completed,
+  expandAll,
+  activeStep,
+  onStepChange,
+  children,
+}: FormSectionProps) => {
+  const isOpen = expandAll || activeStep === step;
+  return (
+    <div
+      className={cn(
+        'border-b border-white/5 last:border-0 transition-all duration-500',
+        !isOpen && 'opacity-60'
+      )}
+    >
+      <button
+        type="button"
+        onClick={() => onStepChange(step)}
+        className="w-full flex items-center justify-between p-6 sm:p-8 hover:bg-white/[0.02] transition-colors"
+      >
+        <div className="flex items-center gap-4">
+          <div
+            className={cn(
+              'w-10 h-10 rounded-xl flex items-center justify-center transition-all',
+              isOpen
+                ? 'bg-orange-500 text-white shadow-[0_0_20px_rgba(249,115,22,0.3)]'
+                : 'bg-zinc-900 text-zinc-500'
+            )}
+          >
+            <Icon className="w-5 h-5" />
+          </div>
+          <div className="text-left">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500/80">
+              Step 0{step}
+            </span>
+            <h3 className="text-lg font-bold text-white leading-none mt-1">
+              {title}
+            </h3>
+            <span
+              className={cn(
+                'mt-2 inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider',
+                completed
+                  ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+                  : 'bg-zinc-800/60 text-zinc-400 border border-zinc-700/60'
+              )}
+            >
+              {completed ? 'Completed' : 'Incomplete'}
+            </span>
+          </div>
+        </div>
+        <ChevronDown
+          className={cn(
+            'w-5 h-5 text-zinc-600 transition-transform duration-500',
+            isOpen && 'rotate-180'
+          )}
+        />
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.5, ease: [0.04, 0.62, 0.23, 0.98] }}
+            className="overflow-hidden"
+          >
+            <div className="px-6 pb-8 sm:px-8 sm:pb-10 space-y-6">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
 export default function EnrollPage() {
   const [searchParams] = useSearchParams();
   const [activeStep, setActiveStep] = useState<number>(1);
+  const [expandAllSections, setExpandAllSections] = useState(false);
+  const readinessRef = useRef({ step1: false, step2: false });
   const [form, setForm] = useState<Partial<EnrollFormData>>({
     program: searchParams.get('program') || '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitWarning, setSubmitWarning] = useState<string>('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const { disciplineOptions } = useDisciplines();
+  const step1Completed = isStep1Ready(form);
+  const step2Completed = isStep2Ready(form);
+  const step3Completed = isStep3Ready(form);
 
   // --- Auto-Expand Logic ---
   useEffect(() => {
+    const step1Ready = isStep1Ready(form);
+    const step2Ready = isStep2Ready(form);
+
+    const step1BecameReady = !readinessRef.current.step1 && step1Ready;
+    const step2BecameReady = !readinessRef.current.step2 && step2Ready;
+
     // Expand Step 2 if Step 1 basics are done
-    if (activeStep === 1 && form.studentName && form.age && form.gender) {
+    if (activeStep === 1 && step1BecameReady) {
       setActiveStep(2);
     }
     // Expand Step 3 if Step 2 basics are done
-    if (
-      activeStep === 2 &&
-      form.aadharNumber?.length === 12 &&
-      form.parentName &&
-      form.parentPhone?.length === 10
-    ) {
+    if (activeStep === 2 && step2BecameReady) {
       setActiveStep(3);
     }
+
+    readinessRef.current = { step1: step1Ready, step2: step2Ready };
   }, [
+    activeStep,
     form.studentName,
     form.age,
     form.gender,
@@ -112,9 +238,15 @@ export default function EnrollPage() {
   const handleFieldChange = useCallback(
     (field: keyof EnrollFormData, value: string) => {
       setForm((prev) => ({ ...prev, [field]: value }));
-      if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }));
+      if (errors[field]) {
+        setErrors((prev) => ({ ...prev, [field]: '' }));
+      }
+
+      if (submitWarning) {
+        setSubmitWarning('');
+      }
     },
-    [errors]
+    [errors, submitWarning]
   );
 
   const validateAndSubmit = async (e: React.FormEvent) => {
@@ -126,13 +258,16 @@ export default function EnrollPage() {
         if (err.path[0]) flatErrors[err.path[0] as string] = err.message;
       });
       setErrors(flatErrors);
-      // Jump to the first section that has an error
-      if (flatErrors.studentName || flatErrors.age) setActiveStep(1);
-      else if (flatErrors.aadharNumber || flatErrors.parentName)
-        setActiveStep(2);
+      setExpandAllSections(true);
+      setSubmitWarning(
+        `Please fix ${Object.keys(flatErrors).length} highlighted field(s) before submitting.`
+      );
       toast.error('Please fill all required fields correctly');
       return;
     }
+
+    setExpandAllSections(false);
+    setSubmitWarning('');
 
     setIsSaving(true);
     const d = result.data;
@@ -150,6 +285,10 @@ export default function EnrollPage() {
 
       const blockWithAadhaarMessage = (message: string) => {
         setErrors((prev) => ({ ...prev, aadharNumber: message }));
+        setExpandAllSections(true);
+        setSubmitWarning(
+          'Please review the highlighted field before submitting.'
+        );
         setActiveStep(2);
         toast.error(message);
       };
@@ -213,86 +352,6 @@ export default function EnrollPage() {
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const FieldError = useMemo(
-    () =>
-      memo(({ field }: { field: string }) => (
-        <AnimatePresence>
-          {errors[field] && (
-            <motion.p
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="text-red-400 text-[10px] font-bold mt-1.5 flex items-center gap-1 ml-1"
-            >
-              <Info className="w-3.5 h-3.5" /> {errors[field]}
-            </motion.p>
-          )}
-        </AnimatePresence>
-      )),
-    [errors]
-  );
-
-  // --- Accordion Section Component ---
-  const FormSection = ({ step, title, icon: Icon, children }: any) => {
-    const isOpen = activeStep === step;
-    return (
-      <div
-        className={cn(
-          'border-b border-white/5 last:border-0 transition-all duration-500',
-          !isOpen && 'opacity-60'
-        )}
-      >
-        <button
-          type="button"
-          onClick={() => setActiveStep(step)}
-          className="w-full flex items-center justify-between p-6 sm:p-8 hover:bg-white/[0.02] transition-colors"
-        >
-          <div className="flex items-center gap-4">
-            <div
-              className={cn(
-                'w-10 h-10 rounded-xl flex items-center justify-center transition-all',
-                isOpen
-                  ? 'bg-orange-500 text-white shadow-[0_0_20px_rgba(249,115,22,0.3)]'
-                  : 'bg-zinc-900 text-zinc-500'
-              )}
-            >
-              <Icon className="w-5 h-5" />
-            </div>
-            <div className="text-left">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500/80">
-                Step 0{step}
-              </span>
-              <h3 className="text-lg font-bold text-white leading-none mt-1">
-                {title}
-              </h3>
-            </div>
-          </div>
-          <ChevronDown
-            className={cn(
-              'w-5 h-5 text-zinc-600 transition-transform duration-500',
-              isOpen && 'rotate-180'
-            )}
-          />
-        </button>
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.5, ease: [0.04, 0.62, 0.23, 0.98] }}
-              className="overflow-hidden"
-            >
-              <div className="px-6 pb-8 sm:px-8 sm:pb-10 space-y-6">
-                {children}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    );
   };
 
   return (
@@ -359,12 +418,56 @@ export default function EnrollPage() {
                 {/* Animated Form Sidebar */}
                 <div className="lg:col-span-7">
                   <form onSubmit={validateAndSubmit}>
+                    <div className="mb-4 flex justify-end">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setExpandAllSections((prev) => !prev)}
+                        className="h-9 rounded-xl border-white/15 bg-white/[0.03] text-zinc-200 hover:bg-white/[0.07]"
+                      >
+                        {expandAllSections ? (
+                          <>
+                            <ChevronsDownUp className="mr-2 h-4 w-4" /> Collapse
+                            all sections
+                          </>
+                        ) : (
+                          <>
+                            <ChevronsUpDown className="mr-2 h-4 w-4" /> Expand all
+                            sections
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    <AnimatePresence>
+                      {submitWarning && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -8 }}
+                          className="mb-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3"
+                        >
+                          <p className="text-sm font-semibold text-amber-200">
+                            {submitWarning}
+                          </p>
+                          <p className="text-xs text-amber-100/80 mt-1">
+                            Required fields are marked with *
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                     <Card className="bg-zinc-950/40 border-white/[0.08] shadow-2xl rounded-[2.5rem] backdrop-blur-xl overflow-hidden">
                       {/* Step 1 */}
                       <FormSection
                         step={1}
                         title="Candidate Profile"
                         icon={User}
+                        completed={step1Completed}
+                        expandAll={expandAllSections}
+                        activeStep={activeStep}
+                        onStepChange={(step) => {
+                          setExpandAllSections(false);
+                          setActiveStep(step);
+                        }}
                       >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                           <div className="md:col-span-2">
@@ -382,7 +485,7 @@ export default function EnrollPage() {
                                 handleFieldChange('studentName', e.target.value)
                               }
                             />
-                            <FieldError field="studentName" />
+                            <FieldError error={errors.studentName} />
                           </div>
                           <div className="flex gap-4 md:col-span-2">
                             <div className="flex-1">
@@ -407,7 +510,7 @@ export default function EnrollPage() {
                                   ))}
                                 </SelectContent>
                               </Select>
-                              <FieldError field="age" />
+                              <FieldError error={errors.age} />
                             </div>
                             <div className="flex-1">
                               <Label className={LABEL_CLASSES}>Gender *</Label>
@@ -426,7 +529,7 @@ export default function EnrollPage() {
                                   <SelectItem value="Other">Other</SelectItem>
                                 </SelectContent>
                               </Select>
-                              <FieldError field="gender" />
+                              <FieldError error={errors.gender} />
                             </div>
                           </div>
                           <div>
@@ -477,6 +580,13 @@ export default function EnrollPage() {
                         step={2}
                         title="Identity & Parent Details"
                         icon={Shield}
+                        completed={step2Completed}
+                        expandAll={expandAllSections}
+                        activeStep={activeStep}
+                        onStepChange={(step) => {
+                          setExpandAllSections(false);
+                          setActiveStep(step);
+                        }}
                       >
                         <div className="space-y-5">
                           <div>
@@ -501,7 +611,7 @@ export default function EnrollPage() {
                                 }
                               />
                             </div>
-                            <FieldError field="aadharNumber" />
+                            <FieldError error={errors.aadharNumber} />
                           </div>
                           <div className="grid md:grid-cols-2 gap-5">
                             <div className="md:col-span-2">
@@ -519,7 +629,7 @@ export default function EnrollPage() {
                                   )
                                 }
                               />
-                              <FieldError field="parentName" />
+                              <FieldError error={errors.parentName} />
                             </div>
                             <div>
                               <Label className={LABEL_CLASSES}>
@@ -557,7 +667,7 @@ export default function EnrollPage() {
                                   }
                                 />
                               </div>
-                              <FieldError field="parentPhone" />
+                              <FieldError error={errors.parentPhone} />
                             </div>
                           </div>
                         </div>
@@ -568,6 +678,13 @@ export default function EnrollPage() {
                         step={3}
                         title="Program Selection"
                         icon={BookOpen}
+                        completed={step3Completed}
+                        expandAll={expandAllSections}
+                        activeStep={activeStep}
+                        onStepChange={(step) => {
+                          setExpandAllSections(false);
+                          setActiveStep(step);
+                        }}
                       >
                         <div className="space-y-5">
                           <div>
@@ -591,7 +708,7 @@ export default function EnrollPage() {
                                 ))}
                               </SelectContent>
                             </Select>
-                            <FieldError field="program" />
+                            <FieldError error={errors.program} />
                           </div>
                           <div>
                             <Label className={LABEL_CLASSES}>
