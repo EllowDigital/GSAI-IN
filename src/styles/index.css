@@ -557,7 +557,31 @@
   }
 }
 
+@keyframes ring {
+  0%,
+  90%,
+  100% {
+    transform: rotate(0deg);
+  }
+  92% {
+    transform: rotate(8deg);
+  }
+  94% {
+    transform: rotate(-8deg);
+  }
+  96% {
+    transform: rotate(5deg);
+  }
+  98% {
+    transform: rotate(-5deg);
+  }
+}
+
 .animate-shimmer {
+  animation: shimmer 4s ease infinite;
+}
+
+.group:hover .group-hover\:animate-shimmer {
   animation: shimmer 4s ease infinite;
 }
 

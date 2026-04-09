@@ -220,10 +220,8 @@ export default function StudentLogin() {
                 <span className="font-semibold text-blue-900">
                   First time here?
                 </span>{' '}
-                Your default password is{' '}
-                <code className="bg-blue-100 text-blue-900 px-1.5 py-0.5 rounded font-bold tracking-wide">
-                  GSAI-STUDENT-2026
-                </code>
+                Please use credentials shared by academy admin on your
+                registered phone or email.
               </div>
             </div>
 

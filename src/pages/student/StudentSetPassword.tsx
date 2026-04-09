@@ -54,6 +54,9 @@ export default function StudentSetPassword() {
         }
       } catch (err) {
         console.error('Session check failed', err);
+        toast.error('Session verification failed. Please sign in again.');
+        navigate('/student/login', { replace: true });
+        return;
       } finally {
         if (mounted) setCheckingSession(false);
       }

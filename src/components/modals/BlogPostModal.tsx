@@ -1,6 +1,5 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import sanitizeHtml from 'sanitize-html';
 import {
   Dialog,
   DialogContent,
@@ -16,6 +15,7 @@ import {
 } from '@/components/ui/drawer';
 import { useIsMobile } from '@/hooks/useMobile';
 import { Button } from '@/components/ui/button';
+import { sanitizeHtmlForClient } from '@/utils/browserSanitizeHtml';
 
 interface BlogPost {
   id: string;
@@ -42,7 +42,7 @@ export function BlogPostModal({
   const isMobile = useIsMobile();
   // Sanitize blog content to prevent XSS attacks
   const sanitizedContent = post
-    ? sanitizeHtml(post.content, {
+    ? sanitizeHtmlForClient(post.content, {
         allowedTags: [
           'p',
           'br',

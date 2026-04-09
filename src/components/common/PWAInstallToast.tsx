@@ -6,12 +6,20 @@ import { cn } from '@/lib/utils';
 interface PWAInstallToastProps {
   onInstall: () => void;
   onDismiss: () => void;
+  portalType?: 'admin' | 'student';
+  onEnableNotifications?: () => void;
+  pushReady?: boolean;
 }
 
 const PWAInstallToast: React.FC<PWAInstallToastProps> = ({
   onInstall,
   onDismiss,
+  portalType = 'admin',
+  onEnableNotifications,
+  pushReady = false,
 }) => {
+  const isStudent = portalType === 'student';
+
   return (
     <div className="fixed bottom-6 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-sm z-[9999] animate-in slide-in-from-bottom-8 fade-in duration-500 ease-out">
       <div
@@ -38,7 +46,7 @@ const PWAInstallToast: React.FC<PWAInstallToastProps> = ({
                   <Sparkles className="h-3 w-3 text-orange-400" />
                 </div>
                 <h3 className="text-base font-bold tracking-tight text-white">
-                  GSAI Mobile Portal
+                  {isStudent ? 'Student Portal App' : 'Admin Portal App'}
                 </h3>
               </div>
             </div>
@@ -54,9 +62,9 @@ const PWAInstallToast: React.FC<PWAInstallToastProps> = ({
 
           {/* Description */}
           <p className="text-xs font-medium leading-relaxed text-slate-400 px-1">
-            Install the academy portal to your home screen for{' '}
+            Install the {isStudent ? 'student' : 'admin'} portal for{' '}
             <span className="text-slate-200">lightning-fast access</span>,
-            offline training views, and instant notifications.
+            offline support, and instant updates.
           </p>
 
           {/* Action Buttons */}
@@ -81,6 +89,17 @@ const PWAInstallToast: React.FC<PWAInstallToastProps> = ({
               Get App
             </Button>
           </div>
+
+          {pushReady && onEnableNotifications && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onEnableNotifications}
+              className="h-10 rounded-xl border-white/20 bg-white/5 text-xs font-bold text-white hover:bg-white/10"
+            >
+              🔔 Enable Notifications
+            </Button>
+          )}
         </div>
 
         {/* Subtle decorative glow */}

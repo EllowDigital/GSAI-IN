@@ -196,7 +196,6 @@ export default function AdminLogin() {
                         showPassword ? 'Hide password' : 'Show password'
                       }
                       className="absolute top-1/2 -translate-y-1/2 right-3 p-1.5 text-gray-500 hover:text-white rounded-md hover:bg-white/5 transition-colors"
-                      tabIndex={-1}
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>

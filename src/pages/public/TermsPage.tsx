@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Seo from '@/components/seo/Seo';
 
 const sections = [
   {
@@ -61,6 +62,12 @@ const sections = [
 
 const TermsPage: React.FC = () => (
   <div className="min-h-screen bg-black text-white font-montserrat relative overflow-hidden">
+    <Seo
+      title="Terms & Conditions | Ghatak Sports Academy India"
+      description="Read the terms and conditions for training, fees, conduct, safety, and participation at Ghatak Sports Academy India."
+      canonical="/terms"
+    />
+
     {/* Decorative Elements */}
     <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-yellow-500/10 rounded-full blur-[120px]" />

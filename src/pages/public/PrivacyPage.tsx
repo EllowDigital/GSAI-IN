@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Seo from '@/components/seo/Seo';
 
 const privacySections = [
   {
@@ -116,6 +117,12 @@ const privacySections = [
 
 const PrivacyPage: React.FC = () => (
   <div className="min-h-screen bg-black text-white font-montserrat relative overflow-hidden">
+    <Seo
+      title="Privacy Policy | Ghatak Sports Academy India"
+      description="Read the official privacy policy of Ghatak Sports Academy India, including data collection, usage, cookies, and your rights."
+      canonical="/privacy"
+    />
+
     {/* Decorative Elements */}
     <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-yellow-500/10 rounded-full blur-[120px]" />
