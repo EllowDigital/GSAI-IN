@@ -131,6 +131,8 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
         return nextProfile;
       } catch (err) {
         console.error('Profile fetch error:', err);
+        const cached = getCachedStudentProfile();
+        if (cached) return cached;
         return null;
       }
     },
@@ -177,8 +179,19 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
               navigate('/student/dashboard', { replace: true });
             }
           } else {
-            setProfile(null);
-            cacheStudentProfile(null);
+            const cached = getCachedStudentProfile();
+            if (cached) {
+              setProfile(cached);
+              if (
+                [
+                  '/student/login',
+                  '/student',
+                  '/student/set-password',
+                ].includes(currentPath)
+              ) {
+                navigate('/student/dashboard', { replace: true });
+              }
+            }
           }
         } else {
           setProfile(null);
@@ -226,7 +239,22 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
           }
 
           const prof = await loadProfile(newSession.user.id);
-          if (mounted) setProfile(prof);
+          if (mounted) {
+            if (prof) {
+              setProfile(prof);
+
+              // Password setup completes via USER_UPDATED while still signed in.
+              // Route directly to dashboard once profile is available.
+              if (currentPath === '/student/set-password') {
+                navigate('/student/dashboard', { replace: true });
+              }
+            } else {
+              const cached = getCachedStudentProfile();
+              if (cached) {
+                setProfile(cached);
+              }
+            }
+          }
         } else {
           if (mounted) setProfile(null);
           cacheStudentProfile(null);
@@ -278,8 +306,9 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
 
       const prof = await loadProfile(data.user.id);
       if (!prof) {
-        await supabase.auth.signOut();
-        throw new Error('No student account linked to this login.');
+        throw new Error(
+          'Login succeeded, but profile is still loading. Please wait a moment and try again if needed.'
+        );
       }
 
       setProfile(prof);
@@ -333,7 +362,7 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
         session,
         profile,
         isLoading,
-        isAuthenticated: !!profile,
+        isAuthenticated: !!session,
         signIn,
         signOut,
       }}

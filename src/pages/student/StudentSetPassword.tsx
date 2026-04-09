@@ -20,9 +20,16 @@ import {
   validateStrongPassword,
 } from '@/utils/passwordPolicy';
 import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
+import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
+import { useStudentAuth } from './StudentAuthContext';
+
+const SESSION_CHECK_TIMEOUT_MS = 10000;
+const PASSWORD_UPDATE_TIMEOUT_MS = 15000;
+const PASSWORD_REDIRECT_METRIC_KEY = 'gsai-student-password-redirect-start-ms';
 
 export default function StudentSetPassword() {
   const navigate = useNavigate();
+  const { session, isLoading: authLoading } = useStudentAuth();
 
   // State
   const [password, setPassword] = useState('');
@@ -30,7 +37,6 @@ export default function StudentSetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const [checkingSession, setCheckingSession] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -41,39 +47,31 @@ export default function StudentSetPassword() {
 
   // Session Check
   useEffect(() => {
-    let mounted = true;
+    if (authLoading) return;
 
-    const checkSession = async () => {
-      try {
-        const { data } = await supabase.auth.getSession();
-        if (!mounted) return;
+    if (!session) {
+      toast.error('Please sign in first to update your password.');
+      navigate('/student/login', { replace: true });
+      return;
+    }
 
-        if (!data.session) {
-          toast.error('Please sign in first to update your password.');
-          navigate('/student/login', { replace: true });
-          return;
-        }
-      } catch (err) {
-        console.error('Session check failed', err);
-        toast.error('Session verification failed. Please sign in again.');
-        navigate('/student/login', { replace: true });
-        return;
-      } finally {
-        if (mounted) setCheckingSession(false);
-      }
-    };
+    if (!session.user?.user_metadata?.require_password_setup) {
+      navigate('/student/dashboard', { replace: true });
+    }
+  }, [authLoading, session, navigate]);
 
-    checkSession();
-
-    return () => {
-      mounted = false;
-    };
-  }, [navigate]);
+  // Prefetch dashboard route chunk so post-save navigation feels instant.
+  useEffect(() => {
+    void import('./StudentDashboard');
+  }, []);
 
   // Handlers
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (submitting) return;
+
+    const submitStartMs =
+      typeof performance !== 'undefined' ? performance.now() : Date.now();
 
     setFormError(null);
 
@@ -91,21 +89,51 @@ export default function StudentSetPassword() {
     setSubmitting(true);
 
     try {
-      const { error } = await supabase.auth.updateUser({
-        password,
-        data: {
-          require_password_setup: false,
-        },
-      });
+      // Ensure we still have a valid session right before updating password.
+      const { data: sessionData } = await withTimeout(
+        supabase.auth.getSession(),
+        SESSION_CHECK_TIMEOUT_MS,
+        'Session check timed out. Please retry.'
+      );
+      if (!sessionData?.session) {
+        throw new Error('Session expired. Please sign in again.');
+      }
+
+      const { error } = await withTimeout(
+        supabase.auth.updateUser({
+          password,
+          data: {
+            require_password_setup: false,
+          },
+        }),
+        PASSWORD_UPDATE_TIMEOUT_MS,
+        'Password update timed out. Please check your connection and try again.'
+      );
 
       if (error) throw error;
 
-      await supabase.auth.signOut();
-      toast.success(
-        'Password set successfully. Please sign in with your new password.'
-      );
-      navigate('/student/login', { replace: true });
+      const redirectStartMs =
+        typeof performance !== 'undefined' ? performance.now() : Date.now();
+      const totalMs = Math.round(redirectStartMs - submitStartMs);
+      console.info('[student-set-password] submit-to-redirect-ms', totalMs);
+
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.setItem(
+          PASSWORD_REDIRECT_METRIC_KEY,
+          String(Date.now())
+        );
+      }
+
+      toast.success('Password updated successfully. Redirecting...');
+      navigate('/student/dashboard', { replace: true });
     } catch (error: unknown) {
+      if (isTimeoutError(error)) {
+        const message = 'Request timed out. Please check your connection.';
+        setFormError(message);
+        toast.error(message);
+        return;
+      }
+
       const friendlyError = mapSupabaseErrorToFriendly(error);
       const message =
         friendlyError?.message ||
@@ -119,10 +147,10 @@ export default function StudentSetPassword() {
     }
   };
 
-  const isDisabled = submitting || checkingSession;
+  const isDisabled = submitting || authLoading;
 
   // Loading State
-  if (checkingSession) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50/50 space-y-4">
         <Loader2 className="h-8 w-8 animate-spin text-primary/60" />
