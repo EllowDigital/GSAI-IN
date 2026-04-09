@@ -67,6 +67,9 @@ export default function AnnouncementsManager() {
   const [modalOpen, setModalOpen] = useState(false);
   const [pushScope, setPushScope] = useState<'admin' | 'student'>('student');
   const [pushUrl, setPushUrl] = useState('/student/dashboard');
+  const [sendLockById, setSendLockById] = useState<Record<string, boolean>>(
+    {}
+  );
 
   const {
     data: announcements = [],
@@ -188,6 +191,17 @@ export default function AnnouncementsManager() {
         e instanceof Error ? e.message : 'Failed to send push notification.'
       ),
   });
+
+  const handleSendPush = async (announcement: Announcement) => {
+    if (sendLockById[announcement.id]) return;
+
+    setSendLockById((prev) => ({ ...prev, [announcement.id]: true }));
+    try {
+      await sendPushMutation.mutateAsync(announcement);
+    } finally {
+      setSendLockById((prev) => ({ ...prev, [announcement.id]: false }));
+    }
+  };
 
   const cleanupSubscriptionsMutation = useMutation({
     mutationFn: async () => {
@@ -488,10 +502,12 @@ export default function AnnouncementsManager() {
                         variant="outline"
                         size="sm"
                         className="gap-1.5"
-                        disabled={sendPushMutation.isPending}
-                        onClick={() => sendPushMutation.mutate(ann)}
+                        disabled={Boolean(sendLockById[ann.id])}
+                        onClick={() => {
+                          void handleSendPush(ann);
+                        }}
                       >
-                        {sendPushMutation.isPending ? (
+                        {sendLockById[ann.id] ? (
                           <Spinner size={14} />
                         ) : (
                           <BellRing className="w-3.5 h-3.5" />

@@ -4,6 +4,25 @@ import { supabase } from '@/services/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { RefreshCcw, Trash2 } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 
@@ -36,19 +55,42 @@ export default function PushNotificationHistoryPanel({
   cleanupLoading = false,
   onCleanup,
 }: Props) {
+  const [scopeFilter, setScopeFilter] = React.useState<
+    'all' | 'admin' | 'student'
+  >('all');
+  const [fromDate, setFromDate] = React.useState('');
+  const [toDate, setToDate] = React.useState('');
+
   const {
     data: logs = [],
     isLoading,
     refetch,
     isFetching,
   } = useQuery({
-    queryKey: ['push-notification-delivery-logs'],
+    queryKey: [
+      'push-notification-delivery-logs',
+      scopeFilter,
+      fromDate,
+      toDate,
+    ],
     queryFn: async () => {
-      const { data, error } = await (supabase
+      let query = supabase
         .from('push_notification_delivery_logs' as any)
         .select('id, portal_scope, title, body, total_targets, sent_count, failed_count, created_at, target_url')
         .order('created_at', { ascending: false })
-        .limit(25) as any);
+        .limit(50) as any;
+
+      if (scopeFilter !== 'all') {
+        query = query.eq('portal_scope', scopeFilter);
+      }
+      if (fromDate) {
+        query = query.gte('created_at', `${fromDate}T00:00:00.000Z`);
+      }
+      if (toDate) {
+        query = query.lte('created_at', `${toDate}T23:59:59.999Z`);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       return (data || []) as PushLogRow[];
@@ -59,11 +101,43 @@ export default function PushNotificationHistoryPanel({
   return (
     <Card className="border-border/70 bg-card/80">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
           <CardTitle className="text-base font-semibold">
             {title || 'Push Notification History'}
           </CardTitle>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Select
+              value={scopeFilter}
+              onValueChange={(value) =>
+                setScopeFilter(value as 'all' | 'admin' | 'student')
+              }
+            >
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Scope" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All scopes</SelectItem>
+                <SelectItem value="student">Student</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Input
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="w-[150px]"
+              aria-label="From date"
+            />
+
+            <Input
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              className="w-[150px]"
+              aria-label="To date"
+            />
+
             <Button
               variant="outline"
               size="sm"
@@ -79,16 +153,44 @@ export default function PushNotificationHistoryPanel({
               Refresh
             </Button>
             {onCleanup && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10"
-                onClick={onCleanup}
-                disabled={cleanupLoading}
-              >
-                {cleanupLoading ? <Spinner size={14} /> : <Trash2 className="h-3.5 w-3.5" />}
-                Cleanup Stale
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10"
+                    disabled={cleanupLoading}
+                  >
+                    {cleanupLoading ? (
+                      <Spinner size={14} />
+                    ) : (
+                      <Trash2 className="h-3.5 w-3.5" />
+                    )}
+                    Cleanup Stale
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Cleanup stale subscriptions?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will deactivate stale or repeatedly failing push
+                      subscriptions. This action is safe but impacts future
+                      push delivery for affected devices.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-destructive text-destructive-foreground"
+                      onClick={onCleanup}
+                    >
+                      Confirm Cleanup
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
           </div>
         </div>
