@@ -17,14 +17,11 @@ export default function OfflineBanner() {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    // Initial check just in case the state changed between render and mount
-    if (!navigator.onLine && !isOffline) setIsOffline(true);
-
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [isOffline]);
+  }, []);
 
   return (
     <AnimatePresence>
