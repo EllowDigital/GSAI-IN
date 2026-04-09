@@ -34,6 +34,9 @@ import StudentAnnouncements from '@/components/student/StudentAnnouncements';
 import StudentBeltExamNotifications from '@/components/student/StudentBeltExamNotifications';
 import { downloadCertificateFile } from '@/utils/certificateDownload';
 
+const PASSWORD_REDIRECT_METRIC_KEY =
+  'gsai-student-password-redirect-start-ms';
+
 // --- Types ---
 interface Program {
   program_name: string;
@@ -82,6 +85,28 @@ export default function StudentDashboard() {
       ? `${profile.studentName} | GSAI Portal`
       : 'Student Dashboard | GSAI Portal';
   }, [profile?.studentName]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const rawStartMs = window.sessionStorage.getItem(
+      PASSWORD_REDIRECT_METRIC_KEY
+    );
+    if (!rawStartMs) return;
+
+    const startMs = Number(rawStartMs);
+    if (!Number.isNaN(startMs)) {
+      const renderMs = Date.now() - startMs;
+      if (renderMs >= 0) {
+        console.info(
+          '[student-set-password] redirect-to-dashboard-render-ms',
+          renderMs
+        );
+      }
+    }
+
+    window.sessionStorage.removeItem(PASSWORD_REDIRECT_METRIC_KEY);
+  }, []);
 
   // --- Queries ---
   const { data: enrolledPrograms = [] } = useQuery<Program[]>({
