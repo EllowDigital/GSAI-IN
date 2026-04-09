@@ -41,6 +41,7 @@ import { toast } from '@/hooks/useToast';
 import Navbar from '@/components/layout/Navbar';
 import { useDisciplines } from '@/hooks/useDisciplines';
 import { cn } from '@/lib/utils';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 // --- Validation Logic ---
 const enrollSchema = z.object({
@@ -291,26 +292,6 @@ export default function EnrollPage() {
       toast.error(message);
     };
 
-    const parseEnrollmentInsertError = (
-      errorMessage: string
-    ): string | null => {
-      const normalized = errorMessage.toLowerCase();
-
-      if (normalized.includes('already registered')) {
-        return 'You are already registered. Please use the student portal to log in.';
-      }
-
-      if (normalized.includes('already under review')) {
-        return 'Your enrollment request is already under review. Please wait for approval.';
-      }
-
-      if (normalized.includes('already been processed and contacted')) {
-        return 'Your request has already been processed and contacted. Please check your status or wait for further updates.';
-      }
-
-      return null;
-    };
-
     try {
       // Resubmission is intentionally allowed when existing requests are only rejected.
       const { error: insertError } = await supabase
@@ -330,11 +311,9 @@ export default function EnrollPage() {
         } as any);
 
       if (insertError) {
-        const aadharMessage = parseEnrollmentInsertError(
-          insertError.message || ''
-        );
-        if (aadharMessage) {
-          blockWithAadhaarMessage(aadharMessage);
+        const friendlyInsertError = mapSupabaseErrorToFriendly(insertError);
+        if (friendlyInsertError?.field === 'aadharNumber') {
+          blockWithAadhaarMessage(friendlyInsertError.message);
           return;
         }
 
@@ -353,14 +332,26 @@ export default function EnrollPage() {
             notificationType: 'admin',
           },
         })
+        .then(({ error: invokeError }) => {
+          if (invokeError) {
+            console.error(
+              'Enrollment admin email function returned error:',
+              invokeError
+            );
+          }
+        })
         .catch((invokeError) => {
-          console.error('Failed to send enrollment admin email:', invokeError);
+          console.error('Failed to invoke enrollment admin email function:', invokeError);
         });
 
       setIsSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err: any) {
-      toast.error(err.message || 'Connection error.');
+      const friendlyError = mapSupabaseErrorToFriendly(err);
+      toast.error(
+        friendlyError?.message ||
+          'We could not submit your enrollment right now. Please try again.'
+      );
     } finally {
       setIsSaving(false);
     }

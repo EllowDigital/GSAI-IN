@@ -9,6 +9,19 @@ export interface AppError {
   originalError?: unknown;
 }
 
+export interface FriendlySupabaseError {
+  message: string;
+  field?: string;
+}
+
+interface SupabaseLikeError {
+  message?: string;
+  code?: string;
+  hint?: string;
+  details?: string;
+  constraint?: string;
+}
+
 export class DatabaseError extends Error implements AppError {
   code?: string;
   statusCode?: number;
@@ -128,6 +141,102 @@ export function handleSupabaseError(error: any): AppError {
         error
       );
   }
+}
+
+/**
+ * Map raw Supabase/Postgres errors to user-friendly messages for forms.
+ */
+export function mapSupabaseErrorToFriendly(
+  error: unknown
+): FriendlySupabaseError | null {
+  if (!error || typeof error !== 'object') {
+    return null;
+  }
+
+  const maybeError = error as SupabaseLikeError;
+  const message = maybeError.message ?? '';
+  const normalized = message.toLowerCase();
+  const details = (maybeError.details ?? '').toLowerCase();
+  const hint = (maybeError.hint ?? '').toLowerCase();
+  const constraint = (maybeError.constraint ?? '').toLowerCase();
+  const code = maybeError.code;
+
+  const aadharConstraintHit =
+    constraint === 'idx_enrollment_unique_aadhar_pending' ||
+    constraint === 'idx_enrollment_unique_aadhar_active' ||
+    details.includes('idx_enrollment_unique_aadhar_pending') ||
+    details.includes('idx_enrollment_unique_aadhar_active') ||
+    normalized.includes('idx_enrollment_unique_aadhar_pending') ||
+    normalized.includes('idx_enrollment_unique_aadhar_active');
+
+  const aadharContextHit =
+    aadharConstraintHit ||
+    details.includes('aadhar') ||
+    hint.includes('aadhar') ||
+    normalized.includes('aadhar');
+
+  // Enrollment-specific Aadhaar duplicate/guardrail cases.
+  if (code === '23505' && aadharContextHit) {
+    return {
+      message:
+        'An enrollment request with this Aadhaar number already exists. If it is pending approval, please wait for confirmation.',
+      field: 'aadharNumber',
+    };
+  }
+
+  if (
+    normalized.includes('duplicate key value violates unique constraint') &&
+    aadharContextHit
+  ) {
+    return {
+      message:
+        'An enrollment request with this Aadhaar number already exists. If it is pending approval, please wait for confirmation.',
+      field: 'aadharNumber',
+    };
+  }
+
+  if (normalized.includes('already registered')) {
+    return {
+      message:
+        'You are already registered. Please use the student portal to log in.',
+      field: 'aadharNumber',
+    };
+  }
+
+  if (normalized.includes('already under review')) {
+    return {
+      message:
+        'Your enrollment request is already under review. Please wait for approval.',
+      field: 'aadharNumber',
+    };
+  }
+
+  if (normalized.includes('already been processed and contacted')) {
+    return {
+      message:
+        'Your request has already been processed and contacted. Please check your status or wait for further updates.',
+      field: 'aadharNumber',
+    };
+  }
+
+  if (code === '23505') {
+    return {
+      message: 'This record already exists. Please review your details.',
+    };
+  }
+
+  if (
+    normalized.includes('fetch') ||
+    normalized.includes('network') ||
+    normalized.includes('connection')
+  ) {
+    return {
+      message:
+        'Network error. Please check your internet connection and try again.',
+    };
+  }
+
+  return null;
 }
 
 /**

@@ -107,7 +107,8 @@ function buildAdminHtml(details: {
     .box{background:#f8fafc;border:1px solid #dbeafe;border-left:4px solid #2563eb;padding:12px 14px;border-radius:10px;margin:14px 0}
     .box p{margin:4px 0;font-size:14px}
     .footer{background:#f8fafc;padding:16px 26px;text-align:center;font-size:12px;color:#64748b;border-top:1px solid #e5e7eb}
-    .btn{display:inline-block;background:#1d4ed8;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600;margin-top:10px}
+    .btn{display:inline-block;background:#1d4ed8;color:#ffffff !important;-webkit-text-fill-color:#ffffff !important;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:700;margin-top:10px}
+    a.btn,a.btn:visited,a.btn:hover,a.btn:active{color:#ffffff !important;-webkit-text-fill-color:#ffffff !important;text-decoration:none}
   </style>
 </head>
 <body>
@@ -129,7 +130,7 @@ function buildAdminHtml(details: {
           <p><strong>Student Phone:</strong> ${escapeHtml(details.studentPhone)}</p>
         </div>
         <p>Please review this request in the admin portal and decide the next stage (contact / approve / reject).</p>
-        <p><a class="btn" href="${ADMIN_PORTAL_URL}" rel="noopener noreferrer">Open Admin Portal</a></p>
+        <p><a class="btn" href="${ADMIN_PORTAL_URL}" rel="noopener noreferrer" style="display:inline-block;background:#1d4ed8;color:#ffffff !important;-webkit-text-fill-color:#ffffff !important;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:700;">Open Admin Portal</a></p>
       </div>
       <div class="footer">
         <p>Phone / WhatsApp: ${ACADEMY_PHONE}</p>

@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import { toast } from '@/hooks/useToast';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 const BELT_COLORS: Record<string, string> = {
   white: 'bg-gray-100 text-gray-800 border-gray-300',
@@ -130,7 +131,8 @@ export default function StudentProfileCard() {
       queryClient.invalidateQueries({ queryKey: ['student-profile'] });
       toast.success('Profile photo updated!');
     } catch (err: any) {
-      toast.error(err.message || 'Upload failed');
+      const friendlyError = mapSupabaseErrorToFriendly(err);
+      toast.error(friendlyError?.message || err.message || 'Upload failed');
     } finally {
       setUploading(false);
     }
@@ -175,7 +177,8 @@ export default function StudentProfileCard() {
       toast.success('Profile updated!');
       setEditOpen(false);
     } catch (err: any) {
-      toast.error(err.message || 'Update failed');
+      const friendlyError = mapSupabaseErrorToFriendly(err);
+      toast.error(friendlyError?.message || err.message || 'Update failed');
     } finally {
       setSaving(false);
     }

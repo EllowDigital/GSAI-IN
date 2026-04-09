@@ -13,6 +13,7 @@ import { toast } from '@/hooks/useToast';
 import Spinner from '@/components/ui/spinner';
 import { Copy, CheckCircle, Info } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 type Props = {
   open: boolean;
@@ -96,7 +97,8 @@ export default function CreatePortalAccountDialog({
       queryClient.invalidateQueries({ queryKey: ['students-portal-status'] });
       toast.success('Portal account created!');
     } catch (err: any) {
-      toast.error(err.message || 'Failed to create account');
+      const friendlyError = mapSupabaseErrorToFriendly(err);
+      toast.error(friendlyError?.message || err.message || 'Failed to create account');
     } finally {
       setIsPending(false);
     }

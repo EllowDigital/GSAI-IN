@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION public.enforce_enrollment_aadhar_guardrails()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
