@@ -19,6 +19,7 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 interface Testimonial {
   id: string;
@@ -40,6 +41,13 @@ export default function TestimonialsManager() {
     rating: 5,
   });
   const { toast } = useToast();
+
+  const getFriendlySupabaseMessage = (error: unknown, fallback: string) => {
+    const friendly = mapSupabaseErrorToFriendly(error);
+    if (friendly?.message) return friendly.message;
+    if (error instanceof Error && error.message) return error.message;
+    return fallback;
+  };
 
   const { data: testimonials = [], isLoading: loading } = useQuery({
     queryKey: ['admin-program-testimonials'],
@@ -84,8 +92,10 @@ export default function TestimonialsManager() {
     onError: (error) => {
       toast({
         title: 'Error',
-        description:
-          error instanceof Error ? error.message : 'Failed to add testimonial.',
+        description: getFriendlySupabaseMessage(
+          error,
+          'Failed to add testimonial.'
+        ),
         variant: 'error',
       });
     },
@@ -106,10 +116,10 @@ export default function TestimonialsManager() {
     onError: (error) => {
       toast({
         title: 'Update failed',
-        description:
-          error instanceof Error
-            ? error.message
-            : 'Could not update publish status.',
+        description: getFriendlySupabaseMessage(
+          error,
+          'Could not update publish status.'
+        ),
         variant: 'error',
       });
     },
@@ -131,10 +141,10 @@ export default function TestimonialsManager() {
     onError: (error) => {
       toast({
         title: 'Delete failed',
-        description:
-          error instanceof Error
-            ? error.message
-            : 'Could not delete testimonial.',
+        description: getFriendlySupabaseMessage(
+          error,
+          'Could not delete testimonial.'
+        ),
         variant: 'error',
       });
     },

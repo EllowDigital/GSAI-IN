@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/services/supabase/client';
 import { toast } from '@/components/ui/sonner';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 interface EvidenceUploadButtonProps {
   progressId: string;
@@ -47,8 +48,10 @@ export default function EvidenceUploadButton({
 
       onUploaded(data.publicUrl);
     } catch (error) {
+      const friendly = mapSupabaseErrorToFriendly(error);
       toast.error(
-        error instanceof Error ? error.message : 'Failed to upload evidence'
+        friendly?.message ||
+          (error instanceof Error ? error.message : 'Failed to upload evidence')
       );
     } finally {
       event.target.value = '';
