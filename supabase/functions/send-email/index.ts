@@ -143,7 +143,8 @@ async function wait(ms: number) {
   await new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-async function sendWithRetry(url: string, init: RequestInit, maxAttempts = 3) {
+// Keep delivery single-attempt by default to avoid duplicate sends without provider idempotency.
+async function sendWithRetry(url: string, init: RequestInit, maxAttempts = 1) {
   let lastResponse: Response | null = null
   let lastError: unknown = null
 
@@ -160,7 +161,9 @@ async function sendWithRetry(url: string, init: RequestInit, maxAttempts = 3) {
       if (attempt === maxAttempts) throw error
     }
 
-    await wait(250 * attempt)
+    if (attempt < maxAttempts) {
+      await wait(250 * attempt)
+    }
   }
 
   if (lastResponse) return lastResponse

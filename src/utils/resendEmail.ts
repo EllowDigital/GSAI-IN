@@ -191,18 +191,18 @@ export function buildEnrollmentReceivedEmail(params: {
   const safeProgram = escapeHtml(params.program);
   const safeRelation = escapeHtml(relation);
   return {
-    subject: `Enrollment Received - ${params.studentName} | ${ACADEMY_NAME}`,
+    subject: `Enrollment Received | ${ACADEMY_NAME}`,
     html: `
       <p>Namaste <strong>${safeParentName}</strong> ji,</p>
-      <p>We have received the enrollment request for your ${safeRelation}, <strong>${safeStudentName}</strong>, in the <strong>${safeProgram}</strong> program.</p>
+      <p>We have received the enrollment request for your ${safeRelation}, <strong>${safeStudentName}</strong>, for <strong>${safeProgram}</strong>.</p>
       ${infoBox(
         infoRow('Student', params.studentName) +
           infoRow('Program', params.program) +
           infoRow('Parent', params.parentName)
       )}
-      <p>Our team will review the request and contact you shortly regarding batch timing, trial class, and next steps.</p>
+      <p>Our team will contact you within 24 hours for trial class and batch details.</p>
       <p style="margin-top:20px">📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
-      <p style="margin-top:16px">Thank you for choosing <strong>${ACADEMY_NAME}</strong>.</p>
+      <p style="margin-top:16px">Thank you,<br><strong>${ACADEMY_NAME}</strong></p>
     `,
   };
 }
@@ -221,15 +221,15 @@ export function buildEnrollmentContactedEmail(params: {
   const safeRelation = escapeHtml(relation);
   const safeNotes = params.notes ? escapeHtml(params.notes) : null;
   return {
-    subject: `Enrollment Update - ${params.studentName} | ${ACADEMY_NAME}`,
+    subject: `Enrollment Contacted | ${ACADEMY_NAME}`,
     html: `
       <p>Namaste <strong>${safeParentName}</strong> ji,</p>
-      <p>This is an update regarding the enrollment of your ${safeRelation}, <strong>${safeStudentName}</strong>, in the <strong>${safeProgram}</strong> program.</p>
+      <p>Our team has started the process for your ${safeRelation}, <strong>${safeStudentName}</strong> (${safeProgram}).</p>
       ${infoBox(
         infoRow('Student', params.studentName) +
           infoRow('Program', params.program)
       )}
-      <p>Our team is ready to assist you. Please reply to this email or call us to confirm trial class, batch timing, and admission guidance.</p>
+      <p>Please call or WhatsApp us to confirm trial class timing.</p>
       ${safeNotes ? `<p><strong>Note:</strong> ${safeNotes}</p>` : ''}
       <p style="margin-top:20px">📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
       <p style="margin-top:16px">Thank you,<br><strong>${ACADEMY_NAME}</strong></p>
@@ -255,10 +255,10 @@ export function buildEnrollmentApprovedEmail(params: {
     ? validateHttpsUrl(params.portalUrl, 'portalUrl')
     : 'https://ghataksportsacademy.com/student/login';
   return {
-    subject: `Enrollment Approved - ${params.studentName} | ${ACADEMY_NAME}`,
+    subject: `Enrollment Approved | ${ACADEMY_NAME}`,
     html: `
       <p>Namaste <strong>${safeParentName}</strong> ji,</p>
-      <p>We are pleased to inform you that the enrollment for your ${safeRelation}, <strong>${safeStudentName}</strong>, in the <strong>${safeProgram}</strong> program has been <strong style="color:#16a34a">approved</strong>!</p>
+      <p>Good news. Enrollment for your ${safeRelation}, <strong>${safeStudentName}</strong>, is <strong style="color:#16a34a">approved</strong>.</p>
       ${infoBox(
         infoRow('Student', params.studentName) +
           infoRow('Program', params.program) +
@@ -270,10 +270,10 @@ export function buildEnrollmentApprovedEmail(params: {
           ) +
           infoRow('Default Password', STUDENT_PORTAL_DEFAULT_PASSWORD)
       )}
-      <p>Please sign in to the student portal using your Login ID and the default password above, then change your password from inside the portal.</p>
+      <p>Please login and change password after first sign-in.</p>
       ${safeNotes ? `<p><strong>Note:</strong> ${safeNotes}</p>` : ''}
       <p style="margin-top:20px">📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
-      <p style="margin-top:16px">Welcome to <strong>${ACADEMY_NAME}</strong>!</p>
+      <p style="margin-top:16px">Welcome to <strong>${ACADEMY_NAME}</strong>.</p>
     `,
   };
 }
@@ -292,16 +292,16 @@ export function buildEnrollmentRejectedEmail(params: {
   const safeRelation = escapeHtml(relation);
   const safeNotes = params.notes ? escapeHtml(params.notes) : null;
   return {
-    subject: `Enrollment Update - ${params.studentName} | ${ACADEMY_NAME}`,
+    subject: `Enrollment Rejected | ${ACADEMY_NAME}`,
     html: `
       <p>Namaste <strong>${safeParentName}</strong> ji,</p>
-      <p>After review, we are unable to proceed with the enrollment request for your ${safeRelation}, <strong>${safeStudentName}</strong>, in the <strong>${safeProgram}</strong> program at this time.</p>
+      <p>After review, we are unable to proceed with enrollment for your ${safeRelation}, <strong>${safeStudentName}</strong>, at this time.</p>
       ${infoBox(
         infoRow('Student', params.studentName) +
           infoRow('Program', params.program)
       )}
       ${safeNotes ? `<p><strong>Reason:</strong> ${safeNotes}</p>` : ''}
-      <p>If you have questions or wish to explore other options, please contact us directly.</p>
+      <p>If needed, please contact us for guidance or next options.</p>
       <p style="margin-top:20px">📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
       <p style="margin-top:16px">Thank you for your understanding.<br><strong>${ACADEMY_NAME}</strong></p>
     `,
@@ -328,11 +328,11 @@ export function buildPortalCredentialsEmail(params: {
   );
 
   return {
-    subject: `Student Portal Access - ${params.studentName} | ${ACADEMY_NAME}`,
+    subject: `Admission Complete - Login Details | ${ACADEMY_NAME}`,
     html: `
       <p>Namaste <strong>${safeParentName}</strong> ji,</p>
-      <p>Admission has been completed for your ${safeRelation}, <strong>${safeStudentName}</strong>, in the <strong>${safeProgram}</strong> program.</p>
-      <p>Use these credentials to sign in. After first login, update the password from inside the student portal.</p>
+      <p>Admission is complete for your ${safeRelation}, <strong>${safeStudentName}</strong> (${safeProgram}).</p>
+      <p>Please use these login details:</p>
       ${infoBox(
         infoRow(
           'Portal URL',
@@ -344,9 +344,9 @@ export function buildPortalCredentialsEmail(params: {
           infoRow('Login ID', params.loginId) +
           infoRow('Default Password', safeDefaultPassword)
       )}
-      <p>For security, change this default password immediately after sign-in.</p>
+      <p>Important: change password after first login.</p>
       <p style="margin-top:20px">📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
-      <p style="margin-top:16px">Welcome to <strong>${ACADEMY_NAME}</strong>!</p>
+      <p style="margin-top:16px">Welcome to <strong>${ACADEMY_NAME}</strong>.</p>
     `,
   };
 }

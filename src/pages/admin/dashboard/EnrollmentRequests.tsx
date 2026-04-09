@@ -75,6 +75,8 @@ interface EnrollmentRequest {
   linked_student_id?: string | null;
 }
 
+type EnrollmentActionEmailType = 'contacted' | 'approved' | 'rejected';
+
 const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
   pending: {
     label: 'Pending',
@@ -125,6 +127,7 @@ export default function EnrollmentRequestsManager() {
   const [viewReq, setViewReq] = useState<EnrollmentRequest | null>(null);
   const [adminNotes, setAdminNotes] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [actionLocks, setActionLocks] = useState<Record<string, boolean>>({});
 
   // Approve flow state
   const [approveReq, setApproveReq] = useState<EnrollmentRequest | null>(null);
@@ -172,7 +175,225 @@ export default function EnrollmentRequestsManager() {
     notes,
   });
 
-  // Send rejection notification via WhatsApp + email
+  const getActionLockKey = (
+    requestId: string,
+    action: EnrollmentActionEmailType
+  ) => `${requestId}:${action}`;
+
+  const isActionLocked = (
+    requestId: string,
+    action: EnrollmentActionEmailType
+  ) => Boolean(actionLocks[getActionLockKey(requestId, action)]);
+
+  const setActionLocked = (
+    requestId: string,
+    action: EnrollmentActionEmailType,
+    locked: boolean
+  ) => {
+    const lockKey = getActionLockKey(requestId, action);
+    setActionLocks((prev) => {
+      if (locked) return { ...prev, [lockKey]: true };
+      const next = { ...prev };
+      delete next[lockKey];
+      return next;
+    });
+  };
+
+  const getEmailSentFlagColumn = (action: EnrollmentActionEmailType) => {
+    switch (action) {
+      case 'contacted':
+        return 'contacted_email_sent';
+      case 'approved':
+        return 'approved_email_sent';
+      case 'rejected':
+      default:
+        return 'rejected_email_sent';
+    }
+  };
+
+  const claimEnrollmentEmailEvent = async ({
+    requestId,
+    action,
+    recipientEmail,
+    subject,
+  }: {
+    requestId: string;
+    action: EnrollmentActionEmailType;
+    recipientEmail: string;
+    subject: string;
+  }) => {
+    const idempotencyKey = `${requestId}:${action}:${crypto.randomUUID()}`;
+    const sentFlagColumn = getEmailSentFlagColumn(action);
+
+    const { data: flagData, error: flagError } = (await supabase
+      .from('enrollment_requests' as any)
+      .select(sentFlagColumn)
+      .eq('id', requestId)
+      .maybeSingle()) as any;
+
+    if (flagError) throw flagError;
+    if (flagData?.[sentFlagColumn]) {
+      return {
+        shouldSend: false,
+        reason: 'already_sent',
+      } as const;
+    }
+
+    const { data, error } = (await supabase
+      .from('enrollment_email_events' as any)
+      .insert({
+        enrollment_request_id: requestId,
+        action,
+        idempotency_key: idempotencyKey,
+        status: 'processing',
+        recipient_email: recipientEmail,
+        subject,
+      } as any)
+      .select('id')
+      .single()) as any;
+
+    if (error) {
+      if ((error as any)?.code === '23505') {
+        return {
+          shouldSend: false,
+          reason: 'duplicate_or_processing',
+        } as const;
+      }
+      throw error;
+    }
+
+    return {
+      shouldSend: true,
+      eventId: data.id as string,
+    } as const;
+  };
+
+  const finalizeEnrollmentEmailEvent = async ({
+    eventId,
+    requestId,
+    action,
+    sent,
+    errorMessage,
+  }: {
+    eventId: string;
+    requestId: string;
+    action: EnrollmentActionEmailType;
+    sent: boolean;
+    errorMessage?: string;
+  }) => {
+    const sentFlagColumn = getEmailSentFlagColumn(action);
+
+    const { error: eventUpdateError } = (await supabase
+      .from('enrollment_email_events' as any)
+      .update({
+        status: sent ? 'sent' : 'failed',
+        sent_at: sent ? new Date().toISOString() : null,
+        error_message: sent ? null : errorMessage || 'Email delivery failed',
+      } as any)
+      .eq('id', eventId)) as any;
+
+    if (eventUpdateError) {
+      console.error('Failed to update enrollment email event', eventUpdateError);
+    }
+
+    if (sent) {
+      const { error: flagUpdateError } = (await supabase
+        .from('enrollment_requests' as any)
+        .update({
+          [sentFlagColumn]: true,
+        } as any)
+        .eq('id', requestId)) as any;
+      if (flagUpdateError) {
+        console.error('Failed to update enrollment email sent flag', {
+          requestId,
+          action,
+          error: flagUpdateError,
+        });
+      }
+    }
+  };
+
+  const sendEnrollmentActionEmail = async ({
+    req,
+    action,
+    notes,
+  }: {
+    req: EnrollmentRequest;
+    action: EnrollmentActionEmailType;
+    notes?: string;
+  }) => {
+    const recipientEmail = resolveEnrollmentRecipientEmail(req);
+    if (!recipientEmail) {
+      toast.info('No valid email found for this enrollment. Use WhatsApp only.');
+      return;
+    }
+
+    const { buildEnrollmentStageEmail, sendEmail } = await import(
+      '@/utils/resendEmail'
+    );
+
+    const emailStage =
+      action === 'contacted'
+        ? 'contacted'
+        : action === 'approved'
+          ? 'approved'
+          : 'rejected';
+
+    const emailPayload = buildEnrollmentStageEmail(emailStage, {
+      parentName: req.parent_name,
+      studentName: req.student_name,
+      program: req.program,
+      portalUrl: `${window.location.origin}/student/login`,
+      gender: req.gender,
+      notes,
+    });
+
+    const claim = await claimEnrollmentEmailEvent({
+      requestId: req.id,
+      action,
+      recipientEmail,
+      subject: emailPayload.subject,
+    });
+
+    if (!claim.shouldSend) {
+      if (claim.reason === 'already_sent') {
+        toast.info('Email already sent for this action.');
+      }
+      return;
+    }
+
+    try {
+      const sent = await sendEmail({
+        ...emailPayload,
+        to: recipientEmail,
+      });
+
+      await finalizeEnrollmentEmailEvent({
+        eventId: claim.eventId,
+        requestId: req.id,
+        action,
+        sent,
+        errorMessage: sent
+          ? undefined
+          : `Failed to send ${action} email to ${recipientEmail}`,
+      });
+
+      if (!sent) {
+        toast.warning('Action saved, but email could not be delivered.');
+      }
+    } catch (error: any) {
+      await finalizeEnrollmentEmailEvent({
+        eventId: claim.eventId,
+        requestId: req.id,
+        action,
+        sent: false,
+        errorMessage: error?.message || 'Unexpected email delivery error',
+      });
+      throw error;
+    }
+  };
+
+  // Send rejection notification via WhatsApp + idempotent email
   const sendRejectionNotification = async (
     req: EnrollmentRequest,
     notes: string
@@ -183,54 +404,27 @@ export default function EnrollmentRequestsManager() {
 
     const didOpenWhatsApp = openWhatsAppConversation(req.parent_phone, message);
 
-    const recipientEmail = resolveEnrollmentRecipientEmail(req);
+    try {
+      await sendEnrollmentActionEmail({
+        req,
+        action: 'rejected',
+        notes,
+      });
 
-    // Send email if a valid student/parent email exists.
-    if (recipientEmail) {
-      try {
-        const { sendEmail, buildEnrollmentRejectedEmail } =
-          await import('@/utils/resendEmail');
-        const emailPayload = buildEnrollmentRejectedEmail({
-          parentName: req.parent_name,
-          studentName: req.student_name,
-          program: req.program,
-          gender: req.gender,
-          notes,
-        });
-        const emailSent = await sendEmail({
-          ...emailPayload,
-          to: recipientEmail,
-        });
-
-        if (didOpenWhatsApp && emailSent) {
-          toast.success('Rejection sent via WhatsApp and email');
-          return;
-        }
-
-        if (didOpenWhatsApp || emailSent) {
-          toast.warning(
-            didOpenWhatsApp
-              ? 'WhatsApp sent, but email failed.'
-              : 'Email sent, but WhatsApp could not open.'
-          );
-          return;
-        }
-
-        toast.error('Both WhatsApp and email failed. Please retry.');
-      } catch (error) {
-        console.error('Failed to send rejection notifications:', error);
-        toast.error(
-          didOpenWhatsApp
-            ? 'WhatsApp sent, but email failed unexpectedly.'
-            : 'Both WhatsApp and email failed.'
-        );
+      if (didOpenWhatsApp) {
+        toast.success('Rejection sent via WhatsApp and email');
       }
-    } else {
-      (didOpenWhatsApp ? toast.success : toast.error)(
+    } catch (error) {
+      console.error('Failed to send rejection notifications:', error);
+      toast.error(
         didOpenWhatsApp
-          ? 'No valid email found. Sent via WhatsApp only.'
-          : 'WhatsApp could not open for this number'
+          ? 'WhatsApp sent, but email failed unexpectedly.'
+          : 'Both WhatsApp and email failed.'
       );
+    }
+
+    if (!didOpenWhatsApp) {
+      toast.warning('Email was processed, but WhatsApp could not open.');
     }
   };
 
@@ -255,55 +449,9 @@ export default function EnrollmentRequestsManager() {
       if (error) throw error;
       return { id, status, notes };
     },
-    onSuccess: async (data) => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ['enrollment-requests'] });
       toast.success('Request updated');
-
-      const req = requests.find((r) => r.id === data.id);
-      if (req) {
-        const stage = resolveEnrollmentMessageStage(data.status);
-
-        if (stage === 'rejected') {
-          await sendRejectionNotification(req, data.notes || '');
-          setViewReq(null);
-          return;
-        }
-
-        const recipientEmail = resolveEnrollmentRecipientEmail(req);
-
-        // Send email if student email exists, otherwise fallback to parent email-like value.
-        if (recipientEmail) {
-          try {
-            const { sendEmail, buildEnrollmentStageEmail } =
-              await import('@/utils/resendEmail');
-            const emailPayload = buildEnrollmentStageEmail(stage, {
-              parentName: req.parent_name,
-              studentName: req.student_name,
-              program: req.program,
-              portalUrl: `${window.location.origin}/student/login`,
-              gender: req.gender,
-              notes: data.notes,
-            });
-            const sent = await sendEmail({
-              ...emailPayload,
-              to: recipientEmail,
-            });
-            if (!sent) {
-              console.error('Email send failed for enrollment update', {
-                requestId: req.id,
-                stage,
-              });
-            }
-          } catch (error) {
-            console.error('Email send failed for enrollment update', error);
-          }
-        } else {
-          toast.info(
-            'No valid email found for this enrollment. Use WhatsApp only.'
-          );
-        }
-      }
-      setViewReq(null);
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -379,6 +527,7 @@ export default function EnrollmentRequestsManager() {
   const [approving, setApproving] = useState(false);
 
   const handleStartApprove = (req: EnrollmentRequest) => {
+    if (isActionLocked(req.id, 'approved')) return;
     setApproveReq(req);
     setApproveStep('confirm');
     setAadharNumber(req.aadhar_number || '');
@@ -475,10 +624,13 @@ export default function EnrollmentRequestsManager() {
   };
 
   const handleCreatePortal = async () => {
-    if (!createdStudentId || !loginId.trim()) {
+    if (!createdStudentId || !loginId.trim() || !approveReq) {
       toast.error('Login ID is required');
       return;
     }
+    if (isActionLocked(approveReq.id, 'approved')) return;
+
+    setActionLocked(approveReq.id, 'approved', true);
     setApproving(true);
     try {
       const portalUrl = `${window.location.origin}/student/login`;
@@ -509,9 +661,7 @@ export default function EnrollmentRequestsManager() {
       queryClient.invalidateQueries({ queryKey: ['students-without-portal'] });
       toast.success('Portal account created!');
 
-      const recipientEmail = approveReq
-        ? resolveEnrollmentRecipientEmail(approveReq)
-        : '';
+      const recipientEmail = resolveEnrollmentRecipientEmail(approveReq);
 
       // Send portal credentials via email if student/parent email exists.
       if (recipientEmail) {
@@ -527,14 +677,37 @@ export default function EnrollmentRequestsManager() {
             defaultPassword: data.default_password,
             gender: approveReq.gender,
           });
-          const sent = await sendEmail({
-            ...emailPayload,
-            to: recipientEmail,
+
+          const claim = await claimEnrollmentEmailEvent({
+            requestId: approveReq.id,
+            action: 'approved',
+            recipientEmail,
+            subject: emailPayload.subject,
           });
-          if (!sent) {
-            toast.warning(
-              'Portal account created, but the email could not be sent.'
-            );
+
+          if (claim.shouldSend) {
+            const sent = await sendEmail({
+              ...emailPayload,
+              to: recipientEmail,
+            });
+
+            await finalizeEnrollmentEmailEvent({
+              eventId: claim.eventId,
+              requestId: approveReq.id,
+              action: 'approved',
+              sent,
+              errorMessage: sent
+                ? undefined
+                : `Failed to send approved email to ${recipientEmail}`,
+            });
+
+            if (!sent) {
+              toast.warning(
+                'Portal account created, but the email could not be sent.'
+              );
+            }
+          } else if (claim.reason === 'already_sent') {
+            toast.info('Approved email already sent for this request.');
           }
         } catch (error) {
           console.error('Failed to send portal credentials email:', error);
@@ -551,6 +724,7 @@ export default function EnrollmentRequestsManager() {
       toast.error(err.message || 'Failed to create portal account');
     } finally {
       setApproving(false);
+      setActionLocked(approveReq.id, 'approved', false);
     }
   };
 
@@ -574,11 +748,46 @@ export default function EnrollmentRequestsManager() {
       toast.error('Please add a reason/note before rejecting');
       return;
     }
-    updateMutation.mutate({
-      id: req.id,
-      status: 'rejected',
-      notes: adminNotes,
-    });
+    if (isActionLocked(req.id, 'rejected')) return;
+
+    setActionLocked(req.id, 'rejected', true);
+    updateMutation
+      .mutateAsync({
+        id: req.id,
+        status: 'rejected',
+        notes: adminNotes,
+      })
+      .then(async () => {
+        await sendRejectionNotification(req, adminNotes);
+        setViewReq(null);
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        setActionLocked(req.id, 'rejected', false);
+      });
+  };
+
+  const handleMarkContacted = (req: EnrollmentRequest, notes?: string) => {
+    if (isActionLocked(req.id, 'contacted')) return;
+
+    setActionLocked(req.id, 'contacted', true);
+    updateMutation
+      .mutateAsync({
+        id: req.id,
+        status: 'contacted',
+        notes,
+      })
+      .then(async () => {
+        await sendEnrollmentActionEmail({
+          req,
+          action: 'contacted',
+          notes,
+        });
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        setActionLocked(req.id, 'contacted', false);
+      });
   };
 
   const filtered = requests.filter((r) => {
@@ -849,6 +1058,7 @@ export default function EnrollmentRequestsManager() {
                               <Button
                                 size="sm"
                                 className="h-8 gap-1 bg-green-600 text-xs hover:bg-green-700"
+                                disabled={isActionLocked(req.id, 'approved')}
                                 onClick={() => handleStartApprove(req)}
                               >
                                 <Check className="w-3 h-3" /> Approve & Add
@@ -879,12 +1089,11 @@ export default function EnrollmentRequestsManager() {
                                 size="sm"
                                 variant="outline"
                                 className="h-8 gap-1 text-xs"
-                                onClick={() =>
-                                  updateMutation.mutate({
-                                    id: req.id,
-                                    status: 'contacted',
-                                  })
+                                disabled={
+                                  isActionLocked(req.id, 'contacted') ||
+                                  updateMutation.isPending
                                 }
+                                onClick={() => handleMarkContacted(req)}
                               >
                                 <Phone className="w-3 h-3" /> Contact
                               </Button>
@@ -892,6 +1101,10 @@ export default function EnrollmentRequestsManager() {
                                 size="sm"
                                 variant="destructive"
                                 className="h-8 gap-1 text-xs"
+                                disabled={
+                                  isActionLocked(req.id, 'rejected') ||
+                                  updateMutation.isPending
+                                }
                                 onClick={() => {
                                   setViewReq(req);
                                   setAdminNotes(req.admin_notes || '');
@@ -907,6 +1120,10 @@ export default function EnrollmentRequestsManager() {
                               size="sm"
                               variant="destructive"
                               className="h-8 gap-1 text-xs"
+                              disabled={
+                                isActionLocked(req.id, 'rejected') ||
+                                updateMutation.isPending
+                              }
                               onClick={() => {
                                 setViewReq(req);
                                 setAdminNotes(req.admin_notes || '');
@@ -1104,6 +1321,7 @@ export default function EnrollmentRequestsManager() {
                       size="sm"
                       variant="outline"
                       className="w-full text-xs"
+                      disabled={updateMutation.isPending}
                       onClick={() => {
                         updateMutation.mutate({
                           id: viewReq.id,
@@ -1124,12 +1342,12 @@ export default function EnrollmentRequestsManager() {
                           size="sm"
                           variant="outline"
                           className="gap-1 text-xs"
+                          disabled={
+                            isActionLocked(viewReq.id, 'contacted') ||
+                            updateMutation.isPending
+                          }
                           onClick={() =>
-                            updateMutation.mutate({
-                              id: viewReq.id,
-                              status: 'contacted',
-                              notes: adminNotes,
-                            })
+                            handleMarkContacted(viewReq, adminNotes || undefined)
                           }
                         >
                           <Phone className="w-3 h-3" /> Mark Contacted
@@ -1138,6 +1356,7 @@ export default function EnrollmentRequestsManager() {
                       <Button
                         size="sm"
                         className="gap-1 text-xs bg-primary text-primary-foreground hover:bg-primary/90"
+                        disabled={approving || isActionLocked(viewReq.id, 'approved')}
                         onClick={() => {
                           setViewReq(null);
                           handleStartApprove(viewReq);
@@ -1149,6 +1368,10 @@ export default function EnrollmentRequestsManager() {
                         size="sm"
                         variant="destructive"
                         className="gap-1 text-xs"
+                        disabled={
+                          isActionLocked(viewReq.id, 'rejected') ||
+                          updateMutation.isPending
+                        }
                         onClick={() => handleRejectWithNotes(viewReq)}
                       >
                         <X className="w-3 h-3" /> Reject & Notify
