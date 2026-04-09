@@ -46,7 +46,8 @@ type Props = {
 
 const scopeBadgeClass = (scope: PushLogRow['portal_scope']) => {
   if (scope === 'admin') return 'bg-sky-500/10 text-sky-700 border-sky-500/20';
-  if (scope === 'student') return 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20';
+  if (scope === 'student')
+    return 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20';
   return 'bg-muted text-muted-foreground';
 };
 
@@ -76,7 +77,9 @@ export default function PushNotificationHistoryPanel({
     queryFn: async () => {
       let query = supabase
         .from('push_notification_delivery_logs' as any)
-        .select('id, portal_scope, title, body, total_targets, sent_count, failed_count, created_at, target_url')
+        .select(
+          'id, portal_scope, title, body, total_targets, sent_count, failed_count, created_at, target_url'
+        )
         .order('created_at', { ascending: false })
         .limit(50) as any;
 
@@ -188,8 +191,8 @@ export default function PushNotificationHistoryPanel({
                     </AlertDialogTitle>
                     <AlertDialogDescription>
                       This will deactivate stale or repeatedly failing push
-                      subscriptions. This action is safe but impacts future
-                      push delivery for affected devices.
+                      subscriptions. This action is safe but impacts future push
+                      delivery for affected devices.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -236,7 +239,9 @@ export default function PushNotificationHistoryPanel({
         </div>
 
         {isLoading ? (
-          <div className="px-4 py-6 text-sm text-muted-foreground">Loading push logs...</div>
+          <div className="px-4 py-6 text-sm text-muted-foreground">
+            Loading push logs...
+          </div>
         ) : logs.length === 0 ? (
           <div className="px-4 py-6 text-sm text-muted-foreground">
             No push notifications sent yet.
@@ -256,18 +261,28 @@ export default function PushNotificationHistoryPanel({
               </thead>
               <tbody>
                 {logs.map((log) => (
-                  <tr key={log.id} className="border-t border-border/50 align-top">
+                  <tr
+                    key={log.id}
+                    className="border-t border-border/50 align-top"
+                  >
                     <td className="px-3 py-2 whitespace-nowrap">
                       {new Date(log.created_at).toLocaleString()}
                     </td>
                     <td className="px-3 py-2">
-                      <Badge variant="outline" className={scopeBadgeClass(log.portal_scope)}>
+                      <Badge
+                        variant="outline"
+                        className={scopeBadgeClass(log.portal_scope)}
+                      >
                         {log.portal_scope || 'mixed'}
                       </Badge>
                     </td>
                     <td className="px-3 py-2 min-w-[260px]">
-                      <div className="font-medium text-foreground">{log.title}</div>
-                      <div className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{log.body}</div>
+                      <div className="font-medium text-foreground">
+                        {log.title}
+                      </div>
+                      <div className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
+                        {log.body}
+                      </div>
                     </td>
                     <td className="px-3 py-2">
                       <Badge variant="secondary">{log.sent_count}</Badge>
@@ -275,7 +290,11 @@ export default function PushNotificationHistoryPanel({
                     <td className="px-3 py-2">
                       <Badge
                         variant="secondary"
-                        className={log.failed_count > 0 ? 'bg-destructive/10 text-destructive' : ''}
+                        className={
+                          log.failed_count > 0
+                            ? 'bg-destructive/10 text-destructive'
+                            : ''
+                        }
                       >
                         {log.failed_count}
                       </Badge>

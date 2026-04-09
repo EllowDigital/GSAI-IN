@@ -39,7 +39,9 @@ export async function ensurePushPermission() {
 
 export async function ensurePushSubscription() {
   if (!canEnablePushNotifications()) {
-    throw new Error('Push notifications are not available on this device/browser.');
+    throw new Error(
+      'Push notifications are not available on this device/browser.'
+    );
   }
 
   const permission = await ensurePushPermission();

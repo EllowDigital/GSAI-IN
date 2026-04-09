@@ -67,9 +67,7 @@ export default function AnnouncementsManager() {
   const [modalOpen, setModalOpen] = useState(false);
   const [pushScope, setPushScope] = useState<'admin' | 'student'>('student');
   const [pushUrl, setPushUrl] = useState('/student/dashboard');
-  const [sendLockById, setSendLockById] = useState<Record<string, boolean>>(
-    {}
-  );
+  const [sendLockById, setSendLockById] = useState<Record<string, boolean>>({});
 
   const {
     data: announcements = [],
@@ -184,7 +182,10 @@ export default function AnnouncementsManager() {
       const total = data?.total ?? 0;
       const deactivated = data?.deactivated ?? 0;
 
-      toast.success('Push notification sent', `Sent ${sent}/${total}, failed ${failed}${deactivated ? `, deactivated ${deactivated}` : ''}`);
+      toast.success(
+        'Push notification sent',
+        `Sent ${sent}/${total}, failed ${failed}${deactivated ? `, deactivated ${deactivated}` : ''}`
+      );
     },
     onError: (e) =>
       toast.error(
@@ -220,7 +221,10 @@ export default function AnnouncementsManager() {
       queryClient.invalidateQueries({
         queryKey: ['push-notification-delivery-logs'],
       });
-      toast.success('Stale subscription cleanup complete', `${count} subscriptions marked inactive.`);
+      toast.success(
+        'Stale subscription cleanup complete',
+        `${count} subscriptions marked inactive.`
+      );
     },
     onError: (e) =>
       toast.error(

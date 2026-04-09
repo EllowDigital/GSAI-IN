@@ -136,8 +136,7 @@ const App = () => {
       }
 
       const { timestamp } = JSON.parse(dismissed);
-      const isStillDismissed =
-        Date.now() - timestamp < 7 * 24 * 60 * 60 * 1000;
+      const isStillDismissed = Date.now() - timestamp < 7 * 24 * 60 * 60 * 1000;
       setDismissedInstallToast(isStillDismissed);
     } catch {
       setDismissedInstallToast(false);
@@ -222,10 +221,7 @@ const App = () => {
     // Persist dismissal for 7 days
     try {
       const key = `pwa-install-dismissed-${activePortalScope}`;
-      localStorage.setItem(
-        key,
-        JSON.stringify({ timestamp: Date.now() })
-      );
+      localStorage.setItem(key, JSON.stringify({ timestamp: Date.now() }));
     } catch {
       // Ignore localStorage errors
     }
