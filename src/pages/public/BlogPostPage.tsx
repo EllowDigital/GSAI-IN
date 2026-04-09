@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Clock, Share2, User } from 'lucide-react';
-import sanitizeHtml from 'sanitize-html';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/services/supabase/client';
 import { toast } from 'sonner';
@@ -10,6 +9,7 @@ import { motion } from 'framer-motion';
 import InternalLinksBlock from '@/components/common/InternalLinksBlock';
 import { generateArticleStructuredData } from '@/utils/seoUtils';
 import { injectContextualInternalLinks } from '@/utils/internalLinking';
+import { sanitizeHtmlForClient } from '@/utils/browserSanitizeHtml';
 
 interface BlogPost {
   id: string;
@@ -35,7 +35,7 @@ export default function BlogPost() {
 
   const sanitizedContent = useMemo(
     () =>
-      sanitizeHtml(enrichedContent, {
+      sanitizeHtmlForClient(enrichedContent, {
         allowedTags: [
           'p',
           'br',

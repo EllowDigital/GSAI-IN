@@ -1,11 +1,13 @@
 import { supabase } from '@/services/supabase/client';
 
+/**
+ * ACADEMY CONFIGURATION
+ */
 const ACADEMY_NAME = 'Ghatak Sports Academy India';
 const ACADEMY_EMAIL = 'ghatakgsai@gmail.com';
 const ACADEMY_PHONE = '+91 63941 35988';
 const STUDENT_PORTAL_DEFAULT_PASSWORD = 'GSAI-STUDENT-2026';
-const ACADEMY_LOGO_URL =
-  'https://ghataksportsacademy.com/assets/images/logo.webp';
+const ACADEMY_LOGO_URL = 'https://ghataksportsacademy.com/assets/images/logo.webp';
 
 interface SendEmailParams {
   to: string;
@@ -15,7 +17,10 @@ interface SendEmailParams {
   replyTo?: string;
 }
 
+// ── UTILITY FUNCTIONS ──
+
 export function escapeHtml(value: string): string {
+  if (!value) return '';
   return value
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -30,25 +35,25 @@ function sanitizeSubject(value: string): string {
 
 function validateHttpsUrl(value: string, fieldName: string): string {
   const trimmed = value.trim();
-
-  let parsed: URL;
   try {
-    parsed = new URL(trimmed);
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== 'https:') {
+      throw new Error(`${fieldName} must use HTTPS`);
+    }
+    return parsed.toString();
   } catch {
     throw new Error(`${fieldName} must be a valid URL`);
   }
-
-  if (parsed.protocol !== 'https:') {
-    throw new Error(`${fieldName} must use HTTPS`);
-  }
-
-  return parsed.toString();
 }
 
 function isFullHtmlDocument(value: string): boolean {
   return /<html[\s>]/i.test(value);
 }
 
+/**
+ * BRANDED EMAIL WRAPPER
+ * Optimized for Indian mobile users (Clean, readable, professional)
+ */
 function buildBrandedEmailHtml(subject: string, bodyHtml: string): string {
   const safeSubject = escapeHtml(subject);
 
@@ -58,26 +63,27 @@ function buildBrandedEmailHtml(subject: string, bodyHtml: string): string {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <style>
-    body{margin:0;padding:0;background:#eef2f7;font-family:Arial,Helvetica,sans-serif;color:#1f2937}
-    .wrapper{max-width:640px;margin:0 auto;padding:24px 14px}
-    .card{background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;box-shadow:0 8px 30px rgba(15,23,42,.06)}
-    .header{background:#0f172a;padding:20px 26px;text-align:center}
-    .logo{height:46px;max-width:220px;object-fit:contain;display:block;margin:0 auto 8px}
-    .academy{color:#e2e8f0;font-size:14px;font-weight:600;letter-spacing:.2px}
-    .content{padding:26px;color:#1f2937;line-height:1.65;font-size:15px}
-    .content h2{margin:0 0 14px;color:#0f172a;font-size:19px}
-    .info-box{background:#f8fafc;border:1px solid #dbeafe;border-left:4px solid #2563eb;padding:12px 14px;border-radius:10px;margin:16px 0}
-    .info-box p{margin:4px 0;font-size:14px}
-    .btn{display:inline-block;background:#1d4ed8;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600}
-    .footer{background:#f8fafc;border-top:1px solid #e5e7eb;padding:16px 26px;text-align:center;color:#64748b;font-size:12px}
-    .footer a{color:#1d4ed8;text-decoration:none}
+    body{margin:0;padding:0;background:#f4f7f9;font-family:'Helvetica Neue',Arial,sans-serif;color:#1f2937}
+    .wrapper{max-width:600px;margin:0 auto;padding:20px 10px}
+    .card{background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.05)}
+    .header{background:#0f172a;padding:24px;text-align:center}
+    .logo{height:48px;max-width:200px;object-fit:contain;display:block;margin:0 auto 10px}
+    .academy{color:#f8fafc;font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+    .content{padding:30px 24px;color:#374151;line-height:1.7;font-size:16px}
+    .content h2{margin:0 0 16px;color:#111827;font-size:20px;font-weight:bold;border-bottom:2px solid #f1f5f9;padding-bottom:10px}
+    .info-box{background:#f0f9ff;border:1px solid #bae6fd;border-left:5px solid #0284c7;padding:16px;border-radius:8px;margin:20px 0}
+    .info-box p{margin:6px 0;font-size:14px;color:#0c4a6e}
+    .btn{display:inline-block;background:#1d4ed8;color:#ffffff !important;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;margin-top:10px}
+    .footer{background:#f9fafb;border-top:1px solid #f1f5f9;padding:20px;text-align:center;color:#6b7280;font-size:12px}
+    .footer a{color:#1d4ed8;text-decoration:none;font-weight:600}
+    .hindi-text{color:#4b5563;font-style:italic;font-size:14px;margin-top:4px;display:block}
   </style>
 </head>
 <body>
   <div class="wrapper">
     <div class="card">
       <div class="header">
-        <img class="logo" src="${ACADEMY_LOGO_URL}" alt="${ACADEMY_NAME} logo" />
+        <img class="logo" src="${ACADEMY_LOGO_URL}" alt="${ACADEMY_NAME}" />
         <div class="academy">${ACADEMY_NAME}</div>
       </div>
       <div class="content">
@@ -85,9 +91,9 @@ function buildBrandedEmailHtml(subject: string, bodyHtml: string): string {
         ${bodyHtml}
       </div>
       <div class="footer">
-        <p>${ACADEMY_NAME}</p>
-        <p>Phone / WhatsApp: ${ACADEMY_PHONE} | Email: <a href="mailto:${ACADEMY_EMAIL}">${ACADEMY_EMAIL}</a></p>
-        <p style="margin-top:8px">This is an automated email from the academy portal.</p>
+        <p><strong>${ACADEMY_NAME}</strong></p>
+        <p>WhatsApp/Phone: ${ACADEMY_PHONE} | Email: <a href="mailto:${ACADEMY_EMAIL}">${ACADEMY_EMAIL}</a></p>
+        <p style="margin-top:10px">This is an automated message from our official academy portal.</p>
       </div>
     </div>
   </div>
@@ -131,23 +137,26 @@ export async function sendEmail(params: SendEmailParams): Promise<boolean> {
   }
 }
 
-// ── HTML builders for beautiful email templates ──
+// ── HTML BUILDERS ──
 
-function infoRow(
-  label: string,
-  value: string,
-  options?: { valueIsHtml?: boolean }
-): string {
+function infoRow(label: string, value: string, options?: { valueIsHtml?: boolean }): string {
   const safeLabel = escapeHtml(label);
   const safeValue = options?.valueIsHtml ? value : escapeHtml(value);
-  return `<p style="margin:4px 0;font-size:14px"><strong>${safeLabel}:</strong> ${safeValue}</p>`;
+  return `<p><strong>${safeLabel}:</strong> ${safeValue}</p>`;
 }
 
 function infoBox(rows: string): string {
   return `<div class="info-box">${rows}</div>`;
 }
 
-// ── Fee Reminder Email ──
+function getRelation(gender?: string | null): string {
+  const g = gender?.trim().toLowerCase();
+  if (g === 'male') return 'son';
+  if (g === 'female') return 'daughter';
+  return 'child';
+}
+
+// ── EMAIL TEMPLATES ──
 
 export function buildFeeReminderEmail(params: {
   parentName: string;
@@ -157,27 +166,25 @@ export function buildFeeReminderEmail(params: {
   year: number;
 }): SendEmailParams & { to: string } {
   const { parentName, studentName, amount, month, year } = params;
-  const safeParentName = escapeHtml(parentName);
   return {
-    to: '', // caller must set
+    to: '', 
     subject: `Fee Reminder: ${studentName} - ${month} ${year}`,
     html: `
-      <p>Namaste <strong>${safeParentName}</strong> ji,</p>
-      <p>This is a friendly reminder that the training fee for your child is pending.</p>
+      <p>Namaste <strong>${escapeHtml(parentName)}</strong> ji,</p>
+      <p>This is a friendly reminder that the training fee for your child is currently pending.</p>
+      <span class="hindi-text">आपके बच्चे की ट्रेनिंग फीस अभी पेंडिंग है।</span>
       ${infoBox(
         infoRow('Student', studentName) +
-          infoRow('Amount Due', `₹${amount.toLocaleString()}`) +
-          infoRow('Period', `${month} ${year}`)
+        infoRow('Amount Due', `₹${amount.toLocaleString('en-IN')}`) +
+        infoRow('Period', `${month} ${year}`)
       )}
       <p>Kindly clear the dues at your earliest convenience. If already paid, please ignore this message.</p>
-      <p style="margin-top:20px">For queries, contact us:</p>
+      <p style="margin-top:20px">For any queries, contact us:</p>
       <p>📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
-      <p style="margin-top:16px">Thank you,<br><strong>${ACADEMY_NAME}</strong></p>
+      <p style="margin-top:16px">Thank you,<br><strong>Accounts Dept, ${ACADEMY_NAME}</strong></p>
     `,
   };
 }
-
-// ── Enrollment Stage Emails ──
 
 export function buildEnrollmentReceivedEmail(params: {
   parentName: string;
@@ -186,23 +193,21 @@ export function buildEnrollmentReceivedEmail(params: {
   gender?: string | null;
 }): Omit<SendEmailParams, 'to'> {
   const relation = getRelation(params.gender);
-  const safeParentName = escapeHtml(params.parentName);
-  const safeStudentName = escapeHtml(params.studentName);
-  const safeProgram = escapeHtml(params.program);
-  const safeRelation = escapeHtml(relation);
   return {
     subject: `Enrollment Received | ${ACADEMY_NAME}`,
     html: `
-      <p>Namaste <strong>${safeParentName}</strong> ji,</p>
-      <p>We have received the enrollment request for your ${safeRelation}, <strong>${safeStudentName}</strong>, for <strong>${safeProgram}</strong>.</p>
+      <p>Namaste <strong>${escapeHtml(params.parentName)}</strong> ji,</p>
+      <p>We have received the enrollment request for your ${relation}, <strong>${escapeHtml(params.studentName)}</strong>, for <strong>${escapeHtml(params.program)}</strong>.</p>
+      <span class="hindi-text">हमने आपका नामांकन अनुरोध (Enrollment request) प्राप्त कर लिया है।</span>
       ${infoBox(
         infoRow('Student', params.studentName) +
-          infoRow('Program', params.program) +
-          infoRow('Parent', params.parentName)
+        infoRow('Program', params.program) +
+        infoRow('Parent', params.parentName)
       )}
-      <p>Our team will contact you within 24 hours for trial class and batch details.</p>
+      <p>Our team will contact you within 24 hours regarding the trial class and batch timings.</p>
+      <span class="hindi-text">हमारी टीम 24 घंटे में आपको ट्रायल क्लास और बैच की जानकारी के लिए कॉल करेगी।</span>
       <p style="margin-top:20px">📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
-      <p style="margin-top:16px">Thank you,<br><strong>${ACADEMY_NAME}</strong></p>
+      <p style="margin-top:16px">Regards,<br><strong>Team ${ACADEMY_NAME}</strong></p>
     `,
   };
 }
@@ -215,22 +220,19 @@ export function buildEnrollmentContactedEmail(params: {
   notes?: string | null;
 }): Omit<SendEmailParams, 'to'> {
   const relation = getRelation(params.gender);
-  const safeParentName = escapeHtml(params.parentName);
-  const safeStudentName = escapeHtml(params.studentName);
-  const safeProgram = escapeHtml(params.program);
-  const safeRelation = escapeHtml(relation);
-  const safeNotes = params.notes ? escapeHtml(params.notes) : null;
   return {
     subject: `Enrollment Contacted | ${ACADEMY_NAME}`,
     html: `
-      <p>Namaste <strong>${safeParentName}</strong> ji,</p>
-      <p>Our team has started the process for your ${safeRelation}, <strong>${safeStudentName}</strong> (${safeProgram}).</p>
+      <p>Namaste <strong>${escapeHtml(params.parentName)}</strong> ji,</p>
+      <p>Our team has initiated the admission process for your ${relation}, <strong>${escapeHtml(params.studentName)}</strong> (${escapeHtml(params.program)}).</p>
+      <span class="hindi-text">आपके बच्चे का एडमिशन प्रोसेस शुरू हो चुका है।</span>
       ${infoBox(
         infoRow('Student', params.studentName) +
-          infoRow('Program', params.program)
+        infoRow('Program', params.program)
       )}
-      <p>Please call or WhatsApp us to confirm trial class timing.</p>
-      ${safeNotes ? `<p><strong>Note:</strong> ${safeNotes}</p>` : ''}
+      <p>Please call or WhatsApp us to confirm the trial class timing.</p>
+      <span class="hindi-text">ट्रायल क्लास का समय कन्फर्म करने के लिए हमें कॉल या व्हाट्सएप करें।</span>
+      ${params.notes ? `<p style="margin-top:10px"><strong>Note:</strong> ${escapeHtml(params.notes)}</p>` : ''}
       <p style="margin-top:20px">📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
       <p style="margin-top:16px">Thank you,<br><strong>${ACADEMY_NAME}</strong></p>
     `,
@@ -246,34 +248,32 @@ export function buildEnrollmentApprovedEmail(params: {
   notes?: string | null;
 }): Omit<SendEmailParams, 'to'> {
   const relation = getRelation(params.gender);
-  const safeParentName = escapeHtml(params.parentName);
-  const safeStudentName = escapeHtml(params.studentName);
-  const safeProgram = escapeHtml(params.program);
-  const safeRelation = escapeHtml(relation);
-  const safeNotes = params.notes ? escapeHtml(params.notes) : null;
   const safePortalUrl = params.portalUrl
     ? validateHttpsUrl(params.portalUrl, 'portalUrl')
     : 'https://ghataksportsacademy.com/student/login';
+    
   return {
-    subject: `Enrollment Approved | ${ACADEMY_NAME}`,
+    subject: `Enrollment Approved - Welcome to ${ACADEMY_NAME}`,
     html: `
-      <p>Namaste <strong>${safeParentName}</strong> ji,</p>
-      <p>Good news. Enrollment for your ${safeRelation}, <strong>${safeStudentName}</strong>, is <strong style="color:#16a34a">approved</strong>.</p>
+      <p>Namaste <strong>${escapeHtml(params.parentName)}</strong> ji,</p>
+      <p>Good news! Enrollment for your ${relation}, <strong>${escapeHtml(params.studentName)}</strong>, is <strong style="color:#16a34a">Approved</strong>.</p>
+      <span class="hindi-text">खुशखबरी, आपका नामांकन स्वीकार (Approve) कर लिया गया है।</span>
       ${infoBox(
         infoRow('Student', params.studentName) +
-          infoRow('Program', params.program) +
-          infoRow('Status', '✅ Approved') +
-          infoRow(
-            'Student Portal',
-            `<a href="${safePortalUrl}" rel="noopener noreferrer">${escapeHtml(safePortalUrl)}</a>`,
-            { valueIsHtml: true }
-          ) +
-          infoRow('Default Password', STUDENT_PORTAL_DEFAULT_PASSWORD)
+        infoRow('Program', params.program) +
+        infoRow('Status', '✅ Approved') +
+        infoRow(
+          'Student Portal',
+          `<a href="${safePortalUrl}" rel="noopener noreferrer">${escapeHtml(safePortalUrl)}</a>`,
+          { valueIsHtml: true }
+        ) +
+        infoRow('Default Password', STUDENT_PORTAL_DEFAULT_PASSWORD)
       )}
-      <p>Please login and change password after first sign-in.</p>
-      ${safeNotes ? `<p><strong>Note:</strong> ${safeNotes}</p>` : ''}
-      <p style="margin-top:20px">📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
-      <p style="margin-top:16px">Welcome to <strong>${ACADEMY_NAME}</strong>.</p>
+      <p><strong>Important:</strong> Please login and change your password after the first sign-in.</p>
+      <span class="hindi-text">महत्वपूर्ण: पहली बार लॉगिन करने के बाद पासवर्ड तुरंत बदलें।</span>
+      ${params.notes ? `<p><strong>Note:</strong> ${escapeHtml(params.notes)}</p>` : ''}
+      <p><a href="${safePortalUrl}" class="btn">Go to Student Portal</a></p>
+      <p style="margin-top:20px">Welcome to <strong>${ACADEMY_NAME}</strong> family!</p>
     `,
   };
 }
@@ -286,22 +286,18 @@ export function buildEnrollmentRejectedEmail(params: {
   notes?: string | null;
 }): Omit<SendEmailParams, 'to'> {
   const relation = getRelation(params.gender);
-  const safeParentName = escapeHtml(params.parentName);
-  const safeStudentName = escapeHtml(params.studentName);
-  const safeProgram = escapeHtml(params.program);
-  const safeRelation = escapeHtml(relation);
-  const safeNotes = params.notes ? escapeHtml(params.notes) : null;
   return {
-    subject: `Enrollment Rejected | ${ACADEMY_NAME}`,
+    subject: `Enrollment Update | ${ACADEMY_NAME}`,
     html: `
-      <p>Namaste <strong>${safeParentName}</strong> ji,</p>
-      <p>After review, we are unable to proceed with enrollment for your ${safeRelation}, <strong>${safeStudentName}</strong>, at this time.</p>
+      <p>Namaste <strong>${escapeHtml(params.parentName)}</strong> ji,</p>
+      <p>After review, we are unable to proceed with the enrollment for your ${relation}, <strong>${escapeHtml(params.studentName)}</strong>, at this time.</p>
+      <span class="hindi-text">समीक्षा के बाद, अभी हम नामांकन प्रक्रिया को आगे नहीं बढ़ा पाएंगे।</span>
       ${infoBox(
         infoRow('Student', params.studentName) +
-          infoRow('Program', params.program)
+        infoRow('Program', params.program)
       )}
-      ${safeNotes ? `<p><strong>Reason:</strong> ${safeNotes}</p>` : ''}
-      <p>If needed, please contact us for guidance or next options.</p>
+      ${params.notes ? `<p><strong>Reason:</strong> ${escapeHtml(params.notes)}</p>` : ''}
+      <p>Please contact us if you need any guidance regarding future options.</p>
       <p style="margin-top:20px">📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
       <p style="margin-top:16px">Thank you for your understanding.<br><strong>${ACADEMY_NAME}</strong></p>
     `,
@@ -318,46 +314,31 @@ export function buildPortalCredentialsEmail(params: {
   gender?: string | null;
 }): Omit<SendEmailParams, 'to'> {
   const relation = getRelation(params.gender);
-  const safeParentName = escapeHtml(params.parentName);
-  const safeStudentName = escapeHtml(params.studentName);
-  const safeProgram = escapeHtml(params.program);
-  const safeRelation = escapeHtml(relation);
   const safePortalUrl = validateHttpsUrl(params.portalUrl, 'portalUrl');
-  const safeDefaultPassword = escapeHtml(
-    params.defaultPassword?.trim() || STUDENT_PORTAL_DEFAULT_PASSWORD
-  );
+  const safeDefaultPassword = escapeHtml(params.defaultPassword?.trim() || STUDENT_PORTAL_DEFAULT_PASSWORD);
 
   return {
     subject: `Admission Complete - Login Details | ${ACADEMY_NAME}`,
     html: `
-      <p>Namaste <strong>${safeParentName}</strong> ji,</p>
-      <p>Admission is complete for your ${safeRelation}, <strong>${safeStudentName}</strong> (${safeProgram}).</p>
-      <p>Please use these login details:</p>
+      <p>Namaste <strong>${escapeHtml(params.parentName)}</strong> ji,</p>
+      <p>Admission is now complete for your ${relation}, <strong>${escapeHtml(params.studentName)}</strong> (${escapeHtml(params.program)}).</p>
+      <p>Please use the credentials below to access the student portal:</p>
+      <span class="hindi-text">एडमिशन पूरा हो गया है। कृपया नीचे दिए गए लॉगिन डिटेल्स का उपयोग करें:</span>
       ${infoBox(
         infoRow(
           'Portal URL',
           `<a href="${safePortalUrl}" rel="noopener noreferrer">${escapeHtml(safePortalUrl)}</a>`,
-          {
-            valueIsHtml: true,
-          }
+          { valueIsHtml: true }
         ) +
-          infoRow('Login ID', params.loginId) +
-          infoRow('Default Password', safeDefaultPassword)
+        infoRow('Login ID', params.loginId) +
+        infoRow('Default Password', safeDefaultPassword)
       )}
-      <p>Important: change password after first login.</p>
-      <p style="margin-top:20px">📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
-      <p style="margin-top:16px">Welcome to <strong>${ACADEMY_NAME}</strong>.</p>
+      <p><strong>Note:</strong> Security के लिए पहली लॉगिन के बाद पासवर्ड जरूर बदलें।</p>
+      <p><a href="${safePortalUrl}" class="btn">Login Now</a></p>
+      <p style="margin-top:20px">Regards,<br><strong>Team ${ACADEMY_NAME}</strong></p>
     `,
   };
 }
-
-// ── Enrollment Stage Email Dispatcher ──
-
-export type EnrollmentEmailStage =
-  | 'pending'
-  | 'contacted'
-  | 'approved'
-  | 'rejected';
 
 export function buildEventAnnouncementEmail(params: {
   parentName: string;
@@ -369,35 +350,25 @@ export function buildEventAnnouncementEmail(params: {
   description?: string | null;
   eventsPageUrl?: string;
 }): Omit<SendEmailParams, 'to'> {
-  const safeParentName = escapeHtml(params.parentName || 'Parent');
-  const safeStudentName = escapeHtml(params.studentName || 'Student');
-  const safeTitle = escapeHtml(params.title);
-  const safeFromDate = escapeHtml(params.fromDate);
-  const safeEndDate = params.endDate ? escapeHtml(params.endDate) : null;
-  const safeLocation = params.location ? escapeHtml(params.location) : null;
-  const safeDescription = params.description
-    ? escapeHtml(params.description)
-    : null;
-  const safeEventsPageUrl = params.eventsPageUrl
+  const safePortalUrl = params.eventsPageUrl
     ? validateHttpsUrl(params.eventsPageUrl, 'eventsPageUrl')
     : 'https://ghataksportsacademy.com/events';
 
   return {
-    subject: `New Event: ${params.title} | ${ACADEMY_NAME}`,
+    subject: `New Academy Event: ${params.title}`,
     html: `
-      <p>Namaste <strong>${safeParentName}</strong> ji,</p>
-      <p>We are excited to share a new academy event update for <strong>${safeStudentName}</strong>.</p>
+      <p>Namaste <strong>${escapeHtml(params.parentName || 'Parent')}</strong> ji,</p>
+      <p>We are excited to announce a new academy event for our students.</p>
       ${infoBox(
-        infoRow('Event', safeTitle) +
-          infoRow('Starts On', safeFromDate) +
-          (safeEndDate ? infoRow('Ends On', safeEndDate) : '') +
-          (safeLocation ? infoRow('Location', safeLocation) : '')
+        infoRow('Event', params.title) +
+        infoRow('Starts On', params.fromDate) +
+        (params.endDate ? infoRow('Ends On', params.endDate) : '') +
+        (params.location ? infoRow('Location', params.location) : '')
       )}
-      ${safeDescription ? `<p><strong>Details:</strong> ${safeDescription}</p>` : ''}
-      <p>View complete event details here:</p>
-      <p><a class="btn" href="${safeEventsPageUrl}" rel="noopener noreferrer">View Events</a></p>
-      <p style="margin-top:20px">📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
-      <p style="margin-top:16px">Regards,<br><strong>${ACADEMY_NAME}</strong></p>
+      ${params.description ? `<p><strong>Details:</strong> ${escapeHtml(params.description)}</p>` : ''}
+      <p>View complete details on our events page:</p>
+      <p><a class="btn" href="${safePortalUrl}" rel="noopener noreferrer">View All Events</a></p>
+      <p style="margin-top:20px">Regards,<br><strong>${ACADEMY_NAME}</strong></p>
     `,
   };
 }
@@ -412,38 +383,32 @@ export function buildCompetitionAnnouncementEmail(params: {
   description?: string | null;
   competitionsPageUrl?: string;
 }): Omit<SendEmailParams, 'to'> {
-  const safeParentName = escapeHtml(params.parentName || 'Parent');
-  const safeStudentName = escapeHtml(params.studentName || 'Student');
-  const safeName = escapeHtml(params.name);
-  const safeDate = escapeHtml(params.date);
-  const safeEndDate = params.endDate ? escapeHtml(params.endDate) : null;
-  const safeLocation = params.location ? escapeHtml(params.location) : null;
-  const safeDescription = params.description
-    ? escapeHtml(params.description)
-    : null;
-  const safeCompetitionsPageUrl = params.competitionsPageUrl
+  const safeUrl = params.competitionsPageUrl
     ? validateHttpsUrl(params.competitionsPageUrl, 'competitionsPageUrl')
     : 'https://ghataksportsacademy.com/student/dashboard';
 
   return {
-    subject: `Competition Update: ${params.name} | ${ACADEMY_NAME}`,
+    subject: `Competition Update: ${params.name}`,
     html: `
-      <p>Namaste <strong>${safeParentName}</strong> ji,</p>
-      <p>A new competition update is available for <strong>${safeStudentName}</strong>.</p>
+      <p>Namaste <strong>${escapeHtml(params.parentName || 'Parent')}</strong> ji,</p>
+      <p>A new competition update is available for <strong>${escapeHtml(params.studentName || 'Student')}</strong>.</p>
       ${infoBox(
-        infoRow('Competition', safeName) +
-          infoRow('Date', safeDate) +
-          (safeEndDate ? infoRow('End Date', safeEndDate) : '') +
-          (safeLocation ? infoRow('Location', safeLocation) : '')
+        infoRow('Competition', params.name) +
+        infoRow('Date', params.date) +
+        (params.endDate ? infoRow('End Date', params.endDate) : '') +
+        (params.location ? infoRow('Location', params.location) : '')
       )}
-      ${safeDescription ? `<p><strong>Details:</strong> ${safeDescription}</p>` : ''}
-      <p>Please check the student portal for registration and updates:</p>
-      <p><a class="btn" href="${safeCompetitionsPageUrl}" rel="noopener noreferrer">Open Student Portal</a></p>
-      <p style="margin-top:20px">📞 <strong>${ACADEMY_PHONE}</strong> | ✉️ <strong>${ACADEMY_EMAIL}</strong></p>
-      <p style="margin-top:16px">Regards,<br><strong>${ACADEMY_NAME}</strong></p>
+      ${params.description ? `<p><strong>Details:</strong> ${escapeHtml(params.description)}</p>` : ''}
+      <p>Check the student portal for registration details:</p>
+      <p><a class="btn" href="${safeUrl}" rel="noopener noreferrer">Open Student Portal</a></p>
+      <p style="margin-top:20px">Best of luck,<br><strong>Team ${ACADEMY_NAME}</strong></p>
     `,
   };
 }
+
+// ── DISPATCHER ──
+
+export type EnrollmentEmailStage = 'pending' | 'contacted' | 'approved' | 'rejected';
 
 export function buildEnrollmentStageEmail(
   stage: EnrollmentEmailStage,
@@ -467,13 +432,4 @@ export function buildEnrollmentStageEmail(
     default:
       return buildEnrollmentReceivedEmail(params);
   }
-}
-
-// ── Helpers ──
-
-function getRelation(gender?: string | null): string {
-  const g = gender?.trim().toLowerCase();
-  if (g === 'male') return 'son';
-  if (g === 'female') return 'daughter';
-  return 'child';
 }

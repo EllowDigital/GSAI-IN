@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Share2, User } from 'lucide-react';
-import sanitizeHtml from 'sanitize-html';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/services/supabase/client';
@@ -11,6 +10,7 @@ import { motion } from 'framer-motion';
 import InternalLinksBlock from '@/components/common/InternalLinksBlock';
 import { generateArticleStructuredData } from '@/utils/seoUtils';
 import { injectContextualInternalLinks } from '@/utils/internalLinking';
+import { sanitizeHtmlForClient } from '@/utils/browserSanitizeHtml';
 
 interface NewsItem {
   id: string;
@@ -36,7 +36,7 @@ export default function NewsDetail() {
 
   const sanitizedNewsContent = useMemo(
     () =>
-      sanitizeHtml(enrichedNewsContent, {
+      sanitizeHtmlForClient(enrichedNewsContent, {
         allowedTags: ['p', 'br', 'strong', 'em', 'a', 'span'],
         allowedAttributes: {
           a: ['href', 'title', 'target', 'rel', 'class'],
