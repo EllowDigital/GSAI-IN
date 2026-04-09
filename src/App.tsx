@@ -165,6 +165,13 @@ const App = () => {
     const handleOffline = () => setIsOnline(false);
 
     const handleBeforeInstallPrompt = (event: Event) => {
+      const path = window.location.pathname;
+      if (!isPortalLoginPath(path)) {
+        return;
+      }
+
+      syncManifestForPath(path);
+
       // Only intercept if we haven't dismissed and not already installed
       if (
         !interceptInstallPromptRef.current ||
