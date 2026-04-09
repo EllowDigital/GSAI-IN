@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Settings, Save, Loader2, IndianRupee, Edit2, X } from 'lucide-react';
 import { toast } from '@/hooks/useToast';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 const PROGRAMS = [
   { value: 'Karate', label: '🥋 Karate' },
@@ -46,6 +47,13 @@ export default function FeeSettingsCard() {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [feeValues, setFeeValues] = useState<ProgramFees>({});
+
+  const getFriendlySupabaseMessage = (error: unknown, fallback: string) => {
+    const friendly = mapSupabaseErrorToFriendly(error);
+    if (friendly?.message) return friendly.message;
+    if (error instanceof Error && error.message) return error.message;
+    return fallback;
+  };
 
   // Fetch global default fee
   const { data: globalSetting } = useQuery({
@@ -98,7 +106,11 @@ export default function FeeSettingsCard() {
       });
       setEditing(false);
     } catch (err: any) {
-      toast({ title: 'Error', description: err.message, variant: 'error' });
+      toast({
+        title: 'Error',
+        description: getFriendlySupabaseMessage(err, 'Failed to save program fees'),
+        variant: 'error',
+      });
     } finally {
       setSaving(false);
     }
