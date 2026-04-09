@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/useToast';
 import NewsImageUploader from './NewsImageUploader';
 import { Tables } from '@/services/supabase/types';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 type NewsRow = Tables<'news'>;
 
@@ -110,9 +111,10 @@ export default function NewsEditorModal({
       onOpenChange(false);
     },
     onError: (error: any) => {
+      const friendly = mapSupabaseErrorToFriendly(error);
       toast({
         title: 'Error',
-        description: error.message,
+        description: friendly?.message || error.message,
         variant: 'error',
       });
     },
