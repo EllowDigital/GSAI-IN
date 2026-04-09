@@ -35,6 +35,8 @@ function resolveRouteTitle(pathname: string): string {
   if (pathname === '/competitions') return 'All Competitions | GSAI';
   if (pathname === '/programs') return 'All Programs | GSAI';
   if (pathname === '/enroll') return 'Secure Admission | GSAI';
+  if (pathname === '/contact') return 'Contact Us | GSAI';
+  if (pathname === '/corporate') return 'Corporate Programs | GSAI';
   if (pathname === '/locations/lucknow') return 'Lucknow Martial Arts Training | GSAI';
 
   if (pathname.startsWith('/blog/')) return 'Blog Article | GSAI';
