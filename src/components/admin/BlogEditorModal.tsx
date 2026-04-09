@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/useToast';
 import BlogImageUploader from './BlogImageUploader';
 import { Tables } from '@/services/supabase/types';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 type Blog = Tables<'blogs'>;
 
@@ -31,6 +32,13 @@ type Props = {
   mode: 'create' | 'edit';
   blog?: Blog;
   onClose(): void;
+};
+
+const getFriendlySupabaseMessage = (error: unknown, fallback: string) => {
+  const friendly = mapSupabaseErrorToFriendly(error);
+  if (friendly?.message) return friendly.message;
+  if (error instanceof Error && error.message) return error.message;
+  return fallback;
 };
 
 export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
@@ -89,7 +97,11 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
       onClose();
     },
     onError: (err: any) => {
-      toast({ title: 'Error!', description: err.message, variant: 'error' });
+      toast({
+        title: 'Error!',
+        description: getFriendlySupabaseMessage(err, 'Failed to create blog.'),
+        variant: 'error',
+      });
     },
   });
 
@@ -121,7 +133,11 @@ export default function BlogEditorModal({ open, mode, blog, onClose }: Props) {
       onClose();
     },
     onError: (err: any) => {
-      toast({ title: 'Error!', description: err.message, variant: 'error' });
+      toast({
+        title: 'Error!',
+        description: getFriendlySupabaseMessage(err, 'Failed to update blog.'),
+        variant: 'error',
+      });
     },
   });
 

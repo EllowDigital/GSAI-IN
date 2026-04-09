@@ -14,12 +14,20 @@ import { toast } from '@/hooks/useToast';
 import Spinner from '@/components/ui/spinner';
 import { Upload, Download, Trash2, FileCheck, AlertCircle } from 'lucide-react';
 import { downloadCertificateFile } from '@/utils/certificateDownload';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 interface Props {
   competition: { id: string; name: string };
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
+
+const getFriendlySupabaseMessage = (error: unknown, fallback: string) => {
+  const friendly = mapSupabaseErrorToFriendly(error);
+  if (friendly?.message) return friendly.message;
+  if (error instanceof Error && error.message) return error.message;
+  return fallback;
+};
 
 export default function CompetitionCertificates({
   competition,
@@ -106,7 +114,9 @@ export default function CompetitionCertificates({
       toast.success('Certificate uploaded!');
     } catch (e: any) {
       console.error('Certificate upload error:', e);
-      toast.error('Upload failed: ' + e.message);
+      toast.error(
+        'Upload failed: ' + getFriendlySupabaseMessage(e, 'Unexpected error')
+      );
     } finally {
       setUploading(null);
     }
@@ -118,7 +128,7 @@ export default function CompetitionCertificates({
       .delete()
       .eq('id', certId)) as any;
     if (error) {
-      toast.error(error.message);
+      toast.error(getFriendlySupabaseMessage(error, 'Failed to remove certificate'));
       return;
     }
     queryClient.invalidateQueries({

@@ -28,6 +28,7 @@ import {
   sendQueuedAnnouncement,
 } from '@/utils/studentCommunication';
 import { Checkbox } from '@/components/ui/checkbox';
+import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
 type EventRow = Tables<'events'>;
 
@@ -45,6 +46,13 @@ const EMPTY: Partial<EventRow> = {
   end_date: '',
   tag: '',
   location: '',
+};
+
+const getFriendlySupabaseMessage = (error: unknown, fallback: string) => {
+  const friendly = mapSupabaseErrorToFriendly(error);
+  if (friendly?.message) return friendly.message;
+  if (error instanceof Error && error.message) return error.message;
+  return fallback;
 };
 
 // Helper component for date buttons — declared outside modal to avoid creating
@@ -182,9 +190,10 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
           .from('events')
           .upload(filename, imageFile, { upsert: true });
         if (error) {
-          toast.error('Image upload failed: ' + error.message);
+          toast.error(
+            getFriendlySupabaseMessage(error, 'Image upload failed.')
+          );
           setLoading(false);
-          toast.error('Image upload failed');
           return;
         }
         const { data: publicUrlData } = supabase.storage
@@ -215,7 +224,10 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
           } as any)
           .eq('id', editingEvent.id);
         if (error) {
-          toast.error('Failed to update event: ' + error.message);
+          toast.error(
+            'Failed to update event: ' +
+              getFriendlySupabaseMessage(error, 'Unexpected error')
+          );
           setLoading(false);
           return;
         }
@@ -263,7 +275,10 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
           },
         ]);
         if (error) {
-          toast.error('Failed to create event: ' + error.message);
+          toast.error(
+            'Failed to create event: ' +
+              getFriendlySupabaseMessage(error, 'Unexpected error')
+          );
           setLoading(false);
           return;
         }
@@ -310,7 +325,10 @@ const AdminEventFormModal: React.FC<ModalProps> = ({
       }
       onOpenChange(false);
     } catch (err: any) {
-      toast.error('Failed to save event: ' + err.message);
+      toast.error(
+        'Failed to save event: ' +
+          getFriendlySupabaseMessage(err, 'Unexpected error')
+      );
     }
     setLoading(false);
   };
