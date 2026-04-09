@@ -103,7 +103,7 @@ const FieldError = memo(({ error }: { error?: string }) => (
 type FormSectionProps = {
   step: number;
   title: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   completed: boolean;
   expandAll: boolean;
   activeStep: number;
@@ -122,6 +122,9 @@ const FormSection = ({
   children,
 }: FormSectionProps) => {
   const isOpen = expandAll || activeStep === step;
+  const panelId = `enroll-step-panel-${step}`;
+  const buttonId = `enroll-step-button-${step}`;
+
   return (
     <div
       className={cn(
@@ -130,8 +133,11 @@ const FormSection = ({
       )}
     >
       <button
+        id={buttonId}
         type="button"
         onClick={() => onStepChange(step)}
+        aria-expanded={isOpen}
+        aria-controls={panelId}
         className="w-full flex items-center justify-between p-6 sm:p-8 hover:bg-white/[0.02] transition-colors"
       >
         <div className="flex items-center gap-4">
@@ -174,6 +180,9 @@ const FormSection = ({
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            id={panelId}
+            role="region"
+            aria-labelledby={buttonId}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -271,51 +280,40 @@ export default function EnrollPage() {
 
     setIsSaving(true);
     const d = result.data;
-    try {
-      const { data: aadharState, error: aadharStateError } = await supabase.rpc(
-        'get_enrollment_aadhar_state' as any,
-        { p_aadhar_number: d.aadharNumber } as any
+
+    const blockWithAadhaarMessage = (message: string) => {
+      setErrors((prev) => ({ ...prev, aadharNumber: message }));
+      setExpandAllSections(true);
+      setSubmitWarning(
+        'Please review the highlighted field before submitting.'
       );
+      setActiveStep(2);
+      toast.error(message);
+    };
 
-      if (aadharStateError) throw aadharStateError;
+    const parseEnrollmentInsertError = (
+      errorMessage: string
+    ): string | null => {
+      const normalized = errorMessage.toLowerCase();
 
-      const normalizedAadharState = String(aadharState || '')
-        .toLowerCase()
-        .trim();
-
-      const blockWithAadhaarMessage = (message: string) => {
-        setErrors((prev) => ({ ...prev, aadharNumber: message }));
-        setExpandAllSections(true);
-        setSubmitWarning(
-          'Please review the highlighted field before submitting.'
-        );
-        setActiveStep(2);
-        toast.error(message);
-      };
-
-      if (normalizedAadharState === 'approved') {
-        blockWithAadhaarMessage(
-          'You are already registered. Please use the student portal to log in.'
-        );
-        return;
+      if (normalized.includes('already registered')) {
+        return 'You are already registered. Please use the student portal to log in.';
       }
 
-      if (normalizedAadharState === 'pending') {
-        blockWithAadhaarMessage(
-          'Your enrollment request is already under review. Please wait for approval.'
-        );
-        return;
+      if (normalized.includes('already under review')) {
+        return 'Your enrollment request is already under review. Please wait for approval.';
       }
 
-      if (normalizedAadharState === 'contacted') {
-        blockWithAadhaarMessage(
-          'Your request has already been processed and contacted. Please check your status or wait for further updates.'
-        );
-        return;
+      if (normalized.includes('already been processed and contacted')) {
+        return 'Your request has already been processed and contacted. Please check your status or wait for further updates.';
       }
 
+      return null;
+    };
+
+    try {
       // Resubmission is intentionally allowed when existing requests are only rejected.
-      const { error } = await supabase
+      const { error: insertError } = await supabase
         .from('enrollment_requests' as any)
         .insert({
           student_name: d.studentName,
@@ -331,19 +329,33 @@ export default function EnrollPage() {
           message: d.message || null,
         } as any);
 
-      if (error) throw error;
+      if (insertError) {
+        const aadharMessage = parseEnrollmentInsertError(
+          insertError.message || ''
+        );
+        if (aadharMessage) {
+          blockWithAadhaarMessage(aadharMessage);
+          return;
+        }
 
-      supabase.functions.invoke('send-enrollment-received-email', {
-        body: {
-          to: 'ghatakgsai@gmail.com',
-          cc: 'sarwanyadav6174@gmail.com',
-          studentName: d.studentName,
-          program: d.program,
-          parentName: d.parentName,
-          parentPhone: d.parentPhone,
-          notificationType: 'admin',
-        },
-      });
+        throw insertError;
+      }
+
+      void supabase.functions
+        .invoke('send-enrollment-received-email', {
+          body: {
+            to: 'ghatakgsai@gmail.com',
+            cc: 'sarwanyadav6174@gmail.com',
+            studentName: d.studentName,
+            program: d.program,
+            parentName: d.parentName,
+            parentPhone: d.parentPhone,
+            notificationType: 'admin',
+          },
+        })
+        .catch((invokeError) => {
+          console.error('Failed to send enrollment admin email:', invokeError);
+        });
 
       setIsSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });

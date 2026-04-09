@@ -3,11 +3,9 @@
 
 -- 1. Create encrypted storage for Aadhar numbers using pgcrypto
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
 -- 2. Add new encrypted column for Aadhar numbers
 ALTER TABLE public.students 
 ADD COLUMN IF NOT EXISTS encrypted_aadhar_number bytea;
-
 -- 3. Create security functions for data protection
 CREATE OR REPLACE FUNCTION public.encrypt_sensitive_data(data_text text) 
 RETURNS bytea
@@ -16,7 +14,6 @@ SECURITY DEFINER
 AS $$
   SELECT pgp_sym_encrypt(data_text, 'student-data-encryption-key-2025');
 $$;
-
 CREATE OR REPLACE FUNCTION public.decrypt_sensitive_data(encrypted_data bytea) 
 RETURNS text
 LANGUAGE sql
@@ -24,7 +21,6 @@ SECURITY DEFINER
 AS $$
   SELECT pgp_sym_decrypt(encrypted_data, 'student-data-encryption-key-2025');
 $$;
-
 -- 4. Create data masking functions for UI display
 CREATE OR REPLACE FUNCTION public.mask_aadhar(aadhar_text text) 
 RETURNS text
@@ -39,7 +35,6 @@ AS $$
       'XXXX-XXXX-XXXX'
   END;
 $$;
-
 CREATE OR REPLACE FUNCTION public.mask_phone(phone_text text) 
 RETURNS text
 LANGUAGE sql
@@ -53,7 +48,6 @@ AS $$
       'XXXXXXXXXX'
   END;
 $$;
-
 -- 5. Create audit log table for sensitive data access
 CREATE TABLE IF NOT EXISTS public.sensitive_data_audit (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -66,20 +60,16 @@ CREATE TABLE IF NOT EXISTS public.sensitive_data_audit (
   ip_address text,
   details jsonb
 );
-
 -- Enable RLS on audit table
 ALTER TABLE public.sensitive_data_audit ENABLE ROW LEVEL SECURITY;
-
 -- Only admins can view audit logs
 CREATE POLICY "Only admins can view audit logs" ON public.sensitive_data_audit
 FOR SELECT USING (
   EXISTS (SELECT 1 FROM admin_users WHERE admin_users.email = auth.email())
 );
-
 -- Only allow inserts for audit logging
 CREATE POLICY "Allow audit logging" ON public.sensitive_data_audit
 FOR INSERT WITH CHECK (true);
-
 -- 6. Create audit trigger function for data modifications
 CREATE OR REPLACE FUNCTION public.audit_sensitive_data_changes()
 RETURNS trigger
@@ -109,12 +99,10 @@ BEGIN
   RETURN COALESCE(NEW, OLD);
 END;
 $$;
-
 -- 7. Add audit triggers to students table (only for INSERT, UPDATE, DELETE)
 CREATE TRIGGER audit_students_changes
   AFTER INSERT OR UPDATE OR DELETE ON public.students
   FOR EACH ROW EXECUTE FUNCTION public.audit_sensitive_data_changes();
-
 -- 8. Create function to validate Aadhar format
 CREATE OR REPLACE FUNCTION public.validate_aadhar(aadhar_text text) 
 RETURNS boolean
@@ -125,7 +113,6 @@ AS $$
     AND aadhar_text ~ '^[0-9]{12}$' 
     AND length(aadhar_text) = 12;
 $$;
-
 -- 9. Create function to validate phone format
 CREATE OR REPLACE FUNCTION public.validate_phone(phone_text text) 
 RETURNS boolean
@@ -136,16 +123,13 @@ AS $$
     AND phone_text ~ '^[0-9]{10,15}$' 
     AND length(phone_text) BETWEEN 10 AND 15;
 $$;
-
 -- 10. Add validation constraints
 ALTER TABLE public.students 
 ADD CONSTRAINT IF NOT EXISTS valid_aadhar_format 
 CHECK (validate_aadhar(aadhar_number));
-
 ALTER TABLE public.students 
 ADD CONSTRAINT IF NOT EXISTS valid_parent_contact_format 
 CHECK (validate_phone(parent_contact));
-
 -- 11. Create secure view for student data with masking
 CREATE OR REPLACE VIEW public.students_masked AS 
 SELECT 
@@ -165,10 +149,8 @@ SELECT
   fee_status,
   encrypted_aadhar_number
 FROM public.students;
-
 -- 12. Create RLS policies for the masked view
 ALTER VIEW public.students_masked SET (security_invoker = on);
-
 -- 13. Create function for data access logging
 CREATE OR REPLACE FUNCTION public.log_sensitive_data_access(
   p_table_name text,
@@ -196,10 +178,8 @@ BEGIN
   );
 END;
 $$;
-
 -- 14. Enhanced RLS policy for students with better security
 DROP POLICY IF EXISTS "Admins can do everything on students" ON public.students;
-
 CREATE POLICY "Enhanced admin access to students" ON public.students
 FOR ALL USING (
   EXISTS (
@@ -207,7 +187,6 @@ FOR ALL USING (
     WHERE admin_users.email = auth.email()
   )
 );
-
 -- 15. Create policy for fees table (addressing the other security issue)
 CREATE POLICY "Enhanced admin access to fees" ON public.fees
 FOR ALL USING (
@@ -216,7 +195,6 @@ FOR ALL USING (
     WHERE admin_users.email = auth.email()
   )
 );
-
 -- Add audit trigger to fees table as well
 CREATE TRIGGER audit_fees_changes
   AFTER INSERT OR UPDATE OR DELETE ON public.fees

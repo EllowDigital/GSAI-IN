@@ -7,7 +7,6 @@ BEGIN
     ALTER TABLE public.students ADD CONSTRAINT students_aadhar_number_unique UNIQUE (aadhar_number);
   END IF;
 END $$;
-
 -- Add unique constraint on login_id in student_portal_accounts (if not exists)
 DO $$
 BEGIN

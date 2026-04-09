@@ -15,16 +15,13 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
   user_agent TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
-
 -- Enable RLS on audit logs
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
-
 -- Only admins can read audit logs
 CREATE POLICY "Admins can view audit logs" ON public.audit_logs
   FOR SELECT USING (
     EXISTS (SELECT 1 FROM admin_users WHERE admin_users.email = auth.email())
   );
-
 -- Create function to log sensitive data access
 CREATE OR REPLACE FUNCTION public.log_sensitive_access()
 RETURNS TRIGGER AS $$
@@ -53,16 +50,13 @@ BEGIN
   RETURN COALESCE(NEW, OLD);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Add audit triggers to sensitive tables
 CREATE TRIGGER audit_students_trigger
   AFTER INSERT OR UPDATE OR DELETE ON public.students
   FOR EACH ROW EXECUTE FUNCTION public.log_sensitive_access();
-
 CREATE TRIGGER audit_fees_trigger  
   AFTER INSERT OR UPDATE OR DELETE ON public.fees
   FOR EACH ROW EXECUTE FUNCTION public.log_sensitive_access();
-
 -- Create function to mask sensitive data for display
 CREATE OR REPLACE FUNCTION public.mask_aadhar(aadhar_number TEXT)
 RETURNS TEXT AS $$
@@ -74,7 +68,6 @@ BEGIN
   RETURN '****-****-' || RIGHT(aadhar_number, 4);
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
-
 -- Create function to mask phone numbers
 CREATE OR REPLACE FUNCTION public.mask_phone(phone_number TEXT)
 RETURNS TEXT AS $$
@@ -86,14 +79,12 @@ BEGIN
   RETURN '******-' || RIGHT(phone_number, 4);
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
-
 -- Enhanced RLS policies with better security
 -- Drop any conflicting policies first
 DROP POLICY IF EXISTS "Admin users can view all fees" ON public.fees;
 DROP POLICY IF EXISTS "Admin users can insert fees" ON public.fees;
 DROP POLICY IF EXISTS "Admin users can update fees" ON public.fees;
 DROP POLICY IF EXISTS "Admin users can delete fees" ON public.fees;
-
 -- Create comprehensive admin fee policies
 CREATE POLICY "Verified admins can view all fees" ON public.fees
   FOR SELECT USING (
@@ -102,7 +93,6 @@ CREATE POLICY "Verified admins can view all fees" ON public.fees
       WHERE admin_users.email = auth.email()
     ) AND auth.email() IS NOT NULL
   );
-
 CREATE POLICY "Verified admins can insert fees" ON public.fees
   FOR INSERT WITH CHECK (
     EXISTS (
@@ -110,7 +100,6 @@ CREATE POLICY "Verified admins can insert fees" ON public.fees
       WHERE admin_users.email = auth.email()
     ) AND auth.email() IS NOT NULL
   );
-
 CREATE POLICY "Verified admins can update fees" ON public.fees
   FOR UPDATE USING (
     EXISTS (
@@ -118,7 +107,6 @@ CREATE POLICY "Verified admins can update fees" ON public.fees
       WHERE admin_users.email = auth.email()
     ) AND auth.email() IS NOT NULL
   );
-
 CREATE POLICY "Verified admins can delete fees" ON public.fees
   FOR DELETE USING (
     EXISTS (
@@ -126,7 +114,6 @@ CREATE POLICY "Verified admins can delete fees" ON public.fees
       WHERE admin_users.email = auth.email()
     ) AND auth.email() IS NOT NULL
   );
-
 -- Add additional validation triggers for data integrity
 CREATE OR REPLACE FUNCTION public.validate_student_data()
 RETURNS TRIGGER AS $$
@@ -149,13 +136,11 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 -- Add validation trigger to students table
 DROP TRIGGER IF EXISTS validate_student_data_trigger ON public.students;
 CREATE TRIGGER validate_student_data_trigger
   BEFORE INSERT OR UPDATE ON public.students
   FOR EACH ROW EXECUTE FUNCTION public.validate_student_data();
-
 -- Create function to validate fee data
 CREATE OR REPLACE FUNCTION public.validate_fee_data()
 RETURNS TRIGGER AS $$
@@ -185,7 +170,6 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 -- Add validation trigger to fees table
 DROP TRIGGER IF EXISTS validate_fee_data_trigger ON public.fees;
 CREATE TRIGGER validate_fee_data_trigger

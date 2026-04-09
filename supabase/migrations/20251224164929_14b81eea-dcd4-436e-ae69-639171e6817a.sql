@@ -1,9 +1,7 @@
 -- Drop the unique index on rank (it should be unique per discipline, not globally)
 DROP INDEX IF EXISTS belt_levels_rank_key;
-
 -- Create a proper unique index on discipline + rank
 CREATE UNIQUE INDEX IF NOT EXISTS belt_levels_discipline_rank_key ON belt_levels(discipline, rank);
-
 -- Insert discipline-specific belt levels
 -- Taekwondo
 INSERT INTO belt_levels (discipline, color, rank, min_age, min_sessions, requirements) VALUES
@@ -14,7 +12,6 @@ INSERT INTO belt_levels (discipline, color, rank, min_age, min_sessions, require
   ('Taekwondo', 'Red', 5, 10, 60, '[]'::jsonb),
   ('Taekwondo', 'Black', 6, 12, 90, '[]'::jsonb)
 ON CONFLICT (discipline, rank) DO NOTHING;
-
 -- Karate
 INSERT INTO belt_levels (discipline, color, rank, min_age, min_sessions, requirements) VALUES
   ('Karate', 'White', 1, 5, 0, '[]'::jsonb),
@@ -25,7 +22,6 @@ INSERT INTO belt_levels (discipline, color, rank, min_age, min_sessions, require
   ('Karate', 'Brown', 6, 11, 72, '[]'::jsonb),
   ('Karate', 'Black', 7, 14, 100, '[]'::jsonb)
 ON CONFLICT (discipline, rank) DO NOTHING;
-
 -- Kickboxing
 INSERT INTO belt_levels (discipline, color, rank, min_age, min_sessions, requirements) VALUES
   ('Kickboxing', 'White', 1, 6, 0, '[]'::jsonb),
@@ -35,7 +31,6 @@ INSERT INTO belt_levels (discipline, color, rank, min_age, min_sessions, require
   ('Kickboxing', 'Brown', 5, 11, 60, '[]'::jsonb),
   ('Kickboxing', 'Black', 6, 14, 90, '[]'::jsonb)
 ON CONFLICT (discipline, rank) DO NOTHING;
-
 -- BJJ (with stripe support)
 INSERT INTO belt_levels (discipline, color, rank, min_age, min_sessions, requirements) VALUES
   ('BJJ', 'White', 1, 16, 0, '[]'::jsonb),
@@ -44,7 +39,6 @@ INSERT INTO belt_levels (discipline, color, rank, min_age, min_sessions, require
   ('BJJ', 'Brown', 4, 18, 300, '[]'::jsonb),
   ('BJJ', 'Black', 5, 19, 400, '[]'::jsonb)
 ON CONFLICT (discipline, rank) DO NOTHING;
-
 -- Grappling
 INSERT INTO belt_levels (discipline, color, rank, min_age, min_sessions, requirements) VALUES
   ('Grappling', 'White', 1, 16, 0, '[]'::jsonb),
@@ -53,13 +47,11 @@ INSERT INTO belt_levels (discipline, color, rank, min_age, min_sessions, require
   ('Grappling', 'Brown', 4, 18, 300, '[]'::jsonb),
   ('Grappling', 'Black', 5, 19, 400, '[]'::jsonb)
 ON CONFLICT (discipline, rank) DO NOTHING;
-
 -- Set up next_level_id references for each discipline
 UPDATE belt_levels t SET next_level_id = (
   SELECT n.id FROM belt_levels n 
   WHERE n.discipline = t.discipline AND n.rank = t.rank + 1
 );
-
 -- Insert discipline levels for non-belt disciplines
 INSERT INTO discipline_levels (discipline, level_name, level_order, description) VALUES
   ('Boxing', 'Beginner', 1, 'Foundation training'),

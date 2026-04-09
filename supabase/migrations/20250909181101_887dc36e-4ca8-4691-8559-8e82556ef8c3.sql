@@ -28,7 +28,6 @@ BEGIN
   RETURN COALESCE(NEW, OLD);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
-
 -- Update mask_aadhar function with proper search_path
 CREATE OR REPLACE FUNCTION public.mask_aadhar(aadhar_number TEXT)
 RETURNS TEXT AS $$
@@ -40,7 +39,6 @@ BEGIN
   RETURN '****-****-' || RIGHT(aadhar_number, 4);
 END;
 $$ LANGUAGE plpgsql IMMUTABLE SET search_path = public;
-
 -- Update mask_phone function with proper search_path
 CREATE OR REPLACE FUNCTION public.mask_phone(phone_number TEXT)
 RETURNS TEXT AS $$
@@ -52,7 +50,6 @@ BEGIN
   RETURN '******-' || RIGHT(phone_number, 4);
 END;
 $$ LANGUAGE plpgsql IMMUTABLE SET search_path = public;
-
 -- Update validate_student_data function with proper search_path
 CREATE OR REPLACE FUNCTION public.validate_student_data()
 RETURNS TRIGGER AS $$
@@ -75,7 +72,6 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SET search_path = public;
-
 -- Update validate_fee_data function with proper search_path
 CREATE OR REPLACE FUNCTION public.validate_fee_data()
 RETURNS TRIGGER AS $$

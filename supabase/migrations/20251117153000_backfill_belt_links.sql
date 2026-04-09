@@ -1,5 +1,4 @@
 begin;
-
 update public.belt_levels b
 set next_level_id = sub.next_id
 from (
@@ -9,5 +8,4 @@ from (
 ) as sub
 where sub.id = b.id
   and (b.next_level_id is distinct from sub.next_id);
-
 commit;

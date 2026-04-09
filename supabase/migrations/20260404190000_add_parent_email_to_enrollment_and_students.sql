@@ -1,15 +1,11 @@
 ALTER TABLE public.enrollment_requests
 ADD COLUMN IF NOT EXISTS parent_email text;
-
 ALTER TABLE public.students
 ADD COLUMN IF NOT EXISTS parent_email text;
-
 CREATE INDEX IF NOT EXISTS idx_enrollment_requests_parent_email
   ON public.enrollment_requests(parent_email);
-
 CREATE INDEX IF NOT EXISTS idx_students_parent_email
   ON public.students(parent_email);
-
 -- Backfill students.parent_email from latest linked enrollment request when available.
 WITH latest_parent_email AS (
   SELECT DISTINCT ON (linked_student_id)

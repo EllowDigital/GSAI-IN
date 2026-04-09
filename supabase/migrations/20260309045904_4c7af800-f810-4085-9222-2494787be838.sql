@@ -1,4 +1,3 @@
-
 -- Publish tables for Supabase Realtime (ignore if already added)
 DO $$
 BEGIN
