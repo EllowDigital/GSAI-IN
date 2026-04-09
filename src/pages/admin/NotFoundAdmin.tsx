@@ -1,35 +1,45 @@
-import React from 'react';
-import { AlertTriangle } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { AlertTriangle, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function NotFoundAdmin() {
+  // --- Dynamic Page Title ---
+  useEffect(() => {
+    document.title = 'Page Not Found | GSAI Admin';
+  }, []);
+
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 to-yellow-50 dark:from-slate-900 dark:to-slate-800 px-4">
-      <div className="text-center max-w-md">
-        {/* Icon */}
-        <div className="mb-6 flex justify-center">
-          <div className="p-4 rounded-full bg-yellow-100 dark:bg-yellow-800/30">
-            <AlertTriangle className="w-10 h-10 text-yellow-500 dark:text-yellow-400" />
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 px-4 font-sans selection:bg-amber-500/20">
+      <div className="text-center max-w-md animate-in fade-in slide-in-from-bottom-4 duration-500">
+        {/* Icon Container with Pulse Effect */}
+        <div className="mb-8 flex justify-center">
+          <div className="relative">
+            <div className="absolute inset-0 rounded-full bg-amber-500/20 blur-xl animate-pulse" />
+            <div className="relative p-5 rounded-full bg-amber-100 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 shadow-sm">
+              <AlertTriangle className="w-12 h-12 text-amber-600 dark:text-amber-500" />
+            </div>
           </div>
         </div>
 
-        {/* Heading */}
-        <h2 className="text-3xl font-extrabold text-yellow-600 dark:text-yellow-400 mb-2">
-          404 – Page Not Found
+        {/* Typography */}
+        <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 mb-2">
+          404
+        </h1>
+        <h2 className="text-xl font-semibold text-slate-700 dark:text-slate-300 mb-4">
+          Page Not Found
         </h2>
-
-        {/* Message */}
-        <p className="text-gray-600 dark:text-gray-300 mb-4">
-          Sorry, the admin page you're looking for doesn't exist or has been
-          moved.
+        <p className="text-base text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
+          Sorry, the admin page you are looking for doesn't exist, requires
+          different permissions, or has been moved.
         </p>
 
-        {/* Back to Dashboard Button */}
+        {/* Action Button */}
         <Link
           to="/admin/dashboard"
-          className="inline-block mt-2 px-6 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-xl shadow-sm transition"
+          className="inline-flex items-center justify-center gap-2.5 px-6 py-3 bg-slate-900 hover:bg-slate-800 dark:bg-amber-600 dark:hover:bg-amber-700 text-white font-medium rounded-xl shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
         >
-          Go to Dashboard
+          <ArrowLeft className="w-4 h-4" />
+          Return to Dashboard
         </Link>
       </div>
     </div>

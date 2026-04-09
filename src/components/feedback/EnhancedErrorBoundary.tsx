@@ -1,18 +1,28 @@
-import React, { Component, ReactNode } from 'react';
-import { AlertTriangle, RefreshCw, Home, Bug } from 'lucide-react';
+import React, { Component, ReactNode, ErrorInfo } from 'react';
+import {
+  AlertTriangle,
+  RefreshCw,
+  Home,
+  Bug,
+  Copy,
+  CheckCircle2,
+  PhoneCall,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
-  onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
+  onError?: (error: Error, errorInfo: ErrorInfo) => void;
 }
 
 interface State {
   hasError: boolean;
   error: Error | null;
-  errorInfo: React.ErrorInfo | null;
+  errorInfo: ErrorInfo | null;
   errorId: string;
+  copied: boolean;
 }
 
 export class EnhancedErrorBoundary extends Component<Props, State> {
@@ -23,44 +33,42 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
       error: null,
       errorInfo: null,
       errorId: '',
+      copied: false,
     };
   }
 
-  public static getDerivedStateFromError(error: Error): State {
-    return {
-      hasError: true,
-      error,
-      errorInfo: null,
-      errorId: Math.random().toString(36).substr(2, 9),
-    };
+  // Basic recovery logic to update state so next render shows fallback UI
+  public static getDerivedStateFromError(error: Error): Partial<State> {
+    return { hasError: true, error };
   }
 
-  public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Enhanced ErrorBoundary caught an error:', error, errorInfo);
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    const errorId = `ERR-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
 
-    this.setState({
-      error,
-      errorInfo,
-    });
+    this.setState({ errorInfo, errorId });
 
-    // Call the onError callback if provided
-    this.props.onError?.(error, errorInfo);
+    // Custom error logging (e.g., Sentry, Datadog)
+    console.error(`[${errorId}] ErrorBoundary caught:`, error, errorInfo);
 
-    // In production, you might want to send this to an error reporting service
-    if (import.meta.env.PROD) {
-      // Example: sendErrorToService({ error, errorInfo, errorId: this.state.errorId });
+    if (this.props.onError) {
+      this.props.onError(error, errorInfo);
     }
+
+    // Optional: Send to production monitoring service
+    // if (process.env.NODE_ENV === 'production') {
+    //   trackError(error, { errorId, ...errorInfo });
+    // }
   }
 
-  private handleRefresh = () => {
-    window.location.reload();
+  private handleCopyId = () => {
+    if (this.state.errorId) {
+      navigator.clipboard.writeText(this.state.errorId);
+      this.setState({ copied: true });
+      setTimeout(() => this.setState({ copied: false }), 2000);
+    }
   };
 
-  private handleGoHome = () => {
-    window.location.href = '/';
-  };
-
-  private handleResetError = () => {
+  private handleReset = () => {
     this.setState({
       hasError: false,
       error: null,
@@ -70,142 +78,120 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
   };
 
   public render() {
-    if (this.state.hasError) {
-      // If a custom fallback is provided, use it
-      if (this.props.fallback) {
-        return this.props.fallback;
-      }
+    const { hasError, error, errorInfo, errorId, copied } = this.state;
+
+    if (hasError) {
+      if (this.props.fallback) return this.props.fallback;
+
+      const isDev = import.meta.env.DEV;
 
       return (
-        <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center p-4">
-          <div className="max-w-2xl w-full bg-white rounded-3xl shadow-2xl border border-red-100 overflow-hidden">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white p-8 text-center">
-              <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <AlertTriangle className="w-10 h-10" />
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans">
+          <div className="max-w-2xl w-full bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-500">
+            {/* Visual Indicator */}
+            <div className="bg-gradient-to-br from-rose-500 to-orange-500 p-10 text-center text-white">
+              <div className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center mx-auto mb-6 rotate-3">
+                <AlertTriangle className="w-10 h-10 stroke-[2.5px]" />
               </div>
-              <h1 className="text-3xl font-bold mb-2">Something went wrong</h1>
-              <p className="text-red-100 text-lg">
-                We encountered an unexpected error
+              <h1 className="text-3xl font-extrabold tracking-tight mb-2">
+                Unexpected Error
+              </h1>
+              <p className="text-rose-100 font-medium">
+                The application encountered a runtime exception.
               </p>
             </div>
 
-            {/* Content */}
-            <div className="p-8">
-              <div className="text-center mb-8">
-                <p className="text-gray-700 text-lg mb-4">
-                  Don't worry! This happens sometimes. Here are a few things you
-                  can try:
-                </p>
-
-                <div className="bg-gray-50 rounded-2xl p-6 mb-6">
-                  <h3 className="font-semibold text-gray-900 mb-3">
-                    Troubleshooting Steps
-                  </h3>
-                  <ul className="text-left text-gray-600 space-y-2">
-                    <li className="flex items-start gap-2">
-                      <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>Refresh the page to try loading again</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>Clear your browser cache and cookies</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>Check your internet connection</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <div className="w-2 h-2 bg-red-400 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>Try using a different browser or device</span>
-                    </li>
-                  </ul>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+            <div className="p-10">
+              <div className="space-y-8">
+                {/* User Options */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Button
-                    onClick={this.handleRefresh}
-                    className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                    onClick={() => window.location.reload()}
+                    className="h-14 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold transition-all active:scale-95"
                   >
                     <RefreshCw className="w-5 h-5 mr-2" />
-                    Refresh Page
+                    Reload System
                   </Button>
-
                   <Button
-                    onClick={this.handleGoHome}
                     variant="outline"
-                    className="border-2 border-red-200 text-red-700 hover:bg-red-50 px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                    onClick={() => (window.location.href = '/')}
+                    className="h-14 rounded-2xl border-2 border-slate-200 hover:bg-slate-50 font-bold transition-all active:scale-95"
                   >
                     <Home className="w-5 h-5 mr-2" />
-                    Go to Homepage
+                    Return Home
                   </Button>
+                </div>
 
+                {/* Support Info */}
+                <div className="bg-slate-50 rounded-[1.5rem] p-6 border border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="text-center sm:text-left">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
+                      Support Identifier
+                    </p>
+                    <code className="text-lg font-mono font-bold text-slate-700">
+                      {errorId || 'GENERATING...'}
+                    </code>
+                  </div>
                   <Button
-                    onClick={this.handleResetError}
                     variant="ghost"
-                    className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-6 py-3 rounded-xl transition-all duration-300"
+                    size="sm"
+                    onClick={this.handleCopyId}
+                    className={cn(
+                      'rounded-xl px-4 font-semibold transition-all',
+                      copied
+                        ? 'text-emerald-600 bg-emerald-50'
+                        : 'text-slate-500 hover:bg-slate-200/50'
+                    )}
                   >
-                    Try Again
+                    {copied ? (
+                      <CheckCircle2 className="w-4 h-4 mr-2" />
+                    ) : (
+                      <Copy className="w-4 h-4 mr-2" />
+                    )}
+                    {copied ? 'Copied' : 'Copy ID'}
                   </Button>
                 </div>
 
-                {/* Error ID for support */}
-                <div className="bg-gray-100 rounded-xl p-4 mb-6">
-                  <p className="text-sm text-gray-600 mb-2">
-                    If the problem persists, please contact support with this
-                    error ID:
-                  </p>
-                  <code className="bg-white px-3 py-2 rounded-lg text-sm font-mono text-gray-800 border">
-                    {this.state.errorId}
-                  </code>
-                </div>
-
-                {/* Contact Information */}
-                <div className="text-center">
-                  <p className="text-gray-600 mb-2">
-                    Need immediate assistance?
+                <div className="pt-4 border-t border-slate-100 flex flex-col items-center gap-4">
+                  <p className="text-sm font-medium text-slate-500">
+                    Need urgent help?
                   </p>
                   <a
                     href="tel:+916394135988"
-                    className="inline-flex items-center gap-2 text-red-600 hover:text-red-700 font-semibold transition-colors duration-300"
+                    className="group flex items-center gap-3 px-6 py-3 rounded-full bg-rose-50 text-rose-600 font-bold hover:bg-rose-100 transition-colors"
                   >
-                    📞 Call us at +91 63941 35988
+                    <PhoneCall className="w-4 h-4 transition-transform group-hover:rotate-12" />
+                    Contact Technical Support
                   </a>
                 </div>
-              </div>
 
-              {/* Development Error Details */}
-              {import.meta.env.DEV && this.state.error && (
-                <details className="mt-6">
-                  <summary className="cursor-pointer text-gray-700 font-semibold mb-4 flex items-center gap-2">
-                    <Bug className="w-4 h-4" />
-                    Error Details (Development Mode)
-                  </summary>
-                  <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm overflow-auto max-h-96">
-                    <div className="mb-4">
-                      <strong className="text-red-400">Error:</strong>{' '}
-                      {this.state.error.toString()}
-                    </div>
-                    <div className="mb-4">
-                      <strong className="text-red-400">Stack Trace:</strong>
-                      <pre className="whitespace-pre-wrap">
-                        {this.state.error.stack}
-                      </pre>
-                    </div>
-                    {this.state.errorInfo && (
-                      <div>
-                        <strong className="text-red-400">
-                          Component Stack:
-                        </strong>
-                        <pre className="whitespace-pre-wrap">
-                          {this.state.errorInfo.componentStack}
-                        </pre>
+                {/* Developer Console (Debug Only) */}
+                {isDev && error && (
+                  <details className="group border border-amber-200 bg-amber-50/30 rounded-2xl overflow-hidden transition-all">
+                    <summary className="list-none cursor-pointer p-4 flex items-center gap-2 font-bold text-amber-800 select-none">
+                      <Bug className="w-4 h-4 transition-transform group-open:rotate-180" />
+                      Debug Logs
+                    </summary>
+                    <div className="px-4 pb-4">
+                      <div className="bg-slate-900 rounded-xl p-5 overflow-auto max-h-80 shadow-inner">
+                        <p className="text-rose-400 font-mono text-sm font-bold mb-3">
+                          {error.toString()}
+                        </p>
+                        {errorInfo && (
+                          <pre className="text-slate-400 font-mono text-xs leading-relaxed whitespace-pre-wrap">
+                            {errorInfo.componentStack}
+                          </pre>
+                        )}
+                        {error.stack && (
+                          <pre className="mt-4 pt-4 border-t border-slate-800 text-slate-500 font-mono text-[10px] leading-relaxed">
+                            {error.stack}
+                          </pre>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </details>
-              )}
+                    </div>
+                  </details>
+                )}
+              </div>
             </div>
           </div>
         </div>

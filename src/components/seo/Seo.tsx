@@ -1,10 +1,29 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Helmet } from 'react-helmet-async';
 
-/**
- * Advanced SEO component with comprehensive meta tags, structured data, and performance optimizations
- */
-type SeoProps = {
+// --- Configuration ---
+const SITE_CONFIG = {
+  name: 'Ghatak Sports Academy India™',
+  url: 'https://ghataksportsacademy.com',
+  handle: '@ghataksportsacademy',
+  author: 'Ghatak Sports Academy India',
+  logo: 'https://ghataksportsacademy.com/assets/images/logo.webp',
+  defaultImage:
+    'https://ghataksportsacademy.com/assets/images/social-preview.png',
+  contact: {
+    phone: '+91-63941-35988',
+    email: 'ghatakgsai@gmail.com',
+  },
+  socials: [
+    'https://www.facebook.com/ghataksportsacademy',
+    'https://www.instagram.com/ghataksportsacademy',
+    'https://x.com/ghataksportsacademy',
+    'https://www.linkedin.com/company/ghataksportsacademy',
+  ],
+};
+
+// --- Types ---
+export type SeoProps = {
   title: string;
   description: string;
   canonical?: string;
@@ -26,281 +45,181 @@ type SeoProps = {
   noFollow?: boolean;
 };
 
-const primarySiteUrl = 'https://ghataksportsacademy.com';
-const siteDomains = [primarySiteUrl];
-const imageBaseUrl = primarySiteUrl;
-const defaultImage = `${imageBaseUrl}/assets/images/social-preview.png`;
-const defaultAuthor = 'Ghatak Sports Academy India';
-const siteName = 'Ghatak Sports Academy India™';
-const siteLogo = `${imageBaseUrl}/assets/images/logo.webp`;
-const twitterHandle = '@ghataksportsacademy';
-const socialProfiles = [
-  'https://www.facebook.com/ghataksportsacademy',
-  'https://www.instagram.com/ghataksportsacademy',
-  'https://x.com/ghataksportsacademy',
-  'https://www.linkedin.com/company/ghataksportsacademy',
-];
+// --- Utilities ---
+const resolveUrl = (path: string | undefined): string => {
+  if (!path) return SITE_CONFIG.url;
+  if (path.startsWith('http')) return path;
+  return `${SITE_CONFIG.url.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
+};
 
-function normalizeOrigin(value: string): string {
-  return value.replace(/\/$/, '');
-}
+const buildBreadcrumbs = (url: string) => {
+  const urlObj = new URL(url);
+  const segments = urlObj.pathname.split('/').filter(Boolean);
 
-function resolveUrl(value: string | undefined, baseUrl: string): string {
-  if (!value) return baseUrl;
-  if (/^https?:\/\//i.test(value)) return value;
-  if (value.startsWith('//')) return `https:${value}`;
-  if (value.startsWith('/')) return `${baseUrl}${value}`;
-  return `${baseUrl}/${value}`;
-}
-
-function getCanonicalBase(): string {
-  return primarySiteUrl;
-}
-
-function buildCanonicalPath(url: string, fallbackBase: string): string {
-  try {
-    const parsed = new URL(url);
-    const path = `${parsed.pathname}${parsed.search}${parsed.hash}`;
-    return path || '/';
-  } catch {
-    if (url.startsWith(fallbackBase)) {
-      return url.slice(fallbackBase.length) || '/';
-    }
-    return '/';
-  }
-}
-
-export function Seo({
-  title,
-  description,
-  canonical,
-  image,
-  imageAlt,
-  imageWidth = 1200,
-  imageHeight = 630,
-  type = 'website',
-  publishDate,
-  modifiedDate,
-  author = defaultAuthor,
-  keywords = [],
-  category,
-  locale = 'en_US',
-  alternateLanguages = [],
-  children,
-  structuredData,
-  noIndex = false,
-  noFollow = false,
-}: SeoProps) {
-  const canonicalBase = normalizeOrigin(getCanonicalBase());
-  const fullImageUrl = image
-    ? image.startsWith('http')
-      ? image
-      : `${imageBaseUrl}${image}`
-    : defaultImage;
-  const fullCanonicalUrl = resolveUrl(canonical, canonicalBase);
-  const canonicalLower = fullCanonicalUrl.toLowerCase();
-  const canonicalIsHome =
-    canonicalLower === primarySiteUrl ||
-    canonicalLower === `${primarySiteUrl}/`;
-  const normalizedStructuredData = structuredData ?? [];
-
-  const defaultStructuredDataEntries: object[] = [
+  const items = [
     {
-      '@context': 'https://schema.org',
-      '@type': 'Organization',
-      name: siteName,
-      url: primarySiteUrl,
-      logo: {
-        '@type': 'ImageObject',
-        url: siteLogo,
-        width: 512,
-        height: 512,
-      },
-      sameAs: socialProfiles,
-      contactPoint: [
-        {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: SITE_CONFIG.url,
+    },
+  ];
+
+  let currentPath = SITE_CONFIG.url;
+  segments.forEach((seg, i) => {
+    currentPath += `/${seg}`;
+    items.push({
+      '@type': 'ListItem',
+      position: i + 2,
+      name: seg.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
+      item: currentPath,
+    });
+  });
+
+  return items;
+};
+
+// --- Component ---
+export const Seo = memo(
+  ({
+    title,
+    description,
+    canonical,
+    image,
+    imageAlt,
+    imageWidth = 1200,
+    imageHeight = 630,
+    type = 'website',
+    publishDate,
+    modifiedDate,
+    author = SITE_CONFIG.author,
+    keywords = [],
+    category,
+    locale = 'en_US',
+    alternateLanguages = [],
+    children,
+    structuredData = [],
+    noIndex = false,
+    noFollow = false,
+  }: SeoProps) => {
+    const fullCanonicalUrl = resolveUrl(canonical);
+    const fullImageUrl = image ? resolveUrl(image) : SITE_CONFIG.defaultImage;
+    const robotsContent = `${noIndex ? 'noindex' : 'index'}, ${noFollow ? 'nofollow' : 'follow'}`;
+
+    // Structured Data logic
+    const jsonLd = [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: SITE_CONFIG.name,
+        url: SITE_CONFIG.url,
+        logo: SITE_CONFIG.logo,
+        sameAs: SITE_CONFIG.socials,
+        contactPoint: {
           '@type': 'ContactPoint',
           contactType: 'customer support',
-          telephone: '+91-63941-35988',
-          email: 'ghatakgsai@gmail.com',
+          telephone: SITE_CONFIG.contact.phone,
+          email: SITE_CONFIG.contact.email,
           areaServed: 'IN',
           availableLanguage: ['en', 'hi'],
         },
-      ],
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'WebSite',
-      name: siteName,
-      url: primarySiteUrl,
-      potentialAction: {
-        '@type': 'SearchAction',
-        target: `${primarySiteUrl}/?s={search_term_string}`,
-        'query-input': 'required name=search_term_string',
       },
-    },
-  ];
-
-  const canonicalPath = buildCanonicalPath(fullCanonicalUrl, canonicalBase);
-
-  if (!canonicalIsHome) {
-    const pathSegments = canonicalPath
-      .split('/')
-      .filter((seg) => seg.length > 0);
-    const breadcrumbItems = [
       {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: primarySiteUrl,
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: SITE_CONFIG.name,
+        url: SITE_CONFIG.url,
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: `${SITE_CONFIG.url}/?s={search_term_string}`,
+          'query-input': 'required name=search_term_string',
+        },
       },
     ];
 
-    let currentPath = primarySiteUrl;
-    pathSegments.forEach((segment, index) => {
-      currentPath += `/${segment}`;
-      breadcrumbItems.push({
-        '@type': 'ListItem',
-        position: index + 2,
-        name: segment
-          .split('-')
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' '),
-        item: currentPath,
-      });
-    });
+    // Add Breadcrumbs if not home
+    if (new URL(fullCanonicalUrl).pathname !== '/') {
+      jsonLd.push({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: buildBreadcrumbs(fullCanonicalUrl),
+      } as any);
+    }
 
-    defaultStructuredDataEntries.push({
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: breadcrumbItems,
-    });
-  }
+    // Merge custom structured data
+    const finalJsonLd = [...jsonLd, ...structuredData];
 
-  const structuredDataPayload = [
-    ...defaultStructuredDataEntries,
-    ...normalizedStructuredData,
-  ];
+    return (
+      <Helmet prioritizeSeoTags>
+        {/* Basic */}
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <meta name="robots" content={robotsContent} />
+        <link rel="canonical" href={fullCanonicalUrl} />
+        {keywords.length > 0 && (
+          <meta name="keywords" content={keywords.join(', ')} />
+        )}
+        <meta name="author" content={author} />
 
-  // Generate robots meta tag
-  const robots = [];
-  if (noIndex) robots.push('noindex');
-  if (noFollow) robots.push('nofollow');
-  const robotsContent = robots.length > 0 ? robots.join(', ') : 'index, follow';
+        {/* Open Graph */}
+        <meta property="og:site_name" content={SITE_CONFIG.name} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={fullCanonicalUrl} />
+        <meta property="og:type" content={type} />
+        <meta property="og:image" content={fullImageUrl} />
+        <meta property="og:image:alt" content={imageAlt || title} />
+        <meta property="og:image:width" content={imageWidth.toString()} />
+        <meta property="og:image:height" content={imageHeight.toString()} />
+        <meta property="og:locale" content={locale} />
 
-  const alternateUrls = siteDomains.map(
-    (domain) => `${domain}${canonicalPath}`
-  );
+        {/* Article Metadata */}
+        {type === 'article' && (
+          <>
+            {publishDate && (
+              <meta property="article:published_time" content={publishDate} />
+            )}
+            {modifiedDate && (
+              <meta property="article:modified_time" content={modifiedDate} />
+            )}
+            {category && <meta property="article:section" content={category} />}
+          </>
+        )}
 
-  return (
-    <Helmet prioritizeSeoTags>
-      {/* Basic Meta Tags */}
-      <title>{title}</title>
-      <meta name="description" content={description} />
-      <meta name="robots" content={robotsContent} />
-      <link rel="canonical" href={fullCanonicalUrl} />
-      {alternateUrls
-        .filter((href) => href !== fullCanonicalUrl)
-        .map((href) => (
-          <link key={`alternate-${href}`} rel="alternate" href={href} />
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content={SITE_CONFIG.handle} />
+        <meta name="twitter:creator" content={SITE_CONFIG.handle} />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={fullImageUrl} />
+
+        {/* App & Tech */}
+        <meta name="theme-color" content="#000000" />
+        <meta name="format-detection" content="telephone=no" />
+        <link rel="alternate" hrefLang="x-default" href={fullCanonicalUrl} />
+        {alternateLanguages.map((lang) => (
+          <link
+            key={lang.hreflang}
+            rel="alternate"
+            hrefLang={lang.hreflang}
+            href={lang.href}
+          />
         ))}
-      {keywords.length > 0 && (
-        <meta name="keywords" content={keywords.join(', ')} />
-      )}
-      {author && <meta name="author" content={author} />}
-      {category && <meta name="category" content={category} />}
-      <meta name="application-name" content={siteName} />
-      <meta name="apple-mobile-web-app-title" content={siteName} />
 
-      {/* Open Graph Meta Tags */}
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:type" content={type} />
-      <meta property="og:url" content={fullCanonicalUrl} />
-      <meta property="og:site_name" content={siteName} />
-      <meta property="og:locale" content={locale} />
-      {alternateLanguages.map(({ hreflang }) => (
-        <meta
-          key={`og-locale-${hreflang}`}
-          property="og:locale:alternate"
-          content={hreflang}
-        />
-      ))}
-      <meta property="og:image" content={fullImageUrl} />
-      <meta property="og:image:secure_url" content={fullImageUrl} />
-      <meta property="og:image:alt" content={imageAlt || title} />
-      <meta property="og:image:width" content={imageWidth.toString()} />
-      <meta property="og:image:height" content={imageHeight.toString()} />
-      <meta property="og:image:type" content="image/png" />
-      {(modifiedDate || publishDate) && (
-        <meta
-          property="og:updated_time"
-          content={(modifiedDate || publishDate) as string}
-        />
-      )}
-      {socialProfiles.map((profileUrl) => (
-        <meta key={profileUrl} property="og:see_also" content={profileUrl} />
-      ))}
+        {/* JSON-LD */}
+        {finalJsonLd.map((data, i) => (
+          <script key={i} type="application/ld+json">
+            {JSON.stringify(data)}
+          </script>
+        ))}
 
-      {/* Article specific meta tags */}
-      {type === 'article' && (
-        <>
-          {publishDate && (
-            <meta property="article:published_time" content={publishDate} />
-          )}
-          {modifiedDate && (
-            <meta property="article:modified_time" content={modifiedDate} />
-          )}
-          {author && <meta property="article:author" content={author} />}
-          {category && <meta property="article:section" content={category} />}
-          {keywords.map((keyword) => (
-            <meta key={keyword} property="article:tag" content={keyword} />
-          ))}
-        </>
-      )}
+        {children}
+      </Helmet>
+    );
+  }
+);
 
-      {/* Twitter Card Meta Tags */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={fullImageUrl} />
-      <meta name="twitter:image:alt" content={imageAlt || title} />
-      <meta name="twitter:site" content={twitterHandle} />
-      <meta name="twitter:creator" content={twitterHandle} />
+Seo.displayName = 'Seo';
 
-      {/* Performance & Technical Meta Tags */}
-      <meta name="theme-color" content="#000000" />
-      <meta name="msapplication-TileColor" content="#000000" />
-      <meta name="apple-mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-      <meta name="format-detection" content="telephone=no" />
-      <meta httpEquiv="x-dns-prefetch-control" content="on" />
-
-      {/* Performance hints: preconnects and dns-prefetch are handled in `index.html` to avoid duplicates. */}
-
-      {/* Canonical and Language Tags */}
-      <link rel="canonical" href={fullCanonicalUrl} />
-      <link rel="alternate" hrefLang="x-default" href={fullCanonicalUrl} />
-      <link rel="alternate" hrefLang="en" href={fullCanonicalUrl} />
-      <link rel="alternate" hrefLang="en-IN" href={fullCanonicalUrl} />
-      <link rel="alternate" hrefLang="hi-IN" href={fullCanonicalUrl} />
-
-      {alternateLanguages.map(({ hreflang, href }) => (
-        <link key={hreflang} rel="alternate" hrefLang={hreflang} href={href} />
-      ))}
-
-      {/* Structured Data as JSON-LD */}
-      {structuredDataPayload.map((sd, i) => (
-        <script
-          key={`jsonld-${i}`}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(sd) }}
-        />
-      ))}
-
-      {/* Additional children for custom meta tags */}
-      {children}
-    </Helmet>
-  );
-}
 export default Seo;

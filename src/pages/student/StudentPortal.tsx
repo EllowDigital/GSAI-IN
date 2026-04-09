@@ -1,20 +1,43 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import StudentLogin from './StudentLogin';
-import StudentDashboard from './StudentDashboard';
-import StudentSetPassword from './StudentSetPassword';
 import { StudentAuthProvider } from './StudentAuthProvider';
+import { Loader2 } from 'lucide-react';
+
+// --- Lazy Loaded Routes ---
+// These components are only downloaded when the user specifically visits their route,
+// drastically improving the initial page load speed.
+const StudentLogin = lazy(() => import('./StudentLogin'));
+const StudentSetPassword = lazy(() => import('./StudentSetPassword'));
+const StudentDashboard = lazy(() => import('./StudentDashboard'));
+
+// --- Loading Fallback ---
+const PageLoader = () => (
+  <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50/50 space-y-4">
+    <Loader2 className="h-8 w-8 animate-spin text-primary/60" />
+    <p className="text-sm font-medium text-muted-foreground animate-pulse">
+      Loading...
+    </p>
+  </div>
+);
 
 export default function StudentPortal() {
   return (
     <StudentAuthProvider>
-      <Routes>
-        <Route path="login" element={<StudentLogin />} />
-        <Route path="set-password" element={<StudentSetPassword />} />
-        <Route path="dashboard" element={<StudentDashboard />} />
-        <Route index element={<Navigate to="login" replace />} />
-        <Route path="*" element={<Navigate to="login" replace />} />
-      </Routes>
+      {/* Suspense catches the loading state of our lazy imports */}
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          {/* Main App Routes */}
+          <Route path="login" element={<StudentLogin />} />
+          <Route path="set-password" element={<StudentSetPassword />} />
+          <Route path="dashboard" element={<StudentDashboard />} />
+
+          {/* Redirects */}
+          {/* If the user is logged in, the StudentAuthProvider will intercept 
+              this login redirect and securely send them to the dashboard. */}
+          <Route index element={<Navigate to="login" replace />} />
+          <Route path="*" element={<Navigate to="login" replace />} />
+        </Routes>
+      </Suspense>
     </StudentAuthProvider>
   );
 }
