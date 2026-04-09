@@ -1,51 +1,52 @@
 /**
  * PageTracker Component
+ * * Manages Google Analytics 4 (GA4) Virtual Pageviews via Google Tag Manager (GTM).
  *
- * This component handles SPA (Single Page Application) pageview tracking for Google Analytics 4 via GTM.
- *
- * WHY THIS IS NEEDED FOR SPAs:
- * - React SPAs don't trigger traditional page loads on navigation
- * - GTM only fires a pageview on initial page load by default
- * - Without this, only the first page visit gets tracked
- * - This component pushes pageview events to dataLayer on every route change
- *
- * REQUIREMENTS:
- * - GTM must be installed in index.html (BEFORE React loads)
- * - GA4 Configuration Tag in GTM must have "Page views" trigger disabled
- * - Create a Custom Event trigger in GTM for event name: "pageview"
- * - Link this trigger to your GA4 Configuration Tag
- *
- * HOW IT WORKS:
- * 1. Listens to React Router location changes using useLocation hook
- * 2. On route change, pushes a pageview event to dataLayer with full path
- * 3. GTM receives the event and forwards it to GA4
- * 4. Works on initial load, route changes, and browser back/forward
- *
- * PRODUCTION SETUP IN GTM:
- * 1. Create Variable: "Page Path" (type: Data Layer Variable, name: page_path)
- * 2. Create Trigger: "SPA Pageview" (type: Custom Event, event name: "pageview")
- * 3. Update GA4 Config Tag:
- *    - Disable built-in pageview (check "Send a pageview event when this configuration loads": NO)
- *    - Add trigger: "SPA Pageview"
- *    - Set page_path parameter to {{Page Path}} variable
+ * SPA COMPATIBILITY:
+ * - Solves the "Single Page Load" issue where GTM only fires once on entry.
+ * - Manually triggers a 'pageview' event on every React Router location change.
+ * * GTM REQUIREMENTS:
+ * 1. Data Layer Variable: 'page_path' (maps to dlv page_path)
+ * 2. Data Layer Variable: 'page_title' (maps to dlv page_title)
+ * 3. Custom Event Trigger: Event name 'page_view_custom'
+ * 4. GA4 Configuration Tag: Disable 'Send a page view event when this configuration loads'
  */
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { trackPageView } from '@/utils/gtm';
 
 export const PageTracker: React.FC = () => {
   const location = useLocation();
+  const lastTrackedPath = useRef<string>('');
 
   useEffect(() => {
-    // Construct full page path including query parameters
-    const pagePath = location.pathname + location.search;
+    // 1. Construct full path including query strings (e.g., /dashboard?user=123)
+    const currentPath = location.pathname + location.search;
 
-    // Use centralized trackPageView utility for consistent tracking
-    trackPageView(pagePath, document.title);
-  }, [location]); // Re-run whenever route changes
+    // 2. Prevent duplicate tracking of the same path (Safeguard for React Strict Mode)
+    if (lastTrackedPath.current === currentPath) return;
 
-  // This component doesn't render anything
+    /**
+     * 3. Sync Delay
+     * We wrap this in a small timeout/requestAnimationFrame because 
+     * document.title often updates slightly AFTER the route change completes.
+     * This ensures GA4 doesn't log the title of the previous page.
+     */
+    const trackingTimeout = setTimeout(() => {
+      const pageTitle = document.title || 'GSAI Portal';
+      
+      // Execute the GTM Push
+      trackPageView(currentPath, pageTitle);
+      
+      // Update the reference
+      lastTrackedPath.current = currentPath;
+    }, 100);
+
+    return () => clearTimeout(trackingTimeout);
+  }, [location]);
+
+  // Non-rendering component
   return null;
 };
 
