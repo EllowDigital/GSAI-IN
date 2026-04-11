@@ -1,4 +1,9 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import {
+  RequestAuthError,
+  getUserRoles,
+  requireAuthenticatedUser,
+} from '../_shared/adminAuth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -45,24 +50,14 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      return json(401, { error: 'Unauthorized' });
-    }
-
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_ANON_KEY')!,
-      { global: { headers: { Authorization: authHeader } } }
-    );
-
-    const {
-      data: { user },
-      error: userError,
-    } = await supabaseClient.auth.getUser();
-
-    if (userError || !user) {
-      return json(401, { error: 'Unauthorized' });
+    let userId = '';
+    try {
+      userId = await requireAuthenticatedUser(req);
+    } catch (error) {
+      if (error instanceof RequestAuthError) {
+        return json(error.status, { error: error.message });
+      }
+      return json(500, { error: 'Auth verification failed' });
     }
 
     const body = (await req.json()) as RequestBody;
@@ -84,12 +79,7 @@ Deno.serve(async (req) => {
     }
 
     // Enforce scope alignment to prevent cross-portal abuse.
-    const { data: roles } = await supabaseClient
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', user.id);
-
-    const roleSet = new Set((roles || []).map((r: { role: string }) => r.role));
+    const roleSet = await getUserRoles(userId);
     if (body.portal_scope === 'admin' && !roleSet.has('admin')) {
       return json(403, { error: 'Admin role required for admin push scope' });
     }
@@ -108,7 +98,7 @@ Deno.serve(async (req) => {
       .from('push_subscriptions')
       .upsert(
         {
-          auth_user_id: user.id,
+          auth_user_id: userId,
           portal_scope: body.portal_scope,
           endpoint,
           p256dh,

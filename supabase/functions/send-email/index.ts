@@ -1,9 +1,12 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import {
   ACADEMY_CONTACT_EMAIL,
   ACADEMY_NAME,
   getResendSenderAddress,
 } from '../_shared/emailConfig.ts';
+import {
+  RequestAuthError,
+  requireAdminUser,
+} from '../_shared/adminAuth.ts';
 
 function normalizeOrigin(origin: string): string | null {
   const trimmed = origin.trim()
@@ -244,32 +247,15 @@ Deno.serve(async (req) => {
     return errorResponse(405, 'method_not_allowed', 'Only POST is allowed', origin)
   }
 
-  const authHeader = req.headers.get('Authorization')
-  if (!authHeader?.startsWith('Bearer ')) {
-    return errorResponse(401, 'unauthorized', 'Missing or invalid authorization header', origin)
-  }
-
-  const supabaseClient = createClient(
-    Deno.env.get('SUPABASE_URL')!,
-    Deno.env.get('SUPABASE_ANON_KEY')!,
-    { global: { headers: { Authorization: authHeader } } }
-  )
-
-  const { data: authData, error: authError } = await supabaseClient.auth.getUser()
-  if (authError || !authData.user) {
-    return errorResponse(401, 'unauthorized', 'Invalid or expired token', origin)
-  }
-
-  const userId = authData.user.id
-  const { data: roleData, error: roleError } = await supabaseClient
-    .from('user_roles')
-    .select('id')
-    .eq('user_id', userId)
-    .eq('role', 'admin')
-    .maybeSingle()
-
-  if (roleError || !roleData) {
-    return errorResponse(403, 'forbidden', 'Admin access required', origin)
+  let userId = ''
+  try {
+    userId = await requireAdminUser(req)
+  } catch (error) {
+    if (error instanceof RequestAuthError) {
+      const code = error.status === 403 ? 'forbidden' : 'unauthorized'
+      return errorResponse(error.status, code, error.message, origin)
+    }
+    return errorResponse(500, 'internal_error', 'Auth verification failed', origin)
   }
 
   if (!isOriginAllowed(origin)) {

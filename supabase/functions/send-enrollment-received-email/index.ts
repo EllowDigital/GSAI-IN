@@ -17,10 +17,12 @@ const ACADEMY_EMAIL = ACADEMY_CONTACT_EMAIL;
 const ACADEMY_PHONE = '+91 63941 35988';
 const ACADEMY_LOGO_URL = 'https://ghataksportsacademy.com/assets/images/logo.webp';
 const ADMIN_PORTAL_URL = 'https://ghataksportsacademy.com/admin';
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const MAX_REQUESTS_PER_WINDOW = 12;
+
+const requestBuckets = new Map<string, number[]>();
 
 interface RequestBody {
-  to?: string;
-  cc?: string;
   parentName?: string;
   parentEmail?: string;
   studentName?: string;
@@ -28,7 +30,68 @@ interface RequestBody {
   parentPhone?: string;
   studentEmail?: string;
   studentPhone?: string;
-  notificationType?: 'parent' | 'admin';
+  notificationType?: 'admin';
+}
+
+function normalizeOrigin(origin: string): string | null {
+  const trimmed = origin.trim();
+  if (!trimmed) return null;
+
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return null;
+    return `${parsed.protocol}//${parsed.host}`.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+const ALLOWED_ORIGINS = new Set(
+  (Deno.env.get('ALLOWED_EMAIL_ORIGINS') ?? '')
+    .split(',')
+    .map((origin) => normalizeOrigin(origin))
+    .filter((origin): origin is string => Boolean(origin))
+);
+
+function isOriginAllowed(origin: string | null): boolean {
+  if (!origin) return true;
+
+  const normalizedOrigin = normalizeOrigin(origin);
+  if (!normalizedOrigin) return false;
+
+  if (ALLOWED_ORIGINS.size === 0) return true;
+  if (ALLOWED_ORIGINS.has(normalizedOrigin)) return true;
+
+  const url = new URL(normalizedOrigin);
+  if (url.hostname.startsWith('www.')) {
+    const withoutWww = `${url.protocol}//${url.host.replace(/^www\./, '')}`;
+    return ALLOWED_ORIGINS.has(withoutWww);
+  }
+
+  const withWww = `${url.protocol}//www.${url.host}`;
+  return ALLOWED_ORIGINS.has(withWww);
+}
+
+function getClientAddress(req: Request): string {
+  const xff = req.headers.get('x-forwarded-for') || req.headers.get('X-Forwarded-For') || '';
+  const firstXff = xff.split(',')[0]?.trim();
+  if (firstXff) return firstXff;
+  return req.headers.get('x-real-ip') || req.headers.get('X-Real-IP') || 'unknown';
+}
+
+function enforceRateLimit(key: string): boolean {
+  const now = Date.now();
+  const windowStart = now - RATE_LIMIT_WINDOW_MS;
+  const requests = (requestBuckets.get(key) ?? []).filter((stamp) => stamp >= windowStart);
+
+  if (requests.length >= MAX_REQUESTS_PER_WINDOW) {
+    requestBuckets.set(key, requests);
+    return false;
+  }
+
+  requests.push(now);
+  requestBuckets.set(key, requests);
+  return true;
 }
 
 function escapeHtml(value: string): string {
@@ -212,7 +275,15 @@ function buildAdminHtml(details: {
 }
 
 Deno.serve(async (req) => {
+  const origin = req.headers.get('Origin');
+
   if (req.method === 'OPTIONS') {
+    if (!isOriginAllowed(origin)) {
+      return new Response(JSON.stringify({ error: 'Origin not allowed' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     return new Response('ok', { headers: corsHeaders });
   }
 
@@ -232,10 +303,23 @@ Deno.serve(async (req) => {
     });
   }
 
+  if (!isOriginAllowed(origin)) {
+    return new Response(JSON.stringify({ error: 'Origin not allowed' }), {
+      status: 403,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  const requesterKey = `${getClientAddress(req)}::${origin ?? 'no-origin'}`;
+  if (!enforceRateLimit(requesterKey)) {
+    return new Response(JSON.stringify({ error: 'Rate limited' }), {
+      status: 429,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
   try {
     const body = (await req.json()) as RequestBody;
-    const to = (body.to || '').trim().toLowerCase();
-    const cc = (body.cc || '').trim().toLowerCase();
     const parentName = (body.parentName || 'Parent').trim();
     const parentEmail = (body.parentEmail || 'Not provided').trim();
     const studentName = (body.studentName || 'Student').trim();
@@ -243,12 +327,20 @@ Deno.serve(async (req) => {
     const parentPhone = (body.parentPhone || 'Not provided').trim();
     const studentEmail = (body.studentEmail || 'Not provided').trim();
     const studentPhone = (body.studentPhone || 'Not provided').trim();
-    const notificationType = body.notificationType === 'admin' ? 'admin' : 'parent';
+    const notificationType = body.notificationType === 'admin' ? 'admin' : null;
 
-    const resolvedTo =
-      notificationType === 'admin' ? ADMIN_EMAIL.toLowerCase() : to;
-    const resolvedCc =
-      notificationType === 'admin' ? ADMIN_CC.toLowerCase() : cc;
+    if (!notificationType) {
+      return new Response(
+        JSON.stringify({ error: 'Only admin notification is supported' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    const resolvedTo = ADMIN_EMAIL.toLowerCase();
+    const resolvedCc = ADMIN_CC.toLowerCase();
 
     if (!isValidEmail(resolvedTo)) {
       return new Response(JSON.stringify({ error: 'Invalid email' }), {
@@ -264,24 +356,18 @@ Deno.serve(async (req) => {
       });
     }
 
-    const subject =
-      notificationType === 'admin'
-        ? `New Enrollment Submission | ${ACADEMY_NAME}`
-        : `Enrollment Request Received | ${ACADEMY_NAME}`;
+    const subject = `New Enrollment Submission | ${ACADEMY_NAME}`;
     const fromAddress = getResendSenderAddress('onboarding');
 
-    const html =
-      notificationType === 'admin'
-        ? buildAdminHtml({
-            studentName,
-            parentName,
-            parentEmail,
-            program,
-            parentPhone,
-            studentEmail,
-            studentPhone,
-          })
-        : buildParentHtml(parentName, studentName, program);
+    const html = buildAdminHtml({
+      studentName,
+      parentName,
+      parentEmail,
+      program,
+      parentPhone,
+      studentEmail,
+      studentPhone,
+    });
 
     const response = await fetch(RESEND_API_URL, {
       method: 'POST',
