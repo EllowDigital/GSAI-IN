@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/services/supabase/client';
-import { Session } from '@supabase/supabase-js';
+import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { toast } from '@/components/ui/sonner';
 import { AuthCelebration } from '@/components/admin/AuthCelebration';
 import type { Enums } from '@/services/supabase/types';
@@ -23,6 +23,7 @@ import {
   rememberVerifiedAdminUser,
 } from '@/services/supabase/session';
 import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
+import { recordAuthCallbackDuration } from '@/utils/authTelemetry';
 
 const ADMIN_ROLE: Enums<'app_role'> = 'admin';
 const AUTH_REQUEST_TIMEOUT_MS = 20000;
@@ -277,7 +278,13 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    const handleAuthStateUpdate = async (newSession: Session | null) => {
+    const handleAuthStateUpdate = async (
+      event: AuthChangeEvent,
+      newSession: Session | null
+    ) => {
+      const startedAt =
+        typeof performance !== 'undefined' ? performance.now() : Date.now();
+
       if (!mounted) return;
 
       try {
@@ -305,9 +312,12 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
           return;
         }
         console.error('Auth state listener failed', error);
-        clearState();
-        rememberIntendedRoute();
-        navigate('/admin/login', { replace: true });
+        toast.warning('Temporary auth issue detected. Keeping your session.');
+        setIsLoading(false);
+      } finally {
+        const endedAt =
+          typeof performance !== 'undefined' ? performance.now() : Date.now();
+        recordAuthCallbackDuration('admin', endedAt - startedAt, event);
       }
     };
 
@@ -357,18 +367,17 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
           return;
         }
         console.error('Failed to initialize admin auth', error);
-        clearState();
-        rememberIntendedRoute();
-        navigate('/admin/login', { replace: true });
+        toast.warning('Unable to verify session right now. Retaining current state.');
+        setIsLoading(false);
       }
     };
 
     initializeAuth();
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, newSession) => {
+      (event, newSession) => {
         // Avoid awaiting network calls in Supabase auth callback to prevent lock contention.
-        void handleAuthStateUpdate(newSession);
+        void handleAuthStateUpdate(event, newSession);
       }
     );
 
@@ -451,7 +460,6 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
         throw new Error(error.message);
       }
 
-      clearPersistedSupabaseSession();
       clearPersistedSupabaseSession('admin');
       clearState({ keepLoading: true });
       if (typeof window !== 'undefined') {

@@ -2,9 +2,9 @@ import {
   ACADEMY_NAME,
   getResendSenderAddress,
 } from '../_shared/emailConfig.ts';
+import { verifyRequestJwt } from '../_shared/requestAuth.ts';
 
 const RESEND_API_URL = 'https://api.resend.com/emails';
-const TEST_RECIPIENT = 'sarwanyadav6174@gmail.com';
 const ACADEMY_LOGO_URL = 'https://ghataksportsacademy.com/assets/images/logo.webp';
 
 const corsHeaders = {
@@ -109,17 +109,28 @@ Deno.serve(async (req) => {
     return json(405, { error: 'Method not allowed' });
   }
 
-  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-  if (!RESEND_API_KEY) {
-    return json(500, { error: 'Missing RESEND_API_KEY' });
+  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')?.trim();
+  const TEST_RECIPIENT = Deno.env.get('SMOKE_TEST_RECIPIENT')?.trim();
+  const expectedTestKey = Deno.env.get('EMAIL_SMOKE_TEST_KEY')?.trim();
+
+  if (!RESEND_API_KEY || !TEST_RECIPIENT || !expectedTestKey) {
+    return json(500, {
+      error:
+        'Missing one or more required env vars: RESEND_API_KEY, SMOKE_TEST_RECIPIENT, EMAIL_SMOKE_TEST_KEY',
+    });
   }
 
-  const expectedTestKey = Deno.env.get('EMAIL_SMOKE_TEST_KEY')?.trim();
-  if (expectedTestKey) {
-    const testKey = req.headers.get('x-test-key')?.trim();
-    if (!testKey || testKey !== expectedTestKey) {
-      return json(401, { error: 'Invalid test key' });
-    }
+  try {
+    await verifyRequestJwt(req);
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'Unauthorized request';
+    return json(401, { error: message });
+  }
+
+  const testKey = req.headers.get('x-test-key')?.trim();
+  if (!testKey || testKey !== expectedTestKey) {
+    return json(401, { error: 'Invalid test key' });
   }
 
   const now = new Date().toISOString();

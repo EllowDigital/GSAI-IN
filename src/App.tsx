@@ -15,6 +15,7 @@ import { Toaster as Sonner } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeSupabaseOptimization } from '@/utils/supabaseOptimization';
 import { performanceMonitor } from '@/utils/performance';
+import { initializeAuthTelemetry } from '@/utils/authTelemetry';
 
 import Preloader from '@/components/common/Preloader';
 import OfflineBanner from '@/components/common/OfflineBanner';
@@ -154,6 +155,7 @@ const App = () => {
   useEffect(() => {
     try {
       initializeSupabaseOptimization();
+      initializeAuthTelemetry();
     } catch (error) {
       console.error('Failed to initialize Supabase optimization:', error);
       // Continue loading even if optimization fails

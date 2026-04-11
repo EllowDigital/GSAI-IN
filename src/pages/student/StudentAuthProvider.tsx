@@ -7,11 +7,12 @@ import React, {
 } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { studentSupabase } from '@/services/supabase/studentClient';
-import { Session } from '@supabase/supabase-js';
+import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { AuthCelebration } from '@/components/admin/AuthCelebration';
 import { clearPersistedSupabaseSession } from '@/services/supabase/session';
 import { toast } from '@/components/ui/sonner';
 import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
+import { recordAuthCallbackDuration } from '@/utils/authTelemetry';
 import { StudentAuthContext, StudentProfile } from './StudentAuthContext';
 
 // --- Constants & Types ---
@@ -205,15 +206,10 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
           if (cached) {
             setProfile(cached);
             toast.warning('Using cached session. Reconnecting...');
-          } else {
-            setSession(null);
-            setProfile(null);
           }
           toast.error('Student portal is responding slowly. Please try again.');
         } else {
-          setSession(null);
-          setProfile(null);
-          cacheStudentProfile(null);
+          toast.warning('Temporary auth issue detected. Keeping your current session.');
         }
       } finally {
         if (mounted) setIsLoading(false);
@@ -222,49 +218,67 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
 
     initializeAuth();
 
-    const handleAuthStateUpdate = async (newSession: Session | null) => {
+    const handleAuthStateUpdate = async (
+      event: AuthChangeEvent,
+      newSession: Session | null
+    ) => {
+      const startedAt =
+        typeof performance !== 'undefined' ? performance.now() : Date.now();
+
       if (!mounted || isSigningOut.current) return;
 
-      setSession(newSession);
+      try {
+        setSession(newSession);
 
-      if (newSession) {
-        const currentPath = window.location.pathname;
-        if (requiresPasswordSetup(newSession)) {
-          if (currentPath !== '/student/set-password') {
-            navigate('/student/set-password', { replace: true });
+        if (newSession) {
+          const currentPath = window.location.pathname;
+          if (requiresPasswordSetup(newSession)) {
+            if (currentPath !== '/student/set-password') {
+              navigate('/student/set-password', { replace: true });
+            }
+            return;
           }
+
+          const prof = await loadProfile(newSession.user.id);
+          if (mounted) {
+            if (prof) {
+              setProfile(prof);
+
+              // Password setup completes via USER_UPDATED while still signed in.
+              // Route directly to dashboard once profile is available.
+              if (currentPath === '/student/set-password') {
+                navigate('/student/dashboard', { replace: true });
+              }
+            } else {
+              const cached = getCachedStudentProfile();
+              if (cached) {
+                setProfile(cached);
+              }
+            }
+          }
+        } else {
+          if (mounted) setProfile(null);
+          cacheStudentProfile(null);
+        }
+      } catch (error) {
+        if (isTimeoutError(error)) {
+          toast.warning('Connection is slow. Retaining current session.');
           return;
         }
-
-        const prof = await loadProfile(newSession.user.id);
-        if (mounted) {
-          if (prof) {
-            setProfile(prof);
-
-            // Password setup completes via USER_UPDATED while still signed in.
-            // Route directly to dashboard once profile is available.
-            if (currentPath === '/student/set-password') {
-              navigate('/student/dashboard', { replace: true });
-            }
-          } else {
-            const cached = getCachedStudentProfile();
-            if (cached) {
-              setProfile(cached);
-            }
-          }
-        }
-      } else {
-        if (mounted) setProfile(null);
-        cacheStudentProfile(null);
+        console.error('Student auth state listener failed', error);
+        toast.warning('Temporary auth issue detected. Keeping your session.');
+      } finally {
+        const endedAt =
+          typeof performance !== 'undefined' ? performance.now() : Date.now();
+        recordAuthCallbackDuration('student', endedAt - startedAt, event);
       }
     };
 
     // Listen for auth changes (login/logout from other tabs, token refreshes)
-    const { data: listener } = supabase.auth.onAuthStateChange(
     const { data: listener } = studentSupabase.auth.onAuthStateChange(
-      (_event, newSession) => {
+      (event, newSession) => {
         // Avoid awaiting long work in Supabase callback to reduce auth lock contention.
-        void handleAuthStateUpdate(newSession);
+        void handleAuthStateUpdate(event, newSession);
       }
     );
 
@@ -341,7 +355,6 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
     triggerAnimation('logout', 'Signing you out safely...', 700);
 
     try {
-      const { error } = await supabase.auth.signOut();
       const { error } = await studentSupabase.auth.signOut();
       if (error) throw error;
 

@@ -1,5 +1,14 @@
 export const ACADEMY_NAME = 'Ghatak Sports Academy India';
-export const ACADEMY_CONTACT_EMAIL = 'ghatakgsai@gmail.com';
+
+const getRequiredEnv = (key: string): string => {
+  const value = Deno.env.get(key)?.trim();
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${key}`);
+  }
+  return value;
+};
+
+export const ACADEMY_CONTACT_EMAIL = getRequiredEnv('ACADEMY_CONTACT_EMAIL');
 
 export const RESEND_DOMAIN_SENDERS = {
   automated: 'no-reply@ghataksportsacademy.com',
