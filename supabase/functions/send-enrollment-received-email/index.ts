@@ -3,6 +3,7 @@ import {
   ACADEMY_NAME,
   getResendSenderAddress,
 } from '../_shared/emailConfig.ts';
+import { verifyRequestJwt } from '../_shared/requestAuth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -11,6 +12,8 @@ const corsHeaders = {
 };
 
 const RESEND_API_URL = 'https://api.resend.com/emails';
+const ADMIN_EMAIL = Deno.env.get('ACADEMY_CONTACT_EMAIL')?.trim() || '';
+const ADMIN_CC = Deno.env.get('ADMIN_CC_EMAIL')?.trim() || '';
 const ACADEMY_EMAIL = ACADEMY_CONTACT_EMAIL;
 const ACADEMY_PHONE = '+91 63941 35988';
 const ACADEMY_LOGO_URL = 'https://ghataksportsacademy.com/assets/images/logo.webp';
@@ -223,9 +226,20 @@ Deno.serve(async (req) => {
 
   const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 
-  if (!RESEND_API_KEY) {
+  if (!RESEND_API_KEY || !ADMIN_EMAIL || !ADMIN_CC) {
     return new Response(JSON.stringify({ error: 'Server misconfigured' }), {
       status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  try {
+    await verifyRequestJwt(req);
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'Unauthorized request';
+    return new Response(JSON.stringify({ error: message }), {
+      status: 401,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
@@ -243,14 +257,19 @@ Deno.serve(async (req) => {
     const studentPhone = (body.studentPhone || 'Not provided').trim();
     const notificationType = body.notificationType === 'admin' ? 'admin' : 'parent';
 
-    if (!isValidEmail(to)) {
+    const resolvedTo =
+      notificationType === 'admin' ? ADMIN_EMAIL.toLowerCase() : to;
+    const resolvedCc =
+      notificationType === 'admin' ? ADMIN_CC.toLowerCase() : cc;
+
+    if (!isValidEmail(resolvedTo)) {
       return new Response(JSON.stringify({ error: 'Invalid email' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    if (cc && !isValidEmail(cc)) {
+    if (resolvedCc && !isValidEmail(resolvedCc)) {
       return new Response(JSON.stringify({ error: 'Invalid cc email' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -284,8 +303,8 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         from: `${ACADEMY_NAME} <${fromAddress}>`,
-        to: [to],
-        ...(cc ? { cc: [cc] } : {}),
+        to: [resolvedTo],
+        ...(resolvedCc ? { cc: [resolvedCc] } : {}),
         subject,
         html,
       }),

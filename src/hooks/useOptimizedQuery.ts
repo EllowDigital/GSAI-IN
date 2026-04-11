@@ -4,6 +4,7 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 import { optimizedQuery } from '@/utils/supabaseOptimization';
+import { IS_SUPABASE_CONFIGURED } from '@/services/supabase/constants';
 
 /**
  * Enhanced hook that wraps useQuery with Supabase optimizations
@@ -18,6 +19,8 @@ export function useOptimizedQuery<TData = any, TError = Error>(
   }
 ): UseQueryResult<TData, TError> {
   const { cacheKey, cacheDuration, retries, ...queryOptions } = options || {};
+  const shouldEnableSupabaseQuery =
+    (queryOptions.enabled ?? true) && IS_SUPABASE_CONFIGURED;
 
   return useQuery({
     queryKey,
@@ -31,6 +34,7 @@ export function useOptimizedQuery<TData = any, TError = Error>(
     gcTime: 1000 * 60 * 30, // 30 minutes
     refetchOnWindowFocus: false,
     retry: 2,
+    enabled: shouldEnableSupabaseQuery,
     ...queryOptions,
   });
 }

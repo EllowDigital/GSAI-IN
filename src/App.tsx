@@ -15,6 +15,7 @@ import { Toaster as Sonner } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeSupabaseOptimization } from '@/utils/supabaseOptimization';
 import { performanceMonitor } from '@/utils/performance';
+import { initializeAuthTelemetry } from '@/utils/authTelemetry';
 
 import Preloader from '@/components/common/Preloader';
 import OfflineBanner from '@/components/common/OfflineBanner';
@@ -152,14 +153,48 @@ const App = () => {
   );
 
   useEffect(() => {
-    try {
-      initializeSupabaseOptimization();
-    } catch (error) {
-      console.error('Failed to initialize Supabase optimization:', error);
-      // Continue loading even if optimization fails
-    }
+    const scheduleIdleTask = (task: () => void) => {
+      if (typeof window === 'undefined') {
+        task();
+        return () => {};
+      }
 
-    const timeout = setTimeout(() => setLoading(false), 1000);
+      if ('requestIdleCallback' in window) {
+        const idleId = (
+          window as Window & {
+            requestIdleCallback: (callback: IdleRequestCallback) => number;
+          }
+        ).requestIdleCallback(() => task());
+        return () => {
+          if ('cancelIdleCallback' in window) {
+            (
+              window as Window & {
+                cancelIdleCallback: (id: number) => void;
+              }
+            ).cancelIdleCallback(idleId);
+          }
+        };
+      }
+
+      const timeoutId = window.setTimeout(task, 120);
+      return () => window.clearTimeout(timeoutId);
+    };
+
+    const cancelIdleInit = scheduleIdleTask(() => {
+      try {
+        initializeSupabaseOptimization();
+        initializeAuthTelemetry();
+      } catch (error) {
+        console.error('Failed to initialize Supabase optimization:', error);
+      }
+    });
+
+    try {
+      // Let the UI render as soon as possible.
+      setLoading(false);
+    } catch {
+      setLoading(false);
+    }
 
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -200,7 +235,7 @@ const App = () => {
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
-      clearTimeout(timeout);
+      cancelIdleInit();
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
       window.removeEventListener(

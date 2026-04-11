@@ -81,7 +81,7 @@ The sitemap is generated via `npm run sitemap` and referenced in `public/robots.
 
 EllowDigital Enterprise
 Developer: Sarwan Yadav
-Email: ghatakgsai@gmail.com
+Email: support@ghataksportsacademy.com
 Location: Indira Nagar, Lucknow, Uttar Pradesh
 
 ------------------------------------------------------------

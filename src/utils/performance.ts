@@ -13,6 +13,8 @@ export interface PerformanceMetrics {
 class PerformanceMonitor {
   private metrics: PerformanceMetrics = {};
   private observers: PerformanceObserver[] = [];
+  private readonly debugPerf =
+    import.meta.env.DEV && import.meta.env.VITE_ENABLE_PERF_DEBUG === 'true';
 
   constructor() {
     this.initializeObservers();
@@ -92,7 +94,7 @@ class PerformanceMonitor {
   }
 
   private logMetric(name: string, value: number) {
-    if (import.meta.env.DEV) {
+    if (this.debugPerf) {
       console.log(`🚀 Performance Metric - ${name}: ${Math.round(value)}ms`);
     }
 
@@ -145,7 +147,10 @@ export const performanceMonitor = new PerformanceMonitor();
 
 // Utility functions
 export const reportWebVitals = (metric: any) => {
-  if (import.meta.env.DEV) {
+  if (
+    import.meta.env.DEV &&
+    import.meta.env.VITE_ENABLE_PERF_DEBUG === 'true'
+  ) {
     console.log('📊 Web Vitals:', metric);
   }
   // Send to analytics service

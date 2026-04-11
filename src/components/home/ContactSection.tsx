@@ -10,7 +10,7 @@ import {
   Sparkles,
   ArrowRight,
 } from 'lucide-react';
-import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
+import { ACADEMY_CONTACT_EMAIL, ADMIN_CC_EMAIL } from '@/config/contact';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -264,11 +264,7 @@ export default function ContactSection() {
                   name="_subject"
                   value="New Contact Form Submission - Ghatak Sports Academy"
                 />
-                <input
-                  type="hidden"
-                  name="_cc"
-                  value="sarwanyadav6174@gmail.com,ellowdigitalindia@gmail.com"
-                />
+                <input type="hidden" name="_cc" value={ADMIN_CC_EMAIL} />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-2">

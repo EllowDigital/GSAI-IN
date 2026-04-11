@@ -6,12 +6,13 @@ import React, {
   useRef,
 } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { supabase } from '@/services/supabase/client';
-import { Session } from '@supabase/supabase-js';
+import { studentSupabase } from '@/services/supabase/studentClient';
+import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { AuthCelebration } from '@/components/admin/AuthCelebration';
 import { clearPersistedSupabaseSession } from '@/services/supabase/session';
 import { toast } from '@/components/ui/sonner';
 import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
+import { recordAuthCallbackDuration } from '@/utils/authTelemetry';
 import { StudentAuthContext, StudentProfile } from './StudentAuthContext';
 
 // --- Constants & Types ---
@@ -100,7 +101,7 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
     async (userId: string): Promise<StudentProfile | null> => {
       try {
         const response = await withTimeout(
-          supabase
+          studentSupabase
             .from('student_portal_accounts')
             .select('student_id, login_id, students(name, program)')
             .eq('auth_user_id', userId)
@@ -146,7 +147,7 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
     const initializeAuth = async () => {
       try {
         const { data } = await withTimeout(
-          supabase.auth.getSession(),
+          studentSupabase.auth.getSession(),
           AUTH_TIMEOUT_MS,
           'Loading student session timed out.'
         );
@@ -205,15 +206,12 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
           if (cached) {
             setProfile(cached);
             toast.warning('Using cached session. Reconnecting...');
-          } else {
-            setSession(null);
-            setProfile(null);
           }
           toast.error('Student portal is responding slowly. Please try again.');
         } else {
-          setSession(null);
-          setProfile(null);
-          cacheStudentProfile(null);
+          toast.warning(
+            'Temporary auth issue detected. Keeping your current session.'
+          );
         }
       } finally {
         if (mounted) setIsLoading(false);
@@ -222,11 +220,16 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
 
     initializeAuth();
 
-    // Listen for auth changes (login/logout from other tabs, token refreshes)
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      async (_event, newSession) => {
-        if (!mounted || isSigningOut.current) return;
+    const handleAuthStateUpdate = async (
+      event: AuthChangeEvent,
+      newSession: Session | null
+    ) => {
+      const startedAt =
+        typeof performance !== 'undefined' ? performance.now() : Date.now();
 
+      if (!mounted || isSigningOut.current) return;
+
+      try {
         setSession(newSession);
 
         if (newSession) {
@@ -235,7 +238,7 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
             if (currentPath !== '/student/set-password') {
               navigate('/student/set-password', { replace: true });
             }
-            return; // Stop execution here if password setup is needed
+            return;
           }
 
           const prof = await loadProfile(newSession.user.id);
@@ -259,6 +262,25 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
           if (mounted) setProfile(null);
           cacheStudentProfile(null);
         }
+      } catch (error) {
+        if (isTimeoutError(error)) {
+          toast.warning('Connection is slow. Retaining current session.');
+          return;
+        }
+        console.error('Student auth state listener failed', error);
+        toast.warning('Temporary auth issue detected. Keeping your session.');
+      } finally {
+        const endedAt =
+          typeof performance !== 'undefined' ? performance.now() : Date.now();
+        recordAuthCallbackDuration('student', endedAt - startedAt, event);
+      }
+    };
+
+    // Listen for auth changes (login/logout from other tabs, token refreshes)
+    const { data: listener } = studentSupabase.auth.onAuthStateChange(
+      (event, newSession) => {
+        // Avoid awaiting long work in Supabase callback to reduce auth lock contention.
+        void handleAuthStateUpdate(event, newSession);
       }
     );
 
@@ -289,7 +311,7 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
       const email = `${loginId.toLowerCase().trim()}@student.gsai.app`;
 
       const response = await withTimeout(
-        supabase.auth.signInWithPassword({ email, password }),
+        studentSupabase.auth.signInWithPassword({ email, password }),
         AUTH_TIMEOUT_MS,
         'Login request timed out. Please check your connection and try again.'
       );
@@ -335,10 +357,10 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
     triggerAnimation('logout', 'Signing you out safely...', 700);
 
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error } = await studentSupabase.auth.signOut();
       if (error) throw error;
 
-      clearPersistedSupabaseSession();
+      clearPersistedSupabaseSession('student');
       setSession(null);
       setProfile(null);
       cacheStudentProfile(null);

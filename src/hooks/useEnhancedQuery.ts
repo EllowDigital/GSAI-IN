@@ -10,6 +10,7 @@ import {
   retryOperation,
   logError,
 } from '@/utils/errorHandling';
+import { IS_SUPABASE_CONFIGURED } from '@/services/supabase/constants';
 
 interface EnhancedQueryOptions {
   queryKey: string[];
@@ -65,7 +66,7 @@ export function useEnhancedQuery<T = any>({
     staleTime,
     gcTime: cacheTime, // Updated from cacheTime to gcTime for newer react-query versions
     refetchOnWindowFocus,
-    enabled,
+    enabled: enabled && IS_SUPABASE_CONFIGURED,
     retry: (failureCount, error) => {
       // Don't retry on authentication errors
       if (error instanceof Error && error.message.includes('session')) {
@@ -78,7 +79,7 @@ export function useEnhancedQuery<T = any>({
 
   // Real-time subscription
   useEffect(() => {
-    if (!enableRealtime || !realtimeTable) return;
+    if (!IS_SUPABASE_CONFIGURED || !enableRealtime || !realtimeTable) return;
 
     const channel = supabase
       .channel(`enhanced-${realtimeTable}-${queryKey.join('-')}`)

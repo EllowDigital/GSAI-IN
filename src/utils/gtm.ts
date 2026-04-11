@@ -41,8 +41,9 @@ export const pushToDataLayer = (data: GTMEvent): void => {
     if (typeof window !== 'undefined' && window.dataLayer) {
       window.dataLayer.push(data);
 
-      // Log in development for debugging
-      if (import.meta.env.DEV) {
+      // Keep GTM debug logging opt-in to avoid main-thread noise in dev.
+      const debugGtm = import.meta.env.VITE_ENABLE_GTM_DEBUG === 'true';
+      if (import.meta.env.DEV && debugGtm) {
         console.log('📊 GTM Event:', data);
       }
     } else {

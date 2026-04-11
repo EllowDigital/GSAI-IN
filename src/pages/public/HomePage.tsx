@@ -1,30 +1,42 @@
+import { lazy, Suspense } from 'react';
 import Seo from '@/components/seo/Seo';
-import CompetitionResultsSection from '@/components/home/CompetitionResultsSection';
-import UpcomingCompetitionsSection from '@/components/home/UpcomingCompetitionsSection';
 import Navbar from '@/components/layout/Navbar';
 
 import HeroSection from '@/components/home/HeroSection';
 import AboutSection from '@/components/home/AboutSection';
-import FounderSection from '@/components/home/FounderSection';
-import ProgramsSection from '@/components/home/ProgramsSection';
-import CorporateSection from '@/components/home/CorporateSection';
-import AchievementSection from '@/components/home/AchievementSection';
-import TestimonialSection from '@/components/home/TestimonialSection';
-
-import EventsSection from '@/components/home/EventsSection';
-import GallerySection from '@/components/home/GallerySection';
-
-import NewsSection from '@/components/home/NewsSection';
-import BlogNewsSection from '@/components/home/BlogNewsSection';
-
-import FaqSection, { faqs as faqData } from '@/components/home/FaqSection';
-import ContactSection from '@/components/home/ContactSection';
-import LocationSection from '@/components/home/LocationSection';
-
-import RecognitionAffiliationsSection from '@/components/home/RecognitionAffiliationsSection';
 import FooterSection from '@/components/layout/FooterSection';
 import FloatingEnrollButton from '@/components/common/FloatingEnrollButton';
 import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
+import { faqs as faqData } from '@/components/home/FaqSection';
+
+const FounderSection = lazy(() => import('@/components/home/FounderSection'));
+const ProgramsSection = lazy(() => import('@/components/home/ProgramsSection'));
+const AchievementSection = lazy(
+  () => import('@/components/home/AchievementSection')
+);
+const CompetitionResultsSection = lazy(
+  () => import('@/components/home/CompetitionResultsSection')
+);
+const UpcomingCompetitionsSection = lazy(
+  () => import('@/components/home/UpcomingCompetitionsSection')
+);
+const GallerySection = lazy(() => import('@/components/home/GallerySection'));
+const TestimonialSection = lazy(
+  () => import('@/components/home/TestimonialSection')
+);
+const EventsSection = lazy(() => import('@/components/home/EventsSection'));
+const NewsSection = lazy(() => import('@/components/home/NewsSection'));
+const BlogNewsSection = lazy(() => import('@/components/home/BlogNewsSection'));
+const FaqSection = lazy(() => import('@/components/home/FaqSection'));
+const LocationSection = lazy(() => import('@/components/home/LocationSection'));
+const ContactSection = lazy(() => import('@/components/home/ContactSection'));
+const RecognitionAffiliationsSection = lazy(
+  () => import('@/components/home/RecognitionAffiliationsSection')
+);
+
+function SectionSkeleton() {
+  return <div className="min-h-[220px] w-full" aria-hidden="true" />;
+}
 
 // Structured data for SEO rich snippets
 const orgStructuredData = {
@@ -601,21 +613,22 @@ export default function Index() {
       <main className="flex-1 flex flex-col gap-0" role="main">
         <HeroSection />
         <AboutSection />
-        <FounderSection />
-        <ProgramsSection />
-        {/* <CorporateSection /> */}
-        <AchievementSection />
-        <CompetitionResultsSection />
-        <UpcomingCompetitionsSection />
-        <GallerySection />
-        <TestimonialSection />
-        <EventsSection />
-        <NewsSection />
-        <BlogNewsSection />
-        <FaqSection />
-        <LocationSection />
-        <ContactSection />
-        <RecognitionAffiliationsSection />
+        <Suspense fallback={<SectionSkeleton />}>
+          <FounderSection />
+          <ProgramsSection />
+          <AchievementSection />
+          <CompetitionResultsSection />
+          <UpcomingCompetitionsSection />
+          <GallerySection />
+          <TestimonialSection />
+          <EventsSection />
+          <NewsSection />
+          <BlogNewsSection />
+          <FaqSection />
+          <LocationSection />
+          <ContactSection />
+          <RecognitionAffiliationsSection />
+        </Suspense>
       </main>
 
       {/* Footer */}

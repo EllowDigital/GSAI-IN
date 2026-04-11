@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/services/supabase/client';
-import { Session } from '@supabase/supabase-js';
+import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { toast } from '@/components/ui/sonner';
 import { AuthCelebration } from '@/components/admin/AuthCelebration';
 import type { Enums } from '@/services/supabase/types';
@@ -23,6 +23,7 @@ import {
   rememberVerifiedAdminUser,
 } from '@/services/supabase/session';
 import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
+import { recordAuthCallbackDuration } from '@/utils/authTelemetry';
 
 const ADMIN_ROLE: Enums<'app_role'> = 'admin';
 const AUTH_REQUEST_TIMEOUT_MS = 20000;
@@ -275,6 +276,51 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    let mounted = true;
+
+    const handleAuthStateUpdate = async (
+      event: AuthChangeEvent,
+      newSession: Session | null
+    ) => {
+      const startedAt =
+        typeof performance !== 'undefined' ? performance.now() : Date.now();
+
+      if (!mounted) return;
+
+      try {
+        const isAdminUser = await updateAuthState(newSession);
+        if (!mounted) return;
+
+        setIsLoading(false);
+
+        if (isAdminUser) {
+          const destination = consumeRedirectRoute();
+          if (locationRef.current.pathname.startsWith('/admin/login')) {
+            navigate(destination, { replace: true });
+          }
+        } else if (!isAdminUser && !pendingLogoutRef.current) {
+          rememberIntendedRoute();
+          clearState();
+          navigate('/admin/login', { replace: true });
+        }
+      } catch (error) {
+        if (!mounted) return;
+
+        if (isTimeoutError(error)) {
+          toast.warning('Connection is slow. Retaining current session.');
+          setIsLoading(false);
+          return;
+        }
+        console.error('Auth state listener failed', error);
+        toast.warning('Temporary auth issue detected. Keeping your session.');
+        setIsLoading(false);
+      } finally {
+        const endedAt =
+          typeof performance !== 'undefined' ? performance.now() : Date.now();
+        recordAuthCallbackDuration('admin', endedAt - startedAt, event);
+      }
+    };
+
     const initializeAuth = async (attempt = 0) => {
       try {
         const { data } = await withTimeout(
@@ -282,8 +328,10 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
           AUTH_REQUEST_TIMEOUT_MS,
           'Auth session request timed out.'
         );
+        if (!mounted) return;
         const activeSession = data.session;
         const isAdminUser = await updateAuthState(activeSession);
+        if (!mounted) return;
 
         setIsLoading(false);
 
@@ -299,6 +347,8 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
           navigate('/admin/login', { replace: true });
         }
       } catch (error) {
+        if (!mounted) return;
+
         if (isTimeoutError(error)) {
           if (attempt < INIT_AUTH_MAX_RETRIES) {
             toast.message('Admin auth is slow. Retrying...');
@@ -317,45 +367,24 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
           return;
         }
         console.error('Failed to initialize admin auth', error);
-        clearState();
-        rememberIntendedRoute();
-        navigate('/admin/login', { replace: true });
+        toast.warning(
+          'Unable to verify session right now. Retaining current state.'
+        );
+        setIsLoading(false);
       }
     };
 
     initializeAuth();
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      async (_event, newSession) => {
-        try {
-          const isAdminUser = await updateAuthState(newSession);
-          setIsLoading(false);
-
-          if (isAdminUser) {
-            const destination = consumeRedirectRoute();
-            if (locationRef.current.pathname.startsWith('/admin/login')) {
-              navigate(destination, { replace: true });
-            }
-          } else if (!isAdminUser && !pendingLogoutRef.current) {
-            rememberIntendedRoute();
-            clearState();
-            navigate('/admin/login', { replace: true });
-          }
-        } catch (error) {
-          if (isTimeoutError(error)) {
-            toast.warning('Connection is slow. Retaining current session.');
-            setIsLoading(false);
-            return;
-          }
-          console.error('Auth state listener failed', error);
-          clearState();
-          rememberIntendedRoute();
-          navigate('/admin/login', { replace: true });
-        }
+      (event, newSession) => {
+        // Avoid awaiting network calls in Supabase auth callback to prevent lock contention.
+        void handleAuthStateUpdate(event, newSession);
       }
     );
 
     return () => {
+      mounted = false;
       listener.subscription.unsubscribe();
       if (authRetryTimeoutRef.current) {
         clearTimeout(authRetryTimeoutRef.current);
@@ -433,7 +462,7 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
         throw new Error(error.message);
       }
 
-      clearPersistedSupabaseSession();
+      clearPersistedSupabaseSession('admin');
       clearState({ keepLoading: true });
       if (typeof window !== 'undefined') {
         window.sessionStorage.removeItem(POST_LOGIN_REDIRECT_KEY);

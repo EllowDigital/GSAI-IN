@@ -12,6 +12,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
 
 const quickLinks = [
   { name: 'Home', href: '/' },

@@ -100,6 +100,19 @@ const clearRuntimeCachesOnHardReload = async () => {
 // Register the service worker for PWA functionality with error handling
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
+    const runWhenIdle = (task: () => void) => {
+      if ('requestIdleCallback' in window) {
+        (
+          window as Window & {
+            requestIdleCallback: (callback: IdleRequestCallback) => number;
+          }
+        ).requestIdleCallback(() => task());
+        return;
+      }
+
+      window.setTimeout(task, 150);
+    };
+
     if (import.meta.env.DEV) {
       const registrations = await navigator.serviceWorker.getRegistrations();
       await Promise.all(
@@ -110,23 +123,30 @@ if ('serviceWorker' in navigator) {
 
     await clearRuntimeCachesOnHardReload();
 
-    navigator.serviceWorker
-      .register('/sw.js')
-      .then(async (registration) => {
-        // Proactively check for updates to ensure latest deployed assets are used.
-        await registration.update();
+    runWhenIdle(() => {
+      navigator.serviceWorker
+        .register('/sw.js')
+        .then(async (registration) => {
+          // Proactively check for updates to ensure latest deployed assets are used.
+          await registration.update();
 
-        // Tell active service worker to purge runtime caches after hard reload.
-        if (isHardReload() && navigator.serviceWorker.controller) {
-          navigator.serviceWorker.controller.postMessage({
-            type: 'PURGE_RUNTIME_CACHES',
-          });
-        }
+          // Tell active service worker to purge runtime caches after hard reload.
+          if (isHardReload() && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({
+              type: 'PURGE_RUNTIME_CACHES',
+            });
+          }
 
-        console.log('SW registered:', registration);
-      })
-      .catch((error) => {
-        console.warn('SW registration failed:', error);
-      });
+          if (
+            import.meta.env.DEV &&
+            import.meta.env.VITE_ENABLE_SW_DEBUG === 'true'
+          ) {
+            console.log('SW registered:', registration);
+          }
+        })
+        .catch((error) => {
+          console.warn('SW registration failed:', error);
+        });
+    });
   });
 }
