@@ -1,3 +1,5 @@
+import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
+
 export type EnrollmentMessageStage =
   | 'pending'
   | 'contacted'
@@ -18,7 +20,7 @@ export interface EnrollmentMessageData {
 
 const ACADEMY_NAME = 'Ghatak Sports Academy India';
 const ACADEMY_PHONE = '+91 63941 35988';
-const ACADEMY_EMAIL = 'ghatakgsai@gmail.com';
+const ACADEMY_EMAIL = ACADEMY_CONTACT_EMAIL;
 const STUDENT_PORTAL_DEFAULT_PASSWORD = 'GSAI-STUDENT-2026';
 
 const compactLines = (lines: Array<string | null | undefined | false>) =>

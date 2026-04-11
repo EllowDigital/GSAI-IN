@@ -1,5 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import webpush from 'npm:web-push@3.6.7';
+import { ACADEMY_CONTACT_EMAIL } from '../_shared/emailConfig.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -97,7 +98,7 @@ Deno.serve(async (req) => {
 
     const vapidPublicKey = Deno.env.get('WEB_PUSH_PUBLIC_KEY');
     const vapidPrivateKey = Deno.env.get('WEB_PUSH_PRIVATE_KEY');
-    const vapidSubject = Deno.env.get('WEB_PUSH_SUBJECT') || 'mailto:ghatakgsai@gmail.com';
+    const vapidSubject = Deno.env.get('WEB_PUSH_SUBJECT') || `mailto:${ACADEMY_CONTACT_EMAIL}`;
 
     if (!vapidPublicKey || !vapidPrivateKey) {
       return json(500, {

@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
 
 // --- Configuration ---
 const SITE_CONFIG = {
@@ -12,7 +13,7 @@ const SITE_CONFIG = {
     'https://ghataksportsacademy.com/assets/images/social-preview.png',
   contact: {
     phone: '+91-63941-35988',
-    email: 'ghatakgsai@gmail.com',
+    email: ACADEMY_CONTACT_EMAIL,
   },
   socials: [
     'https://www.facebook.com/ghataksportsacademy',

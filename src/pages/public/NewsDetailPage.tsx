@@ -11,6 +11,7 @@ import InternalLinksBlock from '@/components/common/InternalLinksBlock';
 import { generateArticleStructuredData } from '@/utils/seoUtils';
 import { injectContextualInternalLinks } from '@/utils/internalLinking';
 import { sanitizeHtmlForClient } from '@/utils/browserSanitizeHtml';
+import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
 
 interface NewsItem {
   id: string;
@@ -387,7 +388,7 @@ export default function NewsDetail() {
                   <p className="flex flex-col gap-1">
                     <strong className="text-white">Email:</strong>
                     <span className="hover:text-yellow-500 transition-colors">
-                      ghatakgsai@gmail.com
+                        {ACADEMY_CONTACT_EMAIL}
                     </span>
                   </p>
                   <p className="flex flex-col gap-1">

@@ -1,10 +1,11 @@
 import { supabase } from '@/services/supabase/client';
+import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
 
 /**
  * ACADEMY CONFIGURATION
  */
 const ACADEMY_NAME = 'Ghatak Sports Academy India';
-const ACADEMY_EMAIL = 'ghatakgsai@gmail.com';
+const ACADEMY_EMAIL = ACADEMY_CONTACT_EMAIL;
 const ACADEMY_PHONE = '+91 63941 35988';
 const STUDENT_PORTAL_DEFAULT_PASSWORD = 'GSAI-STUDENT-2026';
 const ACADEMY_LOGO_URL =

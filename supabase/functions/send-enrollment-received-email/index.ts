@@ -1,3 +1,9 @@
+import {
+  ACADEMY_CONTACT_EMAIL,
+  ACADEMY_NAME,
+  RESEND_DOMAIN_SENDERS,
+} from '../_shared/emailConfig.ts';
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -5,8 +11,7 @@ const corsHeaders = {
 };
 
 const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend';
-const ACADEMY_NAME = 'Ghatak Sports Academy India';
-const ACADEMY_EMAIL = 'ghatakgsai@gmail.com';
+const ACADEMY_EMAIL = ACADEMY_CONTACT_EMAIL;
 const ACADEMY_PHONE = '+91 63941 35988';
 const ACADEMY_LOGO_URL = 'https://ghataksportsacademy.com/assets/images/logo.webp';
 const ADMIN_PORTAL_URL = 'https://ghataksportsacademy.com/admin';
@@ -217,7 +222,7 @@ Deno.serve(async (req) => {
         'X-Connection-Api-Key': RESEND_API_KEY,
       },
       body: JSON.stringify({
-        from: `${ACADEMY_NAME} <noreply@ghataksportsacademy.com>`,
+        from: `${ACADEMY_NAME} <${RESEND_DOMAIN_SENDERS.onboarding}>`,
         to: [to],
         ...(cc ? { cc: [cc] } : {}),
         subject,

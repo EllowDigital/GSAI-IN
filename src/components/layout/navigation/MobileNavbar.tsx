@@ -1,3 +1,4 @@
+import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
 import React from 'react';
 import { createPortal } from 'react-dom';
 import {
@@ -210,14 +211,14 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                           </span>
                         </a>
                         <a
-                          href="mailto:ghatakgsai@gmail.com"
+                          href={`mailto:${ACADEMY_CONTACT_EMAIL}`}
                           className="flex items-center gap-3 text-gray-400 hover:text-yellow-400 transition-colors group"
                         >
                           <div className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-yellow-500 group-hover:bg-yellow-500/20 transition-colors">
                             <Mail className="w-4 h-4" />
                           </div>
                           <span className="text-sm font-medium">
-                            ghatakgsai@gmail.com
+                            {ACADEMY_CONTACT_EMAIL}
                           </span>
                         </a>
                       </div>

@@ -1,4 +1,9 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import {
+  ACADEMY_CONTACT_EMAIL,
+  ACADEMY_NAME,
+  RESEND_DOMAIN_SENDERS,
+} from '../_shared/emailConfig.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,8 +12,7 @@ const corsHeaders = {
 };
 
 const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend';
-const ACADEMY_NAME = 'Ghatak Sports Academy India';
-const ACADEMY_EMAIL = 'ghatakgsai@gmail.com';
+const ACADEMY_EMAIL = ACADEMY_CONTACT_EMAIL;
 const ACADEMY_PHONE = '+91 63941 35988';
 const ACADEMY_LOGO_URL = 'https://ghataksportsacademy.com/assets/images/logo.webp';
 
@@ -212,7 +216,7 @@ Deno.serve(async (req) => {
           'X-Connection-Api-Key': RESEND_API_KEY,
         },
         body: JSON.stringify({
-          from: `${ACADEMY_NAME} <noreply@ghataksportsacademy.com>`,
+          from: `${ACADEMY_NAME} <${RESEND_DOMAIN_SENDERS.updates}>`,
           to: [email],
           subject,
           html,

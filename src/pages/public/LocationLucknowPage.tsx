@@ -2,6 +2,7 @@ import React from 'react';
 import Seo from '@/components/seo/Seo';
 import Navbar from '@/components/layout/Navbar';
 import FooterSection from '@/components/layout/FooterSection';
+import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
 
 const lucknowStructuredData = {
   '@context': 'https://schema.org',
@@ -10,7 +11,7 @@ const lucknowStructuredData = {
   url: 'https://ghataksportsacademy.com/locations/lucknow',
   image: 'https://ghataksportsacademy.com/assets/images/logo.webp',
   telephone: '+91 63941 35988',
-  email: 'ghatakgsai@gmail.com',
+  email: ACADEMY_CONTACT_EMAIL,
   address: {
     '@type': 'PostalAddress',
     streetAddress:
