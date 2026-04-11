@@ -76,7 +76,9 @@ function getVerifierConfig(): {
   };
 }
 
-export async function verifyRequestJwt(req: Request): Promise<void> {
+export async function verifyRequestJwt(
+  req: Request
+): Promise<Record<string, unknown>> {
   const authHeader = req.headers.get('authorization') || req.headers.get('Authorization');
   const token = authHeader?.startsWith('Bearer ')
     ? authHeader.slice('Bearer '.length).trim()
@@ -93,5 +95,5 @@ export async function verifyRequestJwt(req: Request): Promise<void> {
     issuer,
   });
 
-  return payload;
+  return payload as Record<string, unknown>;
 }
