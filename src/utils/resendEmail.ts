@@ -20,6 +20,22 @@ interface SendEmailParams {
   senderPurpose?: keyof typeof RESEND_DOMAIN_SENDERS;
 }
 
+function isUnauthorizedInvokeError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false;
+
+  const maybeError = error as { message?: unknown; context?: unknown; status?: unknown };
+  if (typeof maybeError.status === 'number' && maybeError.status === 401) {
+    return true;
+  }
+
+  if (typeof maybeError.message === 'string' && /\b401\b|unauthorized/i.test(maybeError.message)) {
+    return true;
+  }
+
+  const context = maybeError.context as { status?: unknown } | undefined;
+  return typeof context?.status === 'number' && context.status === 401;
+}
+
 // ── UTILITY FUNCTIONS ──
 
 export function escapeHtml(value: string): string {
@@ -136,9 +152,20 @@ export async function sendEmail(params: SendEmailParams): Promise<boolean> {
       replyTo: params.replyTo?.trim(),
     };
 
-    const { data, error } = await supabase.functions.invoke('send-email', {
+    let { data, error } = await supabase.functions.invoke('send-email', {
       body: payload,
     });
+
+    if (error && isUnauthorizedInvokeError(error)) {
+      const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+      if (!refreshError && refreshed.session) {
+        const retryResult = await supabase.functions.invoke('send-email', {
+          body: payload,
+        });
+        data = retryResult.data;
+        error = retryResult.error;
+      }
+    }
 
     if (error) {
       console.error('Email send error:', error);
