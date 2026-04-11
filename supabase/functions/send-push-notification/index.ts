@@ -1,6 +1,10 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import webpush from 'npm:web-push@3.6.7';
 import { ACADEMY_CONTACT_EMAIL } from '../_shared/emailConfig.ts';
+import {
+  RequestAuthError,
+  requireAdminUser,
+} from '../_shared/adminAuth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -48,35 +52,14 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      return json(401, { error: 'Unauthorized' });
-    }
-
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_ANON_KEY')!,
-      { global: { headers: { Authorization: authHeader } } }
-    );
-
-    const {
-      data: { user },
-      error: userError,
-    } = await supabaseClient.auth.getUser();
-
-    if (userError || !user) {
-      return json(401, { error: 'Unauthorized' });
-    }
-
-    const { data: roleData } = await supabaseClient
-      .from('user_roles')
-      .select('id')
-      .eq('user_id', user.id)
-      .eq('role', 'admin')
-      .maybeSingle();
-
-    if (!roleData) {
-      return json(403, { error: 'Admin access required' });
+    let userId = '';
+    try {
+      userId = await requireAdminUser(req);
+    } catch (error) {
+      if (error instanceof RequestAuthError) {
+        return json(error.status, { error: error.message });
+      }
+      return json(500, { error: 'Auth verification failed' });
     }
 
     const body = (await req.json()) as SendPushBody;
@@ -216,7 +199,7 @@ Deno.serve(async (req) => {
 
     await supabaseAdmin.from('push_notification_delivery_logs').insert({
       portal_scope: body.portal_scope || null,
-      triggered_by: user.id,
+      triggered_by: userId,
       target_user_id: body.auth_user_id || null,
       total_targets: targets.length,
       sent_count: sent,

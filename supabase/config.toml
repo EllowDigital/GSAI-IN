@@ -6,6 +6,18 @@ verify_jwt = false
 [functions.reset-student-password]
 verify_jwt = false
 
+[functions.delete-student-account]
+verify_jwt = false
+
+[functions.save-push-subscription]
+verify_jwt = false
+
+[functions.send-push-notification]
+verify_jwt = false
+
+[functions.send-bulk-announcement]
+verify_jwt = false
+
 [functions.send-email-smoke-test]
 verify_jwt = true
 
