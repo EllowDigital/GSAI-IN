@@ -1,5 +1,8 @@
 import { supabase } from '@/services/supabase/client';
-import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
+import {
+  ACADEMY_CONTACT_EMAIL,
+  RESEND_DOMAIN_SENDERS,
+} from '@/config/contact';
 
 /**
  * ACADEMY CONFIGURATION
@@ -17,6 +20,7 @@ interface SendEmailParams {
   html?: string;
   text?: string;
   replyTo?: string;
+  senderPurpose?: keyof typeof RESEND_DOMAIN_SENDERS;
 }
 
 // ── UTILITY FUNCTIONS ──

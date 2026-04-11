@@ -40,6 +40,7 @@ interface EmailRequest {
   html?: string
   text?: string
   replyTo?: string
+  senderPurpose?: 'automated' | 'onboarding' | 'updates'
 }
 
 interface ApiErrorResponse {
@@ -126,6 +127,10 @@ function sanitizeHeaderValue(value: string): string {
 
 function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+}
+
+function isValidSenderPurpose(value: unknown): value is 'automated' | 'onboarding' | 'updates' {
+  return value === 'automated' || value === 'onboarding' || value === 'updates'
 }
 
 function enforceRateLimit(key: string): boolean {
@@ -284,8 +289,18 @@ Deno.serve(async (req) => {
       return errorResponse(400, 'invalid_reply_to', 'replyTo email is invalid', origin)
     }
 
+    const senderPurpose = body.senderPurpose ?? 'automated'
+    if (!isValidSenderPurpose(senderPurpose)) {
+      return errorResponse(
+        400,
+        'invalid_sender_purpose',
+        'senderPurpose must be one of: automated, onboarding, updates',
+        origin
+      )
+    }
+
     const text = typeof body.text === 'string' ? body.text : ''
-    const fromAddress = getResendSenderAddress('automated')
+    const fromAddress = getResendSenderAddress(senderPurpose)
 
     const htmlContent = body.html && body.html.trim().length > 0
       ? body.html
