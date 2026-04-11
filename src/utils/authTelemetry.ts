@@ -51,7 +51,10 @@ const writeCounters = (counters: AuthTelemetryCounters) => {
   if (typeof window === 'undefined') return;
 
   try {
-    window.localStorage.setItem(TELEMETRY_STORAGE_KEY, JSON.stringify(counters));
+    window.localStorage.setItem(
+      TELEMETRY_STORAGE_KEY,
+      JSON.stringify(counters)
+    );
   } catch {
     // Ignore storage quota or privacy mode failures.
   }

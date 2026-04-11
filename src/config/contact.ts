@@ -1,4 +1,6 @@
-const getRequiredViteEnv = (key: 'VITE_ACADEMY_CONTACT_EMAIL' | 'VITE_ADMIN_CC_EMAIL') => {
+const getRequiredViteEnv = (
+  key: 'VITE_ACADEMY_CONTACT_EMAIL' | 'VITE_ADMIN_CC_EMAIL'
+) => {
   const value = import.meta.env[key]?.trim();
 
   if (!value) {

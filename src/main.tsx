@@ -137,7 +137,10 @@ if ('serviceWorker' in navigator) {
             });
           }
 
-          if (import.meta.env.DEV && import.meta.env.VITE_ENABLE_SW_DEBUG === 'true') {
+          if (
+            import.meta.env.DEV &&
+            import.meta.env.VITE_ENABLE_SW_DEBUG === 'true'
+          ) {
             console.log('SW registered:', registration);
           }
         })

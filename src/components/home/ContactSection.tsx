@@ -264,11 +264,7 @@ export default function ContactSection() {
                   name="_subject"
                   value="New Contact Form Submission - Ghatak Sports Academy"
                 />
-                <input
-                  type="hidden"
-                  name="_cc"
-                  value={ADMIN_CC_EMAIL}
-                />
+                <input type="hidden" name="_cc" value={ADMIN_CC_EMAIL} />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-2">

@@ -160,9 +160,11 @@ const App = () => {
       }
 
       if ('requestIdleCallback' in window) {
-        const idleId = (window as Window & { requestIdleCallback: (callback: IdleRequestCallback) => number }).requestIdleCallback(
-          () => task()
-        );
+        const idleId = (
+          window as Window & {
+            requestIdleCallback: (callback: IdleRequestCallback) => number;
+          }
+        ).requestIdleCallback(() => task());
         return () => {
           if ('cancelIdleCallback' in window) {
             (

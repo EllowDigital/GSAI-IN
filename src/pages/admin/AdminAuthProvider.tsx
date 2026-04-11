@@ -367,7 +367,9 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
           return;
         }
         console.error('Failed to initialize admin auth', error);
-        toast.warning('Unable to verify session right now. Retaining current state.');
+        toast.warning(
+          'Unable to verify session right now. Retaining current state.'
+        );
         setIsLoading(false);
       }
     };

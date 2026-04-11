@@ -209,7 +209,9 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
           }
           toast.error('Student portal is responding slowly. Please try again.');
         } else {
-          toast.warning('Temporary auth issue detected. Keeping your current session.');
+          toast.warning(
+            'Temporary auth issue detected. Keeping your current session.'
+          );
         }
       } finally {
         if (mounted) setIsLoading(false);

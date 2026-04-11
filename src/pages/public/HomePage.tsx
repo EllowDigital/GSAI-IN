@@ -26,9 +26,7 @@ const TestimonialSection = lazy(
 );
 const EventsSection = lazy(() => import('@/components/home/EventsSection'));
 const NewsSection = lazy(() => import('@/components/home/NewsSection'));
-const BlogNewsSection = lazy(
-  () => import('@/components/home/BlogNewsSection')
-);
+const BlogNewsSection = lazy(() => import('@/components/home/BlogNewsSection'));
 const FaqSection = lazy(() => import('@/components/home/FaqSection'));
 const LocationSection = lazy(() => import('@/components/home/LocationSection'));
 const ContactSection = lazy(() => import('@/components/home/ContactSection'));

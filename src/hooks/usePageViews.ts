@@ -7,7 +7,8 @@ import { useLocation } from 'react-router-dom';
 export function usePageViews() {
   const location = useLocation();
   const debugPageViews =
-    import.meta.env.DEV && import.meta.env.VITE_ENABLE_PAGEVIEW_DEBUG === 'true';
+    import.meta.env.DEV &&
+    import.meta.env.VITE_ENABLE_PAGEVIEW_DEBUG === 'true';
 
   useEffect(() => {
     // Defer analytics work slightly to keep navigation transitions responsive.

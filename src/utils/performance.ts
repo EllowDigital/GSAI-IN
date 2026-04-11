@@ -147,7 +147,10 @@ export const performanceMonitor = new PerformanceMonitor();
 
 // Utility functions
 export const reportWebVitals = (metric: any) => {
-  if (import.meta.env.DEV && import.meta.env.VITE_ENABLE_PERF_DEBUG === 'true') {
+  if (
+    import.meta.env.DEV &&
+    import.meta.env.VITE_ENABLE_PERF_DEBUG === 'true'
+  ) {
     console.log('📊 Web Vitals:', metric);
   }
   // Send to analytics service
