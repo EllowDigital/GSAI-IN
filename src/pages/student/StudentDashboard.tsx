@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect } from 'react';
 import { useStudentAuth } from './StudentAuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/services/supabase/client';
+import { studentSupabase as supabase } from '@/services/supabase/studentClient';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

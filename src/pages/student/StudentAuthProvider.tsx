@@ -6,7 +6,7 @@ import React, {
   useRef,
 } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { supabase } from '@/services/supabase/client';
+import { studentSupabase } from '@/services/supabase/studentClient';
 import { Session } from '@supabase/supabase-js';
 import { AuthCelebration } from '@/components/admin/AuthCelebration';
 import { clearPersistedSupabaseSession } from '@/services/supabase/session';
@@ -100,7 +100,7 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
     async (userId: string): Promise<StudentProfile | null> => {
       try {
         const response = await withTimeout(
-          supabase
+          studentSupabase
             .from('student_portal_accounts')
             .select('student_id, login_id, students(name, program)')
             .eq('auth_user_id', userId)
@@ -146,7 +146,7 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
     const initializeAuth = async () => {
       try {
         const { data } = await withTimeout(
-          supabase.auth.getSession(),
+          studentSupabase.auth.getSession(),
           AUTH_TIMEOUT_MS,
           'Loading student session timed out.'
         );
@@ -261,6 +261,7 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
 
     // Listen for auth changes (login/logout from other tabs, token refreshes)
     const { data: listener } = supabase.auth.onAuthStateChange(
+    const { data: listener } = studentSupabase.auth.onAuthStateChange(
       (_event, newSession) => {
         // Avoid awaiting long work in Supabase callback to reduce auth lock contention.
         void handleAuthStateUpdate(newSession);
@@ -294,7 +295,7 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
       const email = `${loginId.toLowerCase().trim()}@student.gsai.app`;
 
       const response = await withTimeout(
-        supabase.auth.signInWithPassword({ email, password }),
+        studentSupabase.auth.signInWithPassword({ email, password }),
         AUTH_TIMEOUT_MS,
         'Login request timed out. Please check your connection and try again.'
       );
@@ -341,9 +342,10 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
 
     try {
       const { error } = await supabase.auth.signOut();
+      const { error } = await studentSupabase.auth.signOut();
       if (error) throw error;
 
-      clearPersistedSupabaseSession();
+      clearPersistedSupabaseSession('student');
       setSession(null);
       setProfile(null);
       cacheStudentProfile(null);

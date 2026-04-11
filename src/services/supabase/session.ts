@@ -1,6 +1,7 @@
 import {
   ADMIN_SESSION_STORAGE_KEY,
   ADMIN_VERIFIED_USER_STORAGE_KEY,
+  STUDENT_SESSION_STORAGE_KEY,
   SUPABASE_PROJECT_ID,
 } from './constants';
 
@@ -22,19 +23,41 @@ const getStorage = (storageType: 'localStorage' | 'sessionStorage') => {
 
 export const getSupabaseAuthStorage = () => getStorage('localStorage');
 
-export const clearPersistedSupabaseSession = () => {
+type SupabaseSessionScope = 'admin' | 'student' | 'all';
+
+export const clearPersistedSupabaseSession = (
+  scope: SupabaseSessionScope = 'all'
+) => {
   if (typeof window === 'undefined') return;
 
   const storages = [window.localStorage, window.sessionStorage];
   const prefix = SUPABASE_PROJECT_ID ? `sb-${SUPABASE_PROJECT_ID}` : 'sb-';
+  const removableKeys = new Set<string>();
+  const removableLockKeys = new Set<string>();
+
+  if (scope === 'all' || scope === 'admin') {
+    removableKeys.add(ADMIN_SESSION_STORAGE_KEY);
+    removableKeys.add(ADMIN_VERIFIED_USER_STORAGE_KEY);
+    removableLockKeys.add(`lock:${ADMIN_SESSION_STORAGE_KEY}`);
+  }
+
+  if (scope === 'all' || scope === 'student') {
+    removableKeys.add(STUDENT_SESSION_STORAGE_KEY);
+    removableLockKeys.add(`lock:${STUDENT_SESSION_STORAGE_KEY}`);
+  }
 
   storages.forEach((storage) => {
     try {
-      storage.removeItem(ADMIN_SESSION_STORAGE_KEY);
-      storage.removeItem(ADMIN_VERIFIED_USER_STORAGE_KEY);
+      removableKeys.forEach((key) => storage.removeItem(key));
+      removableLockKeys.forEach((key) => storage.removeItem(key));
 
       Object.keys(storage).forEach((key) => {
-        if (key.startsWith(prefix) || key.includes('supabase.auth')) {
+        if (
+          (scope === 'all' && key.startsWith(prefix)) ||
+          (scope === 'all' && key.includes('supabase.auth')) ||
+          removableKeys.has(key) ||
+          removableLockKeys.has(key)
+        ) {
           storage.removeItem(key);
         }
       });
