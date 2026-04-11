@@ -119,6 +119,21 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
     };
   }, [location.pathname, location.search]);
 
+  useEffect(() => {
+    if (!authAnimation) return;
+
+    // Failsafe: once route navigation completes after auth, close the overlay promptly.
+    if (
+      authAnimation.type === 'login' &&
+      location.pathname.startsWith('/admin/dashboard')
+    ) {
+      const closeAfterNavigation = setTimeout(() => {
+        setAuthAnimation(null);
+      }, 500);
+      return () => clearTimeout(closeAfterNavigation);
+    }
+  }, [authAnimation, location.pathname]);
+
   const rememberIntendedRoute = useCallback(() => {
     if (typeof window === 'undefined') return;
 
@@ -391,6 +406,7 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
       }
       if (authAnimationTimeoutRef.current) {
         clearTimeout(authAnimationTimeoutRef.current);
+        authAnimationTimeoutRef.current = null;
       }
     };
   }, [navigate, rememberIntendedRoute]);
