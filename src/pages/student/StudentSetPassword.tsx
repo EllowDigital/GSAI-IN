@@ -22,6 +22,7 @@ import {
 import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 import { isTimeoutError, withTimeout } from '@/utils/withTimeout';
 import { useStudentAuth } from './StudentAuthContext';
+import Seo from '@/components/seo/Seo';
 
 const SESSION_CHECK_TIMEOUT_MS = 10000;
 const PASSWORD_UPDATE_TIMEOUT_MS = 15000;
@@ -164,6 +165,13 @@ export default function StudentSetPassword() {
   // Main Render
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-slate-100 to-indigo-50/80 px-4 py-8 font-sans selection:bg-primary/20">
+      <Seo
+        title="Set Password | GSAI Student Portal"
+        description="Secure password setup for the Ghatak Sports Academy India student portal."
+        canonical="/student/set-password"
+        noIndex
+        noFollow
+      />
       <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="rounded-[2rem] border border-border/50 bg-background/80 p-6 sm:p-10 shadow-2xl shadow-indigo-500/5 backdrop-blur-xl">
           {/* Header */}

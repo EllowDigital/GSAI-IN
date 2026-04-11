@@ -14,6 +14,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Seo from '@/components/seo/Seo';
 
 // Memoized to prevent unnecessary re-renders when the user types in the form inputs.
 const BrandingPanel = React.memo(() => (
@@ -69,6 +70,20 @@ BrandingPanel.displayName = 'BrandingPanel';
 export default function StudentLogin() {
   const { signIn, isLoading, isAuthenticated } = useStudentAuth();
 
+  const studentPortalStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Ghatak Sports Academy Student Portal Login',
+    url: 'https://ghataksportsacademy.com/student/login',
+    description:
+      'Official student portal login page for Ghatak Sports Academy India.',
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'Ghatak Sports Academy India',
+      url: 'https://ghataksportsacademy.com',
+    },
+  };
+
   const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -104,6 +119,19 @@ export default function StudentLogin() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-indigo-50/80 font-sans text-slate-900 selection:bg-primary/20">
+      <Seo
+        title="Ghatak Sports Academy Student Portal Login | GSAI"
+        description="Login to the official Ghatak Sports Academy India student portal to view progress, fees, events, competitions, and announcements."
+        canonical="/student/login"
+        keywords={[
+          'ghatak sports academy student portal',
+          'ghatak student login',
+          'ghatak sports academy login',
+          'gsai student portal',
+          'ghatak sports academy student dashboard',
+        ]}
+        structuredData={[studentPortalStructuredData]}
+      />
       <div className="mx-auto grid min-h-screen w-full max-w-7xl items-center gap-8 px-4 py-8 sm:px-6 lg:grid-cols-2 lg:px-12">
         {/* Left Side: Static Branding */}
         <BrandingPanel />

@@ -179,7 +179,7 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                       className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-gradient-to-r from-yellow-500 to-red-600 text-white text-base font-bold shadow-lg shadow-orange-500/20 active:scale-[0.98] transition-transform hover:shadow-orange-500/40"
                       role="menuitem"
                     >
-                      🥋 <span>Enroll Now</span>
+                      🥋 <span>Enroll at Ghatak Sports Academy</span>
                     </Link>
 
                     <Link

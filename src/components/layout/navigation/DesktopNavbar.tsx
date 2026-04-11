@@ -66,10 +66,12 @@ export function DesktopNavbar() {
           <Link
             to="/enroll"
             className="relative overflow-hidden group py-2 px-6 h-10 rounded-full flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-red-600 text-white shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all duration-300 hover:-translate-y-0.5"
-            aria-label="Enroll at GSAI"
+            aria-label="Enroll at Ghatak Sports Academy"
           >
             <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer"></span>
-            <span className="font-bold text-sm tracking-wide">Enroll Now</span>
+            <span className="font-bold text-sm tracking-wide">
+              Enroll at Ghatak Sports Academy
+            </span>
           </Link>
         </div>
       </div>
