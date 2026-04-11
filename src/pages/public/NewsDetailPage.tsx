@@ -388,7 +388,7 @@ export default function NewsDetail() {
                   <p className="flex flex-col gap-1">
                     <strong className="text-white">Email:</strong>
                     <span className="hover:text-yellow-500 transition-colors">
-                        {ACADEMY_CONTACT_EMAIL}
+                      {ACADEMY_CONTACT_EMAIL}
                     </span>
                   </p>
                   <p className="flex flex-col gap-1">

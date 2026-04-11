@@ -155,12 +155,12 @@ export default function FooterSection() {
                       <Mail className="w-4 h-4 text-yellow-500" />
                     </div>
                     <div>
-                        <a
-                          href={`mailto:${ACADEMY_CONTACT_EMAIL}`}
-                          className="text-gray-300 hover:text-yellow-400 transition-colors duration-300 text-sm font-medium"
-                        >
-                          {ACADEMY_CONTACT_EMAIL}
-                        </a>
+                      <a
+                        href={`mailto:${ACADEMY_CONTACT_EMAIL}`}
+                        className="text-gray-300 hover:text-yellow-400 transition-colors duration-300 text-sm font-medium"
+                      >
+                        {ACADEMY_CONTACT_EMAIL}
+                      </a>
                     </div>
                   </div>
 
