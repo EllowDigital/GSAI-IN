@@ -3,7 +3,6 @@ import {
   ACADEMY_NAME,
   getResendSenderAddress,
 } from '../_shared/emailConfig.ts';
-import { verifyRequestJwt } from '../_shared/requestAuth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -229,17 +228,6 @@ Deno.serve(async (req) => {
   if (!RESEND_API_KEY || !ADMIN_EMAIL || !ADMIN_CC) {
     return new Response(JSON.stringify({ error: 'Server misconfigured' }), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
-
-  try {
-    await verifyRequestJwt(req);
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : 'Unauthorized request';
-    return new Response(JSON.stringify({ error: message }), {
-      status: 401,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }

@@ -27,7 +27,7 @@ export function usePageViews() {
   useEffect(() => {
     // Avoid forcing layout if already at top.
     if (typeof window !== 'undefined' && window.scrollY > 2) {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     }
   }, [location.pathname]);
 }

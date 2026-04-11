@@ -18,9 +18,15 @@ export function useOptimizedQuery<TData = any, TError = Error>(
     retries?: number;
   }
 ): UseQueryResult<TData, TError> {
-  const { cacheKey, cacheDuration, retries, ...queryOptions } = options || {};
+  const {
+    cacheKey,
+    cacheDuration,
+    retries,
+    enabled: userEnabled,
+    ...queryOptions
+  } = options || {};
   const shouldEnableSupabaseQuery =
-    (queryOptions.enabled ?? true) && IS_SUPABASE_CONFIGURED;
+    (userEnabled ?? true) && IS_SUPABASE_CONFIGURED;
 
   return useQuery({
     queryKey,
@@ -34,8 +40,8 @@ export function useOptimizedQuery<TData = any, TError = Error>(
     gcTime: 1000 * 60 * 30, // 30 minutes
     refetchOnWindowFocus: false,
     retry: 2,
-    enabled: shouldEnableSupabaseQuery,
     ...queryOptions,
+    enabled: shouldEnableSupabaseQuery,
   });
 }
 
