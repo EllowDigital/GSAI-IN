@@ -4,8 +4,9 @@ CREATE TABLE IF NOT EXISTS public.admin_users (
   email TEXT NOT NULL UNIQUE,
   created_at TIMESTAMPTZ DEFAULT now()
 );
-INSERT INTO public.admin_users (email) VALUES ('ghatakgsai@gmail.com')
-ON CONFLICT (email) DO NOTHING;
+-- Seed admin users manually per environment (example):
+-- INSERT INTO public.admin_users (email) VALUES ('admin@example.com')
+-- ON CONFLICT (email) DO NOTHING;
 -- 2. Blogs table
 CREATE TABLE IF NOT EXISTS public.blogs (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
