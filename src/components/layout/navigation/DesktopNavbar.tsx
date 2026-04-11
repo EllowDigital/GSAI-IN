@@ -69,7 +69,9 @@ export function DesktopNavbar() {
             aria-label="Enroll at Ghatak Sports Academy"
           >
             <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer"></span>
-            <span className="font-bold text-sm tracking-wide">Enroll at Ghatak Sports Academy</span>
+            <span className="font-bold text-sm tracking-wide">
+              Enroll at Ghatak Sports Academy
+            </span>
           </Link>
         </div>
       </div>
