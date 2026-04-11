@@ -166,6 +166,7 @@ const AllCompetitionsPage: React.FC = () => {
       <Seo
         title="All Competitions - Ghatak Sports Academy India"
         description="Browse all competitions, tournaments and championships at Ghatak Sports Academy India. Register via Student Portal to participate."
+        canonical="/competitions"
         keywords={[
           'martial arts competitions',
           'karate tournament',

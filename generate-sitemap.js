@@ -103,8 +103,6 @@ const marketingPages = [
   { url: '/blogs', changefreq: 'daily', priority: 0.7 },
   { url: '/gallery', changefreq: 'weekly', priority: 0.6 },
   { url: '/competitions', changefreq: 'weekly', priority: 0.7 },
-  { url: '/contact', changefreq: 'monthly', priority: 0.6 },
-  { url: '/corporate', changefreq: 'monthly', priority: 0.6 },
   { url: '/locations/lucknow', changefreq: 'monthly', priority: 0.5 },
   { url: '/enroll', changefreq: 'weekly', priority: 1.0 },
   { url: '/student/login', changefreq: 'weekly', priority: 0.7 },
@@ -173,8 +171,6 @@ const staticRouteOverrides = {
   '/blogs': { changefreq: 'daily', priority: 0.7 },
   '/gallery': { changefreq: 'weekly', priority: 0.6 },
   '/competitions': { changefreq: 'weekly', priority: 0.7 },
-  '/contact': { changefreq: 'monthly', priority: 0.6 },
-  '/corporate': { changefreq: 'monthly', priority: 0.6 },
   '/locations/lucknow': { changefreq: 'monthly', priority: 0.5 },
   '/enroll': { changefreq: 'weekly', priority: 1.0 },
   '/student/login': { changefreq: 'weekly', priority: 0.7 },
@@ -186,6 +182,9 @@ const shouldIncludeStaticRoute = (url) => {
   if (!url || !url.startsWith('/')) return false;
   if (url.includes('*') || url.includes(':')) return false;
   if (url.startsWith('/admin')) return false;
+
+  // Alias routes resolve to sections on home and should not be indexed separately.
+  if (url === '/contact' || url === '/corporate') return false;
 
   // Skip legacy redirect aliases to avoid duplicate indexing.
   if (url === '/pages/privacy.html' || url === '/pages/terms.html') return false;

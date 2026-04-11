@@ -21,6 +21,16 @@ SITE_URL = "${DEPLOY_PRIME_URL}"
 LOVABLE_DEV_SERVER = "true"
 
 [[redirects]]
+from = "/contact"
+to = "/"
+status = 301
+
+[[redirects]]
+from = "/corporate"
+to = "/"
+status = 301
+
+[[redirects]]
 from = "/*"
 to = "/index.html"
 status = 200

@@ -152,6 +152,7 @@ export default function AllGalleryPage() {
       <Seo
         title="Gallery - Academy Moments"
         description="Explore our complete collection of academy moments, training sessions, events, and achievements. Discover the energy and community spirit that defines our academy."
+        canonical="/gallery"
         keywords={[
           'martial arts academy',
           'gallery',

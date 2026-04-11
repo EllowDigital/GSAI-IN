@@ -85,6 +85,7 @@ const AllNewsPage: React.FC = () => {
       <Seo
         title="All News - Ghatak Sports Academy India"
         description="Read all the latest news, announcements, and achievements from Ghatak Sports Academy India. Stay updated with our martial arts community updates."
+        canonical="/news"
         keywords={[
           'martial arts news',
           'sports academy news',
