@@ -26,7 +26,7 @@ const HomePageWrapper: React.FC = () => {
   // Handle hash scrolling after loading
   useEffect(() => {
     if (!isLoading && location.hash) {
-      const timer = setTimeout(() => {
+      const frame = window.requestAnimationFrame(() => {
         const element = document.querySelector(location.hash);
         if (element) {
           const offsetTop =
@@ -36,8 +36,8 @@ const HomePageWrapper: React.FC = () => {
             behavior: 'smooth',
           });
         }
-      }, 500); // Small delay to ensure content is rendered
-      return () => clearTimeout(timer);
+      });
+      return () => window.cancelAnimationFrame(frame);
     }
   }, [isLoading, location.hash]);
 
@@ -53,7 +53,7 @@ const HomePageWrapper: React.FC = () => {
     const targetHash = sectionMap[location.pathname];
     if (!targetHash) return;
 
-    const timer = setTimeout(() => {
+    const frame = window.requestAnimationFrame(() => {
       const element = document.querySelector(targetHash);
       if (!element) return;
 
@@ -63,9 +63,9 @@ const HomePageWrapper: React.FC = () => {
         top: offsetTop,
         behavior: 'smooth',
       });
-    }, 500);
+    });
 
-    return () => clearTimeout(timer);
+    return () => window.cancelAnimationFrame(frame);
   }, [isLoading, location.pathname]);
 
   useEffect(() => {
@@ -97,8 +97,7 @@ const HomePageWrapper: React.FC = () => {
           console.warn('Auth session check failed:', err);
         }
       } finally {
-        // Add a small delay to prevent flash of loading state
-        setTimeout(() => setIsLoading(false), 800);
+        setIsLoading(false);
       }
     };
 
