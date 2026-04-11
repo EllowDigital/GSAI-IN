@@ -23,12 +23,19 @@ interface SendEmailParams {
 function isUnauthorizedInvokeError(error: unknown): boolean {
   if (!error || typeof error !== 'object') return false;
 
-  const maybeError = error as { message?: unknown; context?: unknown; status?: unknown };
+  const maybeError = error as {
+    message?: unknown;
+    context?: unknown;
+    status?: unknown;
+  };
   if (typeof maybeError.status === 'number' && maybeError.status === 401) {
     return true;
   }
 
-  if (typeof maybeError.message === 'string' && /\b401\b|unauthorized/i.test(maybeError.message)) {
+  if (
+    typeof maybeError.message === 'string' &&
+    /\b401\b|unauthorized/i.test(maybeError.message)
+  ) {
     return true;
   }
 
@@ -157,7 +164,8 @@ export async function sendEmail(params: SendEmailParams): Promise<boolean> {
     });
 
     if (error && isUnauthorizedInvokeError(error)) {
-      const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+      const { data: refreshed, error: refreshError } =
+        await supabase.auth.refreshSession();
       if (!refreshError && refreshed.session) {
         const retryResult = await supabase.functions.invoke('send-email', {
           body: payload,
