@@ -203,6 +203,7 @@ const FormSection = ({
 
 export default function EnrollPage() {
   const [searchParams] = useSearchParams();
+  const hasQueryParams = searchParams.toString().length > 0;
   const [activeStep, setActiveStep] = useState<number>(1);
   const [expandAllSections, setExpandAllSections] = useState(false);
   const readinessRef = useRef({ step1: false, step2: false });
@@ -217,6 +218,54 @@ export default function EnrollPage() {
   const step1Completed = isStep1Ready(form);
   const step2Completed = isStep2Ready(form);
   const step3Completed = isStep3Ready(form);
+
+  const enrollKeywords = [
+    'ghatak',
+    'ghatak sports',
+    'ghatak sports academy',
+    'ghatak sports academy india',
+    'ghatak sports academy admission',
+    'ghatak sports academy enroll',
+    'ghatak admissio',
+    'ghatak sports admissio',
+    'ghatak sports academy admissio',
+    'ghatak sports academy india admissio',
+    'ghatak enroll',
+    'ghatak sports enroll',
+    'ghatak sports academy india enroll',
+  ];
+
+  const enrollStructuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'EducationalOrganization',
+        '@id': 'https://ghataksportsacademy.com/#organization',
+        name: 'Ghatak Sports Academy India',
+        url: 'https://ghataksportsacademy.com',
+        email: ACADEMY_CONTACT_EMAIL,
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: 'Lucknow',
+          addressRegion: 'Uttar Pradesh',
+          addressCountry: 'IN',
+        },
+      },
+      {
+        '@type': 'SportsActivityLocation',
+        name: 'Ghatak Sports Academy India',
+        url: 'https://ghataksportsacademy.com/enroll',
+        sport: ['Martial Arts', 'Boxing', 'Grappling', 'Self Defense'],
+      },
+      {
+        '@type': 'WebPage',
+        '@id': 'https://ghataksportsacademy.com/enroll',
+        name: 'Ghatak Sports Academy Admission and Enroll',
+        url: 'https://ghataksportsacademy.com/enroll',
+        isPartOf: { '@id': 'https://ghataksportsacademy.com/#organization' },
+      },
+    ],
+  };
 
   // --- Auto-Expand Logic ---
   useEffect(() => {
@@ -365,8 +414,12 @@ export default function EnrollPage() {
     <div className="min-h-screen bg-[#050505] selection:bg-orange-500/30">
       <Navbar />
       <Seo
-        title="Secure Admission | GSAI"
-        description="Join India's premier martial arts academy."
+        title="Ghatak Sports Academy Admission and Enroll | India"
+        description="Official Ghatak Sports Academy India admission and enroll page. Apply for Boxing, Grappling, Self Defense, Fat Loss, and martial arts coaching in Lucknow."
+        canonical="/enroll"
+        keywords={enrollKeywords}
+        noIndex={hasQueryParams}
+        structuredData={[enrollStructuredData]}
       />
 
       <main className="relative pt-32 pb-20 px-4">
@@ -395,16 +448,22 @@ export default function EnrollPage() {
                     >
                       ADMISSION OPEN 2026
                     </Badge>
-                    <h1 className="text-4xl lg:text-6xl font-black text-white leading-tight">
+                    <h1 className="text-3xl lg:text-5xl font-black text-white leading-tight">
+                      Ghatak Sports Academy Admission & Enroll
+                    </h1>
+                    <h2 className="text-4xl lg:text-6xl font-black text-white leading-tight">
                       Begin Your{' '}
                       <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-600">
                         Elite
                       </span>{' '}
                       Legacy
-                    </h1>
+                    </h2>
                     <p className="text-zinc-400 text-lg leading-relaxed max-w-md">
-                      Our dynamic adaptive form makes enrollment seamless. Fill
-                      the details to trigger your evaluation.
+                      Use this official Ghatak Sports Academy India admission
+                      portal to enroll in your preferred discipline. If you
+                      searched for terms like ghatak sports academy admission,
+                      ghatak sports academy enroll, or even common misspellings
+                      like ghatak admissio, you are on the right page.
                     </p>
                   </div>
                   <div className="grid grid-cols-2 gap-3">

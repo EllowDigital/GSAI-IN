@@ -53,6 +53,12 @@ const resolveUrl = (path: string | undefined): string => {
   return `${SITE_CONFIG.url.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
 };
 
+const resolveDefaultCanonical = (): string => {
+  if (typeof window === 'undefined') return SITE_CONFIG.url;
+  const pathname = window.location.pathname || '/';
+  return resolveUrl(pathname);
+};
+
 const buildBreadcrumbs = (url: string) => {
   const urlObj = new URL(url);
   const segments = urlObj.pathname.split('/').filter(Boolean);
@@ -103,7 +109,9 @@ export const Seo = memo(
     noIndex = false,
     noFollow = false,
   }: SeoProps) => {
-    const fullCanonicalUrl = resolveUrl(canonical);
+    const fullCanonicalUrl = canonical
+      ? resolveUrl(canonical)
+      : resolveDefaultCanonical();
     const fullImageUrl = image ? resolveUrl(image) : SITE_CONFIG.defaultImage;
     const robotsContent = `${noIndex ? 'noindex' : 'index'}, ${noFollow ? 'nofollow' : 'follow'}`;
 

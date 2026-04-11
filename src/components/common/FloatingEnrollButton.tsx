@@ -31,11 +31,11 @@ export default function FloatingEnrollButton() {
           <Link
             to="/enroll"
             className="group flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-yellow-500 to-red-600 text-white font-bold text-sm shadow-2xl shadow-orange-500/30 hover:shadow-orange-500/50 hover:-translate-y-0.5 transition-all duration-300 ring-2 ring-white/20"
-            aria-label="Enroll at GSAI"
+            aria-label="Enroll at Ghatak Sports Academy"
           >
             <span className="text-lg">🥋</span>
-            <span className="hidden sm:inline">Join GSAI</span>
-            <span className="sm:hidden">Enroll</span>
+            <span className="hidden sm:inline">Enroll at Ghatak Sports Academy</span>
+            <span className="sm:hidden">Enroll at GSA</span>
           </Link>
         </motion.div>
       )}

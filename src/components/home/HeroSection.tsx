@@ -431,7 +431,7 @@ export default function HeroSection() {
             >
               <span className="absolute inset-0 w-full h-full -mt-1 rounded-xl opacity-30 bg-gradient-to-b from-transparent via-transparent to-black"></span>
               <span className="relative flex items-center gap-2">
-                🥋 Join GSAI Now
+                🥋 Enroll at Ghatak Sports Academy
               </span>
             </a>
 

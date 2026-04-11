@@ -106,7 +106,7 @@ const marketingPages = [
   { url: '/contact', changefreq: 'monthly', priority: 0.6 },
   { url: '/corporate', changefreq: 'monthly', priority: 0.6 },
   { url: '/locations/lucknow', changefreq: 'monthly', priority: 0.5 },
-  { url: '/enroll', changefreq: 'monthly', priority: 0.8 },
+  { url: '/enroll', changefreq: 'weekly', priority: 1.0 },
   { url: '/privacy', changefreq: 'yearly', priority: 0.3 },
   { url: '/terms', changefreq: 'yearly', priority: 0.3 },
 ];
@@ -175,7 +175,7 @@ const staticRouteOverrides = {
   '/contact': { changefreq: 'monthly', priority: 0.6 },
   '/corporate': { changefreq: 'monthly', priority: 0.6 },
   '/locations/lucknow': { changefreq: 'monthly', priority: 0.5 },
-  '/enroll': { changefreq: 'monthly', priority: 0.8 },
+  '/enroll': { changefreq: 'weekly', priority: 1.0 },
   '/privacy': { changefreq: 'yearly', priority: 0.3 },
   '/terms': { changefreq: 'yearly', priority: 0.3 },
 };
