@@ -222,43 +222,48 @@ export function StudentAuthProvider({ children }: { children: ReactNode }) {
 
     initializeAuth();
 
+    const handleAuthStateUpdate = async (newSession: Session | null) => {
+      if (!mounted || isSigningOut.current) return;
+
+      setSession(newSession);
+
+      if (newSession) {
+        const currentPath = window.location.pathname;
+        if (requiresPasswordSetup(newSession)) {
+          if (currentPath !== '/student/set-password') {
+            navigate('/student/set-password', { replace: true });
+          }
+          return;
+        }
+
+        const prof = await loadProfile(newSession.user.id);
+        if (mounted) {
+          if (prof) {
+            setProfile(prof);
+
+            // Password setup completes via USER_UPDATED while still signed in.
+            // Route directly to dashboard once profile is available.
+            if (currentPath === '/student/set-password') {
+              navigate('/student/dashboard', { replace: true });
+            }
+          } else {
+            const cached = getCachedStudentProfile();
+            if (cached) {
+              setProfile(cached);
+            }
+          }
+        }
+      } else {
+        if (mounted) setProfile(null);
+        cacheStudentProfile(null);
+      }
+    };
+
     // Listen for auth changes (login/logout from other tabs, token refreshes)
     const { data: listener } = supabase.auth.onAuthStateChange(
-      async (_event, newSession) => {
-        if (!mounted || isSigningOut.current) return;
-
-        setSession(newSession);
-
-        if (newSession) {
-          const currentPath = window.location.pathname;
-          if (requiresPasswordSetup(newSession)) {
-            if (currentPath !== '/student/set-password') {
-              navigate('/student/set-password', { replace: true });
-            }
-            return; // Stop execution here if password setup is needed
-          }
-
-          const prof = await loadProfile(newSession.user.id);
-          if (mounted) {
-            if (prof) {
-              setProfile(prof);
-
-              // Password setup completes via USER_UPDATED while still signed in.
-              // Route directly to dashboard once profile is available.
-              if (currentPath === '/student/set-password') {
-                navigate('/student/dashboard', { replace: true });
-              }
-            } else {
-              const cached = getCachedStudentProfile();
-              if (cached) {
-                setProfile(cached);
-              }
-            }
-          }
-        } else {
-          if (mounted) setProfile(null);
-          cacheStudentProfile(null);
-        }
+      (_event, newSession) => {
+        // Avoid awaiting long work in Supabase callback to reduce auth lock contention.
+        void handleAuthStateUpdate(newSession);
       }
     );
 
