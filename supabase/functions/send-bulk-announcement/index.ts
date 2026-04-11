@@ -2,7 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import {
   ACADEMY_CONTACT_EMAIL,
   ACADEMY_NAME,
-  RESEND_DOMAIN_SENDERS,
+  getResendSenderAddress,
 } from '../_shared/emailConfig.ts';
 
 const corsHeaders = {
@@ -203,6 +203,7 @@ Deno.serve(async (req) => {
     let sent = 0;
     let failed = 0;
     const totalRecipients = uniqueRecipients.size;
+    const fromAddress = getResendSenderAddress('updates');
 
     for (const [, recipient] of uniqueRecipients) {
       const email = (recipient.student_email || '').toString().trim().toLowerCase();
@@ -216,7 +217,7 @@ Deno.serve(async (req) => {
           'X-Connection-Api-Key': RESEND_API_KEY,
         },
         body: JSON.stringify({
-          from: `${ACADEMY_NAME} <${RESEND_DOMAIN_SENDERS.updates}>`,
+          from: `${ACADEMY_NAME} <${fromAddress}>`,
           to: [email],
           subject,
           html,

@@ -2,7 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import {
   ACADEMY_CONTACT_EMAIL,
   ACADEMY_NAME,
-  RESEND_DOMAIN_SENDERS,
+  getResendSenderAddress,
 } from '../_shared/emailConfig.ts';
 
 function normalizeOrigin(origin: string): string | null {
@@ -290,6 +290,7 @@ Deno.serve(async (req) => {
     }
 
     const text = typeof body.text === 'string' ? body.text : ''
+    const fromAddress = getResendSenderAddress('automated')
 
     const htmlContent = body.html && body.html.trim().length > 0
       ? body.html
@@ -303,7 +304,7 @@ Deno.serve(async (req) => {
         'X-Connection-Api-Key': RESEND_API_KEY,
       },
       body: JSON.stringify({
-        from: `${ACADEMY_NAME} <${RESEND_DOMAIN_SENDERS.automated}>`,
+        from: `${ACADEMY_NAME} <${fromAddress}>`,
         to: [to],
         subject,
         html: htmlContent,

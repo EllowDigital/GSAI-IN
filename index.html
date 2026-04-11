@@ -4,6 +4,9 @@
 <head>
   <!-- ============================== -->
   <!-- 🚀 Google Tag Manager -->
+  <script>
+    const ACADEMY_CONTACT_EMAIL = 'ghatakgsai@gmail.com';
+  </script>
   <!-- ============================== -->
   <!--
     GA4 is configured INSIDE GTM (not via gtag.js) with Measurement ID: G-DN204S2BBC
@@ -99,7 +102,7 @@
   <!-- ============================== -->
   <!-- ☎️ Contact Metadata -->
   <!-- ============================== -->
-  <meta name="email" content="ghatakgsai@gmail.com" />
+  <meta name="email" content="ghatakgsai@gmail.com" id="meta-contact-email" />
   <meta name="phone" content="+91 6394135988" />
   <meta name="address" content="W27G+2R Lucknow, Uttar Pradesh, India" />
 
@@ -164,7 +167,7 @@
         "@type": "ContactPoint",
         "telephone": "+91 6394135988",
         "contactType": "Customer Service",
-        "email": "ghatakgsai@gmail.com"
+        "email": "__ACADEMY_CONTACT_EMAIL__"
       },
       "sameAs": [
         "https://www.facebook.com/ghataksportsacademy",
@@ -256,11 +259,29 @@
           "name": "How can I contact Ghatak Sports Academy India for admission?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "You can call us at +91 6394135988 or email ghatakgsai@gmail.com to book a trial class and get admission details."
+            "text": "You can call us at +91 6394135988 or email __ACADEMY_CONTACT_EMAIL__ to book a trial class and get admission details."
           }
         }
       ]
     }
+  </script>
+  <script>
+    const metaContactEmail = document.getElementById('meta-contact-email');
+    if (metaContactEmail) {
+      metaContactEmail.setAttribute('content', ACADEMY_CONTACT_EMAIL);
+    }
+
+    document
+      .querySelectorAll('script[type="application/ld+json"]')
+      .forEach((node) => {
+        if (!node.textContent || !node.textContent.includes('__ACADEMY_CONTACT_EMAIL__')) {
+          return;
+        }
+        node.textContent = node.textContent.replaceAll(
+          '__ACADEMY_CONTACT_EMAIL__',
+          ACADEMY_CONTACT_EMAIL
+        );
+      });
   </script>
 
   <!-- 📊 Structured Data: Course Catalog -->

@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+        const ACADEMY_CONTACT_EMAIL = 'ghatakgsai@gmail.com';
+    </script>
     <meta name="theme-color" content="#ffffff" />
     <meta name="description"
         content="Read the Privacy Policy for Ghatak Sports Academy India. Learn how we collect, use, and protect your information." />
@@ -166,7 +169,7 @@
             <h3>8. Contact Us</h3>
             <p>If you have any questions about this Privacy Policy, contact us:</p>
             <p>
-                Email: <a href="mailto:ghatakgsai@gmail.com">ghatakgsai@gmail.com</a><br />
+                Email: <a id="privacy-email-link" href="#"></a><br />
                 Phone: <a href="tel:+916394135988">+91 63941 35988</a>,
                 <a href="tel:+918355062424">+91 83550 62424</a>
             </p>
@@ -176,6 +179,13 @@
     <footer>
         <p>&copy; 2025 Ghatak Sports Academy India. All rights reserved.</p>
     </footer>
+    <script>
+        const privacyEmailLink = document.getElementById('privacy-email-link');
+        if (privacyEmailLink) {
+            privacyEmailLink.setAttribute('href', `mailto:${ACADEMY_CONTACT_EMAIL}`);
+            privacyEmailLink.textContent = ACADEMY_CONTACT_EMAIL;
+        }
+    </script>
 </body>
 
 </html>

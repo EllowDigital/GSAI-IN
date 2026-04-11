@@ -1,7 +1,7 @@
 import {
   ACADEMY_CONTACT_EMAIL,
   ACADEMY_NAME,
-  RESEND_DOMAIN_SENDERS,
+  getResendSenderAddress,
 } from '../_shared/emailConfig.ts';
 
 const corsHeaders = {
@@ -200,6 +200,7 @@ Deno.serve(async (req) => {
       notificationType === 'admin'
         ? `New Enrollment Submission | ${ACADEMY_NAME}`
         : `Enrollment Request Received | ${ACADEMY_NAME}`;
+    const fromAddress = getResendSenderAddress('onboarding');
 
     const html =
       notificationType === 'admin'
@@ -222,7 +223,7 @@ Deno.serve(async (req) => {
         'X-Connection-Api-Key': RESEND_API_KEY,
       },
       body: JSON.stringify({
-        from: `${ACADEMY_NAME} <${RESEND_DOMAIN_SENDERS.onboarding}>`,
+        from: `${ACADEMY_NAME} <${fromAddress}>`,
         to: [to],
         ...(cc ? { cc: [cc] } : {}),
         subject,
