@@ -10,6 +10,7 @@ import {
   Sparkles,
   ArrowRight,
 } from 'lucide-react';
+import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -78,8 +79,8 @@ const contactInfo = [
   {
     icon: Mail,
     title: 'Email Us',
-    details: ['ghatakgsai@gmail.com'],
-    action: 'mailto:ghatakgsai@gmail.com',
+    details: [ACADEMY_CONTACT_EMAIL],
+    action: `mailto:${ACADEMY_CONTACT_EMAIL}`,
     color: 'from-blue-500 to-cyan-600',
     btnText: 'Send Email',
   },
@@ -233,7 +234,7 @@ export default function ContactSection() {
               </div>
 
               <form
-                action="https://formsubmit.co/ghatakgsai@gmail.com"
+                action={`https://formsubmit.co/${ACADEMY_CONTACT_EMAIL}`}
                 method="POST"
                 className="space-y-5"
                 onSubmit={(e) => {

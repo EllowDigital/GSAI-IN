@@ -24,6 +24,7 @@ import LocationSection from '@/components/home/LocationSection';
 import RecognitionAffiliationsSection from '@/components/home/RecognitionAffiliationsSection';
 import FooterSection from '@/components/layout/FooterSection';
 import FloatingEnrollButton from '@/components/common/FloatingEnrollButton';
+import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
 
 // Structured data for SEO rich snippets
 const orgStructuredData = {
@@ -51,7 +52,7 @@ const orgStructuredData = {
       '@type': 'ContactPoint',
       telephone: '+91 63941 35988',
       contactType: 'customer service',
-      email: 'ghatakgsai@gmail.com',
+      email: ACADEMY_CONTACT_EMAIL,
     },
   ],
   address: {
@@ -121,7 +122,7 @@ const localBusinessStructuredData = {
     caption: 'Ghatak Sports Academy India Logo',
   },
   telephone: '+91 63941 35988',
-  email: 'ghatakgsai@gmail.com',
+  email: ACADEMY_CONTACT_EMAIL,
   priceRange: '₹₹',
   currenciesAccepted: 'INR',
   paymentAccepted: 'Cash, UPI, Card',

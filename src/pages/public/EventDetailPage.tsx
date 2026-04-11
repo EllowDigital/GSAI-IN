@@ -11,6 +11,7 @@ import InternalLinksBlock from '@/components/common/InternalLinksBlock';
 import { generateEventStructuredData } from '@/utils/seoUtils';
 import { injectContextualInternalLinks } from '@/utils/internalLinking';
 import { sanitizeHtmlForClient } from '@/utils/browserSanitizeHtml';
+import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
 
 interface Event {
   id: string;
@@ -381,7 +382,7 @@ export default function EventDetail() {
                     <p className="text-gray-300 flex flex-col gap-1">
                       <strong className="text-white">Email:</strong>
                       <span className="text-gray-400 hover:text-yellow-500 transition-colors">
-                        ghatakgsai@gmail.com
+                        {ACADEMY_CONTACT_EMAIL}
                       </span>
                     </p>
                     <p className="text-gray-300 flex flex-col gap-1">

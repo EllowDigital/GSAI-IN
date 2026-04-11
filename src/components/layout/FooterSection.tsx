@@ -156,10 +156,10 @@ export default function FooterSection() {
                     </div>
                     <div>
                       <a
-                        href="mailto:ghatakgsai@gmail.com"
+                        href={`mailto:${ACADEMY_CONTACT_EMAIL}`}
                         className="text-gray-300 hover:text-yellow-400 transition-colors duration-300 text-sm font-medium"
                       >
-                        ghatakgsai@gmail.com
+                        {ACADEMY_CONTACT_EMAIL}
                       </a>
                     </div>
                   </div>

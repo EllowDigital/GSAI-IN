@@ -4,8 +4,9 @@ import { supabase } from '@/services/supabase/client';
 import usePageViews from '@/hooks/usePageViews';
 import Index from '@/pages/public/HomePage';
 import { motion } from 'framer-motion';
+import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
 
-const ADMIN_EMAIL = 'ghatakgsai@gmail.com';
+const ADMIN_EMAIL = ACADEMY_CONTACT_EMAIL;
 
 const HomePageWrapper: React.FC = () => {
   const navigate = useNavigate();

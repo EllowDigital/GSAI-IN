@@ -381,6 +381,7 @@ export default function EnrollmentRequestsManager() {
       const sent = await sendEmail({
         ...emailPayload,
         to: recipientEmail,
+        senderPurpose: 'onboarding',
       });
 
       await finalizeEnrollmentEmailEvent({
@@ -709,6 +710,7 @@ export default function EnrollmentRequestsManager() {
             const sent = await sendEmail({
               ...emailPayload,
               to: recipientEmail,
+              senderPurpose: 'onboarding',
             });
 
             await finalizeEnrollmentEmailEvent({

@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { openWhatsAppConversation } from '@/utils/whatsapp';
+import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
 
 interface FeeReminderButtonProps {
   studentName: string;
@@ -81,7 +82,7 @@ Ghatak Sports Academy`;
   };
 
   const openWhatsAppReminder = () => {
-    const whatsappMsg = `Namaste ${parentName} ji,\n\nThis is a reminder that the fee of ₹${amount.toLocaleString()} for ${studentName}'s training for ${MONTH_NAMES[month - 1]} ${year} is pending.\n\nKindly clear the dues at your earliest convenience.\n\n📞 +91 63941 35988\n✉️ ghatakgsai@gmail.com\n\n- Ghatak Sports Academy India`;
+    const whatsappMsg = `Namaste ${parentName} ji,\n\nThis is a reminder that the fee of ₹${amount.toLocaleString()} for ${studentName}'s training for ${MONTH_NAMES[month - 1]} ${year} is pending.\n\nKindly clear the dues at your earliest convenience.\n\n📞 +91 63941 35988\n✉️ ${ACADEMY_CONTACT_EMAIL}\n\n- Ghatak Sports Academy India`;
     const opened = openWhatsAppConversation(parentContact, whatsappMsg);
 
     if (!opened) {

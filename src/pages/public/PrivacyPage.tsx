@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Seo from '@/components/seo/Seo';
+import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
 
 const privacySections = [
   {
@@ -85,10 +86,10 @@ const privacySections = [
           <div className="flex items-center gap-2">
             <span className="text-gray-400">Email:</span>
             <a
-              href="mailto:ghatakgsai@gmail.com"
+              href={`mailto:${ACADEMY_CONTACT_EMAIL}`}
               className="text-yellow-500 hover:text-yellow-400 transition-colors"
             >
-              ghatakgsai@gmail.com
+              {ACADEMY_CONTACT_EMAIL}
             </a>
           </div>
           <div className="flex items-center gap-2">

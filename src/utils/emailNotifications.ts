@@ -3,7 +3,9 @@
  * Docs: https://formsubmit.co/
  */
 
-const ACADEMY_EMAIL = 'ghataksportsacademy@gmail.com';
+import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
+
+const ACADEMY_EMAIL = ACADEMY_CONTACT_EMAIL;
 const FORMSUBMIT_ENDPOINT = `https://formsubmit.co/ajax/${ACADEMY_EMAIL}`;
 
 interface EmailPayload {

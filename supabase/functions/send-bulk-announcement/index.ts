@@ -1,4 +1,9 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import {
+  ACADEMY_CONTACT_EMAIL,
+  ACADEMY_NAME,
+  getResendSenderAddress,
+} from '../_shared/emailConfig.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -6,9 +11,8 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend';
-const ACADEMY_NAME = 'Ghatak Sports Academy India';
-const ACADEMY_EMAIL = 'ghatakgsai@gmail.com';
+const RESEND_API_URL = 'https://api.resend.com/emails';
+const ACADEMY_EMAIL = ACADEMY_CONTACT_EMAIL;
 const ACADEMY_PHONE = '+91 63941 35988';
 const ACADEMY_LOGO_URL = 'https://ghataksportsacademy.com/assets/images/logo.webp';
 
@@ -20,6 +24,11 @@ interface Payload {
   endDate?: string | null;
   location?: string | null;
   pageUrl?: string | null;
+  testRecipient?: string | null;
+}
+
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
 function escapeHtml(value: string): string {
@@ -38,9 +47,11 @@ function buildBody(kind: 'event' | 'competition', recipient: any, payload: Paylo
   const date = escapeHtml((payload.date || '').toString());
   const endDate = payload.endDate ? escapeHtml(payload.endDate.toString()) : '';
   const location = payload.location ? escapeHtml(payload.location.toString()) : '';
+  
   const description = payload.description
-    ? `<p><strong>Details:</strong> ${escapeHtml(payload.description.toString())}</p>`
+    ? `<p style="margin-top:16px; color: #4b5563;"><strong>Details:</strong> ${escapeHtml(payload.description.toString())}</p>`
     : '';
+    
   const safeUrl = payload.pageUrl && payload.pageUrl.startsWith('https://')
     ? payload.pageUrl
     : 'https://ghataksportsacademy.com/student/dashboard';
@@ -50,25 +61,40 @@ function buildBody(kind: 'event' | 'competition', recipient: any, payload: Paylo
       ? `Event Update: ${payload.title} | ${ACADEMY_NAME}`
       : `Competition Update: ${payload.title} | ${ACADEMY_NAME}`;
 
-  const label = kind === 'event' ? 'Event' : 'Competition';
+  const label = kind === 'event' ? 'Event Name' : 'Competition Name';
+  const dateStr = endDate ? `${date} to ${endDate}` : date;
 
   const html = `<!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<style>
-  body{margin:0;padding:0;background:#eef2f7;font-family:Arial,Helvetica,sans-serif;color:#1f2937}
-  .wrapper{max-width:640px;margin:0 auto;padding:24px 14px}
-  .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;box-shadow:0 8px 30px rgba(15,23,42,.06)}
-  .header{background:#0f172a;padding:20px 26px;text-align:center}
-  .logo{height:46px;max-width:220px;object-fit:contain;display:block;margin:0 auto 8px}
-  .academy{color:#e2e8f0;font-size:14px;font-weight:600;letter-spacing:.2px}
-  .body{padding:26px;color:#1f2937;line-height:1.65;font-size:15px}
-  .box{background:#f8fafc;border:1px solid #dbeafe;border-left:4px solid #2563eb;padding:12px 14px;border-radius:10px;margin:14px 0}
-  .box p{margin:4px 0;font-size:14px}
-  .btn{display:inline-block;background:#1d4ed8;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600}
-  .footer{background:#f8fafc;padding:16px 26px;text-align:center;font-size:12px;color:#64748b;border-top:1px solid #e5e7eb}
-  .footer a{color:#1d4ed8;text-decoration:none}
-</style>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1f2937; }
+    .wrapper { max-width: 600px; margin: 0 auto; padding: 30px 15px; }
+    .card { background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01); }
+    .header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 32px 24px; text-align: center; }
+    .logo { height: 56px; max-width: 220px; object-fit: contain; display: block; margin: 0 auto 12px; }
+    .academy { color: #f8fafc; font-size: 16px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0; }
+    .body { padding: 40px 32px; color: #374151; line-height: 1.6; font-size: 16px; }
+    .body p { margin-top: 0; margin-bottom: 16px; }
+    .info-box { background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 0 20px; border-radius: 12px; margin: 28px 0; }
+    .info-row { padding: 12px 0; border-bottom: 1px solid #e2e8f0; }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: #64748b; font-size: 13px; text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 4px; letter-spacing: 0.5px; }
+    .info-value { color: #0f172a; font-size: 16px; font-weight: 500; display: block; word-break: break-word; }
+    .btn-container { text-align: center; margin: 32px 0 16px; }
+    .btn { display: inline-block; background-color: #2563eb; color: #ffffff !important; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
+    .footer { background-color: #f8fafc; border-top: 1px solid #e5e7eb; padding: 32px 24px; text-align: center; color: #64748b; font-size: 13px; }
+    .footer strong { color: #0f172a; font-size: 15px; display: block; margin-bottom: 8px; }
+    .footer a { color: #2563eb; text-decoration: none; font-weight: 500; }
+    .contact-line { margin: 12px 0; padding: 12px 0; border-top: 1px dashed #cbd5e1; border-bottom: 1px dashed #cbd5e1; }
+    @media only screen and (max-width: 480px) {
+      .body { padding: 30px 20px; }
+      .header { padding: 24px 16px; }
+    }
+  </style>
 </head>
 <body>
 <div class="wrapper">
@@ -79,18 +105,37 @@ function buildBody(kind: 'event' | 'competition', recipient: any, payload: Paylo
     </div>
     <div class="body">
       <p>Namaste <strong>${parentName}</strong> ji,</p>
-      <p>New ${label.toLowerCase()} update for <strong>${studentName}</strong>.</p>
-      <div class="box">
-        <p><strong>${label}:</strong> ${title}</p>
-        <p><strong>Date:</strong> ${date}${endDate ? ` to ${endDate}` : ''}</p>
-        ${location ? `<p><strong>Location:</strong> ${location}</p>` : ''}
+      <p>A new ${kind} update is available for <strong>${studentName}</strong>.</p>
+      
+      <div class="info-box">
+        <div class="info-row">
+          <span class="info-label">${label}</span>
+          <span class="info-value">${title}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Date</span>
+          <span class="info-value">${dateStr}</span>
+        </div>
+        ${location ? `
+        <div class="info-row">
+          <span class="info-label">Location</span>
+          <span class="info-value">${location}</span>
+        </div>` : ''}
       </div>
+      
       ${description}
-      <p><a class="btn" href="${safeUrl}" rel="noopener noreferrer">View Update</a></p>
+      
+      <div class="btn-container">
+        <a class="btn" href="${safeUrl}" rel="noopener noreferrer">View Full Details</a>
+      </div>
     </div>
     <div class="footer">
-      <p>${ACADEMY_NAME}</p>
-      <p>Phone / WhatsApp: ${ACADEMY_PHONE} | Email: <a href="mailto:${ACADEMY_EMAIL}">${ACADEMY_EMAIL}</a></p>
+      <strong>${ACADEMY_NAME}</strong>
+      <div class="contact-line">
+        WhatsApp/Phone: ${ACADEMY_PHONE}<br/>
+        Email: <a href="mailto:${ACADEMY_EMAIL}">${ACADEMY_EMAIL}</a>
+      </div>
+      <p style="margin-top:16px; font-size: 12px;">This is an automated message from our official academy portal. Please do not reply directly to this email.</p>
     </div>
   </div>
 </div>
@@ -153,9 +198,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-    if (!LOVABLE_API_KEY || !RESEND_API_KEY) {
+    if (!RESEND_API_KEY) {
       return new Response(JSON.stringify({ error: 'Server misconfigured' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -176,43 +220,60 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
 
-    const { data: recipients, error: recipientsError } = await supabaseAdmin
-      .from('enrollment_requests')
-      .select('student_email, parent_name, student_name')
-      .eq('status', 'approved')
-      .not('student_email', 'is', null);
-
-    if (recipientsError) {
-      return new Response(JSON.stringify({ error: recipientsError.message }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
     const uniqueRecipients = new Map<string, any>();
-    for (const item of recipients || []) {
-      const email = (item.student_email || '').toString().trim().toLowerCase();
-      if (!email) continue;
-      if (!uniqueRecipients.has(email)) uniqueRecipients.set(email, item);
+
+    const testRecipient = (payload.testRecipient || '').toString().trim().toLowerCase();
+    if (testRecipient) {
+      if (!isValidEmail(testRecipient)) {
+        return new Response(JSON.stringify({ error: 'Invalid testRecipient email' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      uniqueRecipients.set(testRecipient, {
+        student_email: testRecipient,
+        parent_name: 'Parent',
+        student_name: 'Student',
+      });
+    } else {
+      const { data: recipients, error: recipientsError } = await supabaseAdmin
+        .from('enrollment_requests')
+        .select('student_email, parent_name, student_name')
+        .eq('status', 'approved')
+        .not('student_email', 'is', null);
+
+      if (recipientsError) {
+        return new Response(JSON.stringify({ error: recipientsError.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      for (const item of recipients || []) {
+        const email = (item.student_email || '').toString().trim().toLowerCase();
+        if (!email) continue;
+        if (!uniqueRecipients.has(email)) uniqueRecipients.set(email, item);
+      }
     }
 
     let sent = 0;
     let failed = 0;
     const totalRecipients = uniqueRecipients.size;
+    const fromAddress = getResendSenderAddress('updates');
 
     for (const [, recipient] of uniqueRecipients) {
       const email = (recipient.student_email || '').toString().trim().toLowerCase();
       const { subject, html } = buildBody(type, recipient, payload);
 
-      const response = await fetch(`${GATEWAY_URL}/emails`, {
+      const response = await fetch(RESEND_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          'X-Connection-Api-Key': RESEND_API_KEY,
+          Authorization: `Bearer ${RESEND_API_KEY}`,
         },
         body: JSON.stringify({
-          from: `${ACADEMY_NAME} <noreply@ghataksportsacademy.com>`,
+          from: `${ACADEMY_NAME} <${fromAddress}>`,
           to: [email],
           subject,
           html,

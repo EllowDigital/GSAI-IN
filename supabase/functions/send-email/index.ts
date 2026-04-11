@@ -1,4 +1,9 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import {
+  ACADEMY_CONTACT_EMAIL,
+  ACADEMY_NAME,
+  getResendSenderAddress,
+} from '../_shared/emailConfig.ts';
 
 function normalizeOrigin(origin: string): string | null {
   const trimmed = origin.trim()
@@ -20,9 +25,8 @@ const ALLOWED_ORIGINS = new Set(
     .filter((origin): origin is string => Boolean(origin))
 )
 
-const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend'
-const ACADEMY_NAME = 'Ghatak Sports Academy India'
-const ACADEMY_EMAIL = 'ghatakgsai@gmail.com'
+const RESEND_API_URL = 'https://api.resend.com/emails'
+const ACADEMY_EMAIL = ACADEMY_CONTACT_EMAIL
 const ACADEMY_PHONE = '+91 63941 35988'
 const ACADEMY_LOGO_URL = 'https://ghataksportsacademy.com/assets/images/logo.webp'
 const RATE_LIMIT_WINDOW_MS = 60_000
@@ -36,6 +40,7 @@ interface EmailRequest {
   html?: string
   text?: string
   replyTo?: string
+  senderPurpose?: 'automated' | 'onboarding' | 'updates'
 }
 
 interface ApiErrorResponse {
@@ -124,6 +129,10 @@ function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 }
 
+function isValidSenderPurpose(value: unknown): value is 'automated' | 'onboarding' | 'updates' {
+  return value === 'automated' || value === 'onboarding' || value === 'updates'
+}
+
 function enforceRateLimit(key: string): boolean {
   const now = Date.now()
   const windowStart = now - RATE_LIMIT_WINDOW_MS
@@ -173,38 +182,52 @@ async function sendWithRetry(url: string, init: RequestInit, maxAttempts = 1) {
 function buildHtmlEmail(subject: string, bodyHtml: string): string {
   return `<!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<style>
-  body{margin:0;padding:0;background:#eef2f7;font-family:Arial,Helvetica,sans-serif;color:#1f2937}
-  .wrapper{max-width:640px;margin:0 auto;padding:24px 14px}
-  .card{background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;box-shadow:0 8px 30px rgba(15,23,42,.06)}
-  .header{background:#0f172a;padding:20px 26px;text-align:center}
-  .logo{height:46px;max-width:220px;object-fit:contain;display:block;margin:0 auto 8px}
-  .academy{color:#e2e8f0;font-size:14px;font-weight:600;letter-spacing:.2px}
-  .body{padding:26px;color:#1f2937;line-height:1.65;font-size:15px}
-  .body h2{margin:0 0 14px;color:#0f172a;font-size:19px}
-  .footer{background:#f8fafc;border-top:1px solid #e5e7eb;padding:16px 26px;text-align:center;color:#64748b;font-size:12px}
-  .footer a{color:#1d4ed8;text-decoration:none}
-</style></head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1f2937; }
+    .wrapper { max-width: 600px; margin: 0 auto; padding: 30px 15px; }
+    .card { background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01); }
+    .header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 32px 24px; text-align: center; }
+    .logo { height: 56px; max-width: 220px; object-fit: contain; display: block; margin: 0 auto 12px; }
+    .academy { color: #f8fafc; font-size: 16px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0; }
+    .body { padding: 40px 32px; color: #374151; line-height: 1.6; font-size: 16px; }
+    .body h2 { margin: 0 0 24px; color: #111827; font-size: 22px; font-weight: 700; text-align: center; }
+    .footer { background-color: #f8fafc; border-top: 1px solid #e5e7eb; padding: 32px 24px; text-align: center; color: #64748b; font-size: 13px; }
+    .footer strong { color: #0f172a; font-size: 15px; display: block; margin-bottom: 8px; }
+    .footer a { color: #2563eb; text-decoration: none; font-weight: 500; }
+    .contact-line { margin: 12px 0; padding: 12px 0; border-top: 1px dashed #cbd5e1; border-bottom: 1px dashed #cbd5e1; }
+    @media only screen and (max-width: 480px) {
+      .body { padding: 30px 20px; }
+      .header { padding: 24px 16px; }
+    }
+  </style>
+</head>
 <body>
-<div class="wrapper">
-  <div class="card">
-    <div class="header">
-      <img class="logo" src="${ACADEMY_LOGO_URL}" alt="${ACADEMY_NAME} logo" />
-      <div class="academy">${ACADEMY_NAME}</div>
-    </div>
-    <div class="body">
-      <h2>${subject}</h2>
-      ${bodyHtml}
-    </div>
-    <div class="footer">
-      <p>${ACADEMY_NAME}</p>
-      <p>Phone / WhatsApp: ${ACADEMY_PHONE} | Email: <a href="mailto:${ACADEMY_EMAIL}">${ACADEMY_EMAIL}</a></p>
-      <p style="margin-top:8px">This is an automated email from the academy portal.</p>
+  <div class="wrapper">
+    <div class="card">
+      <div class="header">
+        <img class="logo" src="${ACADEMY_LOGO_URL}" alt="${ACADEMY_NAME} logo" />
+        <div class="academy">${ACADEMY_NAME}</div>
+      </div>
+      <div class="body">
+        <h2>${subject}</h2>
+        ${bodyHtml}
+      </div>
+      <div class="footer">
+        <strong>${ACADEMY_NAME}</strong>
+        <div class="contact-line">
+          WhatsApp/Phone: ${ACADEMY_PHONE}<br/>
+          Email: <a href="mailto:${ACADEMY_EMAIL}">${ACADEMY_EMAIL}</a>
+        </div>
+        <p style="margin-top:16px; font-size: 12px;">This is an automated message from our official academy portal. Please do not reply directly to this email.</p>
+      </div>
     </div>
   </div>
-</div>
-</body></html>`
+</body>
+</html>`
 }
 
 Deno.serve(async (req) => {
@@ -257,11 +280,6 @@ Deno.serve(async (req) => {
     return errorResponse(429, 'rate_limited', 'Too many email requests. Please retry later.', origin)
   }
 
-  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')
-  if (!LOVABLE_API_KEY) {
-    return errorResponse(500, 'server_misconfigured', 'LOVABLE_API_KEY not configured', origin)
-  }
-
   const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
   if (!RESEND_API_KEY) {
     return errorResponse(500, 'server_misconfigured', 'RESEND_API_KEY not configured', origin)
@@ -285,21 +303,31 @@ Deno.serve(async (req) => {
       return errorResponse(400, 'invalid_reply_to', 'replyTo email is invalid', origin)
     }
 
+    const senderPurpose = body.senderPurpose ?? 'automated'
+    if (!isValidSenderPurpose(senderPurpose)) {
+      return errorResponse(
+        400,
+        'invalid_sender_purpose',
+        'senderPurpose must be one of: automated, onboarding, updates',
+        origin
+      )
+    }
+
     const text = typeof body.text === 'string' ? body.text : ''
+    const fromAddress = getResendSenderAddress(senderPurpose)
 
     const htmlContent = body.html && body.html.trim().length > 0
       ? body.html
       : buildHtmlEmail(subject, `<p>${escapeHtml(text).replace(/\n/g, '<br>')}</p>`)
 
-    const response = await sendWithRetry(`${GATEWAY_URL}/emails`, {
+    const response = await sendWithRetry(RESEND_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'X-Connection-Api-Key': RESEND_API_KEY,
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: `${ACADEMY_NAME} <noreply@ghataksportsacademy.com>`,
+        from: `${ACADEMY_NAME} <${fromAddress}>`,
         to: [to],
         subject,
         html: htmlContent,

@@ -42,6 +42,7 @@ import Navbar from '@/components/layout/Navbar';
 import { useDisciplines } from '@/hooks/useDisciplines';
 import { cn } from '@/lib/utils';
 import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
+import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
 
 // --- Validation Logic ---
 const enrollSchema = z.object({
@@ -323,7 +324,7 @@ export default function EnrollPage() {
       void supabase.functions
         .invoke('send-enrollment-received-email', {
           body: {
-            to: 'ghatakgsai@gmail.com',
+            to: ACADEMY_CONTACT_EMAIL,
             cc: 'sarwanyadav6174@gmail.com',
             studentName: d.studentName,
             program: d.program,
