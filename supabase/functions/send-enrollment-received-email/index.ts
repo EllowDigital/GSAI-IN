@@ -48,17 +48,29 @@ function buildParentHtml(parentName: string, studentName: string, program: strin
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body{margin:0;padding:0;background:#eef2f7;font-family:Arial,Helvetica,sans-serif;color:#1f2937}
-    .wrapper{max-width:640px;margin:0 auto;padding:24px 14px}
-    .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;box-shadow:0 8px 30px rgba(15,23,42,.06)}
-    .header{background:#0f172a;padding:20px 26px;text-align:center}
-    .logo{height:46px;max-width:220px;object-fit:contain;display:block;margin:0 auto 8px}
-    .academy{color:#e2e8f0;font-size:14px;font-weight:600;letter-spacing:.2px}
-    .body{padding:26px;color:#1f2937;line-height:1.65;font-size:15px}
-    .box{background:#f8fafc;border:1px solid #dbeafe;border-left:4px solid #2563eb;padding:12px 14px;border-radius:10px;margin:14px 0}
-    .box p{margin:4px 0;font-size:14px}
-    .footer{background:#f8fafc;padding:16px 26px;text-align:center;font-size:12px;color:#64748b;border-top:1px solid #e5e7eb}
+    body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1f2937; }
+    .wrapper { max-width: 600px; margin: 0 auto; padding: 30px 15px; }
+    .card { background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01); }
+    .header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 32px 24px; text-align: center; }
+    .logo { height: 56px; max-width: 220px; object-fit: contain; display: block; margin: 0 auto 12px; }
+    .academy { color: #f8fafc; font-size: 16px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0; }
+    .body { padding: 40px 32px; color: #374151; line-height: 1.6; font-size: 16px; }
+    .body p { margin-top: 0; margin-bottom: 16px; }
+    .info-box { background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 0 20px; border-radius: 12px; margin: 28px 0; }
+    .info-row { padding: 12px 0; border-bottom: 1px solid #e2e8f0; }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: #64748b; font-size: 13px; text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 4px; letter-spacing: 0.5px; }
+    .info-value { color: #0f172a; font-size: 16px; font-weight: 500; display: block; word-break: break-word; }
+    .footer { background-color: #f8fafc; border-top: 1px solid #e5e7eb; padding: 32px 24px; text-align: center; color: #64748b; font-size: 13px; }
+    .footer strong { color: #0f172a; font-size: 15px; display: block; margin-bottom: 8px; }
+    .footer a { color: #2563eb; text-decoration: none; font-weight: 500; }
+    .contact-line { margin: 12px 0; padding: 12px 0; border-top: 1px dashed #cbd5e1; border-bottom: 1px dashed #cbd5e1; }
+    @media only screen and (max-width: 480px) {
+      .body { padding: 30px 20px; }
+      .header { padding: 24px 16px; }
+    }
   </style>
 </head>
 <body>
@@ -70,16 +82,28 @@ function buildParentHtml(parentName: string, studentName: string, program: strin
       </div>
       <div class="body">
         <p>Namaste <strong>${escapeHtml(parentName)}</strong> ji,</p>
-        <p>We have successfully received the enrollment request for <strong>${escapeHtml(studentName)}</strong> in <strong>${escapeHtml(program)}</strong>.</p>
-        <div class="box">
-          <p><strong>Status:</strong> Request Received</p>
-          <p><strong>Next Step:</strong> Our team will contact you within 24 hours.</p>
+        <p>We have successfully received the enrollment request for <strong>${escapeHtml(studentName)}</strong> in the <strong>${escapeHtml(program)}</strong> program.</p>
+        
+        <div class="info-box">
+          <div class="info-row">
+            <span class="info-label">Current Status</span>
+            <span class="info-value" style="color: #0284c7;">Request Received</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Next Step</span>
+            <span class="info-value">Our team will contact you within 24 hours to proceed.</span>
+          </div>
         </div>
-        <p>Thank you for choosing ${ACADEMY_NAME}.</p>
+        
+        <p style="margin-top: 24px;">Thank you for choosing ${ACADEMY_NAME}. We look forward to speaking with you soon.</p>
       </div>
       <div class="footer">
-        <p>Phone / WhatsApp: ${ACADEMY_PHONE}</p>
-        <p>Email: ${ACADEMY_EMAIL}</p>
+        <strong>${ACADEMY_NAME}</strong>
+        <div class="contact-line">
+          WhatsApp/Phone: ${ACADEMY_PHONE}<br/>
+          Email: <a href="mailto:${ACADEMY_EMAIL}">${ACADEMY_EMAIL}</a>
+        </div>
+        <p style="margin-top:16px; font-size: 12px;">This is an automated message from our official academy portal. Please do not reply directly to this email.</p>
       </div>
     </div>
   </div>
@@ -101,19 +125,30 @@ function buildAdminHtml(details: {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body{margin:0;padding:0;background:#eef2f7;font-family:Arial,Helvetica,sans-serif;color:#1f2937}
-    .wrapper{max-width:640px;margin:0 auto;padding:24px 14px}
-    .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;box-shadow:0 8px 30px rgba(15,23,42,.06)}
-    .header{background:#0f172a;padding:20px 26px;text-align:center}
-    .logo{height:46px;max-width:220px;object-fit:contain;display:block;margin:0 auto 8px}
-    .academy{color:#e2e8f0;font-size:14px;font-weight:600;letter-spacing:.2px}
-    .body{padding:26px;color:#1f2937;line-height:1.65;font-size:15px}
-    .box{background:#f8fafc;border:1px solid #dbeafe;border-left:4px solid #2563eb;padding:12px 14px;border-radius:10px;margin:14px 0}
-    .box p{margin:4px 0;font-size:14px}
-    .footer{background:#f8fafc;padding:16px 26px;text-align:center;font-size:12px;color:#64748b;border-top:1px solid #e5e7eb}
-    .btn{display:inline-block;background:#1d4ed8;color:#ffffff !important;-webkit-text-fill-color:#ffffff !important;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:700;margin-top:10px}
-    a.btn,a.btn:visited,a.btn:hover,a.btn:active{color:#ffffff !important;-webkit-text-fill-color:#ffffff !important;text-decoration:none}
+    body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1f2937; }
+    .wrapper { max-width: 600px; margin: 0 auto; padding: 30px 15px; }
+    .card { background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01); }
+    .header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 32px 24px; text-align: center; }
+    .logo { height: 56px; max-width: 220px; object-fit: contain; display: block; margin: 0 auto 12px; }
+    .academy { color: #f8fafc; font-size: 16px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0; }
+    .body { padding: 40px 32px; color: #374151; line-height: 1.6; font-size: 16px; }
+    .body p { margin-top: 0; margin-bottom: 16px; }
+    .info-box { background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 0 20px; border-radius: 12px; margin: 28px 0; }
+    .info-row { padding: 12px 0; border-bottom: 1px solid #e2e8f0; }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: #64748b; font-size: 13px; text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 4px; letter-spacing: 0.5px; }
+    .info-value { color: #0f172a; font-size: 16px; font-weight: 500; display: block; word-break: break-word; }
+    .btn-container { text-align: center; margin: 32px 0 16px; }
+    .btn { display: inline-block; background-color: #2563eb; color: #ffffff !important; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
+    .footer { background-color: #f8fafc; border-top: 1px solid #e5e7eb; padding: 32px 24px; text-align: center; color: #64748b; font-size: 13px; }
+    .footer strong { color: #0f172a; font-size: 15px; display: block; margin-bottom: 8px; }
+    .footer a { color: #2563eb; text-decoration: none; font-weight: 500; }
+    @media only screen and (max-width: 480px) {
+      .body { padding: 30px 20px; }
+      .header { padding: 24px 16px; }
+    }
   </style>
 </head>
 <body>
@@ -121,25 +156,52 @@ function buildAdminHtml(details: {
     <div class="card">
       <div class="header">
         <img class="logo" src="${ACADEMY_LOGO_URL}" alt="${ACADEMY_NAME} logo" />
-        <div class="academy">${ACADEMY_NAME}</div>
+        <div class="academy">Admin Notification</div>
       </div>
       <div class="body">
-        <p>A new enrollment form has been submitted from the public website.</p>
-        <div class="box">
-          <p><strong>Student:</strong> ${escapeHtml(details.studentName)}</p>
-          <p><strong>Program:</strong> ${escapeHtml(details.program)}</p>
-          <p><strong>Parent:</strong> ${escapeHtml(details.parentName)}</p>
-          <p><strong>Parent Email:</strong> ${escapeHtml(details.parentEmail)}</p>
-          <p><strong>Parent Phone:</strong> ${escapeHtml(details.parentPhone)}</p>
-          <p><strong>Student Email:</strong> ${escapeHtml(details.studentEmail)}</p>
-          <p><strong>Student Phone:</strong> ${escapeHtml(details.studentPhone)}</p>
+        <p style="font-size: 18px; font-weight: 600; color: #111827; text-align: center; margin-bottom: 24px;">New Enrollment Submission</p>
+        <p>A new enrollment form has been submitted from the public website. Here are the details:</p>
+        
+        <div class="info-box">
+          <div class="info-row">
+            <span class="info-label">Student Name</span>
+            <span class="info-value">${escapeHtml(details.studentName)}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Program Selected</span>
+            <span class="info-value">${escapeHtml(details.program)}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Parent Name</span>
+            <span class="info-value">${escapeHtml(details.parentName)}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Parent Phone</span>
+            <span class="info-value">${escapeHtml(details.parentPhone)}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Parent Email</span>
+            <span class="info-value"><a href="mailto:${escapeHtml(details.parentEmail)}">${escapeHtml(details.parentEmail)}</a></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Student Phone</span>
+            <span class="info-value">${escapeHtml(details.studentPhone)}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Student Email</span>
+            <span class="info-value"><a href="mailto:${escapeHtml(details.studentEmail)}">${escapeHtml(details.studentEmail)}</a></span>
+          </div>
         </div>
-        <p>Please review this request in the admin portal and decide the next stage (contact / approve / reject).</p>
-        <p><a class="btn" href="${ADMIN_PORTAL_URL}" rel="noopener noreferrer" style="display:inline-block;background:#1d4ed8;color:#ffffff !important;-webkit-text-fill-color:#ffffff !important;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:700;">Open Admin Portal</a></p>
+        
+        <p style="margin-top: 24px;">Please review this request in the admin portal and update the stage to "contacted", "approved", or "rejected".</p>
+        
+        <div class="btn-container">
+          <a class="btn" href="${ADMIN_PORTAL_URL}" rel="noopener noreferrer" style="color:#ffffff !important;-webkit-text-fill-color:#ffffff !important;">Open Admin Portal</a>
+        </div>
       </div>
       <div class="footer">
-        <p>Phone / WhatsApp: ${ACADEMY_PHONE}</p>
-        <p>Email: ${ACADEMY_EMAIL}</p>
+        <strong>${ACADEMY_NAME}</strong>
+        <p style="margin-top:16px; font-size: 12px;">Automated internal notification system.</p>
       </div>
     </div>
   </div>
