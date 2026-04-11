@@ -1,14 +1,22 @@
 import {
   createRemoteJWKSet,
-  decodeProtectedHeader,
   jwtVerify,
 } from 'npm:jose@5.9.6';
 
-const JWKS_URL =
-  'https://jddeuhrocglnisujixdt.supabase.co/auth/v1/.well-known/jwks.json';
-const EXPECTED_KID = '1f8a09b4-f4d4-4432-bb0e-08afb5fe90de';
-const EXPECTED_ALGORITHM = 'ES256';
-const EXPECTED_ISSUER = 'https://jddeuhrocglnisujixdt.supabase.co/auth/v1';
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')?.trim() || '';
+
+if (!SUPABASE_URL) {
+  throw new Error('Missing SUPABASE_URL environment variable');
+}
+
+const EXPECTED_ISSUER = `${SUPABASE_URL}/auth/v1`;
+const JWKS_URL = `${EXPECTED_ISSUER}/.well-known/jwks.json`;
+const ALGORITHMS = (
+  Deno.env.get('SUPABASE_JWT_ALGORITHMS') || 'ES256'
+)
+  .split(',')
+  .map((alg) => alg.trim())
+  .filter(Boolean);
 
 const jwks = createRemoteJWKSet(new URL(JWKS_URL));
 
@@ -22,17 +30,8 @@ export async function verifyRequestJwt(req: Request): Promise<void> {
     throw new Error('Missing bearer token');
   }
 
-  const header = decodeProtectedHeader(token);
-  if (header.alg !== EXPECTED_ALGORITHM) {
-    throw new Error(`Unexpected JWT algorithm: ${header.alg}`);
-  }
-
-  if (header.kid !== EXPECTED_KID) {
-    throw new Error(`Unexpected JWT key id: ${header.kid}`);
-  }
-
   await jwtVerify(token, jwks, {
-    algorithms: [EXPECTED_ALGORITHM],
+    algorithms: ALGORITHMS,
     issuer: EXPECTED_ISSUER,
   });
 }
