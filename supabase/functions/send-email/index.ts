@@ -25,7 +25,7 @@ const ALLOWED_ORIGINS = new Set(
     .filter((origin): origin is string => Boolean(origin))
 )
 
-const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend'
+const RESEND_API_URL = 'https://api.resend.com/emails'
 const ACADEMY_EMAIL = ACADEMY_CONTACT_EMAIL
 const ACADEMY_PHONE = '+91 63941 35988'
 const ACADEMY_LOGO_URL = 'https://ghataksportsacademy.com/assets/images/logo.webp'
@@ -261,11 +261,6 @@ Deno.serve(async (req) => {
     return errorResponse(429, 'rate_limited', 'Too many email requests. Please retry later.', origin)
   }
 
-  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')
-  if (!LOVABLE_API_KEY) {
-    return errorResponse(500, 'server_misconfigured', 'LOVABLE_API_KEY not configured', origin)
-  }
-
   const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
   if (!RESEND_API_KEY) {
     return errorResponse(500, 'server_misconfigured', 'RESEND_API_KEY not configured', origin)
@@ -296,12 +291,11 @@ Deno.serve(async (req) => {
       ? body.html
       : buildHtmlEmail(subject, `<p>${escapeHtml(text).replace(/\n/g, '<br>')}</p>`)
 
-    const response = await sendWithRetry(`${GATEWAY_URL}/emails`, {
+    const response = await sendWithRetry(RESEND_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'X-Connection-Api-Key': RESEND_API_KEY,
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
         from: `${ACADEMY_NAME} <${fromAddress}>`,

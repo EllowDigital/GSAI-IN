@@ -11,7 +11,7 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend';
+const RESEND_API_URL = 'https://api.resend.com/emails';
 const ACADEMY_EMAIL = ACADEMY_CONTACT_EMAIL;
 const ACADEMY_PHONE = '+91 63941 35988';
 const ACADEMY_LOGO_URL = 'https://ghataksportsacademy.com/assets/images/logo.webp';
@@ -24,6 +24,11 @@ interface Payload {
   endDate?: string | null;
   location?: string | null;
   pageUrl?: string | null;
+  testRecipient?: string | null;
+}
+
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
 function escapeHtml(value: string): string {
@@ -157,9 +162,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-    if (!LOVABLE_API_KEY || !RESEND_API_KEY) {
+    if (!RESEND_API_KEY) {
       return new Response(JSON.stringify({ error: 'Server misconfigured' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -180,24 +184,41 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
 
-    const { data: recipients, error: recipientsError } = await supabaseAdmin
-      .from('enrollment_requests')
-      .select('student_email, parent_name, student_name')
-      .eq('status', 'approved')
-      .not('student_email', 'is', null);
-
-    if (recipientsError) {
-      return new Response(JSON.stringify({ error: recipientsError.message }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
     const uniqueRecipients = new Map<string, any>();
-    for (const item of recipients || []) {
-      const email = (item.student_email || '').toString().trim().toLowerCase();
-      if (!email) continue;
-      if (!uniqueRecipients.has(email)) uniqueRecipients.set(email, item);
+
+    const testRecipient = (payload.testRecipient || '').toString().trim().toLowerCase();
+    if (testRecipient) {
+      if (!isValidEmail(testRecipient)) {
+        return new Response(JSON.stringify({ error: 'Invalid testRecipient email' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      uniqueRecipients.set(testRecipient, {
+        student_email: testRecipient,
+        parent_name: 'Parent',
+        student_name: 'Student',
+      });
+    } else {
+      const { data: recipients, error: recipientsError } = await supabaseAdmin
+        .from('enrollment_requests')
+        .select('student_email, parent_name, student_name')
+        .eq('status', 'approved')
+        .not('student_email', 'is', null);
+
+      if (recipientsError) {
+        return new Response(JSON.stringify({ error: recipientsError.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      for (const item of recipients || []) {
+        const email = (item.student_email || '').toString().trim().toLowerCase();
+        if (!email) continue;
+        if (!uniqueRecipients.has(email)) uniqueRecipients.set(email, item);
+      }
     }
 
     let sent = 0;
@@ -209,12 +230,11 @@ Deno.serve(async (req) => {
       const email = (recipient.student_email || '').toString().trim().toLowerCase();
       const { subject, html } = buildBody(type, recipient, payload);
 
-      const response = await fetch(`${GATEWAY_URL}/emails`, {
+      const response = await fetch(RESEND_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          'X-Connection-Api-Key': RESEND_API_KEY,
+          Authorization: `Bearer ${RESEND_API_KEY}`,
         },
         body: JSON.stringify({
           from: `${ACADEMY_NAME} <${fromAddress}>`,

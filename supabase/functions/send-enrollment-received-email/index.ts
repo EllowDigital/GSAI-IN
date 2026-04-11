@@ -10,7 +10,7 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend';
+const RESEND_API_URL = 'https://api.resend.com/emails';
 const ACADEMY_EMAIL = ACADEMY_CONTACT_EMAIL;
 const ACADEMY_PHONE = '+91 63941 35988';
 const ACADEMY_LOGO_URL = 'https://ghataksportsacademy.com/assets/images/logo.webp';
@@ -159,10 +159,9 @@ Deno.serve(async (req) => {
     });
   }
 
-  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
   const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 
-  if (!LOVABLE_API_KEY || !RESEND_API_KEY) {
+  if (!RESEND_API_KEY) {
     return new Response(JSON.stringify({ error: 'Server misconfigured' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -215,12 +214,11 @@ Deno.serve(async (req) => {
           })
         : buildParentHtml(parentName, studentName, program);
 
-    const response = await fetch(`${GATEWAY_URL}/emails`, {
+    const response = await fetch(RESEND_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        'X-Connection-Api-Key': RESEND_API_KEY,
+        Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
         from: `${ACADEMY_NAME} <${fromAddress}>`,
