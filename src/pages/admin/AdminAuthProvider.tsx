@@ -452,6 +452,7 @@ function AdminAuthProviderInner({ children }: { children: ReactNode }) {
       }
 
       clearPersistedSupabaseSession();
+      clearPersistedSupabaseSession('admin');
       clearState({ keepLoading: true });
       if (typeof window !== 'undefined') {
         window.sessionStorage.removeItem(POST_LOGIN_REDIRECT_KEY);
