@@ -8,6 +8,23 @@ export const SUPABASE_ANON_KEY =
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
   '';
 
+const hasPlaceholderValue = (value: string): boolean => {
+  const normalized = value.trim().toLowerCase();
+  return (
+    !normalized ||
+    normalized.includes('your-project.supabase.co') ||
+    normalized.includes('your-public-anon-key') ||
+    normalized.includes('your_anon_key') ||
+    normalized.includes('your_supabase') ||
+    normalized.includes('example')
+  );
+};
+
+export const IS_SUPABASE_CONFIGURED =
+  !hasPlaceholderValue(SUPABASE_URL) &&
+  !hasPlaceholderValue(SUPABASE_ANON_KEY) &&
+  !hasPlaceholderValue(SUPABASE_PROJECT_ID);
+
 export const ADMIN_SESSION_STORAGE_KEY = 'gsai-admin-session';
 export const STUDENT_SESSION_STORAGE_KEY = 'gsai-student-session';
 export const ADMIN_VERIFIED_USER_STORAGE_KEY = 'gsai-admin-verified-user';
@@ -15,12 +32,12 @@ export const POST_LOGIN_REDIRECT_KEY = 'gsai-admin-post-login-route';
 
 // Validation function (called explicitly from main.tsx)
 export const validateSupabaseConfig = (): void => {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY || !SUPABASE_PROJECT_ID) {
+  if (!IS_SUPABASE_CONFIGURED) {
     const errorMsg = [
-      '🚨 CRITICAL: Missing Supabase environment variables!',
-      `SUPABASE_URL: ${SUPABASE_URL ? '✓ Set' : '✗ Missing'}`,
-      `SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY ? '✓ Set' : '✗ Missing'}`,
-      `SUPABASE_PROJECT_ID: ${SUPABASE_PROJECT_ID ? '✓ Set' : '✗ Missing'}`,
+      '🚨 CRITICAL: Invalid Supabase environment variables!',
+      `SUPABASE_URL: ${hasPlaceholderValue(SUPABASE_URL) ? '✗ Missing/Placeholder' : '✓ Set'}`,
+      `SUPABASE_ANON_KEY: ${hasPlaceholderValue(SUPABASE_ANON_KEY) ? '✗ Missing/Placeholder' : '✓ Set'}`,
+      `SUPABASE_PROJECT_ID: ${hasPlaceholderValue(SUPABASE_PROJECT_ID) ? '✗ Missing/Placeholder' : '✓ Set'}`,
       '',
       'For local development: Check your .env.local file',
       'For Netlify deployment: Set these in Netlify Dashboard:',
@@ -44,7 +61,7 @@ export const validateSupabaseConfig = (): void => {
       const message1 = document.createElement('p');
       message1.style.margin = '0';
       message1.textContent =
-        'The application is missing required Supabase configuration.';
+        'The application has missing or placeholder Supabase configuration.';
 
       const message2 = document.createElement('p');
       message2.style.cssText = 'margin:10px 0 0 0;font-size:14px;';

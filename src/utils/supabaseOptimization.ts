@@ -4,6 +4,7 @@
 
 import { supabase } from '@/services/supabase/client';
 import { performanceMonitor } from './performance';
+import { IS_SUPABASE_CONFIGURED } from '@/services/supabase/constants';
 
 // Connection pool management
 class ConnectionPoolManager {
@@ -165,6 +166,10 @@ export function clearExpiredCache(): void {
  * Initialize optimization features
  */
 export function initializeSupabaseOptimization(): void {
+  if (!IS_SUPABASE_CONFIGURED) {
+    return;
+  }
+
   // Clear expired cache on page load
   clearExpiredCache();
 
