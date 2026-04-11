@@ -33,6 +33,7 @@ import StudentEventsView from '@/components/student/StudentEventsView';
 import StudentAnnouncements from '@/components/student/StudentAnnouncements';
 import StudentBeltExamNotifications from '@/components/student/StudentBeltExamNotifications';
 import { downloadCertificateFile } from '@/utils/certificateDownload';
+import Seo from '@/components/seo/Seo';
 
 const PASSWORD_REDIRECT_METRIC_KEY = 'gsai-student-password-redirect-start-ms';
 
@@ -216,6 +217,13 @@ export default function StudentDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-background to-indigo-50/40 flex flex-col font-sans text-slate-900">
+      <Seo
+        title="Student Dashboard | GSAI Student Portal"
+        description="Private student dashboard for Ghatak Sports Academy India."
+        canonical="/student/dashboard"
+        noIndex
+        noFollow
+      />
       {/* --- ENHANCED NAVBAR --- */}
       <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm transition-all">
         <div className="flex h-16 items-center justify-between px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full gap-2 sm:gap-4">
