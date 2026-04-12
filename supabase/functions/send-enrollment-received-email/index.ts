@@ -1,5 +1,4 @@
 import {
-  ACADEMY_CONTACT_EMAIL,
   ACADEMY_NAME,
   getResendSenderAddress,
 } from '../_shared/emailConfig.ts';
@@ -13,8 +12,6 @@ const corsHeaders = {
 const RESEND_API_URL = 'https://api.resend.com/emails';
 const ADMIN_EMAIL = Deno.env.get('ACADEMY_CONTACT_EMAIL')?.trim() || '';
 const ADMIN_CC = Deno.env.get('ADMIN_CC_EMAIL')?.trim() || '';
-const ACADEMY_EMAIL = ACADEMY_CONTACT_EMAIL;
-const ACADEMY_PHONE = '+91 63941 35988';
 const ACADEMY_LOGO_URL = 'https://ghataksportsacademy.com/assets/images/logo.webp';
 const ADMIN_PORTAL_URL = 'https://ghataksportsacademy.com/admin';
 const RATE_LIMIT_WINDOW_MS = 60_000;
@@ -54,7 +51,7 @@ const ALLOWED_ORIGINS = new Set(
 );
 
 function isOriginAllowed(origin: string | null): boolean {
-  if (!origin) return true;
+  if (!origin) return ALLOWED_ORIGINS.size === 0;
 
   const normalizedOrigin = normalizeOrigin(origin);
   if (!normalizedOrigin) return false;
@@ -105,75 +102,6 @@ function escapeHtml(value: string): string {
 
 function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
-
-function buildParentHtml(parentName: string, studentName: string, program: string): string {
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1f2937; }
-    .wrapper { max-width: 600px; margin: 0 auto; padding: 30px 15px; }
-    .card { background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01); }
-    .header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 32px 24px; text-align: center; }
-    .logo { height: 56px; max-width: 220px; object-fit: contain; display: block; margin: 0 auto 12px; }
-    .academy { color: #f8fafc; font-size: 16px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin: 0; }
-    .body { padding: 40px 32px; color: #374151; line-height: 1.6; font-size: 16px; }
-    .body p { margin-top: 0; margin-bottom: 16px; }
-    .info-box { background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 0 20px; border-radius: 12px; margin: 28px 0; }
-    .info-row { padding: 12px 0; border-bottom: 1px solid #e2e8f0; }
-    .info-row:last-child { border-bottom: none; }
-    .info-label { color: #64748b; font-size: 13px; text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 4px; letter-spacing: 0.5px; }
-    .info-value { color: #0f172a; font-size: 16px; font-weight: 500; display: block; word-break: break-word; }
-    .footer { background-color: #f8fafc; border-top: 1px solid #e5e7eb; padding: 32px 24px; text-align: center; color: #64748b; font-size: 13px; }
-    .footer strong { color: #0f172a; font-size: 15px; display: block; margin-bottom: 8px; }
-    .footer a { color: #2563eb; text-decoration: none; font-weight: 500; }
-    .contact-line { margin: 12px 0; padding: 12px 0; border-top: 1px dashed #cbd5e1; border-bottom: 1px dashed #cbd5e1; }
-    @media only screen and (max-width: 480px) {
-      .body { padding: 30px 20px; }
-      .header { padding: 24px 16px; }
-    }
-  </style>
-</head>
-<body>
-  <div class="wrapper">
-    <div class="card">
-      <div class="header">
-        <img class="logo" src="${ACADEMY_LOGO_URL}" alt="${ACADEMY_NAME} logo" />
-        <div class="academy">${ACADEMY_NAME}</div>
-      </div>
-      <div class="body">
-        <p>Namaste <strong>${escapeHtml(parentName)}</strong> ji,</p>
-        <p>We have successfully received the enrollment request for <strong>${escapeHtml(studentName)}</strong> in the <strong>${escapeHtml(program)}</strong> program.</p>
-        
-        <div class="info-box">
-          <div class="info-row">
-            <span class="info-label">Current Status</span>
-            <span class="info-value" style="color: #0284c7;">Request Received</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Next Step</span>
-            <span class="info-value">Our team will contact you within 24 hours to proceed.</span>
-          </div>
-        </div>
-        
-        <p style="margin-top: 24px;">Thank you for choosing ${ACADEMY_NAME}. We look forward to speaking with you soon.</p>
-      </div>
-      <div class="footer">
-        <strong>${ACADEMY_NAME}</strong>
-        <div class="contact-line">
-          WhatsApp/Phone: ${ACADEMY_PHONE}<br/>
-          Email: <a href="mailto:${ACADEMY_EMAIL}">${ACADEMY_EMAIL}</a>
-        </div>
-        <p style="margin-top:16px; font-size: 12px;">This is an automated message from our official academy portal. Please do not reply directly to this email.</p>
-      </div>
-    </div>
-  </div>
-</body>
-</html>`;
 }
 
 function buildAdminHtml(details: {
@@ -310,7 +238,7 @@ Deno.serve(async (req) => {
     });
   }
 
-  const requesterKey = `${getClientAddress(req)}::${origin ?? 'no-origin'}`;
+  const requesterKey = getClientAddress(req) || 'unknown-client';
   if (!enforceRateLimit(requesterKey)) {
     return new Response(JSON.stringify({ error: 'Rate limited' }), {
       status: 429,

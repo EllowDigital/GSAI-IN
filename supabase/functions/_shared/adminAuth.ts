@@ -1,5 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { verifyRequestJwt } from './requestAuth.ts';
+import { RequestJwtError, verifyRequestJwt } from './requestAuth.ts';
 
 export class RequestAuthError extends Error {
   status: number;
@@ -38,9 +38,13 @@ export async function requireAuthenticatedUser(req: Request): Promise<string> {
   try {
     payload = await verifyRequestJwt(req);
   } catch (error) {
+    if (error instanceof RequestJwtError) {
+      throw new RequestAuthError(error.status, error.message);
+    }
+
     const message =
-      error instanceof Error ? error.message : 'Missing or invalid token';
-    throw new RequestAuthError(401, message);
+      error instanceof Error ? error.message : 'Auth verification failed';
+    throw new RequestAuthError(500, message);
   }
 
   const userId =

@@ -94,29 +94,60 @@ Deno.serve(async (req) => {
 
     const userAgent = (body.user_agent || '').toString().trim().slice(0, 512) || null;
 
-    const { error: upsertError } = await supabaseAdmin
-      .from('push_subscriptions')
-      .upsert(
-        {
-          auth_user_id: userId,
-          portal_scope: body.portal_scope,
-          endpoint,
-          p256dh,
-          auth,
-          expiration_time: subscription.expirationTime,
-          user_agent: userAgent,
-          is_active: true,
-          fail_count: 0,
-          disabled_at: null,
-          disable_reason: null,
-          last_seen_at: new Date().toISOString(),
-          metadata: body.metadata || {},
-        },
-        { onConflict: 'endpoint' }
-      );
+    const subscriptionRecord = {
+      auth_user_id: userId,
+      portal_scope: body.portal_scope,
+      endpoint,
+      p256dh,
+      auth,
+      expiration_time: subscription.expirationTime,
+      user_agent: userAgent,
+      is_active: true,
+      fail_count: 0,
+      disabled_at: null,
+      disable_reason: null,
+      last_seen_at: new Date().toISOString(),
+      metadata: body.metadata || {},
+    };
 
-    if (upsertError) {
-      return json(500, { error: upsertError.message });
+    const { error: insertError } = await supabaseAdmin
+      .from('push_subscriptions')
+      .insert(subscriptionRecord);
+
+    if (insertError && insertError.code !== '23505') {
+      return json(500, { error: insertError.message });
+    }
+
+    if (insertError?.code === '23505') {
+      const { data: existing, error: existingError } = await supabaseAdmin
+        .from('push_subscriptions')
+        .select('auth_user_id')
+        .eq('endpoint', endpoint)
+        .maybeSingle();
+
+      if (existingError) {
+        return json(500, { error: existingError.message });
+      }
+
+      if (!existing) {
+        return json(500, { error: 'Unable to verify subscription ownership' });
+      }
+
+      if (existing.auth_user_id !== userId) {
+        return json(409, {
+          error: 'Subscription endpoint already belongs to another user',
+        });
+      }
+
+      const { error: updateError } = await supabaseAdmin
+        .from('push_subscriptions')
+        .update(subscriptionRecord)
+        .eq('endpoint', endpoint)
+        .eq('auth_user_id', userId);
+
+      if (updateError) {
+        return json(500, { error: updateError.message });
+      }
     }
 
     return json(200, { success: true });
