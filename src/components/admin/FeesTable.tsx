@@ -26,7 +26,13 @@ export default function FeesTable({
   onEditFee,
   onShowHistory,
 }: {
-  rows: { student: any; fee: any | null; programName: string; rowKey: string }[];
+  rows: {
+    student: any;
+    fee: any | null;
+    programName: string;
+    rowKey: string;
+    expectedMonthlyFee: number;
+  }[];
   isLoading: boolean;
   onEditFee: (args: { student: any; fee?: any; programName: string }) => void;
   onShowHistory: (student: any) => void;
@@ -99,7 +105,7 @@ export default function FeesTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.map(({ student, fee, programName, rowKey }) => {
+          {rows.map(({ student, fee, programName, rowKey, expectedMonthlyFee }) => {
             const status = fee ? getFeeStatus(fee) : 'unpaid';
             const [statusText, statusClass] = getStatusTextAndColor(status);
             return (
@@ -140,7 +146,7 @@ export default function FeesTable({
                     ₹
                     {fee
                       ? fee.monthly_fee.toLocaleString()
-                      : student.default_monthly_fee.toLocaleString()}
+                      : expectedMonthlyFee.toLocaleString()}
                   </span>
                 </TableCell>
                 <TableCell>

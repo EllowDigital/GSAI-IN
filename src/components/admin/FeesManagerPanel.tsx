@@ -32,7 +32,11 @@ import {
 } from 'lucide-react';
 import { FeeCardsGridSkeleton, FeeTableSkeleton } from './AdminSkeletons';
 import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
-import { parseProgramNames } from '@/utils/studentPrograms';
+import {
+  normalizeProgramName,
+  parseProgramNames,
+  programKey,
+} from '@/utils/studentPrograms';
 
 type FeesManagerPanelSection = 'all' | 'records' | 'stats';
 
@@ -151,6 +155,27 @@ export default function FeesManagerPanel({
     staleTime: 1000 * 60 * 5,
   });
 
+  const { data: feeOverrides = [] } = useQuery({
+    queryKey: ['student-program-fee-overrides'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('student_program_fee_overrides')
+        .select('student_id, program_name, monthly_fee');
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const feeOverrideMap = useMemo(() => {
+    const map = new Map<string, number>();
+    feeOverrides.forEach((override: any) => {
+      const key = `${override.student_id}::${programKey(override.program_name)}`;
+      map.set(key, Number(override.monthly_fee || 0));
+    });
+    return map;
+  }, [feeOverrides]);
+
   // All fees for history drawer
   const { data: allFees } = useQuery({
     queryKey: ['fees', 'all'],
@@ -171,12 +196,17 @@ export default function FeesManagerPanel({
         const existingFee = fees?.find(
           (f) =>
             f.student_id === studentId &&
-            (f.program_name || '').toLowerCase() ===
-              (programName || '').toLowerCase()
+            programKey(f.program_name) === programKey(programName)
         );
 
+        const overrideFee = feeOverrideMap.get(
+          `${studentId}::${programKey(programName)}`
+        );
         const programFee =
-          programFees?.[programName] ?? student?.default_monthly_fee ?? 2000;
+          overrideFee ??
+          programFees?.[normalizeProgramName(programName)] ??
+          student?.default_monthly_fee ??
+          2000;
         const discountPercent = student?.discount_percent ?? 0;
         const monthlyFee =
           discountPercent > 0
@@ -194,7 +224,7 @@ export default function FeesManagerPanel({
           // Create new fee record
           const { error } = await supabase.from('fees').insert({
             student_id: studentId,
-            program_name: programName,
+            program_name: normalizeProgramName(programName),
             month: filterMonth,
             year: filterYear,
             monthly_fee: monthlyFee,
@@ -238,13 +268,23 @@ export default function FeesManagerPanel({
       const programMap = new Map<string, string[]>();
 
       students.forEach((student) => {
+        const normalizedProgramMap = new Map<string, string>();
+
         const fromJunction = allStudentPrograms
           .filter((programRow: any) => programRow.student_id === student.id)
-          .map((programRow: any) => (programRow.program_name || '').trim())
+          .map((programRow: any) => normalizeProgramName(programRow.program_name))
           .filter(Boolean);
 
         const fallback = parseProgramNames(student.program);
-        const allPrograms = Array.from(new Set([...fromJunction, ...fallback]));
+        [...fromJunction, ...fallback].forEach((name) => {
+          const key = programKey(name);
+          if (!key) return;
+          if (!normalizedProgramMap.has(key)) {
+            normalizedProgramMap.set(key, normalizeProgramName(name));
+          }
+        });
+
+        const allPrograms = Array.from(normalizedProgramMap.values());
         const normalizedPrograms = allPrograms.length > 0 ? allPrograms : ['General'];
         programMap.set(student.id, normalizedPrograms);
       });
@@ -252,7 +292,7 @@ export default function FeesManagerPanel({
       const existingFeeKeys = new Set(
         (fees || []).map(
           (feeRow) =>
-            `${feeRow.student_id}::${(feeRow.program_name || 'General').toLowerCase()}`
+            `${feeRow.student_id}::${programKey(feeRow.program_name || 'General')}`
         )
       );
 
@@ -261,11 +301,16 @@ export default function FeesManagerPanel({
       students.forEach((student) => {
         const studentPrograms = programMap.get(student.id) || ['General'];
         studentPrograms.forEach((programName) => {
-          const rowKey = `${student.id}::${programName.toLowerCase()}`;
+          const normalizedProgram = normalizeProgramName(programName);
+          const rowKey = `${student.id}::${programKey(normalizedProgram)}`;
           if (existingFeeKeys.has(rowKey)) return;
 
+          const overrideFee = feeOverrideMap.get(rowKey);
           const configuredProgramFee =
-            programFees?.[programName] ?? student.default_monthly_fee ?? 2000;
+            overrideFee ??
+            programFees?.[normalizedProgram] ??
+            student.default_monthly_fee ??
+            2000;
           const discountPercent = student.discount_percent ?? 0;
           const effectiveFee =
             discountPercent > 0
@@ -274,7 +319,7 @@ export default function FeesManagerPanel({
 
           records.push({
             student_id: student.id,
-            program_name: programName,
+            program_name: normalizedProgram,
             month: filterMonth,
             year: filterYear,
             monthly_fee: effectiveFee,
@@ -282,38 +327,51 @@ export default function FeesManagerPanel({
             balance_due: effectiveFee,
             status: 'unpaid',
           });
-        });
-      });
+                const normalizedProgramMap = new Map<string, string>();
 
+                const fromJunction = allStudentPrograms
+      });
+                  .map((programRow: any) => normalizeProgramName(programRow.program_name))
       if (records.length === 0)
         throw new Error('All student-program fee records already exist for this month');
-
-      const { error } = await supabase.from('fees').insert(records);
-      if (error) throw error;
+                [...fromJunction, ...fallbackPrograms].forEach((name) => {
+                  const key = programKey(name);
+                  if (!key) return;
+                  if (!normalizedProgramMap.has(key)) {
+                    normalizedProgramMap.set(key, normalizeProgramName(name));
+                  }
+                });
+                const studentPrograms = Array.from(normalizedProgramMap.values());
       return records.length;
     },
     onSuccess: (count) => {
+                  const normalizedProgram = normalizeProgramName(programName);
       queryClient.invalidateQueries({ queryKey: ['fees'] });
       toast({
         title: 'Batch Generated',
         description: `Created ${count} student-program fee records`,
-      });
-    },
+                        programKey(feeRow.program_name) === programKey(normalizedProgram)
     onError: (error: any) => {
       toast({
+                  const overrideFee = feeOverrideMap.get(
+                    `${student.id}::${programKey(normalizedProgram)}`
+                  );
         title: 'Error',
-        description: getFriendlySupabaseMessage(
+                    overrideFee ??
+                    programFees?.[normalizedProgram] ??
+                    student.default_monthly_fee ??
+                    2000;
           error,
           'Failed to generate fee records'
         ),
         variant: 'error',
       });
-    },
+                  const rowKey = `${student.id}::${programKey(normalizedProgram)}`;
   });
 
   // Compose filtered rows
   const emailByStudentId = new Map<string, string>();
-  for (const row of enrollmentEmails) {
+                    programName: normalizedProgram,
     const studentId = (row.linked_student_id || '').toString();
     const email = ((row.student_email || row.parent_email || '') as string)
       .toString()
@@ -344,8 +402,22 @@ export default function FeesManagerPanel({
                     programName.toLowerCase()
               ) || null;
             const reminderEmail = emailByStudentId.get(student.id) || null;
+            const configuredFee =
+              programFees?.[programName] ?? student.default_monthly_fee ?? 2000;
+            const discountPercent = student.discount_percent ?? 0;
+            const expectedMonthlyFee =
+              discountPercent > 0
+                ? Math.round(configuredFee * (1 - discountPercent / 100))
+                : configuredFee;
             const rowKey = `${student.id}::${programName}`;
-            return { student, fee, reminderEmail, programName, rowKey };
+            return {
+              student,
+              fee,
+              reminderEmail,
+              programName,
+              rowKey,
+              expectedMonthlyFee,
+            };
           });
         })
         .filter((row) => {
@@ -375,9 +447,7 @@ export default function FeesManagerPanel({
       if (r.fee) {
         return sum + Number(r.fee.balance_due || 0);
       }
-      const configuredFee =
-        programFees?.[r.programName] ?? r.student.default_monthly_fee ?? 0;
-      return sum + Number(configuredFee || 0);
+      return sum + Number(r.expectedMonthlyFee || 0);
     }, 0);
 
     return {

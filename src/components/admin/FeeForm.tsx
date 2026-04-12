@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Loader2, IndianRupee, Receipt, StickyNote, Tag } from 'lucide-react';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from '@/hooks/useToast';
@@ -16,7 +17,10 @@ import { supabase } from '@/services/supabase/client';
 import { FeeReceiptUploader } from './FeeReceiptUploader';
 import { getFeeStatus } from '@/utils/feeStatusUtils';
 import { safeAsync, formatErrorForDisplay } from '@/utils/errorHandling';
-import { parseProgramNames } from '@/utils/studentPrograms';
+import {
+  normalizeProgramName,
+  parseProgramNames,
+} from '@/utils/studentPrograms';
 
 type Props = {
   student: any;
@@ -62,6 +66,7 @@ export function FeeForm({
   setLoading,
   onClose,
 }: Props) {
+  const queryClient = useQueryClient();
   const [selectedProgramName, setSelectedProgramName] = React.useState(
     initialProgramName
   );
@@ -158,8 +163,26 @@ export function FeeForm({
     enabled: !!selectedProgramName,
   });
 
+  const { data: customProgramFee } = useQuery({
+    queryKey: ['student-program-fee-override', student?.id, selectedProgramName],
+    queryFn: async () => {
+      if (!student?.id || !selectedProgramName) return null;
+      const { data, error } = await supabase
+        .from('student_program_fee_overrides')
+        .select('monthly_fee')
+        .eq('student_id', student.id)
+        .eq('program_name', selectedProgramName)
+        .maybeSingle();
+      if (error) throw error;
+      return data?.monthly_fee != null ? Number(data.monthly_fee) : null;
+    },
+    enabled: !!student?.id && !!selectedProgramName,
+    staleTime: 1000 * 60 * 2,
+  });
+
   // Priority: student's own default_monthly_fee > program fee from settings > 2000
-  const baseFee = student?.default_monthly_fee ?? programFeeValue ?? 2000;
+  const baseFee =
+    customProgramFee ?? programFeeValue ?? student?.default_monthly_fee ?? 2000;
   const programBaseFee = programFeeValue ?? 2000;
   const discountPercent = student?.discount_percent ?? 0;
   const discountedFee =
@@ -173,6 +196,7 @@ export function FeeForm({
     notes: string;
     receipt_url: string | null;
     status_override: string;
+    save_as_default: boolean;
   }>({
     defaultValues: {
       monthly_fee: fee?.monthly_fee ?? discountedFee,
@@ -180,6 +204,7 @@ export function FeeForm({
       notes: fee?.notes ?? '',
       receipt_url: fee?.receipt_url || null,
       status_override: fee?.status || 'auto',
+      save_as_default: false,
     },
   });
 
@@ -192,8 +217,9 @@ export function FeeForm({
       notes: fee?.notes ?? '',
       receipt_url: fee?.receipt_url || null,
       status_override: fee?.status || 'auto',
+      save_as_default: false,
     });
-  }, [fee, student, discountedFee, selectedProgramName]);
+  }, [fee, student, discountedFee, selectedProgramName, customProgramFee]);
 
   const receiptUrlWatched = useWatch({
     control: form.control,
@@ -219,6 +245,11 @@ export function FeeForm({
 
   const monthly_fee = Number(monthlyFeeWatched || 0);
   const paid_amount = Number(paidAmountWatched || 0);
+  const saveAsDefaultWatched = useWatch({
+    control: form.control,
+    name: 'save_as_default',
+    defaultValue: form.getValues('save_as_default'),
+  });
 
   const calcBalance = () => {
     let bal = monthly_fee + (effectiveCarryForward || 0) - paid_amount;
@@ -241,6 +272,7 @@ export function FeeForm({
     notes: string;
     receipt_url?: string | null;
     status_override: string;
+    save_as_default: boolean;
   }) {
     if (!student || typeof student.id !== 'string') {
       toast({
@@ -271,9 +303,10 @@ export function FeeForm({
     setLoading(true);
     const { data: result, error } = await safeAsync(async () => {
       const now = new Date().toISOString();
+      const normalizedProgram = normalizeProgramName(selectedProgramName) || 'General';
       const basePayload = {
         student_id: student.id,
-        program_name: selectedProgramName,
+        program_name: normalizedProgram,
         month,
         year,
         monthly_fee,
@@ -292,6 +325,7 @@ export function FeeForm({
           ? { ...basePayload }
           : { ...basePayload, created_at: now };
 
+      let savedData: any;
       if (fee && fee.id) {
         const { data, error } = await supabase
           .from('fees')
@@ -300,7 +334,7 @@ export function FeeForm({
           .select()
           .maybeSingle();
         if (error) throw error;
-        return data;
+        savedData = data;
       } else {
         const { data, error } = await supabase
           .from('fees')
@@ -310,8 +344,27 @@ export function FeeForm({
           .select()
           .maybeSingle();
         if (error) throw error;
-        return data;
+        savedData = data;
       }
+
+      if (values.save_as_default) {
+        const { error: overrideError } = await supabase
+          .from('student_program_fee_overrides')
+          .upsert(
+            [
+              {
+                student_id: student.id,
+                program_name: normalizedProgram,
+                monthly_fee,
+                updated_at: now,
+              },
+            ],
+            { onConflict: 'student_id,program_name' }
+          );
+        if (overrideError) throw overrideError;
+      }
+
+      return savedData;
     }, 'Fee Form Submission');
 
     setLoading(false);
@@ -322,6 +375,10 @@ export function FeeForm({
         variant: 'error',
       });
     } else {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['fees'] }),
+        queryClient.invalidateQueries({ queryKey: ['student-program-fee-overrides'] }),
+      ]);
       toast({
         title: 'Fee saved successfully',
         description: `Fee record for ${student.name} has been ${fee?.id ? 'updated' : 'created'}.`,
@@ -384,6 +441,7 @@ export function FeeForm({
           <Select
             value={selectedProgramName}
             onValueChange={setSelectedProgramName}
+            disabled={Boolean(fee?.id)}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select program" />
@@ -396,6 +454,11 @@ export function FeeForm({
               ))}
             </SelectContent>
           </Select>
+          {fee?.id ? (
+            <p className="text-[11px] text-muted-foreground">
+              Program is locked for existing records. Create a new row for another program.
+            </p>
+          ) : null}
         </div>
         {programFeeValue && (
           <div className="flex items-center gap-2 p-2.5 rounded-lg bg-blue-50 border border-blue-200 text-xs">
@@ -406,6 +469,14 @@ export function FeeForm({
             </span>
           </div>
         )}
+        {customProgramFee != null ? (
+          <div className="flex items-center gap-2 p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs">
+            <IndianRupee className="w-3.5 h-3.5 text-emerald-700 flex-shrink-0" />
+            <span className="text-emerald-800">
+              Custom default for this student-program: <strong>₹{customProgramFee.toLocaleString('en-IN')}/month</strong>
+            </span>
+          </div>
+        ) : null}
         {discountPercent > 0 && (
           <div className="flex items-center gap-2 p-2.5 rounded-lg bg-green-50 border border-green-200 text-xs">
             <Tag className="w-3.5 h-3.5 text-green-600 flex-shrink-0" />
@@ -417,6 +488,25 @@ export function FeeForm({
           </div>
         )}
       </div>
+
+      {!fee?.id ? (
+        <div className="flex items-start gap-2 rounded-lg border border-border/60 bg-muted/30 p-2.5">
+          <Checkbox
+            id="save-as-default"
+            checked={Boolean(saveAsDefaultWatched)}
+            onCheckedChange={(checked) =>
+              form.setValue('save_as_default', Boolean(checked))
+            }
+          />
+          <label
+            htmlFor="save-as-default"
+            className="text-xs text-muted-foreground leading-5 cursor-pointer"
+          >
+            Save this amount as the custom monthly default for this student in
+            this program.
+          </label>
+        </div>
+      ) : null}
 
       {/* Fee Amounts */}
       <div className="grid grid-cols-2 gap-3">

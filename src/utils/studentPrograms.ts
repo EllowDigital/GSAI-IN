@@ -1,3 +1,11 @@
+export function normalizeProgramName(input?: string | null): string {
+  return (input || '').trim();
+}
+
+export function programKey(input?: string | null): string {
+  return normalizeProgramName(input).toLowerCase();
+}
+
 export function parseProgramNames(input?: string | null): string[] {
   if (!input) return [];
 
@@ -8,10 +16,10 @@ export function parseProgramNames(input?: string | null): string[] {
     .map((programName) => programName.trim())
     .filter(Boolean)
     .forEach((programName) => {
-      const normalizedKey = programName.toLowerCase();
+      const normalizedKey = programKey(programName);
       if (normalizedKey === 'unassigned') return;
       if (!uniquePrograms.has(normalizedKey)) {
-        uniquePrograms.set(normalizedKey, programName);
+        uniquePrograms.set(normalizedKey, normalizeProgramName(programName));
       }
     });
 

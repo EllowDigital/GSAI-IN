@@ -15,6 +15,7 @@ interface FeesCardsProps {
     reminderEmail?: string | null;
     programName: string;
     rowKey: string;
+    expectedMonthlyFee: number;
   }[];
   onEditFee: (args: { student: any; fee?: any; programName: string }) => void;
   onShowHistory: (student: any) => void;
@@ -50,7 +51,7 @@ export default function FeesCards({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
-      {rows.map(({ student, fee, reminderEmail, programName, rowKey }) => {
+      {rows.map(({ student, fee, reminderEmail, programName, rowKey, expectedMonthlyFee }) => {
         const status = fee ? getFeeStatus(fee) : 'unpaid';
         const [statusText, statusClass] = getStatusTextAndColor(status);
         const isSelected = selectedIds.has(rowKey);
@@ -135,7 +136,7 @@ export default function FeesCards({
                     Fee
                   </span>
                   <span className="font-medium text-foreground">
-                    ₹{fee ? fee.monthly_fee : student.default_monthly_fee}
+                    ₹{fee ? fee.monthly_fee : expectedMonthlyFee}
                   </span>
                 </div>
                 <div className="flex flex-col">
@@ -184,7 +185,7 @@ export default function FeesCards({
                         studentEmail={reminderEmail || ''}
                         parentEmail={student.parent_email || ''}
                         amount={
-                          fee ? fee.balance_due : student.default_monthly_fee
+                          fee ? fee.balance_due : expectedMonthlyFee
                         }
                         month={fee ? fee.month : filterMonth}
                         year={fee ? fee.year : filterYear}
