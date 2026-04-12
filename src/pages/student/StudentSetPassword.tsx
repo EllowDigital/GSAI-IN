@@ -41,11 +41,6 @@ export default function StudentSetPassword() {
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // --- Dynamic Page Title ---
-  useEffect(() => {
-    document.title = 'Set Password | GSAI Portal';
-  }, []);
-
   // Session Check
   useEffect(() => {
     if (authLoading) return;
