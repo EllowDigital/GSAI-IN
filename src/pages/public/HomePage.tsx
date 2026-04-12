@@ -361,7 +361,7 @@ const videoStructuredData = {
   description:
     'Watch our introductory video showcasing martial arts training, facilities, and student achievements at Ghatak Sports Academy India in Lucknow.',
   thumbnailUrl: 'https://ghataksportsacademy.com/assets/images/logo.webp',
-  uploadDate: '2025-03-01',
+  uploadDate: '2025-03-01T00:00:00+05:30',
   contentUrl: 'https://ghataksportsacademy.com/assets/hero/intro.mp4',
   embedUrl: 'https://ghataksportsacademy.com/',
 };
