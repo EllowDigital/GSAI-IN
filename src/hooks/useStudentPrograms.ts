@@ -102,6 +102,7 @@ export function useStudentPrograms(studentId?: string) {
       queryClient.invalidateQueries({ queryKey: ['student-programs', studentId] });
       queryClient.invalidateQueries({ queryKey: ['student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['student-programs-all'] });
       queryClient.invalidateQueries({ queryKey: ['students'] });
       toast.success(`Added ${cleanProgramName} program`);
       return true;
@@ -133,6 +134,7 @@ export function useStudentPrograms(studentId?: string) {
       queryClient.invalidateQueries({ queryKey: ['student-programs', studentId] });
       queryClient.invalidateQueries({ queryKey: ['student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['student-programs-all'] });
       queryClient.invalidateQueries({ queryKey: ['students'] });
       toast.success('Program removed');
       return true;

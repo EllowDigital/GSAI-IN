@@ -80,39 +80,10 @@ export default function StudentDashboard() {
   const queryClient = useQueryClient();
   const studentId = profile?.studentId;
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(null);
   const dashboardTitle = profile?.studentName
     ? `${profile.studentName} | GSAI Student Portal`
     : 'Student Dashboard | GSAI Student Portal';
-
-  const programBadges = useMemo(() => {
-    const normalized = new Map<string, Program>();
-
-    enrolledPrograms.forEach((program) => {
-      const name = (program.program_name || '').trim();
-      if (!name) return;
-      normalized.set(name.toLowerCase(), {
-        ...program,
-        program_name: name,
-      });
-    });
-
-    const fallbackProgram = (profile?.program || '').trim();
-    if (
-      fallbackProgram &&
-      fallbackProgram.toLowerCase() !== 'unassigned' &&
-      !normalized.has(fallbackProgram.toLowerCase())
-    ) {
-      normalized.set(fallbackProgram.toLowerCase(), {
-        program_name: fallbackProgram,
-        is_primary: normalized.size === 0,
-        joined_at: '',
-      });
-    }
-
-    return Array.from(normalized.values()).sort(
-      (a, b) => Number(b.is_primary) - Number(a.is_primary)
-    );
-  }, [enrolledPrograms, profile?.program]);
 
   const handleRefreshAllData = useCallback(async () => {
     if (!studentId || isRefreshing) return;
@@ -152,6 +123,7 @@ export default function StudentDashboard() {
         type: 'active',
       });
 
+      setLastRefreshedAt(new Date());
       toast.success('Dashboard refreshed with latest data.');
     } catch (error) {
       console.error('Student refresh-all failed', error);
@@ -218,6 +190,36 @@ export default function StudentDashboard() {
     gcTime: 1000 * 60 * 30,
     refetchOnWindowFocus: false,
   });
+
+  const programBadges = useMemo(() => {
+    const normalized = new Map<string, Program>();
+
+    enrolledPrograms.forEach((program) => {
+      const name = (program.program_name || '').trim();
+      if (!name) return;
+      normalized.set(name.toLowerCase(), {
+        ...program,
+        program_name: name,
+      });
+    });
+
+    const fallbackProgram = (profile?.program || '').trim();
+    if (
+      fallbackProgram &&
+      fallbackProgram.toLowerCase() !== 'unassigned' &&
+      !normalized.has(fallbackProgram.toLowerCase())
+    ) {
+      normalized.set(fallbackProgram.toLowerCase(), {
+        program_name: fallbackProgram,
+        is_primary: normalized.size === 0,
+        joined_at: '',
+      });
+    }
+
+    return Array.from(normalized.values()).sort(
+      (a, b) => Number(b.is_primary) - Number(a.is_primary)
+    );
+  }, [enrolledPrograms, profile?.program]);
 
   const { data: myRegistrations = [] } = useQuery<Registration[]>({
     queryKey: ['my-registrations', studentId],
@@ -350,6 +352,11 @@ export default function StudentDashboard() {
 
           {/* Right: Actions */}
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            {lastRefreshedAt && (
+              <span className="hidden xl:inline text-[11px] text-muted-foreground whitespace-nowrap">
+                Updated {format(lastRefreshedAt, 'h:mm a')}
+              </span>
+            )}
             <Button
               variant="outline"
               size="sm"

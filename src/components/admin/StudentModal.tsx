@@ -69,11 +69,7 @@ export default function StudentModal({
 }: StudentModalProps) {
   const { getWhiteBeltId } = useBeltLevels();
   const { disciplineOptions } = useDisciplines();
-  const {
-    programs: existingPrograms,
-    addProgram,
-    removeProgram,
-  } = useStudentPrograms(student?.id);
+  const { programs: existingPrograms } = useStudentPrograms(student?.id);
   const [additionalPrograms, setAdditionalPrograms] = useState<string[]>([]);
   const [addingProgram, setAddingProgram] = useState('');
   const queryClient = useQueryClient();
@@ -137,6 +133,21 @@ export default function StudentModal({
         default_monthly_fee: student.default_monthly_fee ?? 2000,
         discount_percent: student.discount_percent ?? 0,
       });
+
+      const existingSecondary = existingPrograms
+        .filter((p) => !p.is_primary)
+        .map((p) => p.program_name)
+        .filter(Boolean);
+      const legacyPrograms = (student.program || '')
+        .split(',')
+        .map((programName: string) => sanitizeText(programName.trim()))
+        .filter(Boolean)
+        .filter(
+          (programName: string) =>
+            programName.toLowerCase() !== primaryProgram.toLowerCase()
+        );
+
+      setAdditionalPrograms(Array.from(new Set([...existingSecondary, ...legacyPrograms])));
     } else {
       form.reset({
         name: '',
@@ -149,40 +160,32 @@ export default function StudentModal({
         default_monthly_fee: globalFee ?? 2000,
         discount_percent: 0,
       });
+      setAdditionalPrograms([]);
     }
-  }, [student, open, globalFee, primaryFromDB]);
+  }, [student, open, globalFee, primaryFromDB, existingPrograms]);
 
   const handleAvatarUpload = (url: string) =>
     form.setValue('profile_image_url', url);
 
   const currentPrimary = useWatch({ control: form.control, name: 'program' });
-  const enrolledProgramNames = student
-    ? existingPrograms.map((p) => p.program_name)
-    : [currentPrimary, ...additionalPrograms].filter(Boolean);
+  const enrolledProgramNames = [currentPrimary, ...additionalPrograms].filter(
+    Boolean
+  );
 
   const availableToAdd = programOptions.filter(
     (p) => !enrolledProgramNames.includes(p.value)
   );
 
-  const handleAddAdditionalProgram = async () => {
+  const handleAddAdditionalProgram = () => {
     if (!addingProgram) return;
-    if (student) {
-      await addProgram(student.id, addingProgram, student.join_date);
-    } else {
-      setAdditionalPrograms((prev) => [...prev, addingProgram]);
-    }
+    setAdditionalPrograms((prev) =>
+      prev.includes(addingProgram) ? prev : [...prev, addingProgram]
+    );
     setAddingProgram('');
   };
 
-  const handleRemoveAdditionalProgram = async (programName: string) => {
-    if (student) {
-      const prog = existingPrograms.find(
-        (p) => p.program_name === programName && !p.is_primary
-      );
-      if (prog) await removeProgram(prog.id, student.id);
-    } else {
-      setAdditionalPrograms((prev) => prev.filter((p) => p !== programName));
-    }
+  const handleRemoveAdditionalProgram = (programName: string) => {
+    setAdditionalPrograms((prev) => prev.filter((p) => p !== programName));
   };
 
   const normalizeJoinDate = (joinDate?: string) => {
@@ -334,12 +337,11 @@ export default function StudentModal({
       };
 
       if (student) {
-        const selectedPrimaryLower = sanitizedValues.program.toLowerCase();
-        const additionalProgramNames = existingPrograms
-          .map((p) => p.program_name)
-          .filter((programName) =>
-            (programName || '').trim().toLowerCase() !== selectedPrimaryLower
-          );
+        const additionalProgramNames = additionalPrograms.filter(
+          (programName) =>
+            (programName || '').trim().toLowerCase() !==
+            sanitizedValues.program.toLowerCase()
+        );
 
         const allProgramNames = await syncStudentPrograms({
           studentId: student.id,
@@ -410,6 +412,7 @@ export default function StudentModal({
         `Student ${student ? 'updated' : 'created'}: ${result?.name}`
       );
       queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['student-programs-all'] });
       queryClient.invalidateQueries({ queryKey: ['student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['students'] });
       queryClient.invalidateQueries({ queryKey: ['students-portal-status'] });
@@ -512,21 +515,16 @@ export default function StudentModal({
             <div className="space-y-2">
               <FormLabel>Additional Programs</FormLabel>
               <div className="flex flex-wrap gap-1.5">
-                {(student
-                  ? existingPrograms.filter((p) => !p.is_primary)
-                  : additionalPrograms.map((p) => ({ program_name: p }))
-                ).map((prog: any) => (
+                {additionalPrograms.map((programName) => (
                   <Badge
-                    key={prog.program_name}
+                    key={programName}
                     variant="secondary"
                     className="gap-1 pr-1"
                   >
-                    {prog.program_name}
+                    {programName}
                     <button
                       type="button"
-                      onClick={() =>
-                        handleRemoveAdditionalProgram(prog.program_name)
-                      }
+                      onClick={() => handleRemoveAdditionalProgram(programName)}
                       className="ml-1 hover:bg-destructive/20 rounded-full p-0.5"
                     >
                       <X className="h-3 w-3" />
