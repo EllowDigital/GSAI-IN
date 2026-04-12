@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/services/supabase/client';
 import { Input } from '@/components/ui/input';
@@ -41,10 +41,6 @@ export default function FeeHistoryLogPanel() {
   const [toDate, setToDate] = useState('');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
-
-  useEffect(() => {
-    setPage(1);
-  }, [statusFilter, yearFilter, fromDate, toDate, pageSize]);
 
   const pageFrom = (page - 1) * pageSize;
   const pageTo = pageFrom + pageSize - 1;
@@ -121,12 +117,7 @@ export default function FeeHistoryLogPanel() {
   const fees = feesResponse?.rows || [];
   const totalCount = feesResponse?.totalCount || 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
-
-  useEffect(() => {
-    if (page > totalPages) {
-      setPage(totalPages);
-    }
-  }, [page, totalPages]);
+  const currentPage = Math.min(page, totalPages);
 
   const studentIds = useMemo(
     () => [...new Set(fees.map((row) => row.student_id).filter(Boolean))],
@@ -273,7 +264,10 @@ export default function FeeHistoryLogPanel() {
                 <Filter className="h-4 w-4 text-muted-foreground" />
                 <select
                   value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
+                  onChange={(e) => {
+                    setStatusFilter(e.target.value);
+                    setPage(1);
+                  }}
                   className="h-9 w-full bg-transparent text-sm outline-none"
                 >
                   <option value="">All Status</option>
@@ -287,7 +281,10 @@ export default function FeeHistoryLogPanel() {
                 <FileClock className="h-4 w-4 text-muted-foreground" />
                 <select
                   value={yearFilter}
-                  onChange={(e) => setYearFilter(e.target.value)}
+                  onChange={(e) => {
+                    setYearFilter(e.target.value);
+                    setPage(1);
+                  }}
                   className="h-9 w-full bg-transparent text-sm outline-none"
                 >
                   <option value="">All Years</option>
@@ -302,7 +299,10 @@ export default function FeeHistoryLogPanel() {
               <Input
                 type="date"
                 value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
+                onChange={(e) => {
+                  setFromDate(e.target.value);
+                  setPage(1);
+                }}
                 className="h-9"
                 aria-label="From date"
               />
@@ -310,7 +310,10 @@ export default function FeeHistoryLogPanel() {
               <Input
                 type="date"
                 value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
+                onChange={(e) => {
+                  setToDate(e.target.value);
+                  setPage(1);
+                }}
                 className="h-9"
                 aria-label="To date"
               />
@@ -403,7 +406,7 @@ export default function FeeHistoryLogPanel() {
 
           <div className="flex flex-col gap-2 border border-border/60 rounded-xl p-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-muted-foreground">
-              Showing {filteredRows.length} rows on page {page} of {totalPages}.
+              Showing {filteredRows.length} rows on page {currentPage} of {totalPages}.
               Total matching logs: {totalCount}
             </p>
 
@@ -412,7 +415,10 @@ export default function FeeHistoryLogPanel() {
                 Rows
                 <select
                   value={String(pageSize)}
-                  onChange={(e) => setPageSize(Number(e.target.value))}
+                  onChange={(e) => {
+                    setPageSize(Number(e.target.value));
+                    setPage(1);
+                  }}
                   className="bg-transparent text-xs outline-none"
                 >
                   <option value="25">25</option>
@@ -424,22 +430,22 @@ export default function FeeHistoryLogPanel() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-                disabled={page <= 1}
+                onClick={() => setPage((prev) => Math.max(1, Math.min(totalPages, prev) - 1))}
+                disabled={currentPage <= 1}
                 className="h-8 px-2"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
 
               <span className="text-xs text-muted-foreground px-1">
-                {page}/{totalPages}
+                {currentPage}/{totalPages}
               </span>
 
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
-                disabled={page >= totalPages}
+                onClick={() => setPage((prev) => Math.min(totalPages, Math.min(totalPages, prev) + 1))}
+                disabled={currentPage >= totalPages}
                 className="h-8 px-2"
               >
                 <ChevronRight className="h-4 w-4" />
