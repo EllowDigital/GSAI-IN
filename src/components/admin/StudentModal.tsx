@@ -38,7 +38,6 @@ import {
   validatePhoneNumber,
 } from '@/utils/inputValidation';
 import { useBeltLevels } from '@/hooks/useBeltLevels';
-import { useStudentPrograms } from '@/hooks/useStudentPrograms';
 import { useDisciplines } from '@/hooks/useDisciplines';
 import { X, Plus } from 'lucide-react';
 
@@ -69,8 +68,6 @@ export default function StudentModal({
 }: StudentModalProps) {
   const { getWhiteBeltId } = useBeltLevels();
   const { disciplineOptions } = useDisciplines();
-  const { programs: fetchedPrograms } = useStudentPrograms(student?.id);
-  const existingPrograms = useMemo(() => fetchedPrograms ?? [], [fetchedPrograms]);
   const initKeyRef = useRef('');
   const studentResetKey = useMemo(() => {
     if (!student) return 'new';
@@ -99,16 +96,6 @@ export default function StudentModal({
     student?.discount_percent,
   ]);
 
-  const existingProgramsKey = useMemo(
-    () =>
-      existingPrograms
-        .map(
-          (program) =>
-            `${program.id}:${program.program_name}:${program.is_primary ? '1' : '0'}`
-        )
-        .join('|'),
-    [existingPrograms]
-  );
   const [additionalPrograms, setAdditionalPrograms] = useState<string[]>([]);
   const [addingProgram, setAddingProgram] = useState('');
   const queryClient = useQueryClient();
@@ -148,7 +135,7 @@ export default function StudentModal({
   });
 
   useEffect(() => {
-    const initKey = `${open ? '1' : '0'}|${studentResetKey}|${existingProgramsKey}|${globalFee ?? ''}`;
+    const initKey = `${open ? '1' : '0'}|${studentResetKey}|${globalFee ?? ''}`;
 
     if (!open) {
       initKeyRef.current = '';
@@ -160,56 +147,27 @@ export default function StudentModal({
     }
 
     if (student) {
-      const primaryFromDB = existingPrograms.find((p) => p.is_primary)?.program_name;
-      // Use primary from junction table if available, else fallback to student.program (first entry)
-      const primaryProgram =
-        primaryFromDB ||
-        (student.program?.includes(',')
-          ? student.program.split(',')[0].trim()
-          : student.program || '');
-
-      const existingSecondary = existingPrograms
-        .filter((p) => !p.is_primary)
-        .map((p) => p.program_name)
-        .filter(Boolean);
-      const legacyPrograms = (student.program || '')
+      const normalizedPrograms = (student.program || '')
         .split(',')
         .map((programName: string) => sanitizeText(programName.trim()))
-        .filter(Boolean)
-        .filter(
-          (programName: string) =>
-            programName.toLowerCase() !== primaryProgram.toLowerCase()
-        );
+        .filter(Boolean);
+      const primaryProgram = normalizedPrograms[0] || '';
 
-      const mergedPrograms = Array.from(
-        new Set([...existingSecondary, ...legacyPrograms])
+      form.reset({
+        name: student.name || '',
+        aadhar_number: student.aadhar_number || '',
+        program: primaryProgram,
+        join_date: student.join_date ? student.join_date.slice(0, 10) : '',
+        parent_name: student.parent_name || '',
+        parent_contact: student.parent_contact || '',
+        profile_image_url: student.profile_image_url || null,
+        default_monthly_fee: student.default_monthly_fee ?? 2000,
+        discount_percent: student.discount_percent ?? 0,
+      });
+
+      const mergedPrograms = normalizedPrograms.filter(
+        (programName) => programName.toLowerCase() !== primaryProgram.toLowerCase()
       );
-
-      const currentFormValues = form.getValues();
-      const shouldResetForm =
-        currentFormValues.name !== (student.name || '') ||
-        currentFormValues.aadhar_number !== (student.aadhar_number || '') ||
-        currentFormValues.program !== primaryProgram ||
-        currentFormValues.join_date !== (student.join_date ? student.join_date.slice(0, 10) : '') ||
-        currentFormValues.parent_name !== (student.parent_name || '') ||
-        currentFormValues.parent_contact !== (student.parent_contact || '') ||
-        (currentFormValues.profile_image_url || null) !== (student.profile_image_url || null) ||
-        (currentFormValues.default_monthly_fee ?? 2000) !== (student.default_monthly_fee ?? 2000) ||
-        (currentFormValues.discount_percent ?? 0) !== (student.discount_percent ?? 0);
-
-      if (shouldResetForm) {
-        form.reset({
-          name: student.name || '',
-          aadhar_number: student.aadhar_number || '',
-          program: primaryProgram,
-          join_date: student.join_date ? student.join_date.slice(0, 10) : '',
-          parent_name: student.parent_name || '',
-          parent_contact: student.parent_contact || '',
-          profile_image_url: student.profile_image_url || null,
-          default_monthly_fee: student.default_monthly_fee ?? 2000,
-          discount_percent: student.discount_percent ?? 0,
-        });
-      }
 
       setAdditionalPrograms((prev) => {
         const isSameLength = prev.length === mergedPrograms.length;
@@ -236,8 +194,6 @@ export default function StudentModal({
   }, [
     student,
     studentResetKey,
-    existingPrograms,
-    existingProgramsKey,
     form,
     globalFee,
     open,
@@ -334,28 +290,54 @@ export default function StudentModal({
 
     if (upsertError) throw upsertError;
 
-    const { error: clearPrimaryError } = await supabase
-      .from('student_programs')
-      .update({ is_primary: false })
-      .eq('student_id', studentId);
-    if (clearPrimaryError) throw clearPrimaryError;
-
-    const { error: setPrimaryError } = await supabase
-      .from('student_programs')
-      .update({ is_primary: true })
-      .eq('student_id', studentId)
-      .eq('program_name', primaryProgram);
-    if (setPrimaryError) throw setPrimaryError;
-
     const { data: finalRows, error: finalRowsError } = await supabase
       .from('student_programs')
-      .select('program_name, is_primary')
+      .select('id, program_name, is_primary')
       .eq('student_id', studentId)
-      .order('is_primary', { ascending: false });
+      .order('program_name', { ascending: true });
 
     if (finalRowsError) throw finalRowsError;
 
-    const finalPrograms = (finalRows || []).map((row) => row.program_name);
+    const primaryRow = (finalRows || []).find(
+      (row) =>
+        sanitizeText((row.program_name || '').trim()).toLowerCase() ===
+        sanitizeText(primaryProgram).toLowerCase()
+    );
+
+    if (primaryRow) {
+      const { error: normalizePrimaryError } = await supabase
+        .from('student_programs')
+        .update({ is_primary: false })
+        .eq('student_id', studentId)
+        .neq('id', primaryRow.id);
+      if (normalizePrimaryError) throw normalizePrimaryError;
+
+      const { error: ensurePrimaryError } = await supabase
+        .from('student_programs')
+        .update({ is_primary: true })
+        .eq('id', primaryRow.id);
+      if (ensurePrimaryError) throw ensurePrimaryError;
+    }
+
+    const finalPrograms = (finalRows || [])
+      .slice()
+      .sort((a, b) => Number(b.is_primary) - Number(a.is_primary))
+      .map((row) => row.program_name);
+
+    const finalSet = new Set(
+      finalPrograms.map((programName) =>
+        sanitizeText((programName || '').trim()).toLowerCase()
+      )
+    );
+    const missingPrograms = desiredPrograms.filter(
+      (programName) => !finalSet.has(programName.toLowerCase())
+    );
+    if (missingPrograms.length > 0) {
+      throw new Error(
+        `Program sync incomplete. Missing: ${missingPrograms.join(', ')}`
+      );
+    }
+
     return finalPrograms;
   };
 
