@@ -53,6 +53,7 @@ export default function FeesManagerPanel({
   const [modalOpen, setModalOpen] = useState(false);
   const [editStudent, setEditStudent] = useState<any | null>(null);
   const [editFee, setEditFee] = useState<any | null>(null);
+  const [editProgramName, setEditProgramName] = useState<string>('General');
   const [historyDrawerOpen, setHistoryDrawerOpen] = useState(false);
   const [historyStudent, setHistoryStudent] = useState<any | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -428,10 +429,8 @@ export default function FeesManagerPanel({
     programName: string;
   }) => {
     setEditStudent(student);
-    setEditFee(fee);
-    if (fee) {
-      setEditFee({ ...fee, program_name: fee.program_name || programName });
-    }
+    setEditProgramName(programName || 'General');
+    setEditFee(fee ? { ...fee, program_name: fee.program_name || programName } : null);
     setModalOpen(true);
   };
 
@@ -442,6 +441,7 @@ export default function FeesManagerPanel({
 
   const handleModalClose = () => {
     setModalOpen(false);
+    setEditProgramName('General');
     setTimeout(() => {
       queryClient.invalidateQueries({ queryKey: ['fees'] });
     }, 100);
@@ -782,7 +782,7 @@ export default function FeesManagerPanel({
           fee={editFee}
           month={filterMonth}
           year={filterYear}
-          programName={editFee?.program_name || undefined}
+          programName={editFee?.program_name || editProgramName}
         />
       )}
       {historyDrawerOpen && (

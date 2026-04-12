@@ -16,6 +16,7 @@ import { supabase } from '@/services/supabase/client';
 import { FeeReceiptUploader } from './FeeReceiptUploader';
 import { getFeeStatus } from '@/utils/feeStatusUtils';
 import { safeAsync, formatErrorForDisplay } from '@/utils/errorHandling';
+import { parseProgramNames } from '@/utils/studentPrograms';
 
 type Props = {
   student: any;
@@ -23,6 +24,7 @@ type Props = {
   carryForward: number;
   month: number;
   year: number;
+  initialProgramName: string;
   adminDebug?: {
     adminEmail?: string | null;
     isAdminInTable?: boolean | null;
@@ -54,24 +56,68 @@ export function FeeForm({
   carryForward,
   month,
   year,
+  initialProgramName,
   adminDebug,
   loading,
   setLoading,
   onClose,
 }: Props) {
+  const [selectedProgramName, setSelectedProgramName] = React.useState(
+    initialProgramName
+  );
+
+  const { data: enrolledPrograms = [] } = useQuery({
+    queryKey: ['student-programs', student?.id],
+    queryFn: async () => {
+      if (!student?.id) return [];
+      const { data, error } = await supabase
+        .from('student_programs')
+        .select('program_name, is_primary')
+        .eq('student_id', student.id)
+        .order('is_primary', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!student?.id,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const studentProgramOptions = React.useMemo(() => {
+    const fromJunction = enrolledPrograms
+      .map((program: any) => (program?.program_name || '').trim())
+      .filter(Boolean);
+    const fromFallback = parseProgramNames(student?.program);
+    const merged = Array.from(new Set([...fromJunction, ...fromFallback]));
+    if (merged.length > 0) return merged;
+    return [initialProgramName || 'General'];
+  }, [enrolledPrograms, student?.program, initialProgramName]);
+
+  React.useEffect(() => {
+    if (
+      selectedProgramName &&
+      studentProgramOptions.some(
+        (programName) =>
+          programName.toLowerCase() === selectedProgramName.toLowerCase()
+      )
+    ) {
+      return;
+    }
+    setSelectedProgramName(studentProgramOptions[0] || 'General');
+  }, [selectedProgramName, studentProgramOptions]);
+
   // Fetch program-specific fee from academy_settings
   const { data: programFeeValue } = useQuery({
-    queryKey: ['academy-settings', `program_fee_${student?.program}`],
+    queryKey: ['academy-settings', `program_fee_${selectedProgramName}`],
     queryFn: async () => {
-      if (!student?.program) return null;
+      if (!selectedProgramName) return null;
       const { data } = await supabase
         .from('academy_settings')
         .select('value')
-        .eq('key', `program_fee_${student.program}`)
+        .eq('key', `program_fee_${selectedProgramName}`)
         .maybeSingle();
       return data?.value ? Number(data.value) : null;
     },
-    enabled: !!student?.program,
+    enabled: !!selectedProgramName,
   });
 
   // Priority: student's own default_monthly_fee > program fee from settings > 2000
@@ -109,7 +155,7 @@ export function FeeForm({
       receipt_url: fee?.receipt_url || null,
       status_override: fee?.status || 'auto',
     });
-  }, [fee, student, discountedFee]);
+  }, [fee, student, discountedFee, selectedProgramName]);
 
   const receiptUrlWatched = useWatch({
     control: form.control,
@@ -189,6 +235,7 @@ export function FeeForm({
       const now = new Date().toISOString();
       const basePayload = {
         student_id: student.id,
+        program_name: selectedProgramName,
         month,
         year,
         monthly_fee,
@@ -219,7 +266,9 @@ export function FeeForm({
       } else {
         const { data, error } = await supabase
           .from('fees')
-          .upsert([payload], { onConflict: 'student_id,month,year' })
+          .upsert([payload], {
+            onConflict: 'student_id,month,year,program_name',
+          })
           .select()
           .maybeSingle();
         if (error) throw error;
@@ -292,11 +341,29 @@ export function FeeForm({
 
       {/* Fee Breakdown Info */}
       <div className="space-y-2">
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-foreground">Program</label>
+          <Select
+            value={selectedProgramName}
+            onValueChange={setSelectedProgramName}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select program" />
+            </SelectTrigger>
+            <SelectContent>
+              {studentProgramOptions.map((programName) => (
+                <SelectItem key={programName} value={programName}>
+                  {programName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         {programFeeValue && (
           <div className="flex items-center gap-2 p-2.5 rounded-lg bg-blue-50 border border-blue-200 text-xs">
             <IndianRupee className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
             <span className="text-blue-800">
-              {student?.program} program fee:{' '}
+              {selectedProgramName} program fee:{' '}
               <strong>₹{programBaseFee.toLocaleString('en-IN')}/month</strong>
             </span>
           </div>

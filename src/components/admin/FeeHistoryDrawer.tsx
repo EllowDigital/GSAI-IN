@@ -130,6 +130,7 @@ export default function FeeHistoryDrawer({
               <TableHeader>
                 <TableRow className="bg-muted/50">
                   <TableHead className="text-xs">Month</TableHead>
+                  <TableHead className="text-xs">Program</TableHead>
                   <TableHead className="text-xs">Fee</TableHead>
                   <TableHead className="text-xs">Paid</TableHead>
                   <TableHead className="text-xs">Balance</TableHead>
@@ -143,7 +144,7 @@ export default function FeeHistoryDrawer({
                 {rows.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={8}
+                      colSpan={9}
                       className="text-center text-muted-foreground py-8"
                     >
                       No payment history found.
@@ -154,6 +155,9 @@ export default function FeeHistoryDrawer({
                     <TableRow key={fee.id} className="group hover:bg-muted/30">
                       <TableCell className="text-xs font-medium">
                         {MONTH_NAMES[fee.month - 1]} {fee.year}
+                      </TableCell>
+                      <TableCell className="text-xs">
+                        {fee.program_name || 'General'}
                       </TableCell>
                       <TableCell className="text-xs">
                         ₹{fee.monthly_fee?.toLocaleString('en-IN')}
@@ -259,6 +263,7 @@ export default function FeeHistoryDrawer({
           fee={editFee}
           month={editFee.month}
           year={editFee.year}
+          programName={editFee.program_name || 'General'}
         />
       )}
 
