@@ -10,7 +10,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Loader2, IndianRupee, Receipt, StickyNote, Tag } from 'lucide-react';
+import {
+  Loader2,
+  IndianRupee,
+  Receipt,
+  StickyNote,
+  Tag,
+  Trash2,
+} from 'lucide-react';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from '@/hooks/useToast';
 import { supabase } from '@/services/supabase/client';
@@ -265,6 +272,40 @@ export function FeeForm({
 
   const effectiveStatus =
     statusOverrideWatched === 'auto' ? autoStatus : statusOverrideWatched;
+
+  async function handleDeleteExistingFee() {
+    if (!fee?.id) return;
+    const confirmed = window.confirm(
+      `Delete this fee record for ${student?.name || 'student'} (${selectedProgramName})? This cannot be undone.`
+    );
+    if (!confirmed) return;
+
+    setLoading(true);
+    const { error } = await safeAsync(async () => {
+      const { error: deleteError } = await supabase
+        .from('fees')
+        .delete()
+        .eq('id', fee.id);
+      if (deleteError) throw deleteError;
+    }, 'Fee Delete');
+    setLoading(false);
+
+    if (error) {
+      toast({
+        title: 'Failed to delete fee',
+        description: formatErrorForDisplay(error),
+        variant: 'error',
+      });
+      return;
+    }
+
+    await queryClient.invalidateQueries({ queryKey: ['fees'] });
+    toast({
+      title: 'Fee deleted',
+      description: `Fee record for ${student?.name || 'student'} was deleted successfully.`,
+    });
+    onClose();
+  }
 
   async function onSubmit(values: {
     monthly_fee: number;
@@ -624,7 +665,21 @@ export function FeeForm({
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-2 pt-2 border-t border-border/50">
+      <div className="flex justify-between gap-2 pt-2 border-t border-border/50">
+        {fee?.id ? (
+          <Button
+            variant="destructive"
+            type="button"
+            onClick={handleDeleteExistingFee}
+            disabled={loading}
+          >
+            <Trash2 className="w-4 h-4 mr-1.5" />
+            Delete
+          </Button>
+        ) : (
+          <div />
+        )}
+        <div className="flex justify-end gap-2">
         <Button variant="outline" type="button" onClick={onClose}>
           Cancel
         </Button>
@@ -637,6 +692,7 @@ export function FeeForm({
             'Save'
           )}
         </Button>
+        </div>
       </div>
     </form>
   );
