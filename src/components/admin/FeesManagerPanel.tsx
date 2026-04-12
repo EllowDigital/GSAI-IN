@@ -10,6 +10,7 @@ import { exportFeesToCsv } from '@/utils/exportToCsv';
 const FeeAnalyticsChart = lazy(() => import('./FeeAnalyticsChart'));
 import { useIsMobile } from '@/hooks/useMobile';
 import FeesCards from './FeesCards';
+import FeesGroupedCards from './FeesGroupedCards';
 import RefreshButton from './RefreshButton';
 import { toast } from '@/hooks/useToast';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ import {
 import {
   Grid,
   List,
+  Users,
   DollarSign,
   CheckSquare,
   X,
@@ -61,10 +63,12 @@ export default function FeesManagerPanel({
   const [historyDrawerOpen, setHistoryDrawerOpen] = useState(false);
   const [historyStudent, setHistoryStudent] = useState<any | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [viewMode, setViewMode] = usePersistentState<'cards' | 'table'>(
+  const [viewMode, setViewMode] = usePersistentState<
+    'cards' | 'table' | 'grouped'
+  >(
     'admin:layout:view-mode',
     'cards',
-    ['cards', 'table']
+    ['cards', 'table', 'grouped']
   );
   const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(
     new Set()
@@ -364,6 +368,27 @@ export default function FeesManagerPanel({
     },
   });
 
+  const deleteFeeMutation = useMutation({
+    mutationFn: async (feeId: string) => {
+      const { error } = await supabase.from('fees').delete().eq('id', feeId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fees'] });
+      toast({
+        title: 'Deleted',
+        description: 'Fee record deleted successfully.',
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Error',
+        description: getFriendlySupabaseMessage(error, 'Failed to delete fee'),
+        variant: 'error',
+      });
+    },
+  });
+
   // Compose filtered rows
   const emailByStudentId = new Map<string, string>();
   for (const row of enrollmentEmails) {
@@ -530,6 +555,25 @@ export default function FeesManagerPanel({
     setHistoryDrawerOpen(true);
   };
 
+  const handleDeleteFee = ({
+    fee,
+    student,
+    programName,
+  }: {
+    fee: any;
+    student: any;
+    programName: string;
+  }) => {
+    if (!fee?.id) return;
+
+    const confirmed = window.confirm(
+      `Delete fee record for ${student?.name || 'student'} (${programName})? This cannot be undone.`
+    );
+    if (!confirmed) return;
+
+    deleteFeeMutation.mutate(fee.id);
+  };
+
   const handleModalClose = () => {
     setModalOpen(false);
     setEditProgramName('General');
@@ -578,6 +622,20 @@ export default function FeesManagerPanel({
         </div>
       );
     }
+
+    if (viewMode === 'grouped') {
+      return (
+        <FeesGroupedCards
+          rows={rows}
+          onEditFee={handleEditFee}
+          onShowHistory={handleShowHistory}
+          onDeleteFee={handleDeleteFee}
+          filterMonth={filterMonth}
+          filterYear={filterYear}
+        />
+      );
+    }
+
     return (
       <FeesCards
         rows={rows}
@@ -739,6 +797,14 @@ export default function FeesManagerPanel({
                   className="rounded-full px-3 h-7"
                 >
                   <List className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant={viewMode === 'grouped' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('grouped')}
+                  className="rounded-full px-3 h-7"
+                >
+                  <Users className="w-4 h-4" />
                 </Button>
               </div>
 
