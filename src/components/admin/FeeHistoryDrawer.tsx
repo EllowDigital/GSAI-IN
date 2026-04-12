@@ -115,7 +115,7 @@ export default function FeeHistoryDrawer({
   return (
     <>
       <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               📋 Fee History — {student?.name}
@@ -210,7 +210,7 @@ export default function FeeHistoryDrawer({
                         {fee.notes || '—'}
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                           <Button
                             variant="ghost"
                             size="sm"
@@ -239,7 +239,7 @@ export default function FeeHistoryDrawer({
           </div>
 
           {rows.length > 0 && (
-            <div className="flex items-center justify-between pt-2 text-xs text-muted-foreground">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2 text-xs text-muted-foreground">
               <span>
                 {rows.length} record{rows.length !== 1 ? 's' : ''}
               </span>

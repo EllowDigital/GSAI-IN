@@ -65,9 +65,12 @@ export default function FeesGroupedCards({
   return (
     <div className="space-y-4">
       {groups.map((group) => (
-        <Card key={group.student.id} className="border border-border/70">
-          <CardContent className="p-4 space-y-3">
-            <div className="flex items-center justify-between gap-3">
+        <Card
+          key={group.student.id}
+          className="border border-border/70 bg-gradient-to-br from-card to-muted/20"
+        >
+          <CardContent className="p-3 sm:p-4 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center gap-3 min-w-0">
                 <Avatar className="h-10 w-10 ring-1 ring-primary/20">
                   {group.student.profile_image_url ? (
@@ -92,7 +95,7 @@ export default function FeesGroupedCards({
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8"
+                className="h-8 w-full sm:w-auto"
                 onClick={() => onShowHistory(group.student)}
               >
                 <History className="w-3.5 h-3.5 mr-1.5" />
@@ -109,10 +112,7 @@ export default function FeesGroupedCards({
                   : `${String(filterMonth).padStart(2, '0')}/${filterYear}`;
 
                 return (
-                  <div
-                    key={row.rowKey}
-                    className="rounded-lg border border-border/70 p-3 bg-muted/20"
-                  >
+                  <div key={row.rowKey} className="rounded-lg border border-border/70 p-3 bg-background/70">
                     <div className="flex items-center justify-between gap-2">
                       <div className="min-w-0">
                         <p className="text-sm font-semibold truncate">{row.programName}</p>
@@ -147,7 +147,7 @@ export default function FeesGroupedCards({
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2 mt-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3">
                       {status !== 'paid' ? (
                         <FeeReminderButton
                           studentName={row.student.name}
@@ -162,7 +162,7 @@ export default function FeesGroupedCards({
                           year={row.fee ? row.fee.year : filterYear}
                         />
                       ) : (
-                        <div />
+                        <div className="hidden sm:block" />
                       )}
 
                       <Button
@@ -207,7 +207,7 @@ export default function FeesGroupedCards({
                           Delete
                         </Button>
                       ) : (
-                        <div />
+                        <div className="hidden sm:block" />
                       )}
                     </div>
                   </div>

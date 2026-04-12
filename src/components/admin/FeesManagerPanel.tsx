@@ -27,6 +27,8 @@ import {
   List,
   Users,
   DollarSign,
+  CalendarDays,
+  Filter,
   CheckSquare,
   X,
   Zap,
@@ -656,26 +658,39 @@ export default function FeesManagerPanel({
   const showRecordsSection = section === 'all' || section === 'records';
 
   return (
-    <div className="admin-page">
+    <div className="admin-page space-y-4 sm:space-y-5">
       {/* Header */}
       <div className="admin-panel rounded-xl sm:rounded-2xl overflow-hidden">
-        <div className="admin-panel-header bg-gradient-to-r from-primary/5 via-background to-background">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
+        <div className="admin-panel-header bg-gradient-to-r from-primary/10 via-background to-background">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="space-y-2">
               <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-foreground">
                 <DollarSign className="w-5 h-5 text-primary" />
                 <span>Fees Management</span>
               </h2>
-              <p className="mt-1 text-sm sm:text-base text-muted-foreground">
+              <p className="text-sm sm:text-base text-muted-foreground max-w-2xl">
                 Manage student fees, track payments, and monitor financial
                 records.
               </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-background/70 px-2.5 py-1 text-[11px] text-muted-foreground">
+                  <CalendarDays className="w-3.5 h-3.5" />
+                  {String(filterMonth).padStart(2, '0')}/{filterYear}
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-background/70 px-2.5 py-1 text-[11px] text-muted-foreground">
+                  <Filter className="w-3.5 h-3.5" />
+                  {hasActiveFilters ? 'Filtered' : 'No filters'}
+                </span>
+                <span className="inline-flex items-center rounded-full border border-border/70 bg-background/70 px-2.5 py-1 text-[11px] text-muted-foreground">
+                  {rows.length} visible row{rows.length !== 1 ? 's' : ''}
+                </span>
+              </div>
             </div>
-            <div className="flex gap-2 mt-2 sm:mt-0">
+            <div className="flex gap-2 mt-1 lg:mt-0">
               <RefreshButton
                 onRefresh={handleRefresh}
                 isLoading={isLoading}
-                className="flex-shrink-0"
+                className="flex-shrink-0 h-9"
               />
             </div>
           </div>
@@ -691,30 +706,30 @@ export default function FeesManagerPanel({
                 <h3 className="text-sm font-semibold text-foreground sm:text-base">
                   Snapshot
                 </h3>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground rounded-full border border-border/70 px-2 py-1 bg-background/70">
                   Month {filterMonth}/{filterYear}
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+                <div className="rounded-lg border border-border/70 bg-card/80 px-3 py-2 shadow-sm">
                   <p className="text-[11px] text-muted-foreground">Students</p>
                   <p className="text-base sm:text-lg font-semibold text-foreground tabular-nums">
                     {feeSnapshot.total}
                   </p>
                 </div>
-                <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+                <div className="rounded-lg border border-green-200/70 bg-green-50/50 px-3 py-2 shadow-sm">
                   <p className="text-[11px] text-muted-foreground">Paid</p>
                   <p className="text-base sm:text-lg font-semibold text-foreground tabular-nums">
                     {feeSnapshot.paid}
                   </p>
                 </div>
-                <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+                <div className="rounded-lg border border-amber-200/70 bg-amber-50/50 px-3 py-2 shadow-sm">
                   <p className="text-[11px] text-muted-foreground">Pending</p>
                   <p className="text-base sm:text-lg font-semibold text-foreground tabular-nums">
                     {feeSnapshot.unpaid}
                   </p>
                 </div>
-                <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+                <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 shadow-sm">
                   <p className="text-[11px] text-muted-foreground">Total Due</p>
                   <p className="text-base sm:text-lg font-semibold text-foreground tabular-nums">
                     ₹{feeSnapshot.totalDue.toLocaleString()}
@@ -752,7 +767,7 @@ export default function FeesManagerPanel({
         <div className="admin-panel rounded-xl sm:rounded-2xl overflow-hidden">
           <div className="admin-panel-body space-y-4 sm:space-y-6">
           {/* Filters and Controls */}
-          <div className="flex flex-col lg:flex-row lg:items-end gap-4 lg:gap-6">
+          <div className="flex flex-col xl:flex-row xl:items-end gap-4 xl:gap-6">
             <div className="flex-1 min-w-0">
               <FeesFilterBar
                 filterMonth={filterMonth}
@@ -767,7 +782,7 @@ export default function FeesManagerPanel({
             </div>
 
             {/* View Controls */}
-            <div className="flex flex-wrap gap-2 sm:gap-3 rounded-xl border border-border/70 bg-muted/20 p-2">
+            <div className="w-full xl:w-auto flex flex-wrap items-center gap-2 sm:gap-3 rounded-xl border border-border/70 bg-muted/20 p-2.5">
               {/* Bulk Mode Toggle */}
               <Button
                 variant={bulkMode ? 'default' : 'outline'}
@@ -779,7 +794,7 @@ export default function FeesManagerPanel({
                 className="h-9"
               >
                 <CheckSquare className="w-4 h-4 sm:mr-1.5" />
-                <span className="hidden sm:inline">Bulk Select</span>
+                <span>Bulk</span>
               </Button>
 
               {/* View Mode Toggle */}
@@ -788,25 +803,28 @@ export default function FeesManagerPanel({
                   variant={viewMode === 'cards' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('cards')}
-                  className="rounded-full px-3 h-7"
+                  className="rounded-full px-2.5 h-8 gap-1"
                 >
                   <Grid className="w-4 h-4" />
+                  <span className="hidden sm:inline text-xs">Cards</span>
                 </Button>
                 <Button
                   variant={viewMode === 'table' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('table')}
-                  className="rounded-full px-3 h-7"
+                  className="rounded-full px-2.5 h-8 gap-1"
                 >
                   <List className="w-4 h-4" />
+                  <span className="hidden sm:inline text-xs">Table</span>
                 </Button>
                 <Button
                   variant={viewMode === 'grouped' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('grouped')}
-                  className="rounded-full px-3 h-7"
+                  className="rounded-full px-2.5 h-8 gap-1"
                 >
                   <Users className="w-4 h-4" />
+                  <span className="hidden sm:inline text-xs">Grouped</span>
                 </Button>
               </div>
 
@@ -815,7 +833,7 @@ export default function FeesManagerPanel({
                 disabled={!Array.isArray(rows) || rows.length === 0}
                 variant="outline"
                 size="sm"
-                className="h-9"
+                className="h-9 flex-1 sm:flex-none"
               >
                 Export CSV
               </Button>
@@ -825,7 +843,7 @@ export default function FeesManagerPanel({
                 disabled={batchGenerateMutation.isPending}
                 variant="outline"
                 size="sm"
-                className="h-9 gap-1.5"
+                className="h-9 gap-1.5 flex-1 sm:flex-none"
               >
                 {batchGenerateMutation.isPending ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
