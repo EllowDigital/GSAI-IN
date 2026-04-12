@@ -872,23 +872,43 @@ export default function ProgressionBoard() {
     staleTime: 1000 * 60 * 5,
   });
 
-  // Build a map: student_id → comma-separated program names from junction table
+  // Build a map: student_id -> merged program names from junction table + students.program fallback
   const studentProgramMap = useMemo(() => {
-    const map = new Map<string, string[]>();
-    allStudentPrograms.forEach((sp: any) => {
-      const existing = map.get(sp.student_id) || [];
-      existing.push(sp.program_name);
-      map.set(sp.student_id, existing);
+    const map = new Map<string, Set<string>>();
+
+    students.forEach((student) => {
+      const programs = (student.program || '')
+        .split(',')
+        .map((p) => p.trim())
+        .filter(Boolean);
+      if (!map.has(student.id)) {
+        map.set(student.id, new Set());
+      }
+      const set = map.get(student.id)!;
+      programs.forEach((p) => set.add(p));
     });
-    return map;
-  }, [allStudentPrograms]);
+
+    allStudentPrograms.forEach((sp: any) => {
+      if (!map.has(sp.student_id)) {
+        map.set(sp.student_id, new Set());
+      }
+      map.get(sp.student_id)!.add((sp.program_name || '').trim());
+    });
+
+    const normalized = new Map<string, string[]>();
+    map.forEach((set, studentId) => {
+      normalized.set(studentId, Array.from(set).filter(Boolean));
+    });
+
+    return normalized;
+  }, [allStudentPrograms, students]);
 
   const studentOptions = useMemo(
     () =>
       students.map((student) => {
-        const programs = studentProgramMap.get(student.id);
+        const programs = studentProgramMap.get(student.id) || [];
         const programLabel =
-          programs && programs.length > 0
+          programs.length > 0
             ? programs.join(', ')
             : student.program;
         return {
@@ -1282,12 +1302,27 @@ export default function ProgressionBoard() {
         onSubmit={async (payload) => {
           if (payload.isLevelBased) {
             // Write to student_discipline_progress table
-            const { error: checkErr, data: existing } = await supabase
+            const { data: existing } = await supabase
               .from('student_discipline_progress')
               .select('id')
               .eq('student_id', payload.studentId)
               .eq('discipline_level_id', payload.beltLevelId)
               .maybeSingle();
+
+            // Ensure selected program is persisted for multi-program students.
+            if (payload.selectedProgram) {
+              await supabase
+                .from('student_programs')
+                .upsert(
+                  {
+                    student_id: payload.studentId,
+                    program_name: payload.selectedProgram,
+                    joined_at: new Date().toISOString().slice(0, 10),
+                    is_primary: false,
+                  },
+                  { onConflict: 'student_id,program_name' }
+                );
+            }
 
             if (existing) {
               const { error } = await supabase
@@ -1315,6 +1350,19 @@ export default function ProgressionBoard() {
               queryKey: ['discipline-progress-admin'],
             });
           } else {
+            if (payload.selectedProgram) {
+              await supabase
+                .from('student_programs')
+                .upsert(
+                  {
+                    student_id: payload.studentId,
+                    program_name: payload.selectedProgram,
+                    joined_at: new Date().toISOString().slice(0, 10),
+                    is_primary: false,
+                  },
+                  { onConflict: 'student_id,program_name' }
+                );
+            }
             await assignStudent(payload);
           }
         }}

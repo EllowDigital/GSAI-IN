@@ -49,6 +49,7 @@ interface AssignStudentBeltDialogProps {
     studentId: string;
     beltLevelId: string;
     status: ProgressStatus;
+    selectedProgram: string;
     isLevelBased?: boolean;
   }) => Promise<void>;
   loading?: boolean;
@@ -199,8 +200,18 @@ export default function AssignStudentBeltDialog({
       );
       return;
     }
+    if (!selectedProgram) {
+      setError('Choose a program for this progression assignment.');
+      return;
+    }
     setError(null);
-    await onSubmit({ studentId, beltLevelId: beltId, status, isLevelBased });
+    await onSubmit({
+      studentId,
+      beltLevelId: beltId,
+      status,
+      selectedProgram,
+      isLevelBased,
+    });
     resetForm();
     onOpenChange(false);
   };

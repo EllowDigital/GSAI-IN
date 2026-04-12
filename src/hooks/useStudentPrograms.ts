@@ -15,6 +15,17 @@ export type StudentProgram = {
 export function useStudentPrograms(studentId?: string) {
   const queryClient = useQueryClient();
 
+  const normalizeJoinDate = useCallback((joinDate?: string) => {
+    if (!joinDate) return new Date().toISOString().slice(0, 10);
+    const trimmed = joinDate.trim();
+    if (!trimmed) return new Date().toISOString().slice(0, 10);
+    const parsed = new Date(trimmed);
+    if (Number.isNaN(parsed.getTime())) {
+      return new Date().toISOString().slice(0, 10);
+    }
+    return parsed.toISOString().slice(0, 10);
+  }, []);
+
   const { data: programs = [], isLoading } = useQuery({
     queryKey: ['student-programs', studentId],
     queryFn: async () => {
@@ -31,49 +42,71 @@ export function useStudentPrograms(studentId?: string) {
   });
 
   const syncStudentProgramField = useCallback(async (studentId: string) => {
-    const { data: allProgs } = await supabase
+    const { data: allProgs, error: allProgsError } = await supabase
       .from('student_programs')
       .select('program_name')
       .eq('student_id', studentId)
       .order('is_primary', { ascending: false });
+    if (allProgsError) throw allProgsError;
+
     if (allProgs && allProgs.length > 0) {
       const programStr = allProgs.map((p) => p.program_name).join(', ');
-      await supabase
+      const { error: studentUpdateError } = await supabase
         .from('students')
         .update({ program: programStr })
         .eq('id', studentId);
+      if (studentUpdateError) throw studentUpdateError;
+      return;
     }
+
+    const { error: clearProgramError } = await supabase
+      .from('students')
+      .update({ program: '' })
+      .eq('id', studentId);
+    if (clearProgramError) throw clearProgramError;
   }, []);
 
   const addProgram = useCallback(
     async (studentId: string, programName: string, joinDate?: string) => {
+      const cleanProgramName = (programName || '').trim();
+      if (!cleanProgramName) {
+        toast.error('Select a valid program to add');
+        return false;
+      }
+
       const { data, error } = await supabase
         .from('student_programs')
         .insert({
           student_id: studentId,
-          program_name: programName,
-          joined_at: joinDate || new Date().toISOString().slice(0, 10),
+          program_name: cleanProgramName,
+          joined_at: normalizeJoinDate(joinDate),
           is_primary: false,
         })
         .select();
       if (error) {
         console.error('addProgram insert error:', error);
         if (error.code === '23505') {
-          toast.error(`Student is already enrolled in ${programName}`);
+          toast.error(`Student is already enrolled in ${cleanProgramName}`);
         } else {
           toast.error('Failed to add program: ' + error.message);
         }
         return false;
       }
       console.log('addProgram insert success:', data);
-      await syncStudentProgramField(studentId);
+      try {
+        await syncStudentProgramField(studentId);
+      } catch (syncError: any) {
+        toast.error('Program was added, but student profile sync failed.');
+        console.error('syncStudentProgramField failed after addProgram', syncError);
+      }
+      queryClient.invalidateQueries({ queryKey: ['student-programs', studentId] });
       queryClient.invalidateQueries({ queryKey: ['student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['students'] });
-      toast.success(`Added ${programName} program`);
+      toast.success(`Added ${cleanProgramName} program`);
       return true;
     },
-    [queryClient, syncStudentProgramField]
+    [normalizeJoinDate, queryClient, syncStudentProgramField]
   );
 
   const removeProgram = useCallback(
@@ -87,8 +120,17 @@ export function useStudentPrograms(studentId?: string) {
         return false;
       }
       if (studentId) {
-        await syncStudentProgramField(studentId);
+        try {
+          await syncStudentProgramField(studentId);
+        } catch (syncError: any) {
+          toast.error('Program removed, but student profile sync failed.');
+          console.error(
+            'syncStudentProgramField failed after removeProgram',
+            syncError
+          );
+        }
       }
+      queryClient.invalidateQueries({ queryKey: ['student-programs', studentId] });
       queryClient.invalidateQueries({ queryKey: ['student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['students'] });

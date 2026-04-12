@@ -1,10 +1,17 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/services/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileClock, Filter, History, Search } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  FileClock,
+  Filter,
+  History,
+  Search,
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { exportFeesToCsv } from '@/utils/exportToCsv';
 
@@ -30,34 +37,116 @@ export default function FeeHistoryLogPanel() {
   const [query, setQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [yearFilter, setYearFilter] = useState('');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
-  const { data: fees = [], isLoading: loadingFees } = useQuery({
-    queryKey: ['fees', 'history-log'],
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter, yearFilter, fromDate, toDate, pageSize]);
+
+  const pageFrom = (page - 1) * pageSize;
+  const pageTo = pageFrom + pageSize - 1;
+
+  const { data: feesResponse, isLoading: loadingFees } = useQuery({
+    queryKey: [
+      'fees',
+      'history-log',
+      statusFilter,
+      yearFilter,
+      fromDate,
+      toDate,
+      page,
+      pageSize,
+    ],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let queryBuilder = supabase
         .from('fees')
         .select(
-          'id,student_id,month,year,monthly_fee,paid_amount,balance_due,status,created_at'
-        )
-        .order('year', { ascending: false })
-        .order('month', { ascending: false })
-        .order('created_at', { ascending: false });
+          'id,student_id,month,year,monthly_fee,paid_amount,balance_due,status,created_at',
+          { count: 'exact' }
+        );
+
+      if (statusFilter) {
+        queryBuilder = queryBuilder.eq('status', statusFilter);
+      }
+
+      if (yearFilter) {
+        queryBuilder = queryBuilder.eq('year', Number(yearFilter));
+      }
+
+      if (fromDate) {
+        const fromIso = new Date(`${fromDate}T00:00:00.000`).toISOString();
+        queryBuilder = queryBuilder.gte('created_at', fromIso);
+      }
+
+      if (toDate) {
+        const toIso = new Date(`${toDate}T23:59:59.999`).toISOString();
+        queryBuilder = queryBuilder.lte('created_at', toIso);
+      }
+
+      const { data, error, count } = await queryBuilder
+        .order('created_at', { ascending: false })
+        .range(pageFrom, pageTo);
 
       if (error) throw error;
-      return (data || []) as FeeRow[];
+
+      return {
+        rows: (data || []) as FeeRow[],
+        totalCount: count || 0,
+      };
     },
   });
 
-  const { data: students = [] } = useQuery({
-    queryKey: ['students', 'fee-history-lite'],
+  const { data: yearOptions = [] } = useQuery({
+    queryKey: ['fees', 'history-years'],
     queryFn: async () => {
       const { data, error } = await supabase
+        .from('fees')
+        .select('year')
+        .order('year', { ascending: false });
+
+      if (error) throw error;
+
+      const years = new Set<number>();
+      for (const row of data || []) {
+        if (typeof row.year === 'number') years.add(row.year);
+      }
+
+      return [...years].sort((a, b) => b - a);
+    },
+  });
+
+  const fees = feesResponse?.rows || [];
+  const totalCount = feesResponse?.totalCount || 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
+  const studentIds = useMemo(
+    () => [...new Set(fees.map((row) => row.student_id).filter(Boolean))],
+    [fees]
+  );
+
+  const { data: students = [] } = useQuery({
+    queryKey: ['students', 'fee-history-lite', studentIds.join(',')],
+    queryFn: async () => {
+      if (studentIds.length === 0) return [] as StudentLite[];
+
+      const { data, error } = await supabase
         .from('students')
-        .select('id,name,program');
+        .select('id,name,program')
+        .in('id', studentIds);
 
       if (error) throw error;
       return (data || []) as StudentLite[];
     },
+    enabled: studentIds.length > 0,
   });
 
   const studentMap = useMemo(() => {
@@ -70,14 +159,6 @@ export default function FeeHistoryLogPanel() {
 
   const filteredRows = useMemo(() => {
     return fees.filter((row) => {
-      if (statusFilter && row.status?.toLowerCase() !== statusFilter) {
-        return false;
-      }
-
-      if (yearFilter && String(row.year) !== yearFilter) {
-        return false;
-      }
-
       if (!normalizedQuery) return true;
 
       const student = studentMap.get(row.student_id);
@@ -91,12 +172,12 @@ export default function FeeHistoryLogPanel() {
         monthYear.includes(normalizedQuery)
       );
     });
-  }, [fees, normalizedQuery, statusFilter, yearFilter, studentMap]);
+  }, [fees, normalizedQuery, studentMap]);
 
   const snapshot = useMemo(() => {
-    const total = filteredRows.length;
+    const total = totalCount;
     const paid = filteredRows.filter((r) => r.status === 'paid').length;
-    const pending = total - paid;
+    const pending = filteredRows.length - paid;
     const collected = filteredRows.reduce(
       (sum, row) => sum + Number(row.paid_amount || 0),
       0
@@ -107,13 +188,7 @@ export default function FeeHistoryLogPanel() {
     );
 
     return { total, paid, pending, collected, due };
-  }, [filteredRows]);
-
-  const yearOptions = useMemo(() => {
-    const years = new Set<number>();
-    for (const row of fees) years.add(row.year);
-    return [...years].sort((a, b) => b - a);
-  }, [fees]);
+  }, [filteredRows, totalCount]);
 
   const exportRows = filteredRows.map((row) => {
     const student = studentMap.get(row.student_id);
@@ -182,8 +257,8 @@ export default function FeeHistoryLogPanel() {
             </Card>
           </div>
 
-          <div className="grid gap-2 sm:grid-cols-3">
-            <div className="relative sm:col-span-2">
+          <div className="grid gap-2 md:grid-cols-5">
+            <div className="relative md:col-span-2">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={query}
@@ -193,7 +268,7 @@ export default function FeeHistoryLogPanel() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 md:col-span-3 md:grid-cols-4">
               <label className="flex items-center gap-2 rounded-lg border border-border/70 bg-muted/20 px-3">
                 <Filter className="h-4 w-4 text-muted-foreground" />
                 <select
@@ -223,6 +298,22 @@ export default function FeeHistoryLogPanel() {
                   ))}
                 </select>
               </label>
+
+              <Input
+                type="date"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                className="h-9"
+                aria-label="From date"
+              />
+
+              <Input
+                type="date"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+                className="h-9"
+                aria-label="To date"
+              />
             </div>
           </div>
 
@@ -308,6 +399,52 @@ export default function FeeHistoryLogPanel() {
                 )}
               </tbody>
             </table>
+          </div>
+
+          <div className="flex flex-col gap-2 border border-border/60 rounded-xl p-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-muted-foreground">
+              Showing {filteredRows.length} rows on page {page} of {totalPages}.
+              Total matching logs: {totalCount}
+            </p>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <label className="flex items-center gap-2 rounded-md border border-border/60 px-2 py-1 text-xs text-muted-foreground">
+                Rows
+                <select
+                  value={String(pageSize)}
+                  onChange={(e) => setPageSize(Number(e.target.value))}
+                  className="bg-transparent text-xs outline-none"
+                >
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </label>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                disabled={page <= 1}
+                className="h-8 px-2"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+
+              <span className="text-xs text-muted-foreground px-1">
+                {page}/{totalPages}
+              </span>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+                disabled={page >= totalPages}
+                className="h-8 px-2"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>

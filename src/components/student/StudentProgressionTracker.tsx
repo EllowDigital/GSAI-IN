@@ -148,13 +148,24 @@ export default function StudentProgressionTracker() {
       </div>
     );
 
-  // Build list of programs the student is in
-  const programs =
-    enrolledPrograms.length > 0
-      ? enrolledPrograms.map((p: any) => p.program_name)
-      : studentRecord?.program
-        ? [studentRecord.program]
-        : [];
+  // Merge all known program sources to support legacy and multi-program records.
+  const programMap = new Map<string, string>();
+
+  enrolledPrograms.forEach((program: any) => {
+    const name = (program?.program_name || '').trim();
+    if (!name) return;
+    programMap.set(name.toLowerCase(), name);
+  });
+
+  [studentRecord?.program, profile?.program].forEach((programName) => {
+    const name = (programName || '').trim();
+    if (!name || name.toLowerCase() === 'unassigned') return;
+    if (!programMap.has(name.toLowerCase())) {
+      programMap.set(name.toLowerCase(), name);
+    }
+  });
+
+  const programs = Array.from(programMap.values());
 
   // If only one program, don't show tabs
   if (programs.length <= 1) {

@@ -185,6 +185,98 @@ export default function StudentModal({
     }
   };
 
+  const normalizeJoinDate = (joinDate?: string) => {
+    if (!joinDate) return new Date().toISOString().slice(0, 10);
+    const trimmed = joinDate.trim();
+    if (!trimmed) return new Date().toISOString().slice(0, 10);
+    const asDate = new Date(trimmed);
+    if (Number.isNaN(asDate.getTime())) {
+      return new Date().toISOString().slice(0, 10);
+    }
+    return asDate.toISOString().slice(0, 10);
+  };
+
+  const syncStudentPrograms = async ({
+    studentId,
+    primaryProgram,
+    joinDate,
+    additionalProgramNames,
+  }: {
+    studentId: string;
+    primaryProgram: string;
+    joinDate: string;
+    additionalProgramNames: string[];
+  }) => {
+    const normalizedJoinDate = normalizeJoinDate(joinDate);
+    const desiredPrograms = Array.from(
+      new Set(
+        [primaryProgram, ...additionalProgramNames]
+          .map((program) => sanitizeText((program || '').trim()))
+          .filter(Boolean)
+      )
+    );
+
+    if (!desiredPrograms.includes(primaryProgram)) {
+      desiredPrograms.unshift(primaryProgram);
+    }
+
+    const { data: existingRows, error: existingRowsError } = await supabase
+      .from('student_programs')
+      .select('id, program_name')
+      .eq('student_id', studentId);
+
+    if (existingRowsError) throw existingRowsError;
+
+    const desiredSet = new Set(desiredPrograms.map((name) => name.toLowerCase()));
+    const toDeleteIds = (existingRows || [])
+      .filter((row) => !desiredSet.has((row.program_name || '').toLowerCase()))
+      .map((row) => row.id);
+
+    if (toDeleteIds.length > 0) {
+      const { error: deleteError } = await supabase
+        .from('student_programs')
+        .delete()
+        .in('id', toDeleteIds);
+      if (deleteError) throw deleteError;
+    }
+
+    const { error: upsertError } = await supabase.from('student_programs').upsert(
+      desiredPrograms.map((programName) => ({
+        student_id: studentId,
+        program_name: programName,
+        joined_at: normalizedJoinDate,
+        is_primary: programName.toLowerCase() === primaryProgram.toLowerCase(),
+      })),
+      { onConflict: 'student_id,program_name' }
+    );
+
+    if (upsertError) throw upsertError;
+
+    const { error: clearPrimaryError } = await supabase
+      .from('student_programs')
+      .update({ is_primary: false })
+      .eq('student_id', studentId);
+    if (clearPrimaryError) throw clearPrimaryError;
+
+    const { error: setPrimaryError } = await supabase
+      .from('student_programs')
+      .update({ is_primary: true })
+      .eq('student_id', studentId)
+      .eq('program_name', primaryProgram);
+    if (setPrimaryError) throw setPrimaryError;
+
+    const { data: finalRows, error: finalRowsError } = await supabase
+      .from('student_programs')
+      .select('program_name, is_primary')
+      .eq('student_id', studentId)
+      .order('is_primary', { ascending: false });
+
+    if (finalRowsError) throw finalRowsError;
+
+    const finalPrograms = (finalRows || []).map((row) => row.program_name);
+    return finalPrograms;
+  };
+
   const onSubmit = async (values: StudentFormValues) => {
     const sanitizedValues = {
       name: sanitizeText(values.name?.trim() || ''),
@@ -242,31 +334,20 @@ export default function StudentModal({
       };
 
       if (student) {
-        // First update primary program in junction table
-        await supabase
-          .from('student_programs')
-          .update({ is_primary: false })
-          .eq('student_id', student.id);
-        await supabase.from('student_programs').upsert(
-          {
-            student_id: student.id,
-            program_name: sanitizedValues.program,
-            joined_at: sanitizedValues.join_date,
-            is_primary: true,
-          },
-          { onConflict: 'student_id,program_name' }
-        );
+        const selectedPrimaryLower = sanitizedValues.program.toLowerCase();
+        const additionalProgramNames = existingPrograms
+          .map((p) => p.program_name)
+          .filter((programName) =>
+            (programName || '').trim().toLowerCase() !== selectedPrimaryLower
+          );
 
-        // Fetch all programs from junction table to sync students.program field
-        const { data: allProgs } = await supabase
-          .from('student_programs')
-          .select('program_name')
-          .eq('student_id', student.id)
-          .order('is_primary', { ascending: false });
+        const allProgramNames = await syncStudentPrograms({
+          studentId: student.id,
+          primaryProgram: sanitizedValues.program,
+          joinDate: sanitizedValues.join_date,
+          additionalProgramNames,
+        });
 
-        const allProgramNames = allProgs?.map((p) => p.program_name) || [
-          sanitizedValues.program,
-        ];
         payload.program = allProgramNames.join(', ');
 
         const { data, error } = await supabase
@@ -286,25 +367,18 @@ export default function StudentModal({
           .single();
         if (error) throw error;
 
-        // Insert primary program
-        await supabase.from('student_programs').insert({
-          student_id: data.id,
-          program_name: sanitizedValues.program,
-          joined_at: sanitizedValues.join_date,
-          is_primary: true,
+        const allProgramNames = await syncStudentPrograms({
+          studentId: data.id,
+          primaryProgram: sanitizedValues.program,
+          joinDate: sanitizedValues.join_date,
+          additionalProgramNames: additionalPrograms,
         });
 
-        // Insert additional programs
-        if (additionalPrograms.length > 0) {
-          await supabase.from('student_programs').insert(
-            additionalPrograms.map((prog) => ({
-              student_id: data.id,
-              program_name: prog,
-              joined_at: sanitizedValues.join_date,
-              is_primary: false,
-            }))
-          );
-        }
+        const { error: programSyncError } = await supabase
+          .from('students')
+          .update({ program: allProgramNames.join(', ') })
+          .eq('id', data.id);
+        if (programSyncError) throw programSyncError;
 
         // Assign white belt
         const whiteBeltId = getWhiteBeltId(data.program);

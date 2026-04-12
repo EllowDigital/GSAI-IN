@@ -201,10 +201,32 @@ export default function StudentProfileCard() {
     .slice(0, 2)
     .toUpperCase();
 
-  const programsToShow =
-    enrolledPrograms.length > 0
-      ? enrolledPrograms
-      : [{ program_name: student.program, is_primary: true }];
+  const programMap = new Map<string, { program_name: string; is_primary: boolean }>();
+
+  enrolledPrograms.forEach((program: any) => {
+    const name = (program?.program_name || '').trim();
+    if (!name) return;
+    programMap.set(name.toLowerCase(), {
+      program_name: name,
+      is_primary: !!program.is_primary,
+    });
+  });
+
+  const fallbackProgram = (student.program || '').trim();
+  if (
+    fallbackProgram &&
+    fallbackProgram.toLowerCase() !== 'unassigned' &&
+    !programMap.has(fallbackProgram.toLowerCase())
+  ) {
+    programMap.set(fallbackProgram.toLowerCase(), {
+      program_name: fallbackProgram,
+      is_primary: programMap.size === 0,
+    });
+  }
+
+  const programsToShow = Array.from(programMap.values()).sort(
+    (a, b) => Number(b.is_primary) - Number(a.is_primary)
+  );
 
   return (
     <>
