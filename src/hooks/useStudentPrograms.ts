@@ -3,6 +3,8 @@ import { supabase } from '@/services/supabase/client';
 import { toast } from '@/components/ui/sonner';
 import { useCallback } from 'react';
 
+const EMPTY_STUDENT_PROGRAMS: StudentProgram[] = [];
+
 export type StudentProgram = {
   id: string;
   student_id: string;
@@ -26,7 +28,7 @@ export function useStudentPrograms(studentId?: string) {
     return parsed.toISOString().slice(0, 10);
   }, []);
 
-  const { data: programs = [], isLoading } = useQuery({
+  const { data: programsData, isLoading } = useQuery({
     queryKey: ['student-programs', studentId],
     queryFn: async () => {
       if (!studentId) return [];
@@ -40,6 +42,8 @@ export function useStudentPrograms(studentId?: string) {
     },
     enabled: !!studentId,
   });
+
+  const programs = programsData ?? EMPTY_STUDENT_PROGRAMS;
 
   const syncStudentProgramField = useCallback(async (studentId: string) => {
     const { data: allProgs, error: allProgsError } = await supabase
