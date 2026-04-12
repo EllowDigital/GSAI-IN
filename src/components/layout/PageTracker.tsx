@@ -15,6 +15,7 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { trackPageView } from '@/utils/gtm';
+import { trackClarityPageView } from '@/utils/clarity';
 
 export const PageTracker: React.FC = () => {
   const location = useLocation();
@@ -38,6 +39,7 @@ export const PageTracker: React.FC = () => {
 
       // Execute the GTM Push
       trackPageView(currentPath, pageTitle);
+      trackClarityPageView(currentPath, pageTitle);
 
       // Update the reference
       lastTrackedPath.current = currentPath;
