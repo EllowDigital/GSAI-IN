@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Edit, Plus, History, IndianRupee } from 'lucide-react';
+import { Edit, Plus, History, IndianRupee, Trash2 } from 'lucide-react';
 import clsx from 'clsx';
 import { getFeeStatus, getStatusTextAndColor } from '@/utils/feeStatusUtils';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -19,6 +19,7 @@ interface FeesCardsProps {
   }[];
   onEditFee: (args: { student: any; fee?: any; programName: string }) => void;
   onShowHistory: (student: any) => void;
+  onDeleteFee?: (args: { fee: any; student: any; programName: string }) => void;
   bulkMode?: boolean;
   selectedIds?: Set<string>;
   onToggleSelect?: (rowKey: string) => void;
@@ -30,6 +31,7 @@ export default function FeesCards({
   rows,
   onEditFee,
   onShowHistory,
+  onDeleteFee,
   bulkMode = false,
   selectedIds = new Set(),
   onToggleSelect,
@@ -196,7 +198,7 @@ export default function FeesCards({
                     variant={fee ? 'secondary' : 'default'}
                     size="sm"
                     onClick={() => onEditFee({ student, fee, programName })}
-                    className="col-span-2 h-8 w-full min-w-0 sm:h-9 text-xs rounded-lg"
+                    className="h-8 w-full min-w-0 sm:h-9 text-xs rounded-lg"
                   >
                     {fee ? (
                       <>
@@ -210,6 +212,19 @@ export default function FeesCards({
                       </>
                     )}
                   </Button>
+                  {fee ? (
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => onDeleteFee?.({ fee, student, programName })}
+                      className="h-8 w-full min-w-0 sm:h-9 text-xs rounded-lg"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                      Delete
+                    </Button>
+                  ) : (
+                    <div />
+                  )}
                 </div>
               )}
             </CardContent>

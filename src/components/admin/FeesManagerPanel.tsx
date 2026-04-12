@@ -618,6 +618,7 @@ export default function FeesManagerPanel({
             isLoading={false}
             onEditFee={handleEditFee}
             onShowHistory={handleShowHistory}
+            onDeleteFee={handleDeleteFee}
           />
         </div>
       );
@@ -641,8 +642,9 @@ export default function FeesManagerPanel({
         rows={rows}
         onEditFee={handleEditFee}
         onShowHistory={handleShowHistory}
+        onDeleteFee={handleDeleteFee}
         bulkMode={bulkMode}
-          selectedIds={selectedRowKeys}
+        selectedIds={selectedRowKeys}
         onToggleSelect={toggleSelection}
         filterMonth={filterMonth}
         filterYear={filterYear}

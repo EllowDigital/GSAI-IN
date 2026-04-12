@@ -12,6 +12,7 @@ import {
   Edit,
   Plus,
   History,
+  Trash2,
   DollarSign,
   Calendar,
   User,
@@ -25,6 +26,7 @@ export default function FeesTable({
   isLoading,
   onEditFee,
   onShowHistory,
+  onDeleteFee,
 }: {
   rows: {
     student: any;
@@ -36,6 +38,7 @@ export default function FeesTable({
   isLoading: boolean;
   onEditFee: (args: { student: any; fee?: any; programName: string }) => void;
   onShowHistory: (student: any) => void;
+  onDeleteFee?: (args: { fee: any; student: any; programName: string }) => void;
 }) {
   if (isLoading) {
     return (
@@ -197,6 +200,17 @@ export default function FeesTable({
                         <Plus className="w-4 h-4 text-white" />
                       )}
                     </Button>
+                    {fee ? (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => onDeleteFee?.({ fee, student, programName })}
+                        className="h-8 w-8 rounded-lg transition-all duration-200 sm:h-9 sm:w-9"
+                        title="Delete fee record"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    ) : null}
                   </div>
                 </TableCell>
               </TableRow>
