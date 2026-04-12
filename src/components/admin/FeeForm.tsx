@@ -66,6 +66,10 @@ export function FeeForm({
     initialProgramName
   );
 
+  React.useEffect(() => {
+    setSelectedProgramName(initialProgramName || 'General');
+  }, [initialProgramName]);
+
   const { data: enrolledPrograms = [] } = useQuery({
     queryKey: ['student-programs', student?.id],
     queryFn: async () => {
@@ -322,7 +326,7 @@ export function FeeForm({
           <p className="font-semibold text-sm text-foreground truncate">
             {student?.name}
           </p>
-          <p className="text-xs text-muted-foreground">{student?.program}</p>
+          <p className="text-xs text-muted-foreground">{selectedProgramName}</p>
         </div>
         <div className="text-right">
           <span className="text-xs font-medium text-muted-foreground">
