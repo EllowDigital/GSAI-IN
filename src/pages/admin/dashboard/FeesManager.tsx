@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import FeesManagerPanel from '@/components/admin/FeesManagerPanel';
 import FeeSettingsCard from '@/components/admin/FeeSettingsCard';
 import FeeHistoryLogPanel from '@/components/admin/FeeHistoryLogPanel';
@@ -11,11 +11,13 @@ export default function FeesManager() {
   >('records');
   const [statsVisited, setStatsVisited] = useState(false);
 
-  useEffect(() => {
-    if (activeTab === 'stats' && !statsVisited) {
+  const handleTabChange = (value: string) => {
+    const nextTab = value as 'records' | 'stats' | 'history' | 'settings';
+    setActiveTab(nextTab);
+    if (nextTab === 'stats') {
       setStatsVisited(true);
     }
-  }, [activeTab, statsVisited]);
+  };
 
   const headingMeta = useMemo(() => {
     if (activeTab === 'stats') {
@@ -49,9 +51,7 @@ export default function FeesManager() {
     <div className="admin-page">
       <Tabs
         value={activeTab}
-        onValueChange={(value) =>
-          setActiveTab(value as 'records' | 'stats' | 'history' | 'settings')
-        }
+        onValueChange={handleTabChange}
         className="w-full space-y-3"
       >
         <div className="sticky top-2 z-20">
