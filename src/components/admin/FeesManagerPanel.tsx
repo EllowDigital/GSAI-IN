@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { FeeCardsGridSkeleton, FeeTableSkeleton } from './AdminSkeletons';
 import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
+import { parseProgramNames } from '@/utils/studentPrograms';
 
 type FeesManagerPanelSection = 'all' | 'records' | 'stats';
 
@@ -60,7 +61,7 @@ export default function FeesManagerPanel({
     'cards',
     ['cards', 'table']
   );
-  const [selectedStudentIds, setSelectedStudentIds] = useState<Set<string>>(
+  const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(
     new Set()
   );
   const [bulkMode, setBulkMode] = useState(false);
@@ -136,6 +137,19 @@ export default function FeesManagerPanel({
     },
   });
 
+  const { data: allStudentPrograms = [] } = useQuery({
+    queryKey: ['all-student-programs'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('student_programs')
+        .select('student_id, program_name, is_primary')
+        .order('is_primary', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+
   // All fees for history drawer
   const { data: allFees } = useQuery({
     queryKey: ['fees', 'all'],
@@ -149,12 +163,24 @@ export default function FeesManagerPanel({
 
   // Bulk mark as paid mutation
   const bulkMarkPaidMutation = useMutation({
-    mutationFn: async (studentIds: string[]) => {
-      const updates = studentIds.map(async (studentId) => {
+    mutationFn: async (rowKeys: string[]) => {
+      const updates = rowKeys.map(async (rowKey) => {
+        const [studentId, programName] = rowKey.split('::');
         const student = students?.find((s) => s.id === studentId);
-        const existingFee = fees?.find((f) => f.student_id === studentId);
+        const existingFee = fees?.find(
+          (f) =>
+            f.student_id === studentId &&
+            (f.program_name || '').toLowerCase() ===
+              (programName || '').toLowerCase()
+        );
+
+        const programFee =
+          programFees?.[programName] ?? student?.default_monthly_fee ?? 2000;
+        const discountPercent = student?.discount_percent ?? 0;
         const monthlyFee =
-          existingFee?.monthly_fee || student?.default_monthly_fee || 2000;
+          discountPercent > 0
+            ? Math.round(programFee * (1 - discountPercent / 100))
+            : programFee;
 
         if (existingFee) {
           // Update existing fee
@@ -167,6 +193,7 @@ export default function FeesManagerPanel({
           // Create new fee record
           const { error } = await supabase.from('fees').insert({
             student_id: studentId,
+            program_name: programName,
             month: filterMonth,
             year: filterYear,
             monthly_fee: monthlyFee,
@@ -182,7 +209,7 @@ export default function FeesManagerPanel({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['fees'] });
-      setSelectedStudentIds(new Set());
+      setSelectedRowKeys(new Set());
       setBulkMode(false);
       toast({
         title: 'Success',
@@ -207,43 +234,68 @@ export default function FeesManagerPanel({
       if (!students || students.length === 0)
         throw new Error('No students found');
 
-      const existingStudentIds = new Set((fees || []).map((f) => f.student_id));
-      const studentsWithoutFee = students.filter(
-        (s) => !existingStudentIds.has(s.id)
+      const programMap = new Map<string, string[]>();
+
+      students.forEach((student) => {
+        const fromJunction = allStudentPrograms
+          .filter((programRow: any) => programRow.student_id === student.id)
+          .map((programRow: any) => (programRow.program_name || '').trim())
+          .filter(Boolean);
+
+        const fallback = parseProgramNames(student.program);
+        const allPrograms = Array.from(new Set([...fromJunction, ...fallback]));
+        const normalizedPrograms = allPrograms.length > 0 ? allPrograms : ['General'];
+        programMap.set(student.id, normalizedPrograms);
+      });
+
+      const existingFeeKeys = new Set(
+        (fees || []).map(
+          (feeRow) =>
+            `${feeRow.student_id}::${(feeRow.program_name || 'General').toLowerCase()}`
+        )
       );
 
-      if (studentsWithoutFee.length === 0)
-        throw new Error('All students already have fee records for this month');
+      const records: Array<Record<string, unknown>> = [];
 
-      const records = studentsWithoutFee.map((s) => {
-        // Use program-specific fee if available, otherwise student default
-        const programFee =
-          programFees?.[s.program] ?? s.default_monthly_fee ?? 2000;
-        const baseFee = s.default_monthly_fee ?? programFee;
-        const discountedFee =
-          s.discount_percent > 0
-            ? Math.round(baseFee * (1 - s.discount_percent / 100))
-            : baseFee;
-        return {
-          student_id: s.id,
-          month: filterMonth,
-          year: filterYear,
-          monthly_fee: discountedFee,
-          paid_amount: 0,
-          balance_due: discountedFee,
-          status: 'unpaid',
-        };
+      students.forEach((student) => {
+        const studentPrograms = programMap.get(student.id) || ['General'];
+        studentPrograms.forEach((programName) => {
+          const rowKey = `${student.id}::${programName.toLowerCase()}`;
+          if (existingFeeKeys.has(rowKey)) return;
+
+          const configuredProgramFee =
+            programFees?.[programName] ?? student.default_monthly_fee ?? 2000;
+          const discountPercent = student.discount_percent ?? 0;
+          const effectiveFee =
+            discountPercent > 0
+              ? Math.round(configuredProgramFee * (1 - discountPercent / 100))
+              : configuredProgramFee;
+
+          records.push({
+            student_id: student.id,
+            program_name: programName,
+            month: filterMonth,
+            year: filterYear,
+            monthly_fee: effectiveFee,
+            paid_amount: 0,
+            balance_due: effectiveFee,
+            status: 'unpaid',
+          });
+        });
       });
+
+      if (records.length === 0)
+        throw new Error('All student-program fee records already exist for this month');
 
       const { error } = await supabase.from('fees').insert(records);
       if (error) throw error;
-      return studentsWithoutFee.length;
+      return records.length;
     },
     onSuccess: (count) => {
       queryClient.invalidateQueries({ queryKey: ['fees'] });
       toast({
         title: 'Batch Generated',
-        description: `Created fee records for ${count} students`,
+        description: `Created ${count} student-program fee records`,
       });
     },
     onError: (error: any) => {
@@ -271,10 +323,29 @@ export default function FeesManagerPanel({
 
   const rows = Array.isArray(students)
     ? students
-        .map((student) => {
-          const fee = fees?.find((f) => f.student_id === student.id) || null;
-          const reminderEmail = emailByStudentId.get(student.id) || null;
-          return { student, fee, reminderEmail };
+        .flatMap((student) => {
+          const fromJunction = allStudentPrograms
+            .filter((programRow: any) => programRow.student_id === student.id)
+            .map((programRow: any) => (programRow.program_name || '').trim())
+            .filter(Boolean);
+          const fallbackPrograms = parseProgramNames(student.program);
+          const studentPrograms = Array.from(
+            new Set([...fromJunction, ...fallbackPrograms])
+          );
+          const programList = studentPrograms.length > 0 ? studentPrograms : ['General'];
+
+          return programList.map((programName) => {
+            const fee =
+              fees?.find(
+                (feeRow) =>
+                  feeRow.student_id === student.id &&
+                  (feeRow.program_name || '').toLowerCase() ===
+                    programName.toLowerCase()
+              ) || null;
+            const reminderEmail = emailByStudentId.get(student.id) || null;
+            const rowKey = `${student.id}::${programName}`;
+            return { student, fee, reminderEmail, programName, rowKey };
+          });
         })
         .filter((row) => {
           if (
@@ -303,7 +374,9 @@ export default function FeesManagerPanel({
       if (r.fee) {
         return sum + Number(r.fee.balance_due || 0);
       }
-      return sum + Number(r.student.default_monthly_fee || 0);
+      const configuredFee =
+        programFees?.[r.programName] ?? r.student.default_monthly_fee ?? 0;
+      return sum + Number(configuredFee || 0);
     }, 0);
 
     return {
@@ -315,13 +388,13 @@ export default function FeesManagerPanel({
   }, [rows]);
 
   // Selection handlers
-  const toggleSelection = (studentId: string) => {
-    setSelectedStudentIds((prev) => {
+  const toggleSelection = (rowKey: string) => {
+    setSelectedRowKeys((prev) => {
       const next = new Set(prev);
-      if (next.has(studentId)) {
-        next.delete(studentId);
+      if (next.has(rowKey)) {
+        next.delete(rowKey);
       } else {
-        next.add(studentId);
+        next.add(rowKey);
       }
       return next;
     });
@@ -330,24 +403,35 @@ export default function FeesManagerPanel({
   const selectAllUnpaid = () => {
     const unpaidIds = rows
       .filter((r) => !r.fee || r.fee.status !== 'paid')
-      .map((r) => r.student.id);
-    setSelectedStudentIds(new Set(unpaidIds));
+      .map((r) => r.rowKey);
+    setSelectedRowKeys(new Set(unpaidIds));
   };
 
   const clearSelection = () => {
-    setSelectedStudentIds(new Set());
+    setSelectedRowKeys(new Set());
     setBulkMode(false);
   };
 
   const handleBulkMarkPaid = () => {
-    if (selectedStudentIds.size === 0) return;
-    bulkMarkPaidMutation.mutate(Array.from(selectedStudentIds));
+    if (selectedRowKeys.size === 0) return;
+    bulkMarkPaidMutation.mutate(Array.from(selectedRowKeys));
   };
 
   // Handlers
-  const handleEditFee = ({ student, fee }: { student: any; fee?: any }) => {
+  const handleEditFee = ({
+    student,
+    fee,
+    programName,
+  }: {
+    student: any;
+    fee?: any;
+    programName: string;
+  }) => {
     setEditStudent(student);
     setEditFee(fee);
+    if (fee) {
+      setEditFee({ ...fee, program_name: fee.program_name || programName });
+    }
     setModalOpen(true);
   };
 
@@ -409,7 +493,7 @@ export default function FeesManagerPanel({
         onEditFee={handleEditFee}
         onShowHistory={handleShowHistory}
         bulkMode={bulkMode}
-        selectedIds={selectedStudentIds}
+          selectedIds={selectedRowKeys}
         onToggleSelect={toggleSelection}
         filterMonth={filterMonth}
         filterYear={filterYear}
@@ -600,7 +684,7 @@ export default function FeesManagerPanel({
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3 flex-wrap">
                   <span className="text-sm font-medium text-foreground">
-                    {selectedStudentIds.size} selected
+                    {selectedRowKeys.size} selected
                   </span>
                   <Button
                     variant="outline"
@@ -623,7 +707,7 @@ export default function FeesManagerPanel({
                 <Button
                   onClick={handleBulkMarkPaid}
                   disabled={
-                    selectedStudentIds.size === 0 ||
+                    selectedRowKeys.size === 0 ||
                     bulkMarkPaidMutation.isPending
                   }
                   size="sm"
@@ -631,7 +715,7 @@ export default function FeesManagerPanel({
                 >
                   {bulkMarkPaidMutation.isPending
                     ? 'Processing...'
-                    : `Mark ${selectedStudentIds.size} as Paid`}
+                    : `Mark ${selectedRowKeys.size} as Paid`}
                 </Button>
               </div>
             </Card>
@@ -698,6 +782,7 @@ export default function FeesManagerPanel({
           fee={editFee}
           month={filterMonth}
           year={filterYear}
+          programName={editFee?.program_name || undefined}
         />
       )}
       {historyDrawerOpen && (

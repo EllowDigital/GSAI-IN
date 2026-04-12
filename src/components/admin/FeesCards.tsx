@@ -9,12 +9,18 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import FeeReminderButton from './FeeReminderButton';
 
 interface FeesCardsProps {
-  rows: { student: any; fee: any | null; reminderEmail?: string | null }[];
-  onEditFee: (args: { student: any; fee?: any }) => void;
+  rows: {
+    student: any;
+    fee: any | null;
+    reminderEmail?: string | null;
+    programName: string;
+    rowKey: string;
+  }[];
+  onEditFee: (args: { student: any; fee?: any; programName: string }) => void;
   onShowHistory: (student: any) => void;
   bulkMode?: boolean;
   selectedIds?: Set<string>;
-  onToggleSelect?: (studentId: string) => void;
+  onToggleSelect?: (rowKey: string) => void;
   filterMonth: number;
   filterYear: number;
 }
@@ -44,14 +50,14 @@ export default function FeesCards({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
-      {rows.map(({ student, fee, reminderEmail }) => {
+      {rows.map(({ student, fee, reminderEmail, programName, rowKey }) => {
         const status = fee ? getFeeStatus(fee) : 'unpaid';
         const [statusText, statusClass] = getStatusTextAndColor(status);
-        const isSelected = selectedIds.has(student.id);
+        const isSelected = selectedIds.has(rowKey);
 
         return (
           <Card
-            key={student.id}
+            key={rowKey}
             className={clsx(
               'group rounded-xl sm:rounded-2xl bg-card border transition-all duration-300 overflow-hidden',
               bulkMode && isSelected
@@ -59,7 +65,7 @@ export default function FeesCards({
                 : 'border-border/50 hover:border-primary/30 hover:shadow-lg',
               bulkMode && 'cursor-pointer'
             )}
-            onClick={() => bulkMode && onToggleSelect?.(student.id)}
+            onClick={() => bulkMode && onToggleSelect?.(rowKey)}
           >
             {/* Status indicator bar */}
             <div
@@ -77,7 +83,7 @@ export default function FeesCards({
                 {bulkMode && (
                   <Checkbox
                     checked={isSelected}
-                    onCheckedChange={() => onToggleSelect?.(student.id)}
+                    onCheckedChange={() => onToggleSelect?.(rowKey)}
                     className="mt-1 flex-shrink-0"
                     onClick={(e) => e.stopPropagation()}
                   />
@@ -99,7 +105,7 @@ export default function FeesCards({
                     {student.name}
                   </h4>
                   <p className="text-xs text-muted-foreground truncate">
-                    {student.program}
+                    {programName}
                   </p>
                 </div>
                 <span
@@ -188,7 +194,7 @@ export default function FeesCards({
                   <Button
                     variant={fee ? 'secondary' : 'default'}
                     size="sm"
-                    onClick={() => onEditFee({ student, fee })}
+                    onClick={() => onEditFee({ student, fee, programName })}
                     className="col-span-2 h-8 w-full min-w-0 sm:h-9 text-xs rounded-lg"
                   >
                     {fee ? (

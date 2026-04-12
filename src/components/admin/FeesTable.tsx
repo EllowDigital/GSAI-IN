@@ -26,9 +26,9 @@ export default function FeesTable({
   onEditFee,
   onShowHistory,
 }: {
-  rows: { student: any; fee: any | null }[];
+  rows: { student: any; fee: any | null; programName: string; rowKey: string }[];
   isLoading: boolean;
-  onEditFee: (args: { student: any; fee?: any }) => void;
+  onEditFee: (args: { student: any; fee?: any; programName: string }) => void;
   onShowHistory: (student: any) => void;
 }) {
   if (isLoading) {
@@ -99,12 +99,12 @@ export default function FeesTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.map(({ student, fee }) => {
+          {rows.map(({ student, fee, programName, rowKey }) => {
             const status = fee ? getFeeStatus(fee) : 'unpaid';
             const [statusText, statusClass] = getStatusTextAndColor(status);
             return (
               <TableRow
-                key={student.id}
+                key={rowKey}
                 className={clsx(
                   'group transition-all duration-200',
                   'hover:bg-gradient-to-r hover:from-green-50/30 hover:to-emerald-50/20',
@@ -122,7 +122,7 @@ export default function FeesTable({
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
                   <span className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-100 to-indigo-100 px-2 py-1 text-[11px] font-semibold text-blue-700 sm:text-xs">
-                    {student.program}
+                    {programName}
                   </span>
                 </TableCell>
                 <TableCell>
@@ -177,7 +177,7 @@ export default function FeesTable({
                     <Button
                       variant={fee ? 'outline' : 'default'}
                       size="sm"
-                      onClick={() => onEditFee({ student, fee })}
+                      onClick={() => onEditFee({ student, fee, programName })}
                       className={clsx(
                         'h-8 w-8 rounded-lg transition-all duration-200 group/btn sm:h-9 sm:w-9',
                         fee
