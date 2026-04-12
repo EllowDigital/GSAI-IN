@@ -39,7 +39,7 @@ import {
 } from '@/utils/inputValidation';
 import { useBeltLevels } from '@/hooks/useBeltLevels';
 import { useDisciplines } from '@/hooks/useDisciplines';
-import { X, Plus } from 'lucide-react';
+import { X } from 'lucide-react';
 
 const StudentSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -97,7 +97,6 @@ export default function StudentModal({
   ]);
 
   const [additionalPrograms, setAdditionalPrograms] = useState<string[]>([]);
-  const [addingProgram, setAddingProgram] = useState('');
   const queryClient = useQueryClient();
 
   // DB-driven program options
@@ -139,6 +138,7 @@ export default function StudentModal({
 
     if (!open) {
       initKeyRef.current = '';
+      setAdditionalPrograms([]);
       return;
     }
 
@@ -207,21 +207,55 @@ export default function StudentModal({
     Boolean
   );
 
-  const availableToAdd = programOptions.filter(
-    (p) => !enrolledProgramNames.includes(p.value)
-  );
-
-  const handleAddAdditionalProgram = () => {
-    if (!addingProgram) return;
-    setAdditionalPrograms((prev) =>
-      prev.includes(addingProgram) ? prev : [...prev, addingProgram]
+  const availableToAdd = useMemo(() => {
+    const enrolledSet = new Set(
+      enrolledProgramNames.map((programName) => programName.toLowerCase())
     );
-    setAddingProgram('');
+    return programOptions.filter(
+      (programOption) => !enrolledSet.has(programOption.value.toLowerCase())
+    );
+  }, [enrolledProgramNames, programOptions]);
+
+  const handleSelectAdditionalProgram = (programName: string) => {
+    const normalized = sanitizeText((programName || '').trim());
+    if (!normalized) return;
+
+    setAdditionalPrograms((prev) => {
+      const exists = prev.some(
+        (existingProgram) =>
+          existingProgram.toLowerCase() === normalized.toLowerCase()
+      );
+      return exists ? prev : [...prev, normalized];
+    });
   };
 
   const handleRemoveAdditionalProgram = (programName: string) => {
     setAdditionalPrograms((prev) => prev.filter((p) => p !== programName));
   };
+
+  useEffect(() => {
+    if (!currentPrimary) return;
+
+    setAdditionalPrograms((prev) => {
+      const uniquePrograms: string[] = [];
+      const seen = new Set<string>();
+
+      prev.forEach((programName) => {
+        const normalized = sanitizeText((programName || '').trim());
+        if (!normalized) return;
+        if (normalized.toLowerCase() === currentPrimary.toLowerCase()) return;
+        if (seen.has(normalized.toLowerCase())) return;
+
+        seen.add(normalized.toLowerCase());
+        uniquePrograms.push(normalized);
+      });
+
+      const sameLength = uniquePrograms.length === prev.length;
+      const sameOrder =
+        sameLength && uniquePrograms.every((programName, index) => programName === prev[index]);
+      return sameOrder ? prev : uniquePrograms;
+    });
+  }, [currentPrimary]);
 
   const normalizeJoinDate = (joinDate?: string) => {
     if (!joinDate) return new Date().toISOString().slice(0, 10);
@@ -326,14 +360,6 @@ export default function StudentModal({
       );
     }
 
-    if (import.meta.env.DEV) {
-      console.log('[StudentModal] student_programs sync verified', {
-        studentId,
-        desiredPrograms,
-        finalPrograms,
-      });
-    }
-
     return finalPrograms;
   };
 
@@ -371,6 +397,18 @@ export default function StudentModal({
     }
 
     const { data: result, error } = await safeAsync(async () => {
+      const stagedAdditionalPrograms = Array.from(
+        new Set(
+          additionalPrograms
+            .map((programName) => sanitizeText((programName || '').trim()))
+            .filter(
+              (programName) =>
+                Boolean(programName) &&
+                programName.toLowerCase() !== sanitizedValues.program.toLowerCase()
+            )
+        )
+      );
+
       if (!student) {
         const { data: existing } = await supabase
           .from('students')
@@ -394,17 +432,11 @@ export default function StudentModal({
       };
 
       if (student) {
-        const additionalProgramNames = additionalPrograms.filter(
-          (programName) =>
-            (programName || '').trim().toLowerCase() !==
-            sanitizedValues.program.toLowerCase()
-        );
-
         const allProgramNames = await syncStudentPrograms({
           studentId: student.id,
           primaryProgram: sanitizedValues.program,
           joinDate: sanitizedValues.join_date,
-          additionalProgramNames,
+          additionalProgramNames: stagedAdditionalPrograms,
         });
 
         payload.program = allProgramNames.join(', ');
@@ -430,7 +462,7 @@ export default function StudentModal({
           studentId: data.id,
           primaryProgram: sanitizedValues.program,
           joinDate: sanitizedValues.join_date,
-          additionalProgramNames: additionalPrograms,
+          additionalProgramNames: stagedAdditionalPrograms,
         });
 
         const { error: programSyncError } = await supabase
@@ -482,14 +514,13 @@ export default function StudentModal({
         queryClient.refetchQueries({ queryKey: ['student-programs-all'], type: 'active' }),
         queryClient.refetchQueries({ queryKey: ['students'], type: 'active' }),
       ]);
-      onOpenChange(false);
+      handleOpenChange(false);
     }
   };
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
       setAdditionalPrograms([]);
-      setAddingProgram('');
     }
     onOpenChange(nextOpen);
   };
@@ -599,11 +630,11 @@ export default function StudentModal({
               {availableToAdd.length > 0 && (
                 <div className="flex gap-2">
                   <Select
-                    value={addingProgram}
-                    onValueChange={setAddingProgram}
+                    value=""
+                    onValueChange={handleSelectAdditionalProgram}
                   >
                     <SelectTrigger className="flex-1 h-8 text-xs">
-                      <SelectValue placeholder="Add another program..." />
+                      <SelectValue placeholder="Select to add another program..." />
                     </SelectTrigger>
                     <SelectContent>
                       {availableToAdd.map((opt) => (
@@ -613,16 +644,6 @@ export default function StudentModal({
                       ))}
                     </SelectContent>
                   </Select>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    className="h-8"
-                    onClick={handleAddAdditionalProgram}
-                    disabled={!addingProgram}
-                  >
-                    <Plus className="h-3 w-3" />
-                  </Button>
                 </div>
               )}
             </div>

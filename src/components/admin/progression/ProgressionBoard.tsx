@@ -1299,26 +1299,6 @@ export default function ProgressionBoard() {
         students={studentOptions}
         belts={beltOptions}
         disciplineLevels={disciplineLevelOptions}
-        onStudentSelectionDebug={({ studentId, parsedPrograms }) => {
-          if (!import.meta.env.DEV) return;
-
-          const student = students.find((candidate) => candidate.id === studentId);
-          const rows = allStudentPrograms.filter(
-            (row: any) => row.student_id === studentId
-          );
-          const mergedPrograms = studentProgramMap.get(studentId) || [];
-
-          console.groupCollapsed(
-            '[ProgressionBoard diagnostic] selected student programs',
-            student?.name || studentId
-          );
-          console.log('student_id:', studentId);
-          console.log('students.program raw:', student?.program || '');
-          console.log('students.program parsed:', parsedPrograms);
-          console.log('student_programs rows:', rows);
-          console.log('merged programs used by dropdown:', mergedPrograms);
-          console.groupEnd();
-        }}
         onSubmit={async (payload) => {
           if (payload.isLevelBased) {
             // Write to student_discipline_progress table
