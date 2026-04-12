@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Dialog,
@@ -71,6 +71,7 @@ export default function StudentModal({
   const { disciplineOptions } = useDisciplines();
   const { programs: fetchedPrograms } = useStudentPrograms(student?.id);
   const existingPrograms = useMemo(() => fetchedPrograms ?? [], [fetchedPrograms]);
+  const initKeyRef = useRef('');
   const studentResetKey = useMemo(() => {
     if (!student) return 'new';
     return [
@@ -97,6 +98,17 @@ export default function StudentModal({
     student?.default_monthly_fee,
     student?.discount_percent,
   ]);
+
+  const existingProgramsKey = useMemo(
+    () =>
+      existingPrograms
+        .map(
+          (program) =>
+            `${program.id}:${program.program_name}:${program.is_primary ? '1' : '0'}`
+        )
+        .join('|'),
+    [existingPrograms]
+  );
   const [additionalPrograms, setAdditionalPrograms] = useState<string[]>([]);
   const [addingProgram, setAddingProgram] = useState('');
   const queryClient = useQueryClient();
@@ -136,6 +148,17 @@ export default function StudentModal({
   });
 
   useEffect(() => {
+    const initKey = `${open ? '1' : '0'}|${studentResetKey}|${existingProgramsKey}|${globalFee ?? ''}`;
+
+    if (!open) {
+      initKeyRef.current = '';
+      return;
+    }
+
+    if (initKeyRef.current === initKey) {
+      return;
+    }
+
     if (student) {
       const primaryFromDB = existingPrograms.find((p) => p.is_primary)?.program_name;
       // Use primary from junction table if available, else fallback to student.program (first entry)
@@ -144,18 +167,6 @@ export default function StudentModal({
         (student.program?.includes(',')
           ? student.program.split(',')[0].trim()
           : student.program || '');
-
-      form.reset({
-        name: student.name || '',
-        aadhar_number: student.aadhar_number || '',
-        program: primaryProgram,
-        join_date: student.join_date ? student.join_date.slice(0, 10) : '',
-        parent_name: student.parent_name || '',
-        parent_contact: student.parent_contact || '',
-        profile_image_url: student.profile_image_url || null,
-        default_monthly_fee: student.default_monthly_fee ?? 2000,
-        discount_percent: student.discount_percent ?? 0,
-      });
 
       const existingSecondary = existingPrograms
         .filter((p) => !p.is_primary)
@@ -173,6 +184,32 @@ export default function StudentModal({
       const mergedPrograms = Array.from(
         new Set([...existingSecondary, ...legacyPrograms])
       );
+
+      const currentFormValues = form.getValues();
+      const shouldResetForm =
+        currentFormValues.name !== (student.name || '') ||
+        currentFormValues.aadhar_number !== (student.aadhar_number || '') ||
+        currentFormValues.program !== primaryProgram ||
+        currentFormValues.join_date !== (student.join_date ? student.join_date.slice(0, 10) : '') ||
+        currentFormValues.parent_name !== (student.parent_name || '') ||
+        currentFormValues.parent_contact !== (student.parent_contact || '') ||
+        (currentFormValues.profile_image_url || null) !== (student.profile_image_url || null) ||
+        (currentFormValues.default_monthly_fee ?? 2000) !== (student.default_monthly_fee ?? 2000) ||
+        (currentFormValues.discount_percent ?? 0) !== (student.discount_percent ?? 0);
+
+      if (shouldResetForm) {
+        form.reset({
+          name: student.name || '',
+          aadhar_number: student.aadhar_number || '',
+          program: primaryProgram,
+          join_date: student.join_date ? student.join_date.slice(0, 10) : '',
+          parent_name: student.parent_name || '',
+          parent_contact: student.parent_contact || '',
+          profile_image_url: student.profile_image_url || null,
+          default_monthly_fee: student.default_monthly_fee ?? 2000,
+          discount_percent: student.discount_percent ?? 0,
+        });
+      }
 
       setAdditionalPrograms((prev) => {
         const isSameLength = prev.length === mergedPrograms.length;
@@ -194,7 +231,17 @@ export default function StudentModal({
       });
       setAdditionalPrograms([]);
     }
-  }, [studentResetKey, open, globalFee, existingPrograms, form]);
+
+    initKeyRef.current = initKey;
+  }, [
+    student,
+    studentResetKey,
+    existingPrograms,
+    existingProgramsKey,
+    form,
+    globalFee,
+    open,
+  ]);
 
   const handleAvatarUpload = (url: string) =>
     form.setValue('profile_image_url', url);
