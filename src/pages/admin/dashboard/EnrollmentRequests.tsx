@@ -1487,9 +1487,9 @@ export default function EnrollmentRequestsManager() {
           if (!o) handleCloseApprove();
         }}
       >
-        <DialogContent className="max-w-md w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-md w-[calc(100vw-1rem)] max-h-[90vh] overflow-y-auto p-4 sm:w-[calc(100vw-2rem)] sm:p-6">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-base leading-5 sm:text-lg sm:leading-6">
               {approveStep === 'confirm' && (
                 <>
                   <UserPlus className="w-5 h-5 text-green-600" /> Step 1: Create
@@ -1508,7 +1508,7 @@ export default function EnrollmentRequestsManager() {
                 </>
               )}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-xs leading-4 sm:text-sm sm:leading-5">
               {approveStep === 'confirm' &&
                 `Add "${approveReq?.student_name}" to your student roster.`}
               {approveStep === 'credentials' &&
@@ -1520,26 +1520,28 @@ export default function EnrollmentRequestsManager() {
 
           {approveStep === 'confirm' && approveReq && (
             <div className="space-y-4">
-              <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-1.5 text-sm">
+              <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-1.5 text-[13px] leading-5 sm:text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Name</span>
-                  <span className="font-medium">{approveReq.student_name}</span>
+                  <span className="font-medium break-words text-right">{approveReq.student_name}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Program</span>
-                  <span className="font-medium">{approveReq.program}</span>
+                  <span className="font-medium break-words text-right">{approveReq.program}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Parent</span>
-                  <span className="font-medium">{approveReq.parent_name}</span>
+                  <span className="font-medium break-words text-right">{approveReq.parent_name}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Phone</span>
-                  <span className="font-medium">{approveReq.parent_phone}</span>
+                  <span className="font-medium break-all text-right">{approveReq.parent_phone}</span>
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium">Aadhar Number *</label>
+                <label className="text-[13px] leading-5 font-medium sm:text-sm">
+                  Aadhar Number *
+                </label>
                 <Input
                   value={aadharNumber}
                   onChange={(e) =>
@@ -1549,19 +1551,21 @@ export default function EnrollmentRequestsManager() {
                   }
                   placeholder="12 digit Aadhar number"
                   maxLength={12}
-                  className="mt-1"
+                  className="mt-1 text-[13px] leading-5 sm:text-sm"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-[11px] leading-4 text-muted-foreground mt-1 sm:text-xs">
                   Required for student records
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium">Join Date *</label>
+                <label className="text-[13px] leading-5 font-medium sm:text-sm">
+                  Join Date *
+                </label>
                 <Input
                   type="date"
                   value={joinDate}
                   onChange={(e) => setJoinDate(e.target.value)}
-                  className="mt-1"
+                  className="mt-1 text-[13px] leading-5 sm:text-sm"
                 />
               </div>
               <Button
@@ -1576,19 +1580,21 @@ export default function EnrollmentRequestsManager() {
 
           {approveStep === 'credentials' && (
             <div className="space-y-4">
-              <div className="rounded-lg border border-green-500/20 bg-green-500/5 p-3 text-sm text-green-700 dark:text-green-400">
+              <div className="rounded-lg border border-green-500/20 bg-green-500/5 p-3 text-[13px] leading-5 text-green-700 dark:text-green-400 sm:text-sm">
                 ✅ Student record created. Now set up their portal login.
               </div>
               <div>
-                <label className="text-sm font-medium">Login ID *</label>
+                <label className="text-[13px] leading-5 font-medium sm:text-sm">
+                  Login ID *
+                </label>
                 <Input
                   value={loginId}
                   onChange={(e) => setLoginId(e.target.value)}
                   placeholder="e.g. STU001"
-                  className="mt-1"
+                  className="mt-1 text-[13px] leading-5 sm:text-sm"
                 />
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
                 Student will sign in using default password{' '}
                 <span className="font-medium">GSAI-STUDENT-2026</span> and then
                 update password from student portal.
@@ -1616,15 +1622,15 @@ export default function EnrollmentRequestsManager() {
               <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-4 space-y-3">
                 <div className="flex items-center gap-2 text-green-600">
                   <CheckCircle className="w-5 h-5" />
-                  <span className="font-semibold text-sm">
+                  <span className="font-semibold text-[13px] leading-5 sm:text-sm">
                     Enrollment Complete!
                   </span>
                 </div>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-[13px] leading-5 sm:text-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Login ID:</span>
                     <div className="flex items-center gap-1.5">
-                      <code className="font-mono text-foreground">
+                      <code className="font-mono text-foreground break-all">
                         {createdCreds.loginId}
                       </code>
                       <button
@@ -1640,7 +1646,7 @@ export default function EnrollmentRequestsManager() {
                       Default Password:
                     </span>
                     <div className="flex items-center gap-1.5">
-                      <code className="font-mono text-foreground">
+                      <code className="font-mono text-foreground break-all">
                         {createdCreds.defaultPassword}
                       </code>
                       <button
@@ -1654,7 +1660,7 @@ export default function EnrollmentRequestsManager() {
                     </div>
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
                   Share these credentials privately. Student must change the
                   default password after first sign-in.
                 </p>
