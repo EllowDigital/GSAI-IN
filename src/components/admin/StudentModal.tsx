@@ -71,6 +71,32 @@ export default function StudentModal({
   const { disciplineOptions } = useDisciplines();
   const { programs: fetchedPrograms } = useStudentPrograms(student?.id);
   const existingPrograms = useMemo(() => fetchedPrograms ?? [], [fetchedPrograms]);
+  const studentResetKey = useMemo(() => {
+    if (!student) return 'new';
+    return [
+      student.id,
+      student.name || '',
+      student.aadhar_number || '',
+      student.program || '',
+      student.join_date || '',
+      student.parent_name || '',
+      student.parent_contact || '',
+      student.profile_image_url || '',
+      student.default_monthly_fee ?? 2000,
+      student.discount_percent ?? 0,
+    ].join('|');
+  }, [
+    student?.id,
+    student?.name,
+    student?.aadhar_number,
+    student?.program,
+    student?.join_date,
+    student?.parent_name,
+    student?.parent_contact,
+    student?.profile_image_url,
+    student?.default_monthly_fee,
+    student?.discount_percent,
+  ]);
   const [additionalPrograms, setAdditionalPrograms] = useState<string[]>([]);
   const [addingProgram, setAddingProgram] = useState('');
   const queryClient = useQueryClient();
@@ -168,7 +194,7 @@ export default function StudentModal({
       });
       setAdditionalPrograms([]);
     }
-  }, [student, open, globalFee, existingPrograms, form]);
+  }, [studentResetKey, open, globalFee, existingPrograms, form]);
 
   const handleAvatarUpload = (url: string) =>
     form.setValue('profile_image_url', url);
