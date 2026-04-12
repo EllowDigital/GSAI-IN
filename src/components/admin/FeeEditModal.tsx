@@ -18,6 +18,7 @@ export default function FeeEditModal({
   fee,
   month,
   year,
+  programName,
   adminDebug,
 }: {
   open: boolean;
@@ -26,6 +27,7 @@ export default function FeeEditModal({
   fee: any | null;
   month: number;
   year: number;
+  programName?: string;
   adminDebug?: {
     adminEmail?: string | null;
     isAdminInTable?: boolean | null;
@@ -46,22 +48,34 @@ export default function FeeEditModal({
         .eq('student_id', student.id)
         .eq('month', prevMonth)
         .eq('year', prevYear)
+        .eq(
+          'program_name',
+          fee?.program_name || programName || student.program || 'General'
+        )
         .maybeSingle();
       const shouldCarry = data && getFeeStatus(data) !== 'paid';
       const balance = shouldCarry ? data.balance_due || 0 : 0;
       setCarryForward(balance || 0);
     }
     fetchPrevious();
-  }, [student?.id, month, year, open]);
+  }, [
+    student?.id,
+    month,
+    year,
+    open,
+    fee?.program_name,
+    programName,
+    student?.program,
+  ]);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
             {fee ? '✏️ Edit Payment' : '➕ Add Payment'}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs sm:text-sm">
             Record fee payment for {student?.name || 'this student'}.
           </DialogDescription>
         </DialogHeader>
@@ -72,6 +86,9 @@ export default function FeeEditModal({
           carryForward={carryForward}
           month={month}
           year={year}
+          initialProgramName={
+            fee?.program_name || programName || student?.program || 'General'
+          }
           adminDebug={adminDebug}
           loading={loading}
           setLoading={setLoading}

@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import { Award, ArrowRight, Star, Layers, ChevronRight } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import { useDisciplines } from '@/hooks/useDisciplines';
+import { parseProgramNames } from '@/utils/studentPrograms';
 
 const BELT_COLORS: Record<string, string> = {
   white: '#e5e7eb',
@@ -148,13 +149,24 @@ export default function StudentProgressionTracker() {
       </div>
     );
 
-  // Build list of programs the student is in
-  const programs =
-    enrolledPrograms.length > 0
-      ? enrolledPrograms.map((p: any) => p.program_name)
-      : studentRecord?.program
-        ? [studentRecord.program]
-        : [];
+  // Merge all known program sources to support legacy and multi-program records.
+  const programMap = new Map<string, string>();
+
+  enrolledPrograms.forEach((program: any) => {
+    const name = (program?.program_name || '').trim();
+    if (!name) return;
+    programMap.set(name.toLowerCase(), name);
+  });
+
+  [studentRecord?.program, profile?.program].forEach((programName) => {
+    parseProgramNames(programName).forEach((name) => {
+      if (!programMap.has(name.toLowerCase())) {
+        programMap.set(name.toLowerCase(), name);
+      }
+    });
+  });
+
+  const programs = Array.from(programMap.values());
 
   // If only one program, don't show tabs
   if (programs.length <= 1) {

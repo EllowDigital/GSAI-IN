@@ -7,7 +7,7 @@ import AboutSection from '@/components/home/AboutSection';
 import FooterSection from '@/components/layout/FooterSection';
 import FloatingEnrollButton from '@/components/common/FloatingEnrollButton';
 import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
-import { faqs as faqData } from '@/components/home/FaqSection';
+import { faqs as faqData } from '@/components/home/faqData';
 
 const FounderSection = lazy(() => import('@/components/home/FounderSection'));
 const ProgramsSection = lazy(() => import('@/components/home/ProgramsSection'));

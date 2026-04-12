@@ -16,7 +16,9 @@ type FeeItem = {
     balance_due?: number;
     status?: string;
     notes?: string;
+    program_name?: string;
   };
+  programName?: string;
 };
 
 type StudentItem = {
@@ -102,7 +104,7 @@ export function exportFeesToCsv(items: FeeItem[], month: number, year: number) {
 
     return [
       escapeCSV(student.name),
-      escapeCSV(student.program),
+      escapeCSV(fee.program_name ?? item.programName ?? student.program),
       escapeCSV(fee.month ?? month),
       escapeCSV(fee.year ?? year),
       escapeCSV(fee.monthly_fee ?? student.default_monthly_fee ?? ''),

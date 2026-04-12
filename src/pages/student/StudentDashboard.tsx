@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState, useCallback } from 'react';
 import { useStudentAuth } from './StudentAuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { studentSupabase as supabase } from '@/services/supabase/studentClient';
@@ -20,6 +20,7 @@ import {
   Sparkles,
   ShieldCheck,
   Swords,
+  RefreshCw,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Navigate } from 'react-router-dom';
@@ -33,6 +34,7 @@ import StudentEventsView from '@/components/student/StudentEventsView';
 import StudentAnnouncements from '@/components/student/StudentAnnouncements';
 import StudentBeltExamNotifications from '@/components/student/StudentBeltExamNotifications';
 import { downloadCertificateFile } from '@/utils/certificateDownload';
+import { parseProgramNames } from '@/utils/studentPrograms';
 import Seo from '@/components/seo/Seo';
 
 const PASSWORD_REDIRECT_METRIC_KEY = 'gsai-student-password-redirect-start-ms';
@@ -78,9 +80,59 @@ export default function StudentDashboard() {
 
   const queryClient = useQueryClient();
   const studentId = profile?.studentId;
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(null);
   const dashboardTitle = profile?.studentName
     ? `${profile.studentName} | GSAI Student Portal`
     : 'Student Dashboard | GSAI Student Portal';
+
+  const handleRefreshAllData = useCallback(async () => {
+    if (!studentId || isRefreshing) return;
+
+    const refreshableQueryKeys = new Set([
+      'student-enrolled-programs',
+      'student-competitions',
+      'my-registrations',
+      'my-certificates',
+      'student-announcements',
+      'belt-exam-notifications',
+      'student-profile',
+      'student-all-programs',
+      'student-belt',
+      'student-fees',
+      'student-record',
+      'student-all-progress',
+      'student-level-progress',
+      'student-promotions',
+      'student-events',
+    ]);
+
+    const shouldRefresh = (queryKey: readonly unknown[]) => {
+      const key = queryKey[0];
+      return typeof key === 'string' && refreshableQueryKeys.has(key);
+    };
+
+    try {
+      setIsRefreshing(true);
+
+      await queryClient.invalidateQueries({
+        predicate: ({ queryKey }) => shouldRefresh(queryKey),
+      });
+
+      await queryClient.refetchQueries({
+        predicate: ({ queryKey }) => shouldRefresh(queryKey),
+        type: 'active',
+      });
+
+      setLastRefreshedAt(new Date());
+      toast.success('Dashboard refreshed with latest data.');
+    } catch (error) {
+      console.error('Student refresh-all failed', error);
+      toast.error('Unable to refresh all data right now.');
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [isRefreshing, queryClient, studentId]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -139,6 +191,33 @@ export default function StudentDashboard() {
     gcTime: 1000 * 60 * 30,
     refetchOnWindowFocus: false,
   });
+
+  const programBadges = useMemo(() => {
+    const normalized = new Map<string, Program>();
+
+    enrolledPrograms.forEach((program) => {
+      const name = (program.program_name || '').trim();
+      if (!name) return;
+      normalized.set(name.toLowerCase(), {
+        ...program,
+        program_name: name,
+      });
+    });
+
+    const fallbackPrograms = parseProgramNames(profile?.program);
+    fallbackPrograms.forEach((fallbackProgram) => {
+      if (normalized.has(fallbackProgram.toLowerCase())) return;
+      normalized.set(fallbackProgram.toLowerCase(), {
+        program_name: fallbackProgram,
+        is_primary: normalized.size === 0,
+        joined_at: '',
+      });
+    });
+
+    return Array.from(normalized.values()).sort(
+      (a, b) => Number(b.is_primary) - Number(a.is_primary)
+    );
+  }, [enrolledPrograms, profile?.program]);
 
   const { data: myRegistrations = [] } = useQuery<Registration[]>({
     queryKey: ['my-registrations', studentId],
@@ -251,8 +330,8 @@ export default function StudentDashboard() {
               {profile?.studentName}
             </span>
             <div className="flex items-center md:justify-center gap-1 flex-wrap mt-0.5 w-full">
-              {enrolledPrograms.length > 0 ? (
-                enrolledPrograms.map((p) => (
+              {programBadges.length > 0 ? (
+                programBadges.map((p) => (
                   <Badge
                     key={p.program_name}
                     variant={p.is_primary ? 'default' : 'secondary'}
@@ -271,6 +350,25 @@ export default function StudentDashboard() {
 
           {/* Right: Actions */}
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            {lastRefreshedAt && (
+              <span className="hidden xl:inline text-[11px] text-muted-foreground whitespace-nowrap">
+                Updated {format(lastRefreshedAt, 'h:mm a')}
+              </span>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefreshAllData}
+              disabled={isRefreshing}
+              className="gap-2 px-2 sm:px-3 h-9"
+            >
+              <RefreshCw
+                className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`}
+              />
+              <span className="hidden lg:inline font-semibold text-sm">
+                {isRefreshing ? 'Refreshing...' : 'Refresh'}
+              </span>
+            </Button>
             <ChangePasswordDialog />
             <Button
               variant="ghost"
@@ -315,7 +413,7 @@ export default function StudentDashboard() {
                   Active Programs
                 </p>
                 <p className="mt-1 text-2xl font-bold text-white">
-                  {enrolledPrograms.length || 1}
+                  {programBadges.length}
                 </p>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm transition-colors hover:bg-white/10">

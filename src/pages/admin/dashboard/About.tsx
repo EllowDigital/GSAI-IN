@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import {
   Info,
   Instagram,
@@ -18,9 +18,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-type LastUpdatedPayload = {
-  lastUpdated?: string;
-};
+const ADMIN_VERSION = 'v2.5.0';
+const ADMIN_LAST_UPDATED = '12 Apr 2026';
 
 const SOCIAL_LINKS = [
   {
@@ -50,42 +49,6 @@ const SOCIAL_LINKS = [
 ];
 
 export default function About() {
-  const [lastUpdated, setLastUpdated] = useState('2026-04-04T00:00:00.000Z');
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadLastUpdated = async () => {
-      try {
-        const response = await fetch('/last-updated.json', {
-          cache: 'no-store',
-        });
-        if (!response.ok) return;
-        const payload = (await response.json()) as LastUpdatedPayload;
-        if (isMounted && payload.lastUpdated) {
-          setLastUpdated(payload.lastUpdated);
-        }
-      } catch {
-        // Keep fallback date if fetch fails.
-      }
-    };
-
-    loadLastUpdated();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  const formattedDate = useMemo(() => {
-    const parsed = new Date(lastUpdated);
-    if (Number.isNaN(parsed.getTime())) return 'Not available';
-    return parsed.toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-  }, [lastUpdated]);
-
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* --- HERO BANNER --- */}
@@ -116,7 +79,7 @@ export default function About() {
                 Admin Version
               </p>
               <p className="mt-1 text-2xl font-bold text-white tracking-tight">
-                v2.4.0
+                {ADMIN_VERSION}
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm transition-colors hover:bg-white/10">
@@ -124,7 +87,7 @@ export default function About() {
                 Last Update
               </p>
               <p className="mt-1 text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-                {formattedDate}
+                {ADMIN_LAST_UPDATED}
               </p>
             </div>
           </div>
@@ -218,7 +181,9 @@ export default function About() {
               <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                 <Rocket className="w-3.5 h-3.5" /> Current Version
               </p>
-              <p className="mt-1.5 text-xl font-bold text-foreground">v2.4.0</p>
+              <p className="mt-1.5 text-xl font-bold text-foreground">
+                {ADMIN_VERSION}
+              </p>
             </div>
 
             <div className="rounded-xl border border-border/60 bg-background p-4 shadow-sm">
@@ -226,7 +191,7 @@ export default function About() {
                 <CalendarClock className="w-3.5 h-3.5" /> Last Admin Update
               </p>
               <p className="mt-1.5 text-xl font-bold text-foreground">
-                {formattedDate}
+                {ADMIN_LAST_UPDATED}
               </p>
             </div>
 

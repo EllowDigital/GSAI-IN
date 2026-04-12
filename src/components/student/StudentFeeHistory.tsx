@@ -143,6 +143,9 @@ export default function StudentFeeHistory() {
                     {MONTH_NAMES[fee.month - 1]} {fee.year}
                   </p>
                   <p className="text-xs text-muted-foreground">
+                    {fee.program_name || 'General'}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
                     ₹{fee.paid_amount} / ₹{fee.monthly_fee}
                     {fee.balance_due > 0 && (
                       <span className="text-destructive ml-1">

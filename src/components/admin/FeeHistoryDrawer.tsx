@@ -115,7 +115,7 @@ export default function FeeHistoryDrawer({
   return (
     <>
       <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               📋 Fee History — {student?.name}
@@ -130,6 +130,7 @@ export default function FeeHistoryDrawer({
               <TableHeader>
                 <TableRow className="bg-muted/50">
                   <TableHead className="text-xs">Month</TableHead>
+                  <TableHead className="text-xs">Program</TableHead>
                   <TableHead className="text-xs">Fee</TableHead>
                   <TableHead className="text-xs">Paid</TableHead>
                   <TableHead className="text-xs">Balance</TableHead>
@@ -143,7 +144,7 @@ export default function FeeHistoryDrawer({
                 {rows.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={8}
+                      colSpan={9}
                       className="text-center text-muted-foreground py-8"
                     >
                       No payment history found.
@@ -154,6 +155,9 @@ export default function FeeHistoryDrawer({
                     <TableRow key={fee.id} className="group hover:bg-muted/30">
                       <TableCell className="text-xs font-medium">
                         {MONTH_NAMES[fee.month - 1]} {fee.year}
+                      </TableCell>
+                      <TableCell className="text-xs">
+                        {fee.program_name || 'General'}
                       </TableCell>
                       <TableCell className="text-xs">
                         ₹{fee.monthly_fee?.toLocaleString('en-IN')}
@@ -206,7 +210,7 @@ export default function FeeHistoryDrawer({
                         {fee.notes || '—'}
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                           <Button
                             variant="ghost"
                             size="sm"
@@ -235,7 +239,7 @@ export default function FeeHistoryDrawer({
           </div>
 
           {rows.length > 0 && (
-            <div className="flex items-center justify-between pt-2 text-xs text-muted-foreground">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2 text-xs text-muted-foreground">
               <span>
                 {rows.length} record{rows.length !== 1 ? 's' : ''}
               </span>
@@ -259,6 +263,7 @@ export default function FeeHistoryDrawer({
           fee={editFee}
           month={editFee.month}
           year={editFee.year}
+          programName={editFee.program_name || 'General'}
         />
       )}
 
