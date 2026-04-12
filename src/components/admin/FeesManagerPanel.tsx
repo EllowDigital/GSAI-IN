@@ -434,6 +434,13 @@ export default function FeesManagerPanel({
           }
           return true;
         })
+        .reduce((acc: any[], row: any) => {
+          if (acc.some((existingRow) => existingRow.rowKey === row.rowKey)) {
+            return acc;
+          }
+          acc.push(row);
+          return acc;
+        }, [])
     : [];
 
   const isLoading = loadingStudents || loadingFees || isRefreshing;
