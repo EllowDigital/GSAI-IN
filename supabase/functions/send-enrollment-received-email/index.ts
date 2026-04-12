@@ -238,7 +238,7 @@ Deno.serve(async (req) => {
     });
   }
 
-  const requesterKey = getClientAddress(req) || 'unknown-client';
+  const requesterKey = getClientAddress(req);
   if (!enforceRateLimit(requesterKey)) {
     return new Response(JSON.stringify({ error: 'Rate limited' }), {
       status: 429,

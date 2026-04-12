@@ -1359,7 +1359,7 @@ export default function EnrollmentRequestsManager() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="w-full text-xs"
+                      className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-9 sm:text-xs"
                       disabled={updateMutation.isPending}
                       onClick={() => {
                         updateMutation.mutate({
@@ -1380,7 +1380,7 @@ export default function EnrollmentRequestsManager() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="gap-1 text-xs"
+                          className="min-h-11 px-3 py-2.5 gap-1.5 text-[13px] sm:min-h-9 sm:text-xs"
                           disabled={
                             isActionLocked(viewReq.id, 'contacted') ||
                             updateMutation.isPending
@@ -1397,7 +1397,7 @@ export default function EnrollmentRequestsManager() {
                       )}
                       <Button
                         size="sm"
-                        className="gap-1 text-xs bg-primary text-primary-foreground hover:bg-primary/90 sm:col-span-2"
+                        className="min-h-11 px-3 py-2.5 gap-1.5 text-[13px] bg-primary text-primary-foreground hover:bg-primary/90 sm:min-h-9 sm:text-xs sm:col-span-2"
                         disabled={
                           approving || isActionLocked(viewReq.id, 'approved')
                         }
@@ -1411,7 +1411,7 @@ export default function EnrollmentRequestsManager() {
                       <Button
                         size="sm"
                         variant="destructive"
-                        className="gap-1 text-xs"
+                        className="min-h-11 px-3 py-2.5 gap-1.5 text-[13px] sm:min-h-9 sm:text-xs"
                         disabled={
                           !canRejectFromModal ||
                           isActionLocked(viewReq.id, 'rejected') ||
@@ -1448,14 +1448,14 @@ export default function EnrollmentRequestsManager() {
                       href={parentWhatsAppUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:col-span-2"
+                      className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-[13px] font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:min-h-10 sm:text-sm sm:col-span-2"
                     >
                       📱 {currentWhatsAppLabel}
                     </a>
                     <Button
                       type="button"
                       variant="outline"
-                      className="w-full"
+                      className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-10 sm:text-sm"
                       onClick={() => copyToClipboard(currentWhatsAppMessage)}
                     >
                       <Copy className="w-4 h-4 mr-2" /> Copy Text
@@ -1463,7 +1463,7 @@ export default function EnrollmentRequestsManager() {
                     <Button
                       type="button"
                       variant="outline"
-                      className="w-full sm:col-span-2"
+                      className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-10 sm:text-sm sm:col-span-2"
                       onClick={() => copyToClipboard(viewReq.parent_phone)}
                     >
                       <Phone className="w-4 h-4 mr-2" /> Copy Parent Number
@@ -1571,7 +1571,7 @@ export default function EnrollmentRequestsManager() {
               <Button
                 onClick={handleCreateStudent}
                 disabled={approving}
-                className="w-full"
+                className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-10 sm:text-sm"
               >
                 {approving ? <Spinner size={16} /> : 'Create Student Record'}
               </Button>
@@ -1602,14 +1602,14 @@ export default function EnrollmentRequestsManager() {
               <Button
                 onClick={handleCreatePortal}
                 disabled={approving}
-                className="w-full"
+                className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-10 sm:text-sm"
               >
                 {approving ? <Spinner size={16} /> : 'Create Portal Account'}
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                className="w-full text-xs text-muted-foreground"
+                className="w-full min-h-11 px-3 py-2.5 text-[13px] text-muted-foreground sm:min-h-9 sm:text-xs"
                 onClick={handleCloseApprove}
               >
                 Skip — I'll set up login later
@@ -1671,14 +1671,14 @@ export default function EnrollmentRequestsManager() {
                     href={credentialsWhatsAppUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:col-span-2"
+                    className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-[13px] font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:min-h-10 sm:text-sm sm:col-span-2"
                   >
                     📱 Send Portal Details
                   </a>
                   <Button
                     type="button"
                     variant="outline"
-                    className="w-full"
+                    className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-10 sm:text-sm"
                     onClick={() => copyToClipboard(credentialsMessage)}
                   >
                     <Copy className="w-4 h-4 mr-2" /> Copy Message
@@ -1686,7 +1686,7 @@ export default function EnrollmentRequestsManager() {
                   <Button
                     type="button"
                     variant="outline"
-                    className="w-full sm:col-span-2"
+                    className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-10 sm:text-sm sm:col-span-2"
                     onClick={() => copyToClipboard(approveReq.parent_phone)}
                   >
                     <Phone className="w-4 h-4 mr-2" /> Copy Parent Number
@@ -1695,7 +1695,7 @@ export default function EnrollmentRequestsManager() {
               )}
               <Button
                 onClick={handleCloseApprove}
-                className="w-full"
+                className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-10 sm:text-sm"
                 variant="outline"
               >
                 Done
