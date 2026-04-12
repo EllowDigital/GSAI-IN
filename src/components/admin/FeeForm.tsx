@@ -109,6 +109,40 @@ export function FeeForm({
     setSelectedProgramName(studentProgramOptions[0] || 'General');
   }, [selectedProgramName, studentProgramOptions]);
 
+  const { data: carryForwardForProgram } = useQuery({
+    queryKey: [
+      'fees-carry-forward',
+      student?.id,
+      month,
+      year,
+      selectedProgramName,
+    ],
+    queryFn: async () => {
+      if (!student?.id || !selectedProgramName) return 0;
+      const prevMonth = month === 1 ? 12 : month - 1;
+      const prevYear = month === 1 ? year - 1 : year;
+
+      const { data, error } = await supabase
+        .from('fees')
+        .select('balance_due, status')
+        .eq('student_id', student.id)
+        .eq('month', prevMonth)
+        .eq('year', prevYear)
+        .eq('program_name', selectedProgramName)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return 0;
+      return data.status !== 'paid' ? Number(data.balance_due || 0) : 0;
+    },
+    enabled: !!student?.id && !!selectedProgramName,
+    staleTime: 1000 * 60 * 2,
+  });
+
+  const effectiveCarryForward =
+    typeof carryForwardForProgram === 'number'
+      ? carryForwardForProgram
+      : carryForward;
+
   // Fetch program-specific fee from academy_settings
   const { data: programFeeValue } = useQuery({
     queryKey: ['academy-settings', `program_fee_${selectedProgramName}`],
@@ -187,7 +221,7 @@ export function FeeForm({
   const paid_amount = Number(paidAmountWatched || 0);
 
   const calcBalance = () => {
-    let bal = monthly_fee + (carryForward || 0) - paid_amount;
+    let bal = monthly_fee + (effectiveCarryForward || 0) - paid_amount;
     if (bal < 0) bal = 0;
     return bal;
   };
@@ -216,7 +250,7 @@ export function FeeForm({
       });
       return;
     }
-    if (paid_amount > monthly_fee + carryForward) {
+    if (paid_amount > monthly_fee + effectiveCarryForward) {
       toast({
         title: 'Invalid Paid Amount',
         description:
@@ -417,11 +451,11 @@ export function FeeForm({
       </div>
 
       {/* Carry Forward */}
-      {carryForward > 0 && (
+      {effectiveCarryForward > 0 && (
         <div className="flex items-center gap-2 p-2.5 rounded-lg bg-yellow-50 border border-yellow-200 text-xs">
           <span className="text-yellow-800">
             ⚠️ Carried forward from previous month:{' '}
-            <strong>₹{carryForward.toLocaleString('en-IN')}</strong>
+            <strong>₹{effectiveCarryForward.toLocaleString('en-IN')}</strong>
           </span>
         </div>
       )}
