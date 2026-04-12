@@ -33,7 +33,17 @@ import {
 import { FeeCardsGridSkeleton, FeeTableSkeleton } from './AdminSkeletons';
 import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 
-export default function FeesManagerPanel() {
+type FeesManagerPanelSection = 'all' | 'records' | 'stats';
+
+type FeesManagerPanelProps = {
+  section?: FeesManagerPanelSection;
+  enableAnalytics?: boolean;
+};
+
+export default function FeesManagerPanel({
+  section = 'all',
+  enableAnalytics = true,
+}: FeesManagerPanelProps) {
   const now = new Date();
   const [filterMonth, setFilterMonth] = useState(now.getMonth() + 1);
   const [filterYear, setFilterYear] = useState(now.getFullYear());
@@ -407,9 +417,12 @@ export default function FeesManagerPanel() {
     );
   };
 
+  const showStatsSections = section === 'all' || section === 'stats';
+  const showRecordsSection = section === 'all' || section === 'records';
+
   return (
     <div className="admin-page">
-      {/* Header Card */}
+      {/* Header */}
       <div className="admin-panel rounded-xl sm:rounded-2xl overflow-hidden">
         <div className="admin-panel-header bg-gradient-to-r from-primary/5 via-background to-background">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -431,50 +444,70 @@ export default function FeesManagerPanel() {
               />
             </div>
           </div>
+        </div>
+      </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
-              <p className="text-[11px] text-muted-foreground">Students</p>
-              <p className="text-lg font-semibold text-foreground tabular-nums">
-                {feeSnapshot.total}
-              </p>
-            </div>
-            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
-              <p className="text-[11px] text-muted-foreground">Paid</p>
-              <p className="text-lg font-semibold text-foreground tabular-nums">
-                {feeSnapshot.paid}
-              </p>
-            </div>
-            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
-              <p className="text-[11px] text-muted-foreground">Pending</p>
-              <p className="text-lg font-semibold text-foreground tabular-nums">
-                {feeSnapshot.unpaid}
-              </p>
-            </div>
-            <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
-              <p className="text-[11px] text-muted-foreground">Total Due</p>
-              <p className="text-lg font-semibold text-foreground tabular-nums">
-                ₹{feeSnapshot.totalDue.toLocaleString()}
-              </p>
+      {showStatsSections && (
+        <>
+          {/* Stats Card */}
+          <div className="admin-panel rounded-xl sm:rounded-2xl overflow-hidden">
+            <div className="admin-panel-body">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+                  <p className="text-[11px] text-muted-foreground">Students</p>
+                  <p className="text-lg font-semibold text-foreground tabular-nums">
+                    {feeSnapshot.total}
+                  </p>
+                </div>
+                <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+                  <p className="text-[11px] text-muted-foreground">Paid</p>
+                  <p className="text-lg font-semibold text-foreground tabular-nums">
+                    {feeSnapshot.paid}
+                  </p>
+                </div>
+                <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+                  <p className="text-[11px] text-muted-foreground">Pending</p>
+                  <p className="text-lg font-semibold text-foreground tabular-nums">
+                    {feeSnapshot.unpaid}
+                  </p>
+                </div>
+                <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
+                  <p className="text-[11px] text-muted-foreground">Total Due</p>
+                  <p className="text-lg font-semibold text-foreground tabular-nums">
+                    ₹{feeSnapshot.totalDue.toLocaleString()}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="admin-panel-body space-y-4 sm:space-y-6">
-          {/* Analytics Chart */}
-          <Suspense
-            fallback={
-              <div className="h-[400px] flex items-center justify-center">
-                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
-              </div>
-            }
-          >
-            <FeeAnalyticsChart />
-          </Suspense>
+          {/* Insights Card */}
+          <div className="admin-panel rounded-xl sm:rounded-2xl overflow-hidden">
+            <div className="admin-panel-body space-y-4 sm:space-y-6">
+              {enableAnalytics ? (
+                <Suspense
+                  fallback={
+                    <div className="h-[320px] flex items-center justify-center">
+                      <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+                    </div>
+                  }
+                >
+                  <FeeAnalyticsChart />
+                </Suspense>
+              ) : (
+                <div className="h-[320px] rounded-xl border border-border/60 bg-muted/20 flex items-center justify-center text-sm text-muted-foreground">
+                  Open the Stats tab to load analytics.
+                </div>
+              )}
 
-          {/* Summary Card */}
-          <FeeSummaryCard fees={fees || []} loading={loadingFees} />
-
+              <FeeSummaryCard fees={fees || []} loading={loadingFees} />
+            </div>
+          </div>
+        </>
+      )}
+      {showRecordsSection && (
+        <div className="admin-panel rounded-xl sm:rounded-2xl overflow-hidden">
+          <div className="admin-panel-body space-y-4 sm:space-y-6">
           {/* Filters and Controls */}
           <div className="flex flex-col lg:flex-row lg:items-end gap-4 lg:gap-6">
             <div className="flex-1 min-w-0">
@@ -644,8 +677,9 @@ export default function FeesManagerPanel() {
               renderContent()
             )}
           </div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Modals/Drawers */}
       {modalOpen && (
