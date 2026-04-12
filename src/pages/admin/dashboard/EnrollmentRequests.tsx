@@ -1210,64 +1210,72 @@ export default function EnrollmentRequestsManager() {
           if (!o) setViewReq(null);
         }}
       >
-        <DialogContent className="max-w-xl max-h-[90vh] overflow-hidden p-0">
+        <DialogContent className="w-[calc(100vw-1rem)] max-w-xl max-h-[90vh] overflow-hidden p-0 sm:w-full">
           <div className="max-h-[90vh] overflow-y-auto">
-            <DialogHeader className="border-b border-border px-5 py-4 sm:px-6">
-              <DialogTitle>Enrollment Request</DialogTitle>
-              <DialogDescription>
+            <DialogHeader className="border-b border-border px-4 py-4 sm:px-6">
+              <DialogTitle className="text-base leading-5 sm:text-lg sm:leading-6">
+                Enrollment Request
+              </DialogTitle>
+              <DialogDescription className="text-xs leading-4 sm:text-sm sm:leading-5">
                 Review the request, notes, and parent communication from one
                 simple screen.
               </DialogDescription>
             </DialogHeader>
             {viewReq && (
-              <div className="space-y-5 p-5 sm:p-6">
-                <div className="grid gap-3 text-sm [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]">
+              <div className="space-y-5 p-4 sm:p-6">
+                <div className="grid grid-cols-1 gap-3 text-[13px] leading-5 sm:grid-cols-2 sm:text-sm sm:leading-5">
                   <div>
-                    <p className="text-xs text-muted-foreground">Student</p>
-                    <p className="font-medium">{viewReq.student_name}</p>
+                    <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
+                      Student
+                    </p>
+                    <p className="font-medium break-words">{viewReq.student_name}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
                       Age / Gender
                     </p>
-                    <p className="font-medium">
+                    <p className="font-medium break-words">
                       {viewReq.age} yrs • {viewReq.gender}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">Parent</p>
-                    <p className="font-medium">{viewReq.parent_name}</p>
+                    <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
+                      Parent
+                    </p>
+                    <p className="font-medium break-words">{viewReq.parent_name}</p>
                   </div>
                   {viewReq.parent_email && (
                     <div>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
                         Parent Email
                       </p>
                       <a
                         href={`mailto:${viewReq.parent_email}`}
-                        className="font-medium text-primary hover:underline"
+                        className="font-medium text-primary hover:underline break-all"
                       >
                         {viewReq.parent_email}
                       </a>
                     </div>
                   )}
                   <div>
-                    <p className="text-xs text-muted-foreground">Phone</p>
+                    <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
+                      Phone
+                    </p>
                     <a
                       href={`tel:${viewReq.parent_phone}`}
-                      className="font-medium text-primary hover:underline"
+                      className="font-medium text-primary hover:underline break-all"
                     >
                       {viewReq.parent_phone}
                     </a>
                   </div>
                   {viewReq.student_email && (
                     <div>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
                         Student Email
                       </p>
                       <a
                         href={`mailto:${viewReq.student_email}`}
-                        className="font-medium text-primary hover:underline"
+                        className="font-medium text-primary hover:underline break-all"
                       >
                         {viewReq.student_email}
                       </a>
@@ -1275,27 +1283,29 @@ export default function EnrollmentRequestsManager() {
                   )}
                   {viewReq.student_phone && (
                     <div>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
                         Student Phone
                       </p>
                       <a
                         href={`tel:${viewReq.student_phone}`}
-                        className="font-medium text-primary hover:underline"
+                        className="font-medium text-primary hover:underline break-all"
                       >
                         {viewReq.student_phone}
                       </a>
                     </div>
                   )}
-                  <div className="col-span-2">
-                    <p className="text-xs text-muted-foreground">Program</p>
-                    <p className="font-medium">{viewReq.program}</p>
+                  <div className="sm:col-span-2">
+                    <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
+                      Program
+                    </p>
+                    <p className="font-medium break-words">{viewReq.program}</p>
                   </div>
                   {viewReq.aadhar_number && (
-                    <div className="col-span-2">
-                      <p className="text-xs text-muted-foreground">
+                    <div className="sm:col-span-2">
+                      <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
                         Aadhar Number
                       </p>
-                      <p className="font-medium font-mono">
+                      <p className="font-medium font-mono break-all">
                         {viewReq.aadhar_number.replace(
                           /(\d{4})(\d{4})(\d{4})/,
                           '$1-$2-$3'
@@ -1304,22 +1314,26 @@ export default function EnrollmentRequestsManager() {
                     </div>
                   )}
                   {viewReq.message && (
-                    <div className="col-span-2">
-                      <p className="text-xs text-muted-foreground">Message</p>
-                      <p className="font-medium">{viewReq.message}</p>
+                    <div className="sm:col-span-2">
+                      <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
+                        Message
+                      </p>
+                      <p className="font-medium break-words">{viewReq.message}</p>
                     </div>
                   )}
-                  <div className="col-span-2">
-                    <p className="text-xs text-muted-foreground">Submitted</p>
-                    <p className="font-medium">
+                  <div className="sm:col-span-2">
+                    <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
+                      Submitted
+                    </p>
+                    <p className="font-medium break-words">
                       {format(new Date(viewReq.created_at), 'PPp')}
                     </p>
                   </div>
                 </div>
 
                 {/* Admin Notes */}
-                <div className="rounded-xl border border-border bg-card p-4">
-                  <label className="text-xs font-medium text-muted-foreground">
+                <div className="rounded-xl border border-border bg-card p-3.5 sm:p-4">
+                  <label className="text-[11px] font-medium leading-4 text-muted-foreground sm:text-xs">
                     Admin Notes{' '}
                     {viewReq.status !== 'approved' &&
                     viewReq.status !== 'rejected'
@@ -1331,7 +1345,7 @@ export default function EnrollmentRequestsManager() {
                     onChange={(e) => setAdminNotes(e.target.value)}
                     placeholder="Add notes (required for rejection)..."
                     rows={3}
-                    className="mt-1"
+                    className="mt-1 text-[13px] leading-5 sm:text-sm"
                     disabled={
                       viewReq.status === 'approved' ||
                       viewReq.status === 'rejected'
@@ -1345,7 +1359,7 @@ export default function EnrollmentRequestsManager() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="w-full text-xs"
+                      className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-9 sm:text-xs"
                       disabled={updateMutation.isPending}
                       onClick={() => {
                         updateMutation.mutate({
@@ -1361,12 +1375,12 @@ export default function EnrollmentRequestsManager() {
 
                 {viewReq.status !== 'approved' &&
                   viewReq.status !== 'rejected' && (
-                    <div className="flex flex-wrap gap-2">
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                       {viewReq.status === 'pending' && (
                         <Button
                           size="sm"
                           variant="outline"
-                          className="gap-1 text-xs"
+                          className="min-h-11 px-3 py-2.5 gap-1.5 text-[13px] sm:min-h-9 sm:text-xs"
                           disabled={
                             isActionLocked(viewReq.id, 'contacted') ||
                             updateMutation.isPending
@@ -1383,7 +1397,7 @@ export default function EnrollmentRequestsManager() {
                       )}
                       <Button
                         size="sm"
-                        className="gap-1 text-xs bg-primary text-primary-foreground hover:bg-primary/90"
+                        className="min-h-11 px-3 py-2.5 gap-1.5 text-[13px] bg-primary text-primary-foreground hover:bg-primary/90 sm:min-h-9 sm:text-xs sm:col-span-2"
                         disabled={
                           approving || isActionLocked(viewReq.id, 'approved')
                         }
@@ -1397,7 +1411,7 @@ export default function EnrollmentRequestsManager() {
                       <Button
                         size="sm"
                         variant="destructive"
-                        className="gap-1 text-xs"
+                        className="min-h-11 px-3 py-2.5 gap-1.5 text-[13px] sm:min-h-9 sm:text-xs"
                         disabled={
                           !canRejectFromModal ||
                           isActionLocked(viewReq.id, 'rejected') ||
@@ -1418,30 +1432,30 @@ export default function EnrollmentRequestsManager() {
                     </p>
                   )}
                 {viewReq.status === 'approved' && (
-                  <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-3 text-sm text-green-700 dark:text-green-400 font-medium">
+                  <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-3 text-[13px] leading-5 text-green-700 dark:text-green-400 font-medium sm:text-sm">
                     ✅ This enrollment has been approved. Student has been
                     added.
                   </div>
                 )}
                 {viewReq.status === 'rejected' && (
-                  <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive font-medium">
+                  <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-[13px] leading-5 text-destructive font-medium sm:text-sm">
                     ❌ This enrollment has been rejected.
                   </div>
                 )}
                 {parentWhatsAppUrl ? (
-                  <div className="grid gap-2 [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     <a
                       href={parentWhatsAppUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                      className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-[13px] font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:min-h-10 sm:text-sm sm:col-span-2"
                     >
                       📱 {currentWhatsAppLabel}
                     </a>
                     <Button
                       type="button"
                       variant="outline"
-                      className="w-full"
+                      className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-10 sm:text-sm"
                       onClick={() => copyToClipboard(currentWhatsAppMessage)}
                     >
                       <Copy className="w-4 h-4 mr-2" /> Copy Text
@@ -1449,7 +1463,7 @@ export default function EnrollmentRequestsManager() {
                     <Button
                       type="button"
                       variant="outline"
-                      className="w-full"
+                      className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-10 sm:text-sm sm:col-span-2"
                       onClick={() => copyToClipboard(viewReq.parent_phone)}
                     >
                       <Phone className="w-4 h-4 mr-2" /> Copy Parent Number
@@ -1473,9 +1487,9 @@ export default function EnrollmentRequestsManager() {
           if (!o) handleCloseApprove();
         }}
       >
-        <DialogContent className="max-w-md w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-md w-[calc(100vw-1rem)] max-h-[90vh] overflow-y-auto p-4 sm:w-[calc(100vw-2rem)] sm:p-6">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-base leading-5 sm:text-lg sm:leading-6">
               {approveStep === 'confirm' && (
                 <>
                   <UserPlus className="w-5 h-5 text-green-600" /> Step 1: Create
@@ -1494,7 +1508,7 @@ export default function EnrollmentRequestsManager() {
                 </>
               )}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-xs leading-4 sm:text-sm sm:leading-5">
               {approveStep === 'confirm' &&
                 `Add "${approveReq?.student_name}" to your student roster.`}
               {approveStep === 'credentials' &&
@@ -1506,26 +1520,28 @@ export default function EnrollmentRequestsManager() {
 
           {approveStep === 'confirm' && approveReq && (
             <div className="space-y-4">
-              <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-1.5 text-sm">
+              <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-1.5 text-[13px] leading-5 sm:text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Name</span>
-                  <span className="font-medium">{approveReq.student_name}</span>
+                  <span className="font-medium break-words text-right">{approveReq.student_name}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Program</span>
-                  <span className="font-medium">{approveReq.program}</span>
+                  <span className="font-medium break-words text-right">{approveReq.program}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Parent</span>
-                  <span className="font-medium">{approveReq.parent_name}</span>
+                  <span className="font-medium break-words text-right">{approveReq.parent_name}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Phone</span>
-                  <span className="font-medium">{approveReq.parent_phone}</span>
+                  <span className="font-medium break-all text-right">{approveReq.parent_phone}</span>
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium">Aadhar Number *</label>
+                <label className="text-[13px] leading-5 font-medium sm:text-sm">
+                  Aadhar Number *
+                </label>
                 <Input
                   value={aadharNumber}
                   onChange={(e) =>
@@ -1535,25 +1551,27 @@ export default function EnrollmentRequestsManager() {
                   }
                   placeholder="12 digit Aadhar number"
                   maxLength={12}
-                  className="mt-1"
+                  className="mt-1 text-[13px] leading-5 sm:text-sm"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-[11px] leading-4 text-muted-foreground mt-1 sm:text-xs">
                   Required for student records
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium">Join Date *</label>
+                <label className="text-[13px] leading-5 font-medium sm:text-sm">
+                  Join Date *
+                </label>
                 <Input
                   type="date"
                   value={joinDate}
                   onChange={(e) => setJoinDate(e.target.value)}
-                  className="mt-1"
+                  className="mt-1 text-[13px] leading-5 sm:text-sm"
                 />
               </div>
               <Button
                 onClick={handleCreateStudent}
                 disabled={approving}
-                className="w-full"
+                className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-10 sm:text-sm"
               >
                 {approving ? <Spinner size={16} /> : 'Create Student Record'}
               </Button>
@@ -1562,19 +1580,21 @@ export default function EnrollmentRequestsManager() {
 
           {approveStep === 'credentials' && (
             <div className="space-y-4">
-              <div className="rounded-lg border border-green-500/20 bg-green-500/5 p-3 text-sm text-green-700 dark:text-green-400">
+              <div className="rounded-lg border border-green-500/20 bg-green-500/5 p-3 text-[13px] leading-5 text-green-700 dark:text-green-400 sm:text-sm">
                 ✅ Student record created. Now set up their portal login.
               </div>
               <div>
-                <label className="text-sm font-medium">Login ID *</label>
+                <label className="text-[13px] leading-5 font-medium sm:text-sm">
+                  Login ID *
+                </label>
                 <Input
                   value={loginId}
                   onChange={(e) => setLoginId(e.target.value)}
                   placeholder="e.g. STU001"
-                  className="mt-1"
+                  className="mt-1 text-[13px] leading-5 sm:text-sm"
                 />
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
                 Student will sign in using default password{' '}
                 <span className="font-medium">GSAI-STUDENT-2026</span> and then
                 update password from student portal.
@@ -1582,14 +1602,14 @@ export default function EnrollmentRequestsManager() {
               <Button
                 onClick={handleCreatePortal}
                 disabled={approving}
-                className="w-full"
+                className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-10 sm:text-sm"
               >
                 {approving ? <Spinner size={16} /> : 'Create Portal Account'}
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                className="w-full text-xs text-muted-foreground"
+                className="w-full min-h-11 px-3 py-2.5 text-[13px] text-muted-foreground sm:min-h-9 sm:text-xs"
                 onClick={handleCloseApprove}
               >
                 Skip — I'll set up login later
@@ -1602,15 +1622,15 @@ export default function EnrollmentRequestsManager() {
               <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-4 space-y-3">
                 <div className="flex items-center gap-2 text-green-600">
                   <CheckCircle className="w-5 h-5" />
-                  <span className="font-semibold text-sm">
+                  <span className="font-semibold text-[13px] leading-5 sm:text-sm">
                     Enrollment Complete!
                   </span>
                 </div>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-[13px] leading-5 sm:text-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Login ID:</span>
                     <div className="flex items-center gap-1.5">
-                      <code className="font-mono text-foreground">
+                      <code className="font-mono text-foreground break-all">
                         {createdCreds.loginId}
                       </code>
                       <button
@@ -1626,7 +1646,7 @@ export default function EnrollmentRequestsManager() {
                       Default Password:
                     </span>
                     <div className="flex items-center gap-1.5">
-                      <code className="font-mono text-foreground">
+                      <code className="font-mono text-foreground break-all">
                         {createdCreds.defaultPassword}
                       </code>
                       <button
@@ -1640,25 +1660,25 @@ export default function EnrollmentRequestsManager() {
                     </div>
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
                   Share these credentials privately. Student must change the
                   default password after first sign-in.
                 </p>
               </div>
               {approveReq && credentialsWhatsAppUrl && (
-                <div className="grid gap-2 [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <a
                     href={credentialsWhatsAppUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                    className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-[13px] font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:min-h-10 sm:text-sm sm:col-span-2"
                   >
                     📱 Send Portal Details
                   </a>
                   <Button
                     type="button"
                     variant="outline"
-                    className="w-full"
+                    className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-10 sm:text-sm"
                     onClick={() => copyToClipboard(credentialsMessage)}
                   >
                     <Copy className="w-4 h-4 mr-2" /> Copy Message
@@ -1666,7 +1686,7 @@ export default function EnrollmentRequestsManager() {
                   <Button
                     type="button"
                     variant="outline"
-                    className="w-full"
+                    className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-10 sm:text-sm sm:col-span-2"
                     onClick={() => copyToClipboard(approveReq.parent_phone)}
                   >
                     <Phone className="w-4 h-4 mr-2" /> Copy Parent Number
@@ -1675,7 +1695,7 @@ export default function EnrollmentRequestsManager() {
               )}
               <Button
                 onClick={handleCloseApprove}
-                className="w-full"
+                className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-10 sm:text-sm"
                 variant="outline"
               >
                 Done

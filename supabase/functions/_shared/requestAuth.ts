@@ -5,9 +5,6 @@ import {
 
 const DEFAULT_ALGORITHMS = ['ES256'];
 const VALID_JWA_ALGORITHMS = new Set([
-  'HS256',
-  'HS384',
-  'HS512',
   'RS256',
   'RS384',
   'RS512',
@@ -22,6 +19,16 @@ const VALID_JWA_ALGORITHMS = new Set([
 
 let cachedIssuer: string | null = null;
 let cachedJwks: ReturnType<typeof createRemoteJWKSet> | null = null;
+
+export class RequestJwtError extends Error {
+  status: number;
+
+  constructor(status: number, message: string) {
+    super(message);
+    this.name = 'RequestJwtError';
+    this.status = status;
+  }
+}
 
 function normalizeSupabaseUrl(url: string): string {
   return url.replace(/\/+$/, '');
@@ -85,15 +92,47 @@ export async function verifyRequestJwt(
     : '';
 
   if (!token) {
-    throw new Error('Missing bearer token');
+    throw new RequestJwtError(401, 'Missing bearer token');
   }
 
-  const { issuer, jwks, algorithms } = getVerifierConfig();
+  let issuer = '';
+  let jwks: ReturnType<typeof createRemoteJWKSet>;
+  let algorithms: string[] = [];
 
-  const { payload } = await jwtVerify(token, jwks, {
-    algorithms,
-    issuer,
-  });
+  try {
+    ({ issuer, jwks, algorithms } = getVerifierConfig());
+  } catch (error) {
+    const message = error instanceof Error
+      ? error.message
+      : 'JWT verifier is misconfigured';
+    throw new RequestJwtError(500, message);
+  }
 
-  return payload as Record<string, unknown>;
+  const unauthorizedErrorNames = new Set([
+    'JWTExpired',
+    'JWTClaimValidationFailed',
+    'JWTInvalid',
+    'JWSInvalid',
+    'JWSSignatureVerificationFailed',
+  ]);
+
+  let payload: Record<string, unknown>;
+
+  try {
+    const result = await jwtVerify(token, jwks, {
+      algorithms,
+      issuer,
+    });
+    payload = result.payload as Record<string, unknown>;
+  } catch (error) {
+    const name = error instanceof Error ? error.name : '';
+
+    if (unauthorizedErrorNames.has(name)) {
+      throw new RequestJwtError(401, 'Invalid or expired bearer token');
+    }
+
+    throw new RequestJwtError(500, 'Token verification unavailable');
+  }
+
+  return payload;
 }
