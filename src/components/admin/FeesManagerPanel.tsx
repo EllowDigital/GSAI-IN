@@ -656,59 +656,69 @@ export default function FeesManagerPanel({
 
   const showStatsSections = section === 'all' || section === 'stats';
   const showRecordsSection = section === 'all' || section === 'records';
+  const showTopHeader = section !== 'stats';
 
   return (
     <div className="admin-page space-y-4 sm:space-y-5">
       {/* Header */}
-      <div className="admin-panel rounded-xl sm:rounded-2xl overflow-hidden">
-        <div className="admin-panel-header bg-gradient-to-r from-primary/10 via-background to-background">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="space-y-2">
-              <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-foreground">
-                <DollarSign className="w-5 h-5 text-primary" />
-                <span>Fees Management</span>
-              </h2>
-              <p className="text-sm sm:text-base text-muted-foreground max-w-2xl">
-                Manage student fees, track payments, and monitor financial
-                records.
-              </p>
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-background/70 px-2.5 py-1 text-[11px] text-muted-foreground">
-                  <CalendarDays className="w-3.5 h-3.5" />
-                  {String(filterMonth).padStart(2, '0')}/{filterYear}
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-background/70 px-2.5 py-1 text-[11px] text-muted-foreground">
-                  <Filter className="w-3.5 h-3.5" />
-                  {hasActiveFilters ? 'Filtered' : 'No filters'}
-                </span>
-                <span className="inline-flex items-center rounded-full border border-border/70 bg-background/70 px-2.5 py-1 text-[11px] text-muted-foreground">
-                  {rows.length} visible row{rows.length !== 1 ? 's' : ''}
-                </span>
+      {showTopHeader && (
+        <div className="admin-panel rounded-xl sm:rounded-2xl overflow-hidden">
+          <div className="admin-panel-header bg-gradient-to-r from-primary/10 via-background to-background">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div className="space-y-2">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 text-foreground">
+                  <DollarSign className="w-5 h-5 text-primary" />
+                  <span>Fees Management</span>
+                </h2>
+                <p className="text-sm sm:text-base text-muted-foreground max-w-2xl">
+                  Manage student fees, track payments, and monitor financial
+                  records.
+                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-background/70 px-2.5 py-1 text-[11px] text-muted-foreground">
+                    <CalendarDays className="w-3.5 h-3.5" />
+                    {String(filterMonth).padStart(2, '0')}/{filterYear}
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-background/70 px-2.5 py-1 text-[11px] text-muted-foreground">
+                    <Filter className="w-3.5 h-3.5" />
+                    {hasActiveFilters ? 'Filtered' : 'No filters'}
+                  </span>
+                  <span className="inline-flex items-center rounded-full border border-border/70 bg-background/70 px-2.5 py-1 text-[11px] text-muted-foreground">
+                    {rows.length} visible row{rows.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
               </div>
-            </div>
-            <div className="flex gap-2 mt-1 lg:mt-0">
-              <RefreshButton
-                onRefresh={handleRefresh}
-                isLoading={isLoading}
-                className="flex-shrink-0 h-9"
-              />
+              <div className="flex gap-2 mt-1 lg:mt-0">
+                <RefreshButton
+                  onRefresh={handleRefresh}
+                  isLoading={isLoading}
+                  className="flex-shrink-0 h-9"
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {showStatsSections && (
         <>
           {/* Stats Card */}
           <div className="admin-panel rounded-xl sm:rounded-2xl overflow-hidden">
             <div className="admin-panel-body space-y-3 sm:space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2">
                 <h3 className="text-sm font-semibold text-foreground sm:text-base">
                   Snapshot
                 </h3>
-                <p className="text-xs text-muted-foreground rounded-full border border-border/70 px-2 py-1 bg-background/70">
-                  Month {filterMonth}/{filterYear}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-xs text-muted-foreground rounded-full border border-border/70 px-2 py-1 bg-background/70">
+                    Month {filterMonth}/{filterYear}
+                  </p>
+                  <RefreshButton
+                    onRefresh={handleRefresh}
+                    isLoading={isLoading}
+                    className="h-8 px-3"
+                  />
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 <div className="rounded-lg border border-border/70 bg-card/80 px-3 py-2 shadow-sm">
