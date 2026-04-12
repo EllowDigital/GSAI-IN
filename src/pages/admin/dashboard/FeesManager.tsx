@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import FeesManagerPanel from '@/components/admin/FeesManagerPanel';
 import FeeSettingsCard from '@/components/admin/FeeSettingsCard';
+import FeeHistoryLogPanel from '@/components/admin/FeeHistoryLogPanel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart3, DollarSign, Settings } from 'lucide-react';
+import { BarChart3, DollarSign, FileClock, Settings } from 'lucide-react';
 
 export default function FeesManager() {
-  const [activeTab, setActiveTab] = useState<'records' | 'stats' | 'settings'>(
-    'records'
-  );
+  const [activeTab, setActiveTab] = useState<
+    'records' | 'stats' | 'history' | 'settings'
+  >('records');
   const [statsVisited, setStatsVisited] = useState(false);
 
   useEffect(() => {
@@ -21,6 +22,13 @@ export default function FeesManager() {
       return {
         title: 'Fees Stats',
         subtitle: 'Track paid, pending, due, and monthly trends.',
+      };
+    }
+
+    if (activeTab === 'history') {
+      return {
+        title: 'Fees History Log',
+        subtitle: 'Review complete fee history across all students.',
       };
     }
 
@@ -42,11 +50,12 @@ export default function FeesManager() {
       <Tabs
         value={activeTab}
         onValueChange={(value) =>
-          setActiveTab(value as 'records' | 'stats' | 'settings')
+          setActiveTab(value as 'records' | 'stats' | 'history' | 'settings')
         }
         className="w-full space-y-3"
       >
-        <section className="admin-panel overflow-hidden">
+        <div className="sticky top-2 z-20">
+          <section className="admin-panel overflow-hidden bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
           <div className="admin-panel-body bg-gradient-to-r from-primary/5 via-background to-background py-3 sm:py-4">
             <div className="flex flex-col gap-2.5 sm:flex-row sm:items-end sm:justify-between">
               <div className="flex items-center gap-2.5">
@@ -63,7 +72,7 @@ export default function FeesManager() {
                 </div>
               </div>
 
-              <TabsList className="grid h-9 w-full grid-cols-3 rounded-xl border border-border/70 bg-card p-1 sm:h-10 sm:w-[360px]">
+              <TabsList className="grid h-9 w-full grid-cols-4 rounded-xl border border-border/70 bg-card p-1 sm:h-10 sm:w-[480px]">
                 <TabsTrigger
                   value="records"
                   className="gap-1.5 rounded-lg text-xs sm:text-sm"
@@ -77,6 +86,12 @@ export default function FeesManager() {
                   <BarChart3 className="h-3.5 w-3.5" /> Stats
                 </TabsTrigger>
                 <TabsTrigger
+                  value="history"
+                  className="gap-1.5 rounded-lg text-xs sm:text-sm"
+                >
+                  <FileClock className="h-3.5 w-3.5" /> Logs
+                </TabsTrigger>
+                <TabsTrigger
                   value="settings"
                   className="gap-1.5 rounded-lg text-xs sm:text-sm"
                 >
@@ -85,7 +100,8 @@ export default function FeesManager() {
               </TabsList>
             </div>
           </div>
-        </section>
+          </section>
+        </div>
 
         <TabsContent value="records">
           <FeesManagerPanel section="records" />
@@ -93,6 +109,10 @@ export default function FeesManager() {
 
         <TabsContent value="stats">
           <FeesManagerPanel section="stats" enableAnalytics={statsVisited} />
+        </TabsContent>
+
+        <TabsContent value="history">
+          <FeeHistoryLogPanel />
         </TabsContent>
 
         <TabsContent value="settings">

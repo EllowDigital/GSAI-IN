@@ -451,29 +451,37 @@ export default function FeesManagerPanel({
         <>
           {/* Stats Card */}
           <div className="admin-panel rounded-xl sm:rounded-2xl overflow-hidden">
-            <div className="admin-panel-body">
+            <div className="admin-panel-body space-y-3 sm:space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-foreground sm:text-base">
+                  Snapshot
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Month {filterMonth}/{filterYear}
+                </p>
+              </div>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
                   <p className="text-[11px] text-muted-foreground">Students</p>
-                  <p className="text-lg font-semibold text-foreground tabular-nums">
+                  <p className="text-base sm:text-lg font-semibold text-foreground tabular-nums">
                     {feeSnapshot.total}
                   </p>
                 </div>
                 <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
                   <p className="text-[11px] text-muted-foreground">Paid</p>
-                  <p className="text-lg font-semibold text-foreground tabular-nums">
+                  <p className="text-base sm:text-lg font-semibold text-foreground tabular-nums">
                     {feeSnapshot.paid}
                   </p>
                 </div>
                 <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
                   <p className="text-[11px] text-muted-foreground">Pending</p>
-                  <p className="text-lg font-semibold text-foreground tabular-nums">
+                  <p className="text-base sm:text-lg font-semibold text-foreground tabular-nums">
                     {feeSnapshot.unpaid}
                   </p>
                 </div>
                 <div className="rounded-lg border border-border/70 bg-card px-3 py-2">
                   <p className="text-[11px] text-muted-foreground">Total Due</p>
-                  <p className="text-lg font-semibold text-foreground tabular-nums">
+                  <p className="text-base sm:text-lg font-semibold text-foreground tabular-nums">
                     ₹{feeSnapshot.totalDue.toLocaleString()}
                   </p>
                 </div>
