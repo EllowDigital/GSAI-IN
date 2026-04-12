@@ -72,7 +72,8 @@ const studentPortalStructuredData = {
   '@type': 'WebPage',
   name: 'Ghatak Sports Academy Student Portal Login',
   url: 'https://ghataksportsacademy.com/student/login',
-  description: 'Official student portal login page for Ghatak Sports Academy India.',
+  description:
+    'Official student portal login page for Ghatak Sports Academy India.',
   isPartOf: {
     '@type': 'WebSite',
     name: 'Ghatak Sports Academy India',

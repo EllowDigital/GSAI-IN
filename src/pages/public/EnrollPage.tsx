@@ -462,8 +462,8 @@ export default function EnrollPage() {
                       Use this official Ghatak Sports Academy India admission
                       portal to enroll in your preferred discipline. If you
                       searched for terms like ghatak sports academy admission,
-                      ghatak sports academy enroll, or variations of &quot;ghatak
-                      admission,&quot; you are on the right page.
+                      ghatak sports academy enroll, or variations of
+                      &quot;ghatak admission,&quot; you are on the right page.
                     </p>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
