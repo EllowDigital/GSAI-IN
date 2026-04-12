@@ -78,13 +78,9 @@ export default function StudentDashboard() {
 
   const queryClient = useQueryClient();
   const studentId = profile?.studentId;
-
-  // --- Dynamic Page Title ---
-  useEffect(() => {
-    document.title = profile?.studentName
-      ? `${profile.studentName} | GSAI Portal`
-      : 'Student Dashboard | GSAI Portal';
-  }, [profile?.studentName]);
+  const dashboardTitle = profile?.studentName
+    ? `${profile.studentName} | GSAI Student Portal`
+    : 'Student Dashboard | GSAI Student Portal';
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -218,7 +214,7 @@ export default function StudentDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-background to-indigo-50/40 flex flex-col font-sans text-slate-900">
       <Seo
-        title="Student Dashboard | GSAI Student Portal"
+        title={dashboardTitle}
         description="Private student dashboard for Ghatak Sports Academy India."
         canonical="/student/dashboard"
         noIndex

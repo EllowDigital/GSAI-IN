@@ -5,6 +5,7 @@ import { initializeBuildOptimizations } from './utils/buildOptimization';
 import { validateSupabaseConfig } from '@/services/supabase/constants';
 import { BrowserRouter } from 'react-router-dom';
 import { syncManifestForPath } from '@/utils/pwa';
+import { initializeClarity } from '@/utils/clarity';
 
 // Initialize build optimizations
 try {
@@ -22,6 +23,9 @@ try {
   // This catch logs and re-throws any error that was thrown
   throw error;
 }
+
+// Initialize Clarity analytics
+initializeClarity();
 
 // Ensure root element exists
 const rootElement = document.getElementById('root');

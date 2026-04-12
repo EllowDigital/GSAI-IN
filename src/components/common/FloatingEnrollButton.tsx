@@ -37,7 +37,7 @@ export default function FloatingEnrollButton() {
             <span className="hidden sm:inline">
               Enroll at Ghatak Sports Academy
             </span>
-            <span className="sm:hidden">Enroll at GSA</span>
+            <span className="sm:hidden">Enroll at GSAI</span>
           </Link>
         </motion.div>
       )}
