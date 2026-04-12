@@ -69,34 +69,12 @@ export default function StudentModal({
   const { getWhiteBeltId } = useBeltLevels();
   const { disciplineOptions } = useDisciplines();
   const initKeyRef = useRef('');
-  const studentResetKey = useMemo(() => {
-    if (!student) return 'new';
-    return [
-      student.id,
-      student.name || '',
-      student.aadhar_number || '',
-      student.program || '',
-      student.join_date || '',
-      student.parent_name || '',
-      student.parent_contact || '',
-      student.profile_image_url || '',
-      student.default_monthly_fee ?? 2000,
-      student.discount_percent ?? 0,
-    ].join('|');
-  }, [
-    student?.id,
-    student?.name,
-    student?.aadhar_number,
-    student?.program,
-    student?.join_date,
-    student?.parent_name,
-    student?.parent_contact,
-    student?.profile_image_url,
-    student?.default_monthly_fee,
-    student?.discount_percent,
-  ]);
+  const studentResetKey = student?.id || 'new';
 
-  const [additionalPrograms, setAdditionalPrograms] = useState<string[]>([]);
+  const [localAdditionalPrograms, setLocalAdditionalPrograms] = useState<string[]>([]);
+  const [removedAdditionalPrograms, setRemovedAdditionalPrograms] = useState<
+    string[]
+  >([]);
   const queryClient = useQueryClient();
 
   // DB-driven program options
@@ -138,7 +116,6 @@ export default function StudentModal({
 
     if (!open) {
       initKeyRef.current = '';
-      setAdditionalPrograms([]);
       return;
     }
 
@@ -164,17 +141,6 @@ export default function StudentModal({
         default_monthly_fee: student.default_monthly_fee ?? 2000,
         discount_percent: student.discount_percent ?? 0,
       });
-
-      const mergedPrograms = normalizedPrograms.filter(
-        (programName) => programName.toLowerCase() !== primaryProgram.toLowerCase()
-      );
-
-      setAdditionalPrograms((prev) => {
-        const isSameLength = prev.length === mergedPrograms.length;
-        const isSameOrder =
-          isSameLength && prev.every((programName, index) => programName === mergedPrograms[index]);
-        return isSameOrder ? prev : mergedPrograms;
-      });
     } else {
       form.reset({
         name: '',
@@ -187,7 +153,6 @@ export default function StudentModal({
         default_monthly_fee: globalFee ?? 2000,
         discount_percent: 0,
       });
-      setAdditionalPrograms([]);
     }
 
     initKeyRef.current = initKey;
@@ -203,9 +168,46 @@ export default function StudentModal({
     form.setValue('profile_image_url', url);
 
   const currentPrimary = useWatch({ control: form.control, name: 'program' });
-  const enrolledProgramNames = [currentPrimary, ...additionalPrograms].filter(
-    Boolean
-  );
+  const initialAdditionalPrograms = useMemo(() => {
+    if (!student) return [] as string[];
+    const primary = sanitizeText((currentPrimary || '').trim()).toLowerCase();
+
+    const seen = new Set<string>();
+    return (student.program || '')
+      .split(',')
+      .map((programName: string) => sanitizeText(programName.trim()))
+      .filter(Boolean)
+      .filter((programName: string) => {
+        const key = programName.toLowerCase();
+        if (key === primary) return false;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+  }, [student, currentPrimary]);
+
+  const additionalPrograms = useMemo(() => {
+    const primary = sanitizeText((currentPrimary || '').trim()).toLowerCase();
+    const removedSet = new Set(
+      removedAdditionalPrograms.map((programName) => programName.toLowerCase())
+    );
+    const seen = new Set<string>();
+    const merged = [...initialAdditionalPrograms, ...localAdditionalPrograms]
+      .map((programName) => sanitizeText((programName || '').trim()))
+      .filter(Boolean)
+      .filter((programName) => {
+        const key = programName.toLowerCase();
+        if (key === primary) return false;
+        if (removedSet.has(key)) return false;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+
+    return merged;
+  }, [currentPrimary, initialAdditionalPrograms, localAdditionalPrograms, removedAdditionalPrograms]);
+
+  const enrolledProgramNames = [currentPrimary, ...additionalPrograms].filter(Boolean);
 
   const availableToAdd = useMemo(() => {
     const enrolledSet = new Set(
@@ -220,7 +222,14 @@ export default function StudentModal({
     const normalized = sanitizeText((programName || '').trim());
     if (!normalized) return;
 
-    setAdditionalPrograms((prev) => {
+    setRemovedAdditionalPrograms((prev) =>
+      prev.filter(
+        (existingProgram) =>
+          existingProgram.toLowerCase() !== normalized.toLowerCase()
+      )
+    );
+
+    setLocalAdditionalPrograms((prev) => {
       const exists = prev.some(
         (existingProgram) =>
           existingProgram.toLowerCase() === normalized.toLowerCase()
@@ -230,32 +239,17 @@ export default function StudentModal({
   };
 
   const handleRemoveAdditionalProgram = (programName: string) => {
-    setAdditionalPrograms((prev) => prev.filter((p) => p !== programName));
-  };
-
-  useEffect(() => {
-    if (!currentPrimary) return;
-
-    setAdditionalPrograms((prev) => {
-      const uniquePrograms: string[] = [];
-      const seen = new Set<string>();
-
-      prev.forEach((programName) => {
-        const normalized = sanitizeText((programName || '').trim());
-        if (!normalized) return;
-        if (normalized.toLowerCase() === currentPrimary.toLowerCase()) return;
-        if (seen.has(normalized.toLowerCase())) return;
-
-        seen.add(normalized.toLowerCase());
-        uniquePrograms.push(normalized);
-      });
-
-      const sameLength = uniquePrograms.length === prev.length;
-      const sameOrder =
-        sameLength && uniquePrograms.every((programName, index) => programName === prev[index]);
-      return sameOrder ? prev : uniquePrograms;
+    setLocalAdditionalPrograms((prev) =>
+      prev.filter((p) => p.toLowerCase() !== programName.toLowerCase())
+    );
+    setRemovedAdditionalPrograms((prev) => {
+      const exists = prev.some(
+        (existingProgram) =>
+          existingProgram.toLowerCase() === programName.toLowerCase()
+      );
+      return exists ? prev : [...prev, programName];
     });
-  }, [currentPrimary]);
+  };
 
   const normalizeJoinDate = (joinDate?: string) => {
     if (!joinDate) return new Date().toISOString().slice(0, 10);
@@ -520,7 +514,8 @@ export default function StudentModal({
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
-      setAdditionalPrograms([]);
+      setLocalAdditionalPrograms([]);
+      setRemovedAdditionalPrograms([]);
     }
     onOpenChange(nextOpen);
   };
