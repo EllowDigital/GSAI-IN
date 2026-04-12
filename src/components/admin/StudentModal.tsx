@@ -258,37 +258,25 @@ export default function StudentModal({
       desiredPrograms.unshift(primaryProgram);
     }
 
-    const { data: existingRows, error: existingRowsError } = await supabase
+    const { error: clearProgramsError } = await supabase
       .from('student_programs')
-      .select('id, program_name')
+      .delete()
       .eq('student_id', studentId);
 
-    if (existingRowsError) throw existingRowsError;
+    if (clearProgramsError) throw clearProgramsError;
 
-    const desiredSet = new Set(desiredPrograms.map((name) => name.toLowerCase()));
-    const toDeleteIds = (existingRows || [])
-      .filter((row) => !desiredSet.has((row.program_name || '').toLowerCase()))
-      .map((row) => row.id);
+    const rowsToInsert = desiredPrograms.map((programName) => ({
+      student_id: studentId,
+      program_name: programName,
+      joined_at: normalizedJoinDate,
+      is_primary: programName.toLowerCase() === primaryProgram.toLowerCase(),
+    }));
 
-    if (toDeleteIds.length > 0) {
-      const { error: deleteError } = await supabase
-        .from('student_programs')
-        .delete()
-        .in('id', toDeleteIds);
-      if (deleteError) throw deleteError;
-    }
+    const { error: insertProgramsError } = await supabase
+      .from('student_programs')
+      .insert(rowsToInsert);
 
-    const { error: upsertError } = await supabase.from('student_programs').upsert(
-      desiredPrograms.map((programName) => ({
-        student_id: studentId,
-        program_name: programName,
-        joined_at: normalizedJoinDate,
-        is_primary: programName.toLowerCase() === primaryProgram.toLowerCase(),
-      })),
-      { onConflict: 'student_id,program_name' }
-    );
-
-    if (upsertError) throw upsertError;
+    if (insertProgramsError) throw insertProgramsError;
 
     const { data: finalRows, error: finalRowsError } = await supabase
       .from('student_programs')
@@ -336,6 +324,14 @@ export default function StudentModal({
       throw new Error(
         `Program sync incomplete. Missing: ${missingPrograms.join(', ')}`
       );
+    }
+
+    if (import.meta.env.DEV) {
+      console.log('[StudentModal] student_programs sync verified', {
+        studentId,
+        desiredPrograms,
+        finalPrograms,
+      });
     }
 
     return finalPrograms;
@@ -472,13 +468,20 @@ export default function StudentModal({
       toast.success(
         `Student ${student ? 'updated' : 'created'}: ${result?.name}`
       );
-      queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
-      queryClient.invalidateQueries({ queryKey: ['student-programs-all'] });
-      queryClient.invalidateQueries({ queryKey: ['student-programs'] });
-      queryClient.invalidateQueries({ queryKey: ['students'] });
-      queryClient.invalidateQueries({ queryKey: ['students-portal-status'] });
-      queryClient.invalidateQueries({ queryKey: ['portal-accounts'] });
-      queryClient.invalidateQueries({ queryKey: ['fees'] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['all-student-programs'] }),
+        queryClient.invalidateQueries({ queryKey: ['student-programs-all'] }),
+        queryClient.invalidateQueries({ queryKey: ['student-programs'] }),
+        queryClient.invalidateQueries({ queryKey: ['students'] }),
+        queryClient.invalidateQueries({ queryKey: ['students-portal-status'] }),
+        queryClient.invalidateQueries({ queryKey: ['portal-accounts'] }),
+        queryClient.invalidateQueries({ queryKey: ['fees'] }),
+      ]);
+
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: ['student-programs-all'], type: 'active' }),
+        queryClient.refetchQueries({ queryKey: ['students'], type: 'active' }),
+      ]);
       onOpenChange(false);
     }
   };
