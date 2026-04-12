@@ -52,6 +52,10 @@ interface AssignStudentBeltDialogProps {
     selectedProgram: string;
     isLevelBased?: boolean;
   }) => Promise<void>;
+  onStudentSelectionDebug?: (payload: {
+    studentId: string;
+    parsedPrograms: string[];
+  }) => void;
   loading?: boolean;
 }
 
@@ -69,6 +73,7 @@ export default function AssignStudentBeltDialog({
   belts,
   disciplineLevels = [],
   onSubmit,
+  onStudentSelectionDebug,
   loading,
 }: AssignStudentBeltDialogProps) {
   const [studentId, setStudentId] = useState('');
@@ -240,9 +245,19 @@ export default function AssignStudentBeltDialog({
             <Select
               value={studentId}
               onValueChange={(v) => {
+                const selected = students.find((student) => student.value === v);
+                const parsedPrograms = (selected?.program || '')
+                  .split(',')
+                  .map((programName) => programName.trim())
+                  .filter(Boolean);
+
                 setStudentId(v);
                 setBeltId('');
                 setSelectedProgram('');
+                onStudentSelectionDebug?.({
+                  studentId: v,
+                  parsedPrograms,
+                });
               }}
             >
               <SelectTrigger disabled={students.length === 0}>

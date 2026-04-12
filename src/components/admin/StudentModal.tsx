@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Dialog,
@@ -69,7 +69,8 @@ export default function StudentModal({
 }: StudentModalProps) {
   const { getWhiteBeltId } = useBeltLevels();
   const { disciplineOptions } = useDisciplines();
-  const { programs: existingPrograms } = useStudentPrograms(student?.id);
+  const { programs: fetchedPrograms } = useStudentPrograms(student?.id);
+  const existingPrograms = useMemo(() => fetchedPrograms ?? [], [fetchedPrograms]);
   const [additionalPrograms, setAdditionalPrograms] = useState<string[]>([]);
   const [addingProgram, setAddingProgram] = useState('');
   const queryClient = useQueryClient();
@@ -108,13 +109,9 @@ export default function StudentModal({
     },
   });
 
-  // Derive primary program from student_programs table when editing
-  const primaryFromDB = student
-    ? existingPrograms.find((p) => p.is_primary)?.program_name
-    : undefined;
-
   useEffect(() => {
     if (student) {
+      const primaryFromDB = existingPrograms.find((p) => p.is_primary)?.program_name;
       // Use primary from junction table if available, else fallback to student.program (first entry)
       const primaryProgram =
         primaryFromDB ||
@@ -147,7 +144,16 @@ export default function StudentModal({
             programName.toLowerCase() !== primaryProgram.toLowerCase()
         );
 
-      setAdditionalPrograms(Array.from(new Set([...existingSecondary, ...legacyPrograms])));
+      const mergedPrograms = Array.from(
+        new Set([...existingSecondary, ...legacyPrograms])
+      );
+
+      setAdditionalPrograms((prev) => {
+        const isSameLength = prev.length === mergedPrograms.length;
+        const isSameOrder =
+          isSameLength && prev.every((programName, index) => programName === mergedPrograms[index]);
+        return isSameOrder ? prev : mergedPrograms;
+      });
     } else {
       form.reset({
         name: '',
@@ -162,7 +168,7 @@ export default function StudentModal({
       });
       setAdditionalPrograms([]);
     }
-  }, [student, open, globalFee, primaryFromDB, existingPrograms]);
+  }, [student, open, globalFee, existingPrograms, form]);
 
   const handleAvatarUpload = (url: string) =>
     form.setValue('profile_image_url', url);
