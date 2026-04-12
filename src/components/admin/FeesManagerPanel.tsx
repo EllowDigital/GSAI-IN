@@ -67,11 +67,7 @@ export default function FeesManagerPanel({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [viewMode, setViewMode] = usePersistentState<
     'cards' | 'table' | 'grouped'
-  >(
-    'admin:layout:view-mode',
-    'cards',
-    ['cards', 'table', 'grouped']
-  );
+  >('admin:layout:view-mode', 'cards', ['cards', 'table', 'grouped']);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Set<string>>(
     new Set()
   );
@@ -279,7 +275,9 @@ export default function FeesManagerPanel({
 
         const fromJunction = allStudentPrograms
           .filter((programRow: any) => programRow.student_id === student.id)
-          .map((programRow: any) => normalizeProgramName(programRow.program_name))
+          .map((programRow: any) =>
+            normalizeProgramName(programRow.program_name)
+          )
           .filter(Boolean);
 
         const fallback = parseProgramNames(student.program);
@@ -343,7 +341,9 @@ export default function FeesManagerPanel({
       });
 
       if (records.length === 0) {
-        throw new Error('All student-program fee records already exist for this month');
+        throw new Error(
+          'All student-program fee records already exist for this month'
+        );
       }
 
       const { error } = await supabase.from('fees').insert(records);
@@ -409,7 +409,9 @@ export default function FeesManagerPanel({
 
           const fromJunction = allStudentPrograms
             .filter((programRow: any) => programRow.student_id === student.id)
-            .map((programRow: any) => normalizeProgramName(programRow.program_name))
+            .map((programRow: any) =>
+              normalizeProgramName(programRow.program_name)
+            )
             .filter(Boolean);
 
           const fallbackPrograms = parseProgramNames(student.program);
@@ -423,7 +425,8 @@ export default function FeesManagerPanel({
           });
 
           const studentPrograms = Array.from(normalizedProgramMap.values());
-          const programList = studentPrograms.length > 0 ? studentPrograms : ['General'];
+          const programList =
+            studentPrograms.length > 0 ? studentPrograms : ['General'];
 
           return programList.map((programName) => {
             const normalizedProgram = normalizeProgramName(programName);
@@ -431,7 +434,8 @@ export default function FeesManagerPanel({
               fees?.find(
                 (feeRow) =>
                   feeRow.student_id === student.id &&
-                  programKey(feeRow.program_name) === programKey(normalizedProgram)
+                  programKey(feeRow.program_name) ===
+                    programKey(normalizedProgram)
               ) || null;
             const reminderEmail = emailByStudentId.get(student.id) || null;
 
@@ -548,7 +552,9 @@ export default function FeesManagerPanel({
   }) => {
     setEditStudent(student);
     setEditProgramName(programName || 'General');
-    setEditFee(fee ? { ...fee, program_name: fee.program_name || programName } : null);
+    setEditFee(
+      fee ? { ...fee, program_name: fee.program_name || programName } : null
+    );
     setModalOpen(true);
   };
 
@@ -776,186 +782,186 @@ export default function FeesManagerPanel({
       {showRecordsSection && (
         <div className="admin-panel rounded-xl sm:rounded-2xl overflow-hidden">
           <div className="admin-panel-body space-y-4 sm:space-y-6">
-          {/* Filters and Controls */}
-          <div className="flex flex-col xl:flex-row xl:items-end gap-4 xl:gap-6">
-            <div className="flex-1 min-w-0">
-              <FeesFilterBar
-                filterMonth={filterMonth}
-                filterYear={filterYear}
-                filterStatus={filterStatus}
-                filterName={filterName}
-                setFilterMonth={setFilterMonth}
-                setFilterYear={setFilterYear}
-                setFilterStatus={setFilterStatus}
-                setFilterName={setFilterName}
-              />
-            </div>
-
-            {/* View Controls */}
-            <div className="w-full xl:w-auto flex flex-wrap items-center gap-2 sm:gap-3 rounded-xl border border-border/70 bg-muted/20 p-2.5">
-              {/* Bulk Mode Toggle */}
-              <Button
-                variant={bulkMode ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => {
-                  setBulkMode(!bulkMode);
-                  if (bulkMode) clearSelection();
-                }}
-                className="h-9"
-              >
-                <CheckSquare className="w-4 h-4 sm:mr-1.5" />
-                <span>Bulk</span>
-              </Button>
-
-              {/* View Mode Toggle */}
-              <div className="admin-toggle border-border/70 bg-card">
-                <Button
-                  variant={viewMode === 'cards' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('cards')}
-                  className="rounded-full px-2.5 h-8 gap-1"
-                >
-                  <Grid className="w-4 h-4" />
-                  <span className="hidden sm:inline text-xs">Cards</span>
-                </Button>
-                <Button
-                  variant={viewMode === 'table' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('table')}
-                  className="rounded-full px-2.5 h-8 gap-1"
-                >
-                  <List className="w-4 h-4" />
-                  <span className="hidden sm:inline text-xs">Table</span>
-                </Button>
-                <Button
-                  variant={viewMode === 'grouped' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('grouped')}
-                  className="rounded-full px-2.5 h-8 gap-1"
-                >
-                  <Users className="w-4 h-4" />
-                  <span className="hidden sm:inline text-xs">Grouped</span>
-                </Button>
+            {/* Filters and Controls */}
+            <div className="flex flex-col xl:flex-row xl:items-end gap-4 xl:gap-6">
+              <div className="flex-1 min-w-0">
+                <FeesFilterBar
+                  filterMonth={filterMonth}
+                  filterYear={filterYear}
+                  filterStatus={filterStatus}
+                  filterName={filterName}
+                  setFilterMonth={setFilterMonth}
+                  setFilterYear={setFilterYear}
+                  setFilterStatus={setFilterStatus}
+                  setFilterName={setFilterName}
+                />
               </div>
 
-              <Button
-                onClick={() => exportFeesToCsv(rows, filterMonth, filterYear)}
-                disabled={!Array.isArray(rows) || rows.length === 0}
-                variant="outline"
-                size="sm"
-                className="h-9 flex-1 sm:flex-none"
-              >
-                Export CSV
-              </Button>
-
-              <Button
-                onClick={() => batchGenerateMutation.mutate()}
-                disabled={batchGenerateMutation.isPending}
-                variant="outline"
-                size="sm"
-                className="h-9 gap-1.5 flex-1 sm:flex-none"
-              >
-                {batchGenerateMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Zap className="w-4 h-4" />
-                )}
-                <span className="hidden sm:inline">Generate All</span>
-              </Button>
-            </div>
-          </div>
-
-          {/* Bulk Actions Bar */}
-          {bulkMode && (
-            <Card className="p-3 sm:p-4 bg-primary/5 border-primary/20">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-3 flex-wrap">
-                  <span className="text-sm font-medium text-foreground">
-                    {selectedRowKeys.size} selected
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={selectAllUnpaid}
-                    className="h-8 text-xs"
-                  >
-                    Select All Unpaid
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={clearSelection}
-                    className="h-8 text-xs"
-                  >
-                    <X className="w-3 h-3 mr-1" />
-                    Clear
-                  </Button>
-                </div>
+              {/* View Controls */}
+              <div className="w-full xl:w-auto flex flex-wrap items-center gap-2 sm:gap-3 rounded-xl border border-border/70 bg-muted/20 p-2.5">
+                {/* Bulk Mode Toggle */}
                 <Button
-                  onClick={handleBulkMarkPaid}
-                  disabled={
-                    selectedRowKeys.size === 0 ||
-                    bulkMarkPaidMutation.isPending
-                  }
+                  variant={bulkMode ? 'default' : 'outline'}
                   size="sm"
-                  className="bg-green-600 hover:bg-green-700 h-9"
+                  onClick={() => {
+                    setBulkMode(!bulkMode);
+                    if (bulkMode) clearSelection();
+                  }}
+                  className="h-9"
                 >
-                  {bulkMarkPaidMutation.isPending
-                    ? 'Processing...'
-                    : `Mark ${selectedRowKeys.size} as Paid`}
+                  <CheckSquare className="w-4 h-4 sm:mr-1.5" />
+                  <span>Bulk</span>
                 </Button>
-              </div>
-            </Card>
-          )}
 
-          {/* Content */}
-          <div className="w-full space-y-4">
-            {isLoading ? (
-              viewMode === 'table' ? (
-                <FeeTableSkeleton />
-              ) : (
-                <FeeCardsGridSkeleton />
-              )
-            ) : rows.length === 0 ? (
-              <div className="text-center py-8 sm:py-12 space-y-4">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-muted rounded-full flex items-center justify-center">
-                  <DollarSign className="w-8 h-8 text-muted-foreground" />
-                </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-foreground">
-                  No fee records found
-                </h3>
-                <p className="text-sm sm:text-base text-muted-foreground">
-                  {hasActiveFilters
-                    ? 'Try adjusting or clearing your filters to see matching fee records.'
-                    : 'No fee records exist for this month yet. Generate fee records to get started.'}
-                </p>
-                {shouldShowGenerateCta ? (
+                {/* View Mode Toggle */}
+                <div className="admin-toggle border-border/70 bg-card">
                   <Button
-                    onClick={() => batchGenerateMutation.mutate()}
-                    disabled={batchGenerateMutation.isPending}
+                    variant={viewMode === 'cards' ? 'default' : 'ghost'}
                     size="sm"
-                    className="gap-1.5"
+                    onClick={() => setViewMode('cards')}
+                    className="rounded-full px-2.5 h-8 gap-1"
                   >
+                    <Grid className="w-4 h-4" />
+                    <span className="hidden sm:inline text-xs">Cards</span>
+                  </Button>
+                  <Button
+                    variant={viewMode === 'table' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('table')}
+                    className="rounded-full px-2.5 h-8 gap-1"
+                  >
+                    <List className="w-4 h-4" />
+                    <span className="hidden sm:inline text-xs">Table</span>
+                  </Button>
+                  <Button
+                    variant={viewMode === 'grouped' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('grouped')}
+                    className="rounded-full px-2.5 h-8 gap-1"
+                  >
+                    <Users className="w-4 h-4" />
+                    <span className="hidden sm:inline text-xs">Grouped</span>
+                  </Button>
+                </div>
+
+                <Button
+                  onClick={() => exportFeesToCsv(rows, filterMonth, filterYear)}
+                  disabled={!Array.isArray(rows) || rows.length === 0}
+                  variant="outline"
+                  size="sm"
+                  className="h-9 flex-1 sm:flex-none"
+                >
+                  Export CSV
+                </Button>
+
+                <Button
+                  onClick={() => batchGenerateMutation.mutate()}
+                  disabled={batchGenerateMutation.isPending}
+                  variant="outline"
+                  size="sm"
+                  className="h-9 gap-1.5 flex-1 sm:flex-none"
+                >
+                  {batchGenerateMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
                     <Zap className="w-4 h-4" />
-                    Generate Fee Records
-                  </Button>
-                ) : hasActiveFilters ? (
-                  <Button
-                    onClick={() => {
-                      setFilterName('');
-                      setFilterStatus('');
-                    }}
-                    variant="outline"
-                    size="sm"
-                  >
-                    Clear Filters
-                  </Button>
-                ) : null}
+                  )}
+                  <span className="hidden sm:inline">Generate All</span>
+                </Button>
               </div>
-            ) : (
-              renderContent()
+            </div>
+
+            {/* Bulk Actions Bar */}
+            {bulkMode && (
+              <Card className="p-3 sm:p-4 bg-primary/5 border-primary/20">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <span className="text-sm font-medium text-foreground">
+                      {selectedRowKeys.size} selected
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={selectAllUnpaid}
+                      className="h-8 text-xs"
+                    >
+                      Select All Unpaid
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={clearSelection}
+                      className="h-8 text-xs"
+                    >
+                      <X className="w-3 h-3 mr-1" />
+                      Clear
+                    </Button>
+                  </div>
+                  <Button
+                    onClick={handleBulkMarkPaid}
+                    disabled={
+                      selectedRowKeys.size === 0 ||
+                      bulkMarkPaidMutation.isPending
+                    }
+                    size="sm"
+                    className="bg-green-600 hover:bg-green-700 h-9"
+                  >
+                    {bulkMarkPaidMutation.isPending
+                      ? 'Processing...'
+                      : `Mark ${selectedRowKeys.size} as Paid`}
+                  </Button>
+                </div>
+              </Card>
             )}
-          </div>
+
+            {/* Content */}
+            <div className="w-full space-y-4">
+              {isLoading ? (
+                viewMode === 'table' ? (
+                  <FeeTableSkeleton />
+                ) : (
+                  <FeeCardsGridSkeleton />
+                )
+              ) : rows.length === 0 ? (
+                <div className="text-center py-8 sm:py-12 space-y-4">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-muted rounded-full flex items-center justify-center">
+                    <DollarSign className="w-8 h-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-foreground">
+                    No fee records found
+                  </h3>
+                  <p className="text-sm sm:text-base text-muted-foreground">
+                    {hasActiveFilters
+                      ? 'Try adjusting or clearing your filters to see matching fee records.'
+                      : 'No fee records exist for this month yet. Generate fee records to get started.'}
+                  </p>
+                  {shouldShowGenerateCta ? (
+                    <Button
+                      onClick={() => batchGenerateMutation.mutate()}
+                      disabled={batchGenerateMutation.isPending}
+                      size="sm"
+                      className="gap-1.5"
+                    >
+                      <Zap className="w-4 h-4" />
+                      Generate Fee Records
+                    </Button>
+                  ) : hasActiveFilters ? (
+                    <Button
+                      onClick={() => {
+                        setFilterName('');
+                        setFilterStatus('');
+                      }}
+                      variant="outline"
+                      size="sm"
+                    >
+                      Clear Filters
+                    </Button>
+                  ) : null}
+                </div>
+              ) : (
+                renderContent()
+              )}
+            </div>
           </div>
         </div>
       )}

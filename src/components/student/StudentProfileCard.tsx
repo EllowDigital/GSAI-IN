@@ -202,7 +202,10 @@ export default function StudentProfileCard() {
     .slice(0, 2)
     .toUpperCase();
 
-  const programMap = new Map<string, { program_name: string; is_primary: boolean }>();
+  const programMap = new Map<
+    string,
+    { program_name: string; is_primary: boolean }
+  >();
 
   enrolledPrograms.forEach((program: any) => {
     const name = (program?.program_name || '').trim();

@@ -245,7 +245,9 @@ export default function AssignStudentBeltDialog({
             <Select
               value={studentId}
               onValueChange={(v) => {
-                const selected = students.find((student) => student.value === v);
+                const selected = students.find(
+                  (student) => student.value === v
+                );
                 const parsedPrograms = (selected?.program || '')
                   .split(',')
                   .map((programName) => programName.trim())

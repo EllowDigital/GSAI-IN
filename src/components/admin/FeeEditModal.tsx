@@ -48,14 +48,25 @@ export default function FeeEditModal({
         .eq('student_id', student.id)
         .eq('month', prevMonth)
         .eq('year', prevYear)
-        .eq('program_name', fee?.program_name || programName || student.program || 'General')
+        .eq(
+          'program_name',
+          fee?.program_name || programName || student.program || 'General'
+        )
         .maybeSingle();
       const shouldCarry = data && getFeeStatus(data) !== 'paid';
       const balance = shouldCarry ? data.balance_due || 0 : 0;
       setCarryForward(balance || 0);
     }
     fetchPrevious();
-  }, [student?.id, month, year, open, fee?.program_name, programName, student?.program]);
+  }, [
+    student?.id,
+    month,
+    year,
+    open,
+    fee?.program_name,
+    programName,
+    student?.program,
+  ]);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -75,7 +86,9 @@ export default function FeeEditModal({
           carryForward={carryForward}
           month={month}
           year={year}
-          initialProgramName={fee?.program_name || programName || student?.program || 'General'}
+          initialProgramName={
+            fee?.program_name || programName || student?.program || 'General'
+          }
           adminDebug={adminDebug}
           loading={loading}
           setLoading={setLoading}

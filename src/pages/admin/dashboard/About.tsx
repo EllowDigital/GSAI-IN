@@ -181,7 +181,9 @@ export default function About() {
               <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                 <Rocket className="w-3.5 h-3.5" /> Current Version
               </p>
-              <p className="mt-1.5 text-xl font-bold text-foreground">{ADMIN_VERSION}</p>
+              <p className="mt-1.5 text-xl font-bold text-foreground">
+                {ADMIN_VERSION}
+              </p>
             </div>
 
             <div className="rounded-xl border border-border/60 bg-background p-4 shadow-sm">

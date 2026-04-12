@@ -908,9 +908,7 @@ export default function ProgressionBoard() {
       students.map((student) => {
         const programs = studentProgramMap.get(student.id) || [];
         const programLabel =
-          programs.length > 0
-            ? programs.join(', ')
-            : student.program;
+          programs.length > 0 ? programs.join(', ') : student.program;
         return {
           label: `${student.name} • ${programLabel}`,
           value: student.id,
@@ -1311,17 +1309,15 @@ export default function ProgressionBoard() {
 
             // Ensure selected program is persisted for multi-program students.
             if (payload.selectedProgram) {
-              await supabase
-                .from('student_programs')
-                .upsert(
-                  {
-                    student_id: payload.studentId,
-                    program_name: payload.selectedProgram,
-                    joined_at: new Date().toISOString().slice(0, 10),
-                    is_primary: false,
-                  },
-                  { onConflict: 'student_id,program_name' }
-                );
+              await supabase.from('student_programs').upsert(
+                {
+                  student_id: payload.studentId,
+                  program_name: payload.selectedProgram,
+                  joined_at: new Date().toISOString().slice(0, 10),
+                  is_primary: false,
+                },
+                { onConflict: 'student_id,program_name' }
+              );
             }
 
             if (existing) {
@@ -1351,17 +1347,15 @@ export default function ProgressionBoard() {
             });
           } else {
             if (payload.selectedProgram) {
-              await supabase
-                .from('student_programs')
-                .upsert(
-                  {
-                    student_id: payload.studentId,
-                    program_name: payload.selectedProgram,
-                    joined_at: new Date().toISOString().slice(0, 10),
-                    is_primary: false,
-                  },
-                  { onConflict: 'student_id,program_name' }
-                );
+              await supabase.from('student_programs').upsert(
+                {
+                  student_id: payload.studentId,
+                  program_name: payload.selectedProgram,
+                  joined_at: new Date().toISOString().slice(0, 10),
+                  is_primary: false,
+                },
+                { onConflict: 'student_id,program_name' }
+              );
             }
             await assignStudent(payload);
           }

@@ -71,7 +71,9 @@ export default function StudentModal({
   const initKeyRef = useRef('');
   const studentResetKey = student?.id || 'new';
 
-  const [localAdditionalPrograms, setLocalAdditionalPrograms] = useState<string[]>([]);
+  const [localAdditionalPrograms, setLocalAdditionalPrograms] = useState<
+    string[]
+  >([]);
   const [removedAdditionalPrograms, setRemovedAdditionalPrograms] = useState<
     string[]
   >([]);
@@ -156,13 +158,7 @@ export default function StudentModal({
     }
 
     initKeyRef.current = initKey;
-  }, [
-    student,
-    studentResetKey,
-    form,
-    globalFee,
-    open,
-  ]);
+  }, [student, studentResetKey, form, globalFee, open]);
 
   const handleAvatarUpload = (url: string) =>
     form.setValue('profile_image_url', url);
@@ -205,9 +201,16 @@ export default function StudentModal({
       });
 
     return merged;
-  }, [currentPrimary, initialAdditionalPrograms, localAdditionalPrograms, removedAdditionalPrograms]);
+  }, [
+    currentPrimary,
+    initialAdditionalPrograms,
+    localAdditionalPrograms,
+    removedAdditionalPrograms,
+  ]);
 
-  const enrolledProgramNames = [currentPrimary, ...additionalPrograms].filter(Boolean);
+  const enrolledProgramNames = [currentPrimary, ...additionalPrograms].filter(
+    Boolean
+  );
 
   const availableToAdd = useMemo(() => {
     const enrolledSet = new Set(
@@ -398,7 +401,8 @@ export default function StudentModal({
             .filter(
               (programName) =>
                 Boolean(programName) &&
-                programName.toLowerCase() !== sanitizedValues.program.toLowerCase()
+                programName.toLowerCase() !==
+                  sanitizedValues.program.toLowerCase()
             )
         )
       );
@@ -505,7 +509,10 @@ export default function StudentModal({
       ]);
 
       await Promise.all([
-        queryClient.refetchQueries({ queryKey: ['student-programs-all'], type: 'active' }),
+        queryClient.refetchQueries({
+          queryKey: ['student-programs-all'],
+          type: 'active',
+        }),
         queryClient.refetchQueries({ queryKey: ['students'], type: 'active' }),
       ]);
       handleOpenChange(false);

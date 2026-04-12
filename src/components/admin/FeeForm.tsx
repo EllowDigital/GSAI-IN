@@ -74,9 +74,8 @@ export function FeeForm({
   onClose,
 }: Props) {
   const queryClient = useQueryClient();
-  const [selectedProgramName, setSelectedProgramName] = React.useState(
-    initialProgramName
-  );
+  const [selectedProgramName, setSelectedProgramName] =
+    React.useState(initialProgramName);
 
   React.useEffect(() => {
     setSelectedProgramName(initialProgramName || 'General');
@@ -171,7 +170,11 @@ export function FeeForm({
   });
 
   const { data: customProgramFee } = useQuery({
-    queryKey: ['student-program-fee-override', student?.id, selectedProgramName],
+    queryKey: [
+      'student-program-fee-override',
+      student?.id,
+      selectedProgramName,
+    ],
     queryFn: async () => {
       if (!student?.id || !selectedProgramName) return null;
       const { data, error } = await supabase
@@ -344,7 +347,8 @@ export function FeeForm({
     setLoading(true);
     const { data: result, error } = await safeAsync(async () => {
       const now = new Date().toISOString();
-      const normalizedProgram = normalizeProgramName(selectedProgramName) || 'General';
+      const normalizedProgram =
+        normalizeProgramName(selectedProgramName) || 'General';
       const basePayload = {
         student_id: student.id,
         program_name: normalizedProgram,
@@ -418,7 +422,9 @@ export function FeeForm({
     } else {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['fees'] }),
-        queryClient.invalidateQueries({ queryKey: ['student-program-fee-overrides'] }),
+        queryClient.invalidateQueries({
+          queryKey: ['student-program-fee-overrides'],
+        }),
       ]);
       toast({
         title: 'Fee saved successfully',
@@ -478,7 +484,9 @@ export function FeeForm({
       {/* Fee Breakdown Info */}
       <div className="space-y-2">
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-foreground">Program</label>
+          <label className="text-xs font-semibold text-foreground">
+            Program
+          </label>
           <Select
             value={selectedProgramName}
             onValueChange={setSelectedProgramName}
@@ -497,7 +505,8 @@ export function FeeForm({
           </Select>
           {fee?.id ? (
             <p className="text-[11px] text-muted-foreground">
-              Program is locked for existing records. Create a new row for another program.
+              Program is locked for existing records. Create a new row for
+              another program.
             </p>
           ) : null}
         </div>
@@ -514,7 +523,8 @@ export function FeeForm({
           <div className="flex items-center gap-2 p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs">
             <IndianRupee className="w-3.5 h-3.5 text-emerald-700 flex-shrink-0" />
             <span className="text-emerald-800">
-              Custom default for this student-program: <strong>₹{customProgramFee.toLocaleString('en-IN')}/month</strong>
+              Custom default for this student-program:{' '}
+              <strong>₹{customProgramFee.toLocaleString('en-IN')}/month</strong>
             </span>
           </div>
         ) : null}
@@ -680,18 +690,18 @@ export function FeeForm({
           <div />
         )}
         <div className="flex justify-end gap-2">
-        <Button variant="outline" type="button" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button type="submit" disabled={loading} className="min-w-[80px]">
-          {loading ? (
-            <Loader2 className="animate-spin w-4 h-4" />
-          ) : fee?.id ? (
-            'Update'
-          ) : (
-            'Save'
-          )}
-        </Button>
+          <Button variant="outline" type="button" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit" disabled={loading} className="min-w-[80px]">
+            {loading ? (
+              <Loader2 className="animate-spin w-4 h-4" />
+            ) : fee?.id ? (
+              'Update'
+            ) : (
+              'Save'
+            )}
+          </Button>
         </div>
       </div>
     </form>

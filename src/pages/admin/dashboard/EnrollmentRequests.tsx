@@ -1228,7 +1228,9 @@ export default function EnrollmentRequestsManager() {
                     <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
                       Student
                     </p>
-                    <p className="font-medium break-words">{viewReq.student_name}</p>
+                    <p className="font-medium break-words">
+                      {viewReq.student_name}
+                    </p>
                   </div>
                   <div>
                     <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
@@ -1242,7 +1244,9 @@ export default function EnrollmentRequestsManager() {
                     <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
                       Parent
                     </p>
-                    <p className="font-medium break-words">{viewReq.parent_name}</p>
+                    <p className="font-medium break-words">
+                      {viewReq.parent_name}
+                    </p>
                   </div>
                   {viewReq.parent_email && (
                     <div>
@@ -1318,7 +1322,9 @@ export default function EnrollmentRequestsManager() {
                       <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
                         Message
                       </p>
-                      <p className="font-medium break-words">{viewReq.message}</p>
+                      <p className="font-medium break-words">
+                        {viewReq.message}
+                      </p>
                     </div>
                   )}
                   <div className="sm:col-span-2">
@@ -1523,19 +1529,27 @@ export default function EnrollmentRequestsManager() {
               <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-1.5 text-[13px] leading-5 sm:text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Name</span>
-                  <span className="font-medium break-words text-right">{approveReq.student_name}</span>
+                  <span className="font-medium break-words text-right">
+                    {approveReq.student_name}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Program</span>
-                  <span className="font-medium break-words text-right">{approveReq.program}</span>
+                  <span className="font-medium break-words text-right">
+                    {approveReq.program}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Parent</span>
-                  <span className="font-medium break-words text-right">{approveReq.parent_name}</span>
+                  <span className="font-medium break-words text-right">
+                    {approveReq.parent_name}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Phone</span>
-                  <span className="font-medium break-all text-right">{approveReq.parent_phone}</span>
+                  <span className="font-medium break-all text-right">
+                    {approveReq.parent_phone}
+                  </span>
                 </div>
               </div>
               <div>

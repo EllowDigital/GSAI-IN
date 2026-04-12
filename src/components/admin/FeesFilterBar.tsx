@@ -39,7 +39,12 @@ export default function FeesFilterBar({
     { value: 11, label: 'Nov' },
     { value: 12, label: 'Dec' },
   ];
-  const yearOptions = [currentYear - 2, currentYear - 1, currentYear, currentYear + 1];
+  const yearOptions = [
+    currentYear - 2,
+    currentYear - 1,
+    currentYear,
+    currentYear + 1,
+  ];
 
   return (
     <div className="w-full rounded-xl border border-border/70 bg-card/80 p-3 sm:p-4 shadow-sm">

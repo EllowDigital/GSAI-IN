@@ -112,11 +112,18 @@ export default function FeesGroupedCards({
                   : `${String(filterMonth).padStart(2, '0')}/${filterYear}`;
 
                 return (
-                  <div key={row.rowKey} className="rounded-lg border border-border/70 p-3 bg-background/70">
+                  <div
+                    key={row.rowKey}
+                    className="rounded-lg border border-border/70 p-3 bg-background/70"
+                  >
                     <div className="flex items-center justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold truncate">{row.programName}</p>
-                        <p className="text-xs text-muted-foreground">{monthYear}</p>
+                        <p className="text-sm font-semibold truncate">
+                          {row.programName}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {monthYear}
+                        </p>
                       </div>
                       <Badge variant="secondary" className={statusClass}>
                         {statusText}
@@ -127,7 +134,10 @@ export default function FeesGroupedCards({
                       <div>
                         <p className="text-muted-foreground">Fee</p>
                         <p className="font-medium">
-                          ₹{row.fee ? row.fee.monthly_fee : row.expectedMonthlyFee}
+                          ₹
+                          {row.fee
+                            ? row.fee.monthly_fee
+                            : row.expectedMonthlyFee}
                         </p>
                       </div>
                       <div>
@@ -156,7 +166,9 @@ export default function FeesGroupedCards({
                           studentEmail={row.reminderEmail || ''}
                           parentEmail={row.student.parent_email || ''}
                           amount={
-                            row.fee ? row.fee.balance_due : row.expectedMonthlyFee
+                            row.fee
+                              ? row.fee.balance_due
+                              : row.expectedMonthlyFee
                           }
                           month={row.fee ? row.fee.month : filterMonth}
                           year={row.fee ? row.fee.year : filterYear}

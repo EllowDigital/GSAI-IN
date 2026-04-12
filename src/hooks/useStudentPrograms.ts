@@ -101,9 +101,14 @@ export function useStudentPrograms(studentId?: string) {
         await syncStudentProgramField(studentId);
       } catch (syncError: any) {
         toast.error('Program was added, but student profile sync failed.');
-        console.error('syncStudentProgramField failed after addProgram', syncError);
+        console.error(
+          'syncStudentProgramField failed after addProgram',
+          syncError
+        );
       }
-      queryClient.invalidateQueries({ queryKey: ['student-programs', studentId] });
+      queryClient.invalidateQueries({
+        queryKey: ['student-programs', studentId],
+      });
       queryClient.invalidateQueries({ queryKey: ['student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['student-programs-all'] });
@@ -135,7 +140,9 @@ export function useStudentPrograms(studentId?: string) {
           );
         }
       }
-      queryClient.invalidateQueries({ queryKey: ['student-programs', studentId] });
+      queryClient.invalidateQueries({
+        queryKey: ['student-programs', studentId],
+      });
       queryClient.invalidateQueries({ queryKey: ['student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['all-student-programs'] });
       queryClient.invalidateQueries({ queryKey: ['student-programs-all'] });

@@ -53,184 +53,193 @@ export default function FeesCards({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
-      {rows.map(({ student, fee, reminderEmail, programName, rowKey, expectedMonthlyFee }) => {
-        const status = fee ? getFeeStatus(fee) : 'unpaid';
-        const [statusText, statusClass] = getStatusTextAndColor(status);
-        const isSelected = selectedIds.has(rowKey);
+      {rows.map(
+        ({
+          student,
+          fee,
+          reminderEmail,
+          programName,
+          rowKey,
+          expectedMonthlyFee,
+        }) => {
+          const status = fee ? getFeeStatus(fee) : 'unpaid';
+          const [statusText, statusClass] = getStatusTextAndColor(status);
+          const isSelected = selectedIds.has(rowKey);
 
-        return (
-          <Card
-            key={rowKey}
-            className={clsx(
-              'group rounded-xl sm:rounded-2xl bg-card border transition-all duration-300 overflow-hidden',
-              bulkMode && isSelected
-                ? 'border-primary ring-2 ring-primary/20 shadow-lg'
-                : 'border-border/50 hover:border-primary/30 hover:shadow-lg',
-              bulkMode && 'cursor-pointer'
-            )}
-            onClick={() => bulkMode && onToggleSelect?.(rowKey)}
-          >
-            {/* Status indicator bar */}
-            <div
+          return (
+            <Card
+              key={rowKey}
               className={clsx(
-                'h-1',
-                status === 'paid' && 'bg-green-500',
-                status === 'partial' && 'bg-amber-500',
-                status === 'unpaid' && 'bg-red-500'
+                'group rounded-xl sm:rounded-2xl bg-card border transition-all duration-300 overflow-hidden',
+                bulkMode && isSelected
+                  ? 'border-primary ring-2 ring-primary/20 shadow-lg'
+                  : 'border-border/50 hover:border-primary/30 hover:shadow-lg',
+                bulkMode && 'cursor-pointer'
               )}
-            />
-
-            <CardContent className="p-3 sm:p-4 flex flex-col gap-3">
-              {/* Header */}
-              <div className="flex items-start gap-3">
-                {bulkMode && (
-                  <Checkbox
-                    checked={isSelected}
-                    onCheckedChange={() => onToggleSelect?.(rowKey)}
-                    className="mt-1 flex-shrink-0"
-                    onClick={(e) => e.stopPropagation()}
-                  />
+              onClick={() => bulkMode && onToggleSelect?.(rowKey)}
+            >
+              {/* Status indicator bar */}
+              <div
+                className={clsx(
+                  'h-1',
+                  status === 'paid' && 'bg-green-500',
+                  status === 'partial' && 'bg-amber-500',
+                  status === 'unpaid' && 'bg-red-500'
                 )}
-                <Avatar className="h-10 w-10 sm:h-12 sm:w-12 ring-2 ring-offset-2 ring-primary/10 flex-shrink-0">
-                  {student.profile_image_url ? (
-                    <AvatarImage
-                      src={student.profile_image_url}
-                      alt={student.name}
-                    />
-                  ) : (
-                    <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-bold text-sm">
-                      {student.name?.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-sm sm:text-base text-foreground truncate">
-                    {student.name}
-                  </h4>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {programName}
-                  </p>
-                </div>
-                <span
-                  className={clsx(
-                    'shrink-0 rounded-full px-2 py-0.5 font-semibold text-[10px] sm:text-xs capitalize',
-                    statusClass
-                  )}
-                >
-                  {statusText}
-                </span>
-              </div>
+              />
 
-              {/* Fee Details */}
-              <div className="grid grid-cols-2 gap-2 p-2 sm:p-3 bg-muted/30 rounded-lg text-xs sm:text-sm">
-                <div className="flex flex-col">
-                  <span className="text-muted-foreground text-[10px] sm:text-xs">
-                    Month
-                  </span>
-                  <span className="font-medium text-foreground">
-                    {fee
-                      ? `${String(fee.month).padStart(2, '0')}/${fee.year}`
-                      : '-'}
-                  </span>
-                </div>
-                <div className="flex flex-col text-right">
-                  <span className="text-muted-foreground text-[10px] sm:text-xs">
-                    Fee
-                  </span>
-                  <span className="font-medium text-foreground">
-                    ₹{fee ? fee.monthly_fee : expectedMonthlyFee}
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-muted-foreground text-[10px] sm:text-xs">
-                    Paid
-                  </span>
-                  <span className="font-medium text-green-600 dark:text-green-400">
-                    {fee ? `₹${fee.paid_amount}` : '-'}
-                  </span>
-                </div>
-                <div className="flex flex-col text-right">
-                  <span className="text-muted-foreground text-[10px] sm:text-xs">
-                    Balance
-                  </span>
+              <CardContent className="p-3 sm:p-4 flex flex-col gap-3">
+                {/* Header */}
+                <div className="flex items-start gap-3">
+                  {bulkMode && (
+                    <Checkbox
+                      checked={isSelected}
+                      onCheckedChange={() => onToggleSelect?.(rowKey)}
+                      className="mt-1 flex-shrink-0"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  )}
+                  <Avatar className="h-10 w-10 sm:h-12 sm:w-12 ring-2 ring-offset-2 ring-primary/10 flex-shrink-0">
+                    {student.profile_image_url ? (
+                      <AvatarImage
+                        src={student.profile_image_url}
+                        alt={student.name}
+                      />
+                    ) : (
+                      <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-bold text-sm">
+                        {student.name?.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-sm sm:text-base text-foreground truncate">
+                      {student.name}
+                    </h4>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {programName}
+                    </p>
+                  </div>
                   <span
                     className={clsx(
-                      'font-medium',
-                      fee?.balance_due > 0
-                        ? 'text-red-600 dark:text-red-400'
-                        : 'text-foreground'
+                      'shrink-0 rounded-full px-2 py-0.5 font-semibold text-[10px] sm:text-xs capitalize',
+                      statusClass
                     )}
                   >
-                    {fee ? `₹${fee.balance_due}` : '-'}
+                    {statusText}
                   </span>
                 </div>
-              </div>
 
-              {/* Actions */}
-              {!bulkMode && (
-                <div className="grid grid-cols-2 gap-2 pt-1">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 w-full min-w-0 sm:h-9 text-xs rounded-lg"
-                    onClick={() => onShowHistory(student)}
-                  >
-                    <History className="w-3.5 h-3.5 mr-1.5" />
-                    History
-                  </Button>
-                  <div className="min-w-0">
-                    {status !== 'paid' && (
-                      <FeeReminderButton
-                        studentName={student.name}
-                        parentName={student.parent_name || 'Parent'}
-                        parentContact={student.parent_contact || ''}
-                        studentEmail={reminderEmail || ''}
-                        parentEmail={student.parent_email || ''}
-                        amount={
-                          fee ? fee.balance_due : expectedMonthlyFee
-                        }
-                        month={fee ? fee.month : filterMonth}
-                        year={fee ? fee.year : filterYear}
-                      />
-                    )}
+                {/* Fee Details */}
+                <div className="grid grid-cols-2 gap-2 p-2 sm:p-3 bg-muted/30 rounded-lg text-xs sm:text-sm">
+                  <div className="flex flex-col">
+                    <span className="text-muted-foreground text-[10px] sm:text-xs">
+                      Month
+                    </span>
+                    <span className="font-medium text-foreground">
+                      {fee
+                        ? `${String(fee.month).padStart(2, '0')}/${fee.year}`
+                        : '-'}
+                    </span>
                   </div>
-                  <Button
-                    variant={fee ? 'secondary' : 'default'}
-                    size="sm"
-                    onClick={() => onEditFee({ student, fee, programName })}
-                    className="h-8 w-full min-w-0 sm:h-9 text-xs rounded-lg"
-                  >
-                    {fee ? (
-                      <>
-                        <Edit className="w-3.5 h-3.5 mr-1.5" />
-                        Edit
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="w-3.5 h-3.5 mr-1.5" />
-                        Add
-                      </>
-                    )}
-                  </Button>
-                  {fee ? (
+                  <div className="flex flex-col text-right">
+                    <span className="text-muted-foreground text-[10px] sm:text-xs">
+                      Fee
+                    </span>
+                    <span className="font-medium text-foreground">
+                      ₹{fee ? fee.monthly_fee : expectedMonthlyFee}
+                    </span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-muted-foreground text-[10px] sm:text-xs">
+                      Paid
+                    </span>
+                    <span className="font-medium text-green-600 dark:text-green-400">
+                      {fee ? `₹${fee.paid_amount}` : '-'}
+                    </span>
+                  </div>
+                  <div className="flex flex-col text-right">
+                    <span className="text-muted-foreground text-[10px] sm:text-xs">
+                      Balance
+                    </span>
+                    <span
+                      className={clsx(
+                        'font-medium',
+                        fee?.balance_due > 0
+                          ? 'text-red-600 dark:text-red-400'
+                          : 'text-foreground'
+                      )}
+                    >
+                      {fee ? `₹${fee.balance_due}` : '-'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                {!bulkMode && (
+                  <div className="grid grid-cols-2 gap-2 pt-1">
                     <Button
-                      variant="destructive"
+                      variant="outline"
                       size="sm"
-                      onClick={() => onDeleteFee?.({ fee, student, programName })}
+                      className="h-8 w-full min-w-0 sm:h-9 text-xs rounded-lg"
+                      onClick={() => onShowHistory(student)}
+                    >
+                      <History className="w-3.5 h-3.5 mr-1.5" />
+                      History
+                    </Button>
+                    <div className="min-w-0">
+                      {status !== 'paid' && (
+                        <FeeReminderButton
+                          studentName={student.name}
+                          parentName={student.parent_name || 'Parent'}
+                          parentContact={student.parent_contact || ''}
+                          studentEmail={reminderEmail || ''}
+                          parentEmail={student.parent_email || ''}
+                          amount={fee ? fee.balance_due : expectedMonthlyFee}
+                          month={fee ? fee.month : filterMonth}
+                          year={fee ? fee.year : filterYear}
+                        />
+                      )}
+                    </div>
+                    <Button
+                      variant={fee ? 'secondary' : 'default'}
+                      size="sm"
+                      onClick={() => onEditFee({ student, fee, programName })}
                       className="h-8 w-full min-w-0 sm:h-9 text-xs rounded-lg"
                     >
-                      <Trash2 className="w-3.5 h-3.5 mr-1.5" />
-                      Delete
+                      {fee ? (
+                        <>
+                          <Edit className="w-3.5 h-3.5 mr-1.5" />
+                          Edit
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="w-3.5 h-3.5 mr-1.5" />
+                          Add
+                        </>
+                      )}
                     </Button>
-                  ) : (
-                    <div />
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        );
-      })}
+                    {fee ? (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() =>
+                          onDeleteFee?.({ fee, student, programName })
+                        }
+                        className="h-8 w-full min-w-0 sm:h-9 text-xs rounded-lg"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                        Delete
+                      </Button>
+                    ) : (
+                      <div />
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          );
+        }
+      )}
     </div>
   );
 }

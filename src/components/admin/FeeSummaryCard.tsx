@@ -42,7 +42,9 @@ export default function FeeSummaryCard({
         </CardHeader>
         <CardContent>
           <span className="text-xl sm:text-2xl font-bold text-foreground tabular-nums">
-            {loading ? '...' : `₹${summary.partialAmount.toLocaleString('en-IN')}`}
+            {loading
+              ? '...'
+              : `₹${summary.partialAmount.toLocaleString('en-IN')}`}
           </span>
           <div className="text-xs text-amber-900 mt-1">
             {loading ? '' : `${summary.partialCount} partial`}
@@ -60,7 +62,9 @@ export default function FeeSummaryCard({
         </CardHeader>
         <CardContent>
           <span className="text-xl sm:text-2xl font-bold text-foreground tabular-nums">
-            {loading ? '...' : `₹${summary.overdueAmount.toLocaleString('en-IN')}`}
+            {loading
+              ? '...'
+              : `₹${summary.overdueAmount.toLocaleString('en-IN')}`}
           </span>
           <div className="text-xs text-rose-900 mt-1">
             {loading ? '' : `${summary.overdueCount} overdue`}

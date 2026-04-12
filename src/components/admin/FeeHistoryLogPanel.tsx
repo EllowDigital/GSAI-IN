@@ -224,15 +224,21 @@ export default function FeeHistoryLogPanel() {
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
             <Card className="p-3">
               <p className="text-[11px] text-muted-foreground">Total Logs</p>
-              <p className="text-lg font-semibold tabular-nums">{snapshot.total}</p>
+              <p className="text-lg font-semibold tabular-nums">
+                {snapshot.total}
+              </p>
             </Card>
             <Card className="p-3">
               <p className="text-[11px] text-muted-foreground">Paid</p>
-              <p className="text-lg font-semibold tabular-nums">{snapshot.paid}</p>
+              <p className="text-lg font-semibold tabular-nums">
+                {snapshot.paid}
+              </p>
             </Card>
             <Card className="p-3">
               <p className="text-[11px] text-muted-foreground">Pending</p>
-              <p className="text-lg font-semibold tabular-nums">{snapshot.pending}</p>
+              <p className="text-lg font-semibold tabular-nums">
+                {snapshot.pending}
+              </p>
             </Card>
             <Card className="p-3">
               <p className="text-[11px] text-muted-foreground">Collected</p>
@@ -383,13 +389,16 @@ export default function FeeHistoryLogPanel() {
                           </span>
                         </td>
                         <td className="px-3 py-2.5 text-right tabular-nums">
-                          ₹{Number(row.monthly_fee || 0).toLocaleString('en-IN')}
+                          ₹
+                          {Number(row.monthly_fee || 0).toLocaleString('en-IN')}
                         </td>
                         <td className="px-3 py-2.5 text-right tabular-nums">
-                          ₹{Number(row.paid_amount || 0).toLocaleString('en-IN')}
+                          ₹
+                          {Number(row.paid_amount || 0).toLocaleString('en-IN')}
                         </td>
                         <td className="px-3 py-2.5 text-right tabular-nums">
-                          ₹{Number(row.balance_due || 0).toLocaleString('en-IN')}
+                          ₹
+                          {Number(row.balance_due || 0).toLocaleString('en-IN')}
                         </td>
                         <td className="px-3 py-2.5 text-muted-foreground whitespace-nowrap">
                           {row.created_at
@@ -406,8 +415,8 @@ export default function FeeHistoryLogPanel() {
 
           <div className="flex flex-col gap-2 border border-border/60 rounded-xl p-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-muted-foreground">
-              Showing {filteredRows.length} rows on page {currentPage} of {totalPages}.
-              Total matching logs: {totalCount}
+              Showing {filteredRows.length} rows on page {currentPage} of{' '}
+              {totalPages}. Total matching logs: {totalCount}
             </p>
 
             <div className="flex flex-wrap items-center gap-2">
@@ -430,7 +439,9 @@ export default function FeeHistoryLogPanel() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPage((prev) => Math.max(1, Math.min(totalPages, prev) - 1))}
+                onClick={() =>
+                  setPage((prev) => Math.max(1, Math.min(totalPages, prev) - 1))
+                }
                 disabled={currentPage <= 1}
                 className="h-8 px-2"
               >
@@ -444,7 +455,11 @@ export default function FeeHistoryLogPanel() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPage((prev) => Math.min(totalPages, Math.min(totalPages, prev) + 1))}
+                onClick={() =>
+                  setPage((prev) =>
+                    Math.min(totalPages, Math.min(totalPages, prev) + 1)
+                  )
+                }
                 disabled={currentPage >= totalPages}
                 className="h-8 px-2"
               >
