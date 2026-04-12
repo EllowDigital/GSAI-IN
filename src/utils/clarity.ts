@@ -1,14 +1,10 @@
 import Clarity from '@microsoft/clarity';
 
-const DEFAULT_CLARITY_PROJECT_ID = 'waebgqrb30';
-
 let isClarityInitialized = false;
 
-const getClarityProjectId = (): string => {
-  return (
-    import.meta.env.VITE_CLARITY_PROJECT_ID?.trim() ||
-    DEFAULT_CLARITY_PROJECT_ID
-  );
+const getClarityProjectId = (): string | null => {
+  const projectId = import.meta.env.VITE_CLARITY_PROJECT_ID?.trim();
+  return projectId ? projectId : null;
 };
 
 export const initializeClarity = (): void => {
