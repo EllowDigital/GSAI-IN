@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import { Award, ArrowRight, Star, Layers, ChevronRight } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import { useDisciplines } from '@/hooks/useDisciplines';
+import { parseProgramNames } from '@/utils/studentPrograms';
 
 const BELT_COLORS: Record<string, string> = {
   white: '#e5e7eb',
@@ -158,11 +159,11 @@ export default function StudentProgressionTracker() {
   });
 
   [studentRecord?.program, profile?.program].forEach((programName) => {
-    const name = (programName || '').trim();
-    if (!name || name.toLowerCase() === 'unassigned') return;
-    if (!programMap.has(name.toLowerCase())) {
-      programMap.set(name.toLowerCase(), name);
-    }
+    parseProgramNames(programName).forEach((name) => {
+      if (!programMap.has(name.toLowerCase())) {
+        programMap.set(name.toLowerCase(), name);
+      }
+    });
   });
 
   const programs = Array.from(programMap.values());

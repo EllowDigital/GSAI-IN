@@ -34,6 +34,7 @@ import StudentEventsView from '@/components/student/StudentEventsView';
 import StudentAnnouncements from '@/components/student/StudentAnnouncements';
 import StudentBeltExamNotifications from '@/components/student/StudentBeltExamNotifications';
 import { downloadCertificateFile } from '@/utils/certificateDownload';
+import { parseProgramNames } from '@/utils/studentPrograms';
 import Seo from '@/components/seo/Seo';
 
 const PASSWORD_REDIRECT_METRIC_KEY = 'gsai-student-password-redirect-start-ms';
@@ -203,18 +204,15 @@ export default function StudentDashboard() {
       });
     });
 
-    const fallbackProgram = (profile?.program || '').trim();
-    if (
-      fallbackProgram &&
-      fallbackProgram.toLowerCase() !== 'unassigned' &&
-      !normalized.has(fallbackProgram.toLowerCase())
-    ) {
+    const fallbackPrograms = parseProgramNames(profile?.program);
+    fallbackPrograms.forEach((fallbackProgram) => {
+      if (normalized.has(fallbackProgram.toLowerCase())) return;
       normalized.set(fallbackProgram.toLowerCase(), {
         program_name: fallbackProgram,
         is_primary: normalized.size === 0,
         joined_at: '',
       });
-    }
+    });
 
     return Array.from(normalized.values()).sort(
       (a, b) => Number(b.is_primary) - Number(a.is_primary)

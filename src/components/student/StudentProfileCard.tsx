@@ -27,6 +27,7 @@ import {
 import Spinner from '@/components/ui/spinner';
 import { toast } from '@/hooks/useToast';
 import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
+import { parseProgramNames } from '@/utils/studentPrograms';
 
 const BELT_COLORS: Record<string, string> = {
   white: 'bg-gray-100 text-gray-800 border-gray-300',
@@ -212,17 +213,14 @@ export default function StudentProfileCard() {
     });
   });
 
-  const fallbackProgram = (student.program || '').trim();
-  if (
-    fallbackProgram &&
-    fallbackProgram.toLowerCase() !== 'unassigned' &&
-    !programMap.has(fallbackProgram.toLowerCase())
-  ) {
+  const fallbackPrograms = parseProgramNames(student.program);
+  fallbackPrograms.forEach((fallbackProgram, index) => {
+    if (programMap.has(fallbackProgram.toLowerCase())) return;
     programMap.set(fallbackProgram.toLowerCase(), {
       program_name: fallbackProgram,
-      is_primary: programMap.size === 0,
+      is_primary: programMap.size === 0 && index === 0,
     });
-  }
+  });
 
   const programsToShow = Array.from(programMap.values()).sort(
     (a, b) => Number(b.is_primary) - Number(a.is_primary)
