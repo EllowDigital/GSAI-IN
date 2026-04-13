@@ -280,6 +280,9 @@ export default function StudentModal({
     return Array.from(programMap.values());
   };
 
+  const normalizeProgramKey = (programName?: string | null) =>
+    (programName || '').trim().toLowerCase();
+
   const syncStudentPrograms = async ({
     studentId,
     primaryProgram,
@@ -313,9 +316,26 @@ export default function StudentModal({
 
     if (existingRowsError) throw existingRowsError;
 
+    const existingProgramByKey = new Map<string, string>();
+    (existingRows || []).forEach((row) => {
+      const rawProgram = (row.program_name || '').toString().trim();
+      const key = normalizeProgramKey(rawProgram);
+      if (!key || existingProgramByKey.has(key)) return;
+      existingProgramByKey.set(key, rawProgram);
+    });
+
+    // Preserve existing DB casing for case-insensitive matches to avoid
+    // creating duplicate rows on case-sensitive conflict keys.
+    const canonicalDesiredPrograms = dedupeProgramsCaseInsensitive(
+      desiredPrograms.map((programName) => {
+        const key = normalizeProgramKey(programName);
+        return existingProgramByKey.get(key) || programName;
+      })
+    );
+
     const joinedAtByProgramKey = new Map<string, string>();
     (existingRows || []).forEach((row) => {
-      const key = sanitizeText((row.program_name || '').trim()).toLowerCase();
+      const key = normalizeProgramKey(row.program_name);
       if (!key || joinedAtByProgramKey.has(key)) return;
       joinedAtByProgramKey.set(
         key,
@@ -323,13 +343,13 @@ export default function StudentModal({
       );
     });
 
-    const rowsToUpsert = desiredPrograms.map((programName) => {
-      const key = programName.toLowerCase();
+    const rowsToUpsert = canonicalDesiredPrograms.map((programName) => {
+      const key = normalizeProgramKey(programName);
       return {
         student_id: studentId,
         program_name: programName,
         joined_at: joinedAtByProgramKey.get(key) || normalizedJoinDate,
-        is_primary: programName.toLowerCase() === primaryProgram.toLowerCase(),
+        is_primary: key === normalizeProgramKey(primaryProgram),
       };
     });
 
@@ -340,13 +360,17 @@ export default function StudentModal({
     if (upsertProgramsError) throw upsertProgramsError;
 
     const desiredKeys = new Set(
-      desiredPrograms.map((programName) => programName.toLowerCase())
+      canonicalDesiredPrograms.map((programName) =>
+        normalizeProgramKey(programName)
+      )
     );
 
     const programsToDelete = (existingRows || [])
-      .map((row) => sanitizeText((row.program_name || '').trim()))
+      .map((row) => (row.program_name || '').toString())
       .filter(Boolean)
-      .filter((programName) => !desiredKeys.has(programName.toLowerCase()));
+      .filter(
+        (programName) => !desiredKeys.has(normalizeProgramKey(programName))
+      );
 
     if (programsToDelete.length > 0) {
       const { error: deleteRemovedError } = await supabase
@@ -398,7 +422,7 @@ export default function StudentModal({
       )
     );
     const missingPrograms = desiredPrograms.filter(
-      (programName) => !finalSet.has(programName.toLowerCase())
+      (programName) => !finalSet.has(normalizeProgramKey(programName))
     );
     if (missingPrograms.length > 0) {
       throw new Error(
