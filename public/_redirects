@@ -21,6 +21,8 @@ http://www.ghatakgsai.netlify.app/* https://ghataksportsacademy.com/:splat 301!
 # Canonical route consolidation for home-section aliases.
 /contact / 301
 /corporate / 301
+/event /events 301
+/event/ /events 301
 
 # SPA fallback - must be last
 /* /index.html 200

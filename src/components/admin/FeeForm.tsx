@@ -99,12 +99,27 @@ export function FeeForm({
 
   const studentProgramOptions = React.useMemo(() => {
     const fromJunction = enrolledPrograms
-      .map((program: any) => (program?.program_name || '').trim())
+      .map((program: any) => normalizeProgramName(program?.program_name || ''))
       .filter(Boolean);
-    const fromFallback = parseProgramNames(student?.program);
-    const merged = Array.from(new Set([...fromJunction, ...fromFallback]));
+    const fromFallback = parseProgramNames(student?.program).map((name) =>
+      normalizeProgramName(name)
+    );
+
+    const canonicalPrograms = new Map<string, string>();
+    [...fromJunction, ...fromFallback].forEach((programName) => {
+      const normalizedProgramName = normalizeProgramName(
+        (programName || '').trim()
+      );
+      if (!normalizedProgramName) return;
+      const key = normalizedProgramName.toLowerCase();
+      if (!canonicalPrograms.has(key)) {
+        canonicalPrograms.set(key, normalizedProgramName);
+      }
+    });
+
+    const merged = Array.from(canonicalPrograms.values());
     if (merged.length > 0) return merged;
-    return [initialProgramName || 'General'];
+    return [normalizeProgramName(initialProgramName || 'General')];
   }, [enrolledPrograms, student?.program, initialProgramName]);
 
   React.useEffect(() => {
@@ -218,7 +233,7 @@ export function FeeForm({
     },
   });
 
-  // Reset form when fee/student/programFee changes
+  // Reset entire form only when switching to another record/student.
   React.useEffect(() => {
     const effectiveFee = fee?.monthly_fee ?? discountedFee;
     form.reset({
@@ -229,7 +244,14 @@ export function FeeForm({
       status_override: fee?.status || 'auto',
       save_as_default: false,
     });
-  }, [fee, student, discountedFee, selectedProgramName, customProgramFee]);
+  }, [fee, student, discountedFee, form]);
+
+  // When creating a new row, keep user-entered fields and only refresh monthly_fee
+  // if pricing context changes due to selected program or override changes.
+  React.useEffect(() => {
+    if (fee?.id) return;
+    form.setValue('monthly_fee', discountedFee, { shouldDirty: false });
+  }, [fee?.id, discountedFee, selectedProgramName, customProgramFee, form]);
 
   const receiptUrlWatched = useWatch({
     control: form.control,

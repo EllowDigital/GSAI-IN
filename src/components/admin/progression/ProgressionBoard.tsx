@@ -1316,7 +1316,10 @@ export default function ProgressionBoard() {
                   joined_at: new Date().toISOString().slice(0, 10),
                   is_primary: false,
                 },
-                { onConflict: 'student_id,program_name' }
+                {
+                  onConflict: 'student_id,program_name',
+                  ignoreDuplicates: true,
+                }
               );
             }
 
@@ -1354,7 +1357,10 @@ export default function ProgressionBoard() {
                   joined_at: new Date().toISOString().slice(0, 10),
                   is_primary: false,
                 },
-                { onConflict: 'student_id,program_name' }
+                {
+                  onConflict: 'student_id,program_name',
+                  ignoreDuplicates: true,
+                }
               );
             }
             await assignStudent(payload);

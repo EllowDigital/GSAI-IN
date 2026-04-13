@@ -265,6 +265,21 @@ export default function StudentModal({
     return asDate.toISOString().slice(0, 10);
   };
 
+  const dedupeProgramsCaseInsensitive = (programNames: string[]) => {
+    const programMap = new Map<string, string>();
+    programNames
+      .map((programName) => sanitizeText((programName || '').trim()))
+      .filter(Boolean)
+      .forEach((programName) => {
+        const key = programName.toLowerCase();
+        if (!programMap.has(key)) {
+          programMap.set(key, programName);
+        }
+      });
+
+    return Array.from(programMap.values());
+  };
+
   const syncStudentPrograms = async ({
     studentId,
     primaryProgram,
@@ -277,37 +292,71 @@ export default function StudentModal({
     additionalProgramNames: string[];
   }) => {
     const normalizedJoinDate = normalizeJoinDate(joinDate);
-    const desiredPrograms = Array.from(
-      new Set(
-        [primaryProgram, ...additionalProgramNames]
-          .map((program) => sanitizeText((program || '').trim()))
-          .filter(Boolean)
-      )
-    );
+    const desiredPrograms = dedupeProgramsCaseInsensitive([
+      primaryProgram,
+      ...additionalProgramNames,
+    ]);
 
-    if (!desiredPrograms.includes(primaryProgram)) {
+    if (
+      !desiredPrograms.some(
+        (programName) =>
+          programName.toLowerCase() === primaryProgram.toLowerCase()
+      )
+    ) {
       desiredPrograms.unshift(primaryProgram);
     }
 
-    const { error: clearProgramsError } = await supabase
+    const { data: existingRows, error: existingRowsError } = await supabase
       .from('student_programs')
-      .delete()
+      .select('program_name, joined_at')
       .eq('student_id', studentId);
 
-    if (clearProgramsError) throw clearProgramsError;
+    if (existingRowsError) throw existingRowsError;
 
-    const rowsToInsert = desiredPrograms.map((programName) => ({
-      student_id: studentId,
-      program_name: programName,
-      joined_at: normalizedJoinDate,
-      is_primary: programName.toLowerCase() === primaryProgram.toLowerCase(),
-    }));
+    const joinedAtByProgramKey = new Map<string, string>();
+    (existingRows || []).forEach((row) => {
+      const key = sanitizeText((row.program_name || '').trim()).toLowerCase();
+      if (!key || joinedAtByProgramKey.has(key)) return;
+      joinedAtByProgramKey.set(
+        key,
+        normalizeJoinDate(row.joined_at || normalizedJoinDate)
+      );
+    });
 
-    const { error: insertProgramsError } = await supabase
+    const rowsToUpsert = desiredPrograms.map((programName) => {
+      const key = programName.toLowerCase();
+      return {
+        student_id: studentId,
+        program_name: programName,
+        joined_at: joinedAtByProgramKey.get(key) || normalizedJoinDate,
+        is_primary: programName.toLowerCase() === primaryProgram.toLowerCase(),
+      };
+    });
+
+    const { error: upsertProgramsError } = await supabase
       .from('student_programs')
-      .insert(rowsToInsert);
+      .upsert(rowsToUpsert, { onConflict: 'student_id,program_name' });
 
-    if (insertProgramsError) throw insertProgramsError;
+    if (upsertProgramsError) throw upsertProgramsError;
+
+    const desiredKeys = new Set(
+      desiredPrograms.map((programName) => programName.toLowerCase())
+    );
+
+    const programsToDelete = (existingRows || [])
+      .map((row) => sanitizeText((row.program_name || '').trim()))
+      .filter(Boolean)
+      .filter((programName) => !desiredKeys.has(programName.toLowerCase()));
+
+    if (programsToDelete.length > 0) {
+      const { error: deleteRemovedError } = await supabase
+        .from('student_programs')
+        .delete()
+        .eq('student_id', studentId)
+        .in('program_name', programsToDelete);
+
+      if (deleteRemovedError) throw deleteRemovedError;
+    }
 
     const { data: finalRows, error: finalRowsError } = await supabase
       .from('student_programs')
@@ -394,17 +443,15 @@ export default function StudentModal({
     }
 
     const { data: result, error } = await safeAsync(async () => {
-      const stagedAdditionalPrograms = Array.from(
-        new Set(
-          additionalPrograms
-            .map((programName) => sanitizeText((programName || '').trim()))
-            .filter(
-              (programName) =>
-                Boolean(programName) &&
-                programName.toLowerCase() !==
-                  sanitizedValues.program.toLowerCase()
-            )
-        )
+      const stagedAdditionalPrograms = dedupeProgramsCaseInsensitive(
+        additionalPrograms
+          .map((programName) => sanitizeText((programName || '').trim()))
+          .filter(
+            (programName) =>
+              Boolean(programName) &&
+              programName.toLowerCase() !==
+                sanitizedValues.program.toLowerCase()
+          )
       );
 
       if (!student) {

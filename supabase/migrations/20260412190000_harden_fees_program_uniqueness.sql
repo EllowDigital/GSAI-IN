@@ -1,5 +1,7 @@
 -- Normalize and enforce case-insensitive uniqueness for fee records.
 
+CREATE EXTENSION IF NOT EXISTS citext;
+
 -- 1) Normalize program names.
 UPDATE public.fees
 SET program_name = BTRIM(program_name)
@@ -25,10 +27,15 @@ USING ranked r
 WHERE f.id = r.id
   AND r.rn > 1;
 
--- 3) Replace case-sensitive unique index with case-insensitive functional unique index.
+-- 3) Use CITEXT-backed column uniqueness so ON CONFLICT can target raw columns.
 DROP INDEX IF EXISTS public.fees_student_month_year_program_idx;
-CREATE UNIQUE INDEX IF NOT EXISTS fees_student_month_year_program_ci_idx
-ON public.fees (student_id, month, year, LOWER(BTRIM(program_name)));
+DROP INDEX IF EXISTS public.fees_student_month_year_program_ci_idx;
+
+ALTER TABLE public.fees
+ALTER COLUMN program_name TYPE citext USING BTRIM(program_name)::citext;
+
+CREATE UNIQUE INDEX IF NOT EXISTS fees_student_month_year_program_idx
+ON public.fees (student_id, month, year, program_name);
 
 -- 4) Normalize and dedupe custom override table similarly.
 UPDATE public.student_program_fee_overrides
@@ -49,5 +56,10 @@ USING ranked_overrides r
 WHERE o.id = r.id
   AND r.rn > 1;
 
-CREATE UNIQUE INDEX IF NOT EXISTS student_program_fee_overrides_student_program_ci_idx
-ON public.student_program_fee_overrides (student_id, LOWER(BTRIM(program_name)));
+DROP INDEX IF EXISTS public.student_program_fee_overrides_student_program_ci_idx;
+
+ALTER TABLE public.student_program_fee_overrides
+ALTER COLUMN program_name TYPE citext USING BTRIM(program_name)::citext;
+
+CREATE UNIQUE INDEX IF NOT EXISTS student_program_fee_overrides_student_program_idx
+ON public.student_program_fee_overrides (student_id, program_name);

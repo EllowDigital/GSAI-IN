@@ -18,6 +18,7 @@ import { exportFeesToCsv } from '@/utils/exportToCsv';
 type FeeRow = {
   id: string;
   student_id: string;
+  program_name: string;
   month: number;
   year: number;
   monthly_fee: number;
@@ -53,14 +54,16 @@ export default function FeeHistoryLogPanel() {
       yearFilter,
       fromDate,
       toDate,
+      query,
       page,
       pageSize,
     ],
     queryFn: async () => {
+      const normalizedQuery = query.trim().toLowerCase();
       let queryBuilder = supabase
         .from('fees')
         .select(
-          'id,student_id,month,year,monthly_fee,paid_amount,balance_due,status,created_at',
+          'id,student_id,program_name,month,year,monthly_fee,paid_amount,balance_due,status,created_at',
           { count: 'exact' }
         );
 
@@ -80,6 +83,43 @@ export default function FeeHistoryLogPanel() {
       if (toDate) {
         const toIso = new Date(`${toDate}T23:59:59.999`).toISOString();
         queryBuilder = queryBuilder.lte('created_at', toIso);
+      }
+
+      if (normalizedQuery) {
+        const monthYearMatch = normalizedQuery.match(
+          /^(\d{1,2})\s*\/\s*(\d{4})$/
+        );
+
+        if (monthYearMatch) {
+          const qMonth = Number(monthYearMatch[1]);
+          const qYear = Number(monthYearMatch[2]);
+          if (qMonth >= 1 && qMonth <= 12) {
+            queryBuilder = queryBuilder.eq('month', qMonth).eq('year', qYear);
+          }
+        } else if (/^\d{4}$/.test(normalizedQuery)) {
+          queryBuilder = queryBuilder.eq('year', Number(normalizedQuery));
+        } else {
+          const queryToken = normalizedQuery.replace(/[(),]/g, ' ').trim();
+          const { data: matchedStudents } = await supabase
+            .from('students')
+            .select('id')
+            .ilike('name', `%${queryToken}%`)
+            .limit(200);
+
+          const matchedIds = (matchedStudents || []).map((row: any) => row.id);
+          const idList = matchedIds.map((id) => `"${id}"`).join(',');
+
+          if (matchedIds.length > 0) {
+            queryBuilder = queryBuilder.or(
+              `program_name.ilike.%${queryToken}%,student_id.in.(${idList})`
+            );
+          } else {
+            queryBuilder = queryBuilder.ilike(
+              'program_name',
+              `%${queryToken}%`
+            );
+          }
+        }
       }
 
       const { data, error, count } = await queryBuilder
@@ -147,23 +187,7 @@ export default function FeeHistoryLogPanel() {
   }, [students]);
 
   const normalizedQuery = query.trim().toLowerCase();
-
-  const filteredRows = useMemo(() => {
-    return fees.filter((row) => {
-      if (!normalizedQuery) return true;
-
-      const student = studentMap.get(row.student_id);
-      const studentName = (student?.name || '').toLowerCase();
-      const program = (student?.program || '').toLowerCase();
-      const monthYear = `${row.month}/${row.year}`;
-
-      return (
-        studentName.includes(normalizedQuery) ||
-        program.includes(normalizedQuery) ||
-        monthYear.includes(normalizedQuery)
-      );
-    });
-  }, [fees, normalizedQuery, studentMap]);
+  const filteredRows = fees;
 
   const snapshot = useMemo(() => {
     const total = totalCount;
@@ -186,7 +210,7 @@ export default function FeeHistoryLogPanel() {
     return {
       student: {
         name: student?.name || 'Unknown Student',
-        program: student?.program || '-',
+        program: row.program_name || '-',
       },
       fee: row,
     };
@@ -376,7 +400,7 @@ export default function FeeHistoryLogPanel() {
                           {student?.name || 'Unknown Student'}
                         </td>
                         <td className="px-3 py-2.5 text-muted-foreground">
-                          {student?.program || '-'}
+                          {row.program_name || '-'}
                         </td>
                         <td className="px-3 py-2.5">
                           {row.month}/{row.year}
@@ -416,7 +440,10 @@ export default function FeeHistoryLogPanel() {
           <div className="flex flex-col gap-2 border border-border/60 rounded-xl p-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-muted-foreground">
               Showing {filteredRows.length} rows on page {currentPage} of{' '}
-              {totalPages}. Total matching logs: {totalCount}
+              {totalPages}.
+              {normalizedQuery
+                ? ` Total matching logs: ${totalCount}`
+                : ` Total logs: ${totalCount}`}
             </p>
 
             <div className="flex flex-wrap items-center gap-2">
