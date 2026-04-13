@@ -449,7 +449,8 @@ export default function StudentModal({
           .filter(
             (programName) =>
               Boolean(programName) &&
-              programName.toLowerCase() !== sanitizedValues.program.toLowerCase()
+              programName.toLowerCase() !==
+                sanitizedValues.program.toLowerCase()
           )
       );
 

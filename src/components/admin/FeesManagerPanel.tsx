@@ -175,10 +175,10 @@ export default function FeesManagerPanel({
       const normalizedProgramMap = new Map<string, string>();
 
       (junctionByStudent.get(student.id) || []).forEach((name) => {
-          const key = programKey(name);
-          if (!key || normalizedProgramMap.has(key)) return;
-          normalizedProgramMap.set(key, normalizeProgramName(name));
-        });
+        const key = programKey(name);
+        if (!key || normalizedProgramMap.has(key)) return;
+        normalizedProgramMap.set(key, normalizeProgramName(name));
+      });
 
       parseProgramNames(student.program).forEach((name) => {
         const key = programKey(name);
@@ -325,8 +325,9 @@ export default function FeesManagerPanel({
       const records: Array<Record<string, unknown>> = [];
 
       students.forEach((student) => {
-        const studentPrograms =
-          studentProgramsByStudentId.get(student.id) || ['General'];
+        const studentPrograms = studentProgramsByStudentId.get(student.id) || [
+          'General',
+        ];
 
         studentPrograms.forEach((programName) => {
           const normalizedProgram = normalizeProgramName(programName);
@@ -424,8 +425,9 @@ export default function FeesManagerPanel({
   const rows = Array.isArray(students)
     ? students
         .flatMap((student) => {
-          const programList =
-            studentProgramsByStudentId.get(student.id) || ['General'];
+          const programList = studentProgramsByStudentId.get(student.id) || [
+            'General',
+          ];
 
           return programList.map((programName) => {
             const normalizedProgram = normalizeProgramName(programName);

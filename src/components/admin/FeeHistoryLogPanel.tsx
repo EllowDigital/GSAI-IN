@@ -86,7 +86,9 @@ export default function FeeHistoryLogPanel() {
       }
 
       if (normalizedQuery) {
-        const monthYearMatch = normalizedQuery.match(/^(\d{1,2})\s*\/\s*(\d{4})$/);
+        const monthYearMatch = normalizedQuery.match(
+          /^(\d{1,2})\s*\/\s*(\d{4})$/
+        );
 
         if (monthYearMatch) {
           const qMonth = Number(monthYearMatch[1]);
@@ -112,7 +114,10 @@ export default function FeeHistoryLogPanel() {
               `program_name.ilike.%${queryToken}%,student_id.in.(${idList})`
             );
           } else {
-            queryBuilder = queryBuilder.ilike('program_name', `%${queryToken}%`);
+            queryBuilder = queryBuilder.ilike(
+              'program_name',
+              `%${queryToken}%`
+            );
           }
         }
       }
