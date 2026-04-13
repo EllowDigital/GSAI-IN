@@ -159,15 +159,22 @@ export default function FeesManagerPanel({
 
   const studentProgramsByStudentId = useMemo(() => {
     const map = new Map<string, string[]>();
+    const junctionByStudent = new Map<string, string[]>();
+
+    allStudentPrograms.forEach((programRow: any) => {
+      const studentId = String(programRow.student_id || '');
+      if (!studentId) return;
+      const normalizedName = normalizeProgramName(programRow.program_name);
+      if (!normalizedName) return;
+      const existing = junctionByStudent.get(studentId) || [];
+      existing.push(normalizedName);
+      junctionByStudent.set(studentId, existing);
+    });
 
     (students || []).forEach((student) => {
       const normalizedProgramMap = new Map<string, string>();
 
-      allStudentPrograms
-        .filter((programRow: any) => programRow.student_id === student.id)
-        .map((programRow: any) => normalizeProgramName(programRow.program_name))
-        .filter(Boolean)
-        .forEach((name) => {
+      (junctionByStudent.get(student.id) || []).forEach((name) => {
           const key = programKey(name);
           if (!key || normalizedProgramMap.has(key)) return;
           normalizedProgramMap.set(key, normalizeProgramName(name));
