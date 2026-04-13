@@ -97,23 +97,22 @@ export default function FeeHistoryLogPanel() {
         } else if (/^\d{4}$/.test(normalizedQuery)) {
           queryBuilder = queryBuilder.eq('year', Number(normalizedQuery));
         } else {
+          const queryToken = normalizedQuery.replace(/[(),]/g, ' ').trim();
           const { data: matchedStudents } = await supabase
             .from('students')
             .select('id')
-            .ilike('name', `%${normalizedQuery}%`)
+            .ilike('name', `%${queryToken}%`)
             .limit(200);
 
           const matchedIds = (matchedStudents || []).map((row: any) => row.id);
+          const idList = matchedIds.map((id) => `"${id}"`).join(',');
 
           if (matchedIds.length > 0) {
             queryBuilder = queryBuilder.or(
-              `program_name.ilike.%${normalizedQuery}%,student_id.in.(${matchedIds.join(',')})`
+              `program_name.ilike.%${queryToken}%,student_id.in.(${idList})`
             );
           } else {
-            queryBuilder = queryBuilder.ilike(
-              'program_name',
-              `%${normalizedQuery}%`
-            );
+            queryBuilder = queryBuilder.ilike('program_name', `%${queryToken}%`);
           }
         }
       }

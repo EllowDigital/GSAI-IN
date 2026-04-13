@@ -157,6 +157,35 @@ export default function FeesManagerPanel({
     staleTime: 1000 * 60 * 5,
   });
 
+  const studentProgramsByStudentId = useMemo(() => {
+    const map = new Map<string, string[]>();
+
+    (students || []).forEach((student) => {
+      const normalizedProgramMap = new Map<string, string>();
+
+      allStudentPrograms
+        .filter((programRow: any) => programRow.student_id === student.id)
+        .map((programRow: any) => normalizeProgramName(programRow.program_name))
+        .filter(Boolean)
+        .forEach((name) => {
+          const key = programKey(name);
+          if (!key || normalizedProgramMap.has(key)) return;
+          normalizedProgramMap.set(key, normalizeProgramName(name));
+        });
+
+      parseProgramNames(student.program).forEach((name) => {
+        const key = programKey(name);
+        if (!key || normalizedProgramMap.has(key)) return;
+        normalizedProgramMap.set(key, normalizeProgramName(name));
+      });
+
+      const programList = Array.from(normalizedProgramMap.values());
+      map.set(student.id, programList.length > 0 ? programList : ['General']);
+    });
+
+    return map;
+  }, [allStudentPrograms, students]);
+
   const { data: feeOverrides = [] } = useQuery({
     queryKey: ['student-program-fee-overrides'],
     queryFn: async () => {
@@ -177,6 +206,17 @@ export default function FeesManagerPanel({
     });
     return map;
   }, [feeOverrides]);
+
+  const feeByRowKey = useMemo(() => {
+    const map = new Map<string, any>();
+    (fees || []).forEach((feeRow: any) => {
+      const key = `${feeRow.student_id}::${programKey(feeRow.program_name || 'General')}`;
+      if (!map.has(key)) {
+        map.set(key, feeRow);
+      }
+    });
+    return map;
+  }, [fees]);
 
   // All fees for history drawer
   const { data: allFees } = useQuery({
@@ -268,35 +308,6 @@ export default function FeesManagerPanel({
         throw new Error('No students found');
       }
 
-      const programMap = new Map<string, string[]>();
-
-      students.forEach((student) => {
-        const normalizedProgramMap = new Map<string, string>();
-
-        const fromJunction = allStudentPrograms
-          .filter((programRow: any) => programRow.student_id === student.id)
-          .map((programRow: any) =>
-            normalizeProgramName(programRow.program_name)
-          )
-          .filter(Boolean);
-
-        const fallback = parseProgramNames(student.program);
-
-        [...fromJunction, ...fallback].forEach((name) => {
-          const key = programKey(name);
-          if (!key) return;
-          if (!normalizedProgramMap.has(key)) {
-            normalizedProgramMap.set(key, normalizeProgramName(name));
-          }
-        });
-
-        const allPrograms = Array.from(normalizedProgramMap.values());
-        programMap.set(
-          student.id,
-          allPrograms.length > 0 ? allPrograms : ['General']
-        );
-      });
-
       const existingFeeKeys = new Set(
         (fees || []).map(
           (feeRow) =>
@@ -307,7 +318,8 @@ export default function FeesManagerPanel({
       const records: Array<Record<string, unknown>> = [];
 
       students.forEach((student) => {
-        const studentPrograms = programMap.get(student.id) || ['General'];
+        const studentPrograms =
+          studentProgramsByStudentId.get(student.id) || ['General'];
 
         studentPrograms.forEach((programName) => {
           const normalizedProgram = normalizeProgramName(programName);
@@ -405,37 +417,14 @@ export default function FeesManagerPanel({
   const rows = Array.isArray(students)
     ? students
         .flatMap((student) => {
-          const normalizedProgramMap = new Map<string, string>();
-
-          const fromJunction = allStudentPrograms
-            .filter((programRow: any) => programRow.student_id === student.id)
-            .map((programRow: any) =>
-              normalizeProgramName(programRow.program_name)
-            )
-            .filter(Boolean);
-
-          const fallbackPrograms = parseProgramNames(student.program);
-
-          [...fromJunction, ...fallbackPrograms].forEach((name) => {
-            const key = programKey(name);
-            if (!key) return;
-            if (!normalizedProgramMap.has(key)) {
-              normalizedProgramMap.set(key, normalizeProgramName(name));
-            }
-          });
-
-          const studentPrograms = Array.from(normalizedProgramMap.values());
           const programList =
-            studentPrograms.length > 0 ? studentPrograms : ['General'];
+            studentProgramsByStudentId.get(student.id) || ['General'];
 
           return programList.map((programName) => {
             const normalizedProgram = normalizeProgramName(programName);
             const fee =
-              fees?.find(
-                (feeRow) =>
-                  feeRow.student_id === student.id &&
-                  programKey(feeRow.program_name) ===
-                    programKey(normalizedProgram)
+              feeByRowKey.get(
+                `${student.id}::${programKey(normalizedProgram)}`
               ) || null;
             const reminderEmail = emailByStudentId.get(student.id) || null;
 
