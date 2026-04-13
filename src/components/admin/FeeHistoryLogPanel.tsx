@@ -26,6 +26,7 @@ type FeeRow = {
   balance_due: number;
   status: string;
   created_at: string;
+  students?: StudentLite | null;
 };
 
 type StudentLite = {
@@ -63,7 +64,7 @@ export default function FeeHistoryLogPanel() {
       let queryBuilder = supabase
         .from('fees')
         .select(
-          'id,student_id,program_name,month,year,monthly_fee,paid_amount,balance_due,status,created_at',
+          'id,student_id,program_name,month,year,monthly_fee,paid_amount,balance_due,status,created_at,students(name,program)',
           { count: 'exact' }
         );
 
@@ -100,25 +101,9 @@ export default function FeeHistoryLogPanel() {
           queryBuilder = queryBuilder.eq('year', Number(normalizedQuery));
         } else {
           const queryToken = normalizedQuery.replace(/[(),]/g, ' ').trim();
-          const { data: matchedStudents } = await supabase
-            .from('students')
-            .select('id')
-            .ilike('name', `%${queryToken}%`)
-            .limit(200);
-
-          const matchedIds = (matchedStudents || []).map((row: any) => row.id);
-          const idList = matchedIds.map((id) => `"${id}"`).join(',');
-
-          if (matchedIds.length > 0) {
-            queryBuilder = queryBuilder.or(
-              `program_name.ilike.%${queryToken}%,student_id.in.(${idList})`
-            );
-          } else {
-            queryBuilder = queryBuilder.ilike(
-              'program_name',
-              `%${queryToken}%`
-            );
-          }
+          queryBuilder = queryBuilder.or(
+            `program_name.ilike.%${queryToken}%,students.name.ilike.%${queryToken}%`
+          );
         }
       }
 
@@ -164,28 +149,6 @@ export default function FeeHistoryLogPanel() {
     [fees]
   );
 
-  const { data: students = [] } = useQuery({
-    queryKey: ['students', 'fee-history-lite', studentIds.join(',')],
-    queryFn: async () => {
-      if (studentIds.length === 0) return [] as StudentLite[];
-
-      const { data, error } = await supabase
-        .from('students')
-        .select('id,name,program')
-        .in('id', studentIds);
-
-      if (error) throw error;
-      return (data || []) as StudentLite[];
-    },
-    enabled: studentIds.length > 0,
-  });
-
-  const studentMap = useMemo(() => {
-    const map = new Map<string, StudentLite>();
-    for (const s of students) map.set(s.id, s);
-    return map;
-  }, [students]);
-
   const normalizedQuery = query.trim().toLowerCase();
   const filteredRows = fees;
 
@@ -206,7 +169,7 @@ export default function FeeHistoryLogPanel() {
   }, [filteredRows, totalCount]);
 
   const exportRows = filteredRows.map((row) => {
-    const student = studentMap.get(row.student_id);
+    const student = row.students;
     return {
       student: {
         name: student?.name || 'Unknown Student',
@@ -385,7 +348,7 @@ export default function FeeHistoryLogPanel() {
                   </tr>
                 ) : (
                   filteredRows.map((row) => {
-                    const student = studentMap.get(row.student_id);
+                    const student = row.students;
                     const status = (row.status || 'unpaid').toLowerCase();
                     const badgeClass =
                       status === 'paid'
