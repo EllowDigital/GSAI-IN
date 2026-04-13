@@ -368,7 +368,9 @@ export default function StudentModal({
     const programsToDelete = (existingRows || [])
       .map((row) => (row.program_name || '').toString())
       .filter(Boolean)
-      .filter((programName) => !desiredKeys.has(normalizeProgramKey(programName)));
+      .filter(
+        (programName) => !desiredKeys.has(normalizeProgramKey(programName))
+      );
 
     if (programsToDelete.length > 0) {
       const { error: deleteRemovedError } = await supabase
