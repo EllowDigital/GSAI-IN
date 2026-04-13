@@ -21,16 +21,6 @@ SITE_URL = "${DEPLOY_PRIME_URL}"
 LOVABLE_DEV_SERVER = "true"
 
 [[redirects]]
-from = "/event"
-to = "/events"
-status = 301
-
-[[redirects]]
-from = "/event/"
-to = "/events"
-status = 301
-
-[[redirects]]
 from = "/*"
 to = "/index.html"
 status = 200

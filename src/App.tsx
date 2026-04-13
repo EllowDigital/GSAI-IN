@@ -359,6 +359,10 @@ const App = () => {
                       path="/event"
                       element={<Navigate to="/events" replace />}
                     />
+                    <Route
+                      path="/event/"
+                      element={<Navigate to="/events" replace />}
+                    />
                     <Route path="/events" element={<AllEventsPage />} />
                     <Route path="/news" element={<AllNewsPage />} />
                     <Route path="/blogs" element={<AllBlogsPage />} />
