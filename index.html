@@ -17,9 +17,16 @@
     (function (w, d, s, l, i) {
       var loaded = false;
 
+      function removeInteractionListeners() {
+        w.removeEventListener('pointerdown', onFirstInteraction, false);
+        w.removeEventListener('scroll', onFirstInteraction, false);
+        w.removeEventListener('keydown', onFirstInteraction, false);
+      }
+
       function loadGtm() {
         if (loaded) return;
         loaded = true;
+        removeInteractionListeners();
 
         w[l] = w[l] || [];
         w[l].push({
@@ -37,9 +44,7 @@
 
       var onFirstInteraction = function () {
         loadGtm();
-        w.removeEventListener('pointerdown', onFirstInteraction, { passive: true });
-        w.removeEventListener('scroll', onFirstInteraction, { passive: true });
-        w.removeEventListener('keydown', onFirstInteraction, { passive: true });
+        removeInteractionListeners();
       };
 
       w.addEventListener('pointerdown', onFirstInteraction, { passive: true, once: true });
@@ -177,7 +182,15 @@
   <!-- ============================== -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://www.googletagmanager.com" />
+  <link rel="preconnect" href="https://www.clarity.ms" />
+  <link rel="preconnect" href="https://scripts.clarity.ms" />
+  <link rel="preconnect" href="https://jddeuhrocglnisujixdt.supabase.co" crossorigin />
   <link rel="dns-prefetch" href="https://ghataksportsacademy.com" />
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+  <link rel="dns-prefetch" href="https://www.clarity.ms" />
+  <link rel="dns-prefetch" href="https://scripts.clarity.ms" />
+  <link rel="dns-prefetch" href="https://jddeuhrocglnisujixdt.supabase.co" />
 
   <!-- ============================== -->
   <!-- 📊 Structured Data: Organization -->

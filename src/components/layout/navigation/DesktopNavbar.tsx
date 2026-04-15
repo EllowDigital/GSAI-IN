@@ -17,9 +17,9 @@ export function DesktopNavbar() {
           <img
             src="/icons/favicon-32x32.png"
             alt="Ghatak Sports Academy India"
-            width={40}
-            height={40}
-            className="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-[0_0_8px_rgba(234,179,8,0.3)]"
+            width={32}
+            height={32}
+            className="h-8 w-auto object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-[0_0_8px_rgba(234,179,8,0.3)]"
             loading="eager"
             decoding="async"
           />
