@@ -1,4 +1,11 @@
-import { lazy, Suspense } from 'react';
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import Seo from '@/components/seo/Seo';
 import Navbar from '@/components/layout/Navbar';
 
@@ -36,6 +43,56 @@ const RecognitionAffiliationsSection = lazy(
 
 function SectionSkeleton() {
   return <div className="min-h-[220px] w-full" aria-hidden="true" />;
+}
+
+function DeferredSection({
+  children,
+  minHeight = 220,
+}: {
+  children: ReactNode;
+  minHeight?: number;
+}) {
+  const hostRef = useRef<HTMLDivElement | null>(null);
+  const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    if (shouldRender) return;
+
+    const target = hostRef.current;
+    if (!target || typeof IntersectionObserver === 'undefined') {
+      setShouldRender(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting) {
+          setShouldRender(true);
+          observer.disconnect();
+        }
+      },
+      {
+        // Start loading before section enters viewport to avoid visible pop-in.
+        rootMargin: '400px 0px',
+        threshold: 0.01,
+      }
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [shouldRender]);
+
+  return (
+    <div
+      ref={hostRef}
+      style={{ minHeight: `${minHeight}px` }}
+      className="w-full"
+      data-deferred-section="true"
+    >
+      {shouldRender ? <Suspense fallback={<SectionSkeleton />}>{children}</Suspense> : <SectionSkeleton />}
+    </div>
+  );
 }
 
 // Structured data for SEO rich snippets
@@ -600,22 +657,48 @@ export default function Index() {
       <main className="flex-1 flex flex-col gap-0" role="main">
         <HeroSection />
         <AboutSection />
-        <Suspense fallback={<SectionSkeleton />}>
+        <DeferredSection minHeight={280}>
           <FounderSection />
+        </DeferredSection>
+        <DeferredSection minHeight={280}>
           <ProgramsSection />
+        </DeferredSection>
+        <DeferredSection minHeight={260}>
           <AchievementSection />
+        </DeferredSection>
+        <DeferredSection minHeight={260}>
           <CompetitionResultsSection />
+        </DeferredSection>
+        <DeferredSection minHeight={260}>
           <UpcomingCompetitionsSection />
+        </DeferredSection>
+        <DeferredSection minHeight={320}>
           <GallerySection />
+        </DeferredSection>
+        <DeferredSection minHeight={260}>
           <TestimonialSection />
+        </DeferredSection>
+        <DeferredSection minHeight={280}>
           <EventsSection />
+        </DeferredSection>
+        <DeferredSection minHeight={280}>
           <NewsSection />
+        </DeferredSection>
+        <DeferredSection minHeight={280}>
           <BlogNewsSection />
+        </DeferredSection>
+        <DeferredSection minHeight={260}>
           <FaqSection />
+        </DeferredSection>
+        <DeferredSection minHeight={280}>
           <LocationSection />
+        </DeferredSection>
+        <DeferredSection minHeight={320}>
           <ContactSection />
+        </DeferredSection>
+        <DeferredSection minHeight={260}>
           <RecognitionAffiliationsSection />
-        </Suspense>
+        </DeferredSection>
       </main>
 
       {/* Footer */}
