@@ -7,6 +7,22 @@ import { BrowserRouter } from 'react-router-dom';
 import { syncManifestForPath } from '@/utils/pwa';
 import { initializeClarity } from '@/utils/clarity';
 
+const runWhenIdle = (task: () => void, fallbackDelay = 150) => {
+  if ('requestIdleCallback' in window) {
+    (
+      window as Window & {
+        requestIdleCallback: (
+          callback: IdleRequestCallback,
+          options?: IdleRequestOptions
+        ) => number;
+      }
+    ).requestIdleCallback(() => task(), { timeout: fallbackDelay + 2000 });
+    return;
+  }
+
+  window.setTimeout(task, fallbackDelay);
+};
+
 // Initialize build optimizations
 try {
   initializeBuildOptimizations();
@@ -24,8 +40,8 @@ try {
   throw error;
 }
 
-// Initialize Clarity analytics
-initializeClarity();
+// Defer Clarity analytics to idle time to protect first render performance.
+runWhenIdle(() => initializeClarity(), 800);
 
 // Ensure root element exists
 const rootElement = document.getElementById('root');
@@ -104,19 +120,6 @@ const clearRuntimeCachesOnHardReload = async () => {
 // Register the service worker for PWA functionality with error handling
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
-    const runWhenIdle = (task: () => void) => {
-      if ('requestIdleCallback' in window) {
-        (
-          window as Window & {
-            requestIdleCallback: (callback: IdleRequestCallback) => number;
-          }
-        ).requestIdleCallback(() => task());
-        return;
-      }
-
-      window.setTimeout(task, 150);
-    };
-
     if (import.meta.env.DEV) {
       const registrations = await navigator.serviceWorker.getRegistrations();
       await Promise.all(

@@ -51,12 +51,12 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
           onClick={() => setMobileOpen(false)}
         >
           <img
-            src="/assets/images/logo.webp"
+            src="/icons/favicon-32x32.png"
             alt="Ghatak Sports Academy India Logo"
             width={36}
             height={36}
             className="h-9 w-9 sm:h-10 sm:w-10 object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-[0_0_8px_rgba(234,179,8,0.3)]"
-            loading="lazy"
+            loading="eager"
             decoding="async"
           />
           <div className="flex flex-col leading-none justify-center">

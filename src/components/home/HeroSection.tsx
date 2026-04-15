@@ -11,7 +11,6 @@ import {
 import { Volume2, VolumeX, Instagram, ChevronDown } from 'lucide-react';
 
 const bgImages = [
-  '/assets/hero/slider.webp',
   '/assets/hero/slider0.webp',
   '/assets/hero/slider1.webp',
   '/assets/hero/slider2.webp',
@@ -136,9 +135,9 @@ export default function HeroSection() {
     return () => clearInterval(wordTimer);
   }, []);
 
-  // Preload first 3 images only (rest load lazily)
+  // Preload only the first fallback image to avoid front-loading extra bytes.
   useEffect(() => {
-    bgImages.slice(0, 3).forEach((src) => {
+    bgImages.slice(0, 1).forEach((src) => {
       const img = new Image();
       img.src = src;
     });

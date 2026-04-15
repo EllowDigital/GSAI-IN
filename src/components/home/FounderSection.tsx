@@ -1,7 +1,7 @@
 import React from 'react';
 import { Medal, User, Sparkles, Quote } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
-const founderImg = '/assets/images/founder.webp';
+const founderImg = '/assets/images/founder-720.webp';
 
 const containerVariants: Variants = {
   offscreen: {},
