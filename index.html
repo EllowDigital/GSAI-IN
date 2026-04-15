@@ -17,9 +17,16 @@
     (function (w, d, s, l, i) {
       var loaded = false;
 
+      function removeInteractionListeners() {
+        w.removeEventListener('pointerdown', onFirstInteraction, false);
+        w.removeEventListener('scroll', onFirstInteraction, false);
+        w.removeEventListener('keydown', onFirstInteraction, false);
+      }
+
       function loadGtm() {
         if (loaded) return;
         loaded = true;
+        removeInteractionListeners();
 
         w[l] = w[l] || [];
         w[l].push({
@@ -37,9 +44,7 @@
 
       var onFirstInteraction = function () {
         loadGtm();
-        w.removeEventListener('pointerdown', onFirstInteraction, { passive: true });
-        w.removeEventListener('scroll', onFirstInteraction, { passive: true });
-        w.removeEventListener('keydown', onFirstInteraction, { passive: true });
+        removeInteractionListeners();
       };
 
       w.addEventListener('pointerdown', onFirstInteraction, { passive: true, once: true });

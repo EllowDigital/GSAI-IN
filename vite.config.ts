@@ -42,7 +42,7 @@ export default defineConfig(({ mode }) => {
     build: {
       target: 'es2020',
       minify: 'esbuild',
-      sourcemap: mode === 'production',
+      sourcemap: mode === 'production' ? 'hidden' : false,
       cssCodeSplit: true,
       modulePreload: { polyfill: false },
       reportCompressedSize: false,
