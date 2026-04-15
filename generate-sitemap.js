@@ -118,17 +118,6 @@ const defaultImageMeta = [{
   license: `${hostname}/terms`,
 }];
 
-const defaultVideoMeta = [{
-  thumbnail_loc: `${hostname}/assets/images/logo.webp`,
-  title: 'Ghatak Sports Academy India - Training Introduction',
-  description: 'Watch our introductory video showcasing martial arts training, facilities, and student achievements at Ghatak Sports Academy India.',
-  content_loc: `${hostname}/assets/hero/intro.mp4`,
-  duration: 120,
-  publication_date: '2025-03-01T00:00:00Z',
-  family_friendly: 'yes',
-  requires_subscription: 'no',
-}];
-
 // ---------------------- Helpers ---------------------------
 const toISODate = (val) => {
   try {
@@ -188,6 +177,9 @@ const shouldIncludeStaticRoute = (url) => {
 
   // Skip legacy redirect aliases to avoid duplicate indexing.
   if (url === '/pages/privacy.html' || url === '/pages/terms.html') return false;
+
+  // Skip event aliases that 301 to /events.
+  if (url === '/event' || url === '/event/') return false;
 
   return true;
 };
@@ -335,7 +327,6 @@ async function generateSitemap() {
       ...p,
       lastmod: toISODate(),
       img: defaultImageMeta,
-      video: p.url === '/' ? defaultVideoMeta : undefined, // Add video to homepage
     }));
 
     // Program detail pages (/programs/:slug)

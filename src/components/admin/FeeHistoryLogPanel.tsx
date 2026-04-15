@@ -64,7 +64,7 @@ export default function FeeHistoryLogPanel() {
       let queryBuilder = supabase
         .from('fees')
         .select(
-          'id,student_id,program_name,month,year,monthly_fee,paid_amount,balance_due,status,created_at,students(name,program)',
+          'id,student_id,program_name,month,year,monthly_fee,paid_amount,balance_due,status,created_at,students(id,name,program)',
           { count: 'exact' }
         );
 
@@ -144,31 +144,23 @@ export default function FeeHistoryLogPanel() {
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const currentPage = Math.min(page, totalPages);
 
-  const studentIds = useMemo(
-    () => [...new Set(fees.map((row) => row.student_id).filter(Boolean))],
-    [fees]
-  );
-
-  const normalizedQuery = query.trim().toLowerCase();
-  const filteredRows = fees;
-
   const snapshot = useMemo(() => {
     const total = totalCount;
-    const paid = filteredRows.filter((r) => r.status === 'paid').length;
-    const pending = filteredRows.length - paid;
-    const collected = filteredRows.reduce(
+    const paid = fees.filter((r) => r.status === 'paid').length;
+    const pending = fees.length - paid;
+    const collected = fees.reduce(
       (sum, row) => sum + Number(row.paid_amount || 0),
       0
     );
-    const due = filteredRows.reduce(
+    const due = fees.reduce(
       (sum, row) => sum + Number(row.balance_due || 0),
       0
     );
 
     return { total, paid, pending, collected, due };
-  }, [filteredRows, totalCount]);
+  }, [fees, totalCount]);
 
-  const exportRows = filteredRows.map((row) => {
+  const exportRows = fees.map((row) => {
     const student = row.students;
     return {
       student: {
@@ -201,7 +193,7 @@ export default function FeeHistoryLogPanel() {
               variant="outline"
               size="sm"
               onClick={() => exportFeesToCsv(exportRows as any, 0, 0)}
-              disabled={filteredRows.length === 0}
+              disabled={fees.length === 0}
               className="h-9"
             >
               Export Log CSV
@@ -337,7 +329,7 @@ export default function FeeHistoryLogPanel() {
                       Loading fee logs...
                     </td>
                   </tr>
-                ) : filteredRows.length === 0 ? (
+                ) : fees.length === 0 ? (
                   <tr>
                     <td
                       colSpan={8}
@@ -347,7 +339,7 @@ export default function FeeHistoryLogPanel() {
                     </td>
                   </tr>
                 ) : (
-                  filteredRows.map((row) => {
+                  fees.map((row) => {
                     const student = row.students;
                     const status = (row.status || 'unpaid').toLowerCase();
                     const badgeClass =
@@ -402,9 +394,8 @@ export default function FeeHistoryLogPanel() {
 
           <div className="flex flex-col gap-2 border border-border/60 rounded-xl p-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-muted-foreground">
-              Showing {filteredRows.length} rows on page {currentPage} of{' '}
-              {totalPages}.
-              {normalizedQuery
+              Showing {fees.length} rows on page {currentPage} of {totalPages}.
+              {query.trim()
                 ? ` Total matching logs: ${totalCount}`
                 : ` Total logs: ${totalCount}`}
             </p>
