@@ -2,6 +2,7 @@ type AuthScope = 'admin' | 'student';
 
 type AuthTelemetryCounters = {
   lockWaitWarnings: number;
+  realtimeSocketEarlyCloseErrors: number;
   adminAuthCallbackCount: number;
   adminAuthCallbackDurationTotalMs: number;
   adminAuthCallbackMaxMs: number;
@@ -18,6 +19,7 @@ const TELEMETRY_STORAGE_KEY = 'gsai-auth-telemetry';
 
 const emptyCounters = (): AuthTelemetryCounters => ({
   lockWaitWarnings: 0,
+  realtimeSocketEarlyCloseErrors: 0,
   adminAuthCallbackCount: 0,
   adminAuthCallbackDurationTotalMs: 0,
   adminAuthCallbackMaxMs: 0,
@@ -69,6 +71,14 @@ const updateCounters = (updater: (draft: AuthTelemetryCounters) => void) => {
 
 const lockWarningPattern =
   /@supabase\/gotrue-js: Lock "lock:[^"]+" was not released within 5000ms/i;
+const realtimeEarlyClosePattern =
+  /WebSocket is closed before the connection is established/i;
+const shouldSurfaceLockWarnings =
+  import.meta.env.DEV &&
+  import.meta.env.VITE_SUPABASE_LOCK_WARN_CONSOLE === 'true';
+const shouldSurfaceRealtimeSocketErrors =
+  import.meta.env.DEV &&
+  import.meta.env.VITE_SUPABASE_SOCKET_ERROR_CONSOLE === 'true';
 
 let consoleTelemetryPatched = false;
 
@@ -76,6 +86,7 @@ export const initializeAuthTelemetry = () => {
   if (typeof window === 'undefined' || consoleTelemetryPatched) return;
 
   const originalWarn = console.warn.bind(console);
+  const originalError = console.error.bind(console);
 
   console.warn = (...args: unknown[]) => {
     try {
@@ -85,12 +96,40 @@ export const initializeAuthTelemetry = () => {
         updateCounters((draft) => {
           draft.lockWaitWarnings += 1;
         });
+
+        // The warning is often emitted during React remount/unmount races.
+        // Keep telemetry, but hide noisy logs unless explicitly enabled.
+        if (!shouldSurfaceLockWarnings) {
+          return;
+        }
       }
     } catch {
       // Never block the original console.warn behavior.
     }
 
     originalWarn(...args);
+  };
+
+  console.error = (...args: unknown[]) => {
+    try {
+      const firstArg = args[0];
+      const message = typeof firstArg === 'string' ? firstArg : '';
+      if (realtimeEarlyClosePattern.test(message)) {
+        updateCounters((draft) => {
+          draft.realtimeSocketEarlyCloseErrors += 1;
+        });
+
+        // This frequently occurs when channels are intentionally torn down
+        // before the socket handshake fully completes.
+        if (!shouldSurfaceRealtimeSocketErrors) {
+          return;
+        }
+      }
+    } catch {
+      // Never block the original console.error behavior.
+    }
+
+    originalError(...args);
   };
 
   consoleTelemetryPatched = true;
