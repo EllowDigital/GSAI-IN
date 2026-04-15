@@ -90,7 +90,11 @@ function DeferredSection({
       className="w-full"
       data-deferred-section="true"
     >
-      {shouldRender ? <Suspense fallback={<SectionSkeleton />}>{children}</Suspense> : <SectionSkeleton />}
+      {shouldRender ? (
+        <Suspense fallback={<SectionSkeleton />}>{children}</Suspense>
+      ) : (
+        <SectionSkeleton />
+      )}
     </div>
   );
 }

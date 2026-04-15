@@ -26,7 +26,7 @@ const hasClarityScriptTag = (): boolean => {
   if (typeof document === 'undefined') return false;
   return Boolean(
     document.querySelector('script[src*="clarity.ms/tag/"]') ||
-      document.querySelector('script[src*="scripts.clarity.ms"]')
+    document.querySelector('script[src*="scripts.clarity.ms"]')
   );
 };
 
@@ -65,7 +65,13 @@ export const clarityIdentify = (
 
   if (typeof win?.clarity === 'function') {
     try {
-      win.clarity('identify', customId, customSessionId, customPageId, friendlyName);
+      win.clarity(
+        'identify',
+        customId,
+        customSessionId,
+        customPageId,
+        friendlyName
+      );
     } catch (error) {
       console.warn('Clarity identify failed:', error);
     }
