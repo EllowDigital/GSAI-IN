@@ -12,7 +12,6 @@ import { Volume2, VolumeX, Instagram, ChevronDown } from 'lucide-react';
 
 const bgImages = [
   '/assets/hero/slider0.webp',
-  '/assets/hero/slider0.webp',
   '/assets/hero/slider1.webp',
   '/assets/hero/slider2.webp',
   '/assets/hero/slider3.webp',
