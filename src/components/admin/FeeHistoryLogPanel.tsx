@@ -394,8 +394,7 @@ export default function FeeHistoryLogPanel() {
 
           <div className="flex flex-col gap-2 border border-border/60 rounded-xl p-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-muted-foreground">
-              Showing {fees.length} rows on page {currentPage} of{' '}
-              {totalPages}.
+              Showing {fees.length} rows on page {currentPage} of {totalPages}.
               {query.trim()
                 ? ` Total matching logs: ${totalCount}`
                 : ` Total logs: ${totalCount}`}
