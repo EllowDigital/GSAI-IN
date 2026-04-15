@@ -13,15 +13,44 @@
     // Initialize dataLayer before GTM loads
     window.dataLayer = window.dataLayer || [];
 
-    // GTM snippet - loads asynchronously (j.async=true)
-    // Initializing dataLayer early allows queueing events before GTM finishes loading
+    // Defer GTM bootstrap until idle/interaction to protect initial paint and LCP.
     (function (w, d, s, l, i) {
-      w[l] = w[l] || []; w[l].push({
-        'gtm.start':
-          new Date().getTime(), event: 'gtm.js'
-      }); var f = d.getElementsByTagName(s)[0],
-        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
-          'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+      var loaded = false;
+
+      function loadGtm() {
+        if (loaded) return;
+        loaded = true;
+
+        w[l] = w[l] || [];
+        w[l].push({
+          'gtm.start': new Date().getTime(),
+          event: 'gtm.js'
+        });
+
+        var f = d.getElementsByTagName(s)[0];
+        var j = d.createElement(s);
+        var dl = l !== 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+      }
+
+      var onFirstInteraction = function () {
+        loadGtm();
+        w.removeEventListener('pointerdown', onFirstInteraction, { passive: true });
+        w.removeEventListener('scroll', onFirstInteraction, { passive: true });
+        w.removeEventListener('keydown', onFirstInteraction, { passive: true });
+      };
+
+      w.addEventListener('pointerdown', onFirstInteraction, { passive: true, once: true });
+      w.addEventListener('scroll', onFirstInteraction, { passive: true, once: true });
+      w.addEventListener('keydown', onFirstInteraction, { passive: true, once: true });
+
+      if ('requestIdleCallback' in w) {
+        w.requestIdleCallback(loadGtm, { timeout: 3500 });
+      } else {
+        w.setTimeout(loadGtm, 3500);
+      }
     })(window, document, 'script', 'dataLayer', 'GTM-5GCSP6H7');
   </script>
   <!-- End Google Tag Manager -->
