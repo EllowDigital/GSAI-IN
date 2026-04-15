@@ -145,7 +145,7 @@ export default function FeeHistoryLogPanel() {
   const currentPage = Math.min(page, totalPages);
 
   const snapshot = useMemo(() => {
-    const total = totalCount;
+    const total = fees.length;
     const paid = fees.filter((r) => r.status === 'paid').length;
     const pending = fees.length - paid;
     const collected = fees.reduce(
@@ -158,7 +158,7 @@ export default function FeeHistoryLogPanel() {
     );
 
     return { total, paid, pending, collected, due };
-  }, [fees, totalCount]);
+  }, [fees]);
 
   const exportRows = fees.map((row) => {
     const student = row.students;
@@ -202,31 +202,37 @@ export default function FeeHistoryLogPanel() {
 
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
             <Card className="p-3">
-              <p className="text-[11px] text-muted-foreground">Total Logs</p>
+              <p className="text-[11px] text-muted-foreground">
+                Total Logs (Page)
+              </p>
               <p className="text-lg font-semibold tabular-nums">
                 {snapshot.total}
               </p>
             </Card>
             <Card className="p-3">
-              <p className="text-[11px] text-muted-foreground">Paid</p>
+              <p className="text-[11px] text-muted-foreground">Paid (Page)</p>
               <p className="text-lg font-semibold tabular-nums">
                 {snapshot.paid}
               </p>
             </Card>
             <Card className="p-3">
-              <p className="text-[11px] text-muted-foreground">Pending</p>
+              <p className="text-[11px] text-muted-foreground">
+                Pending (Page)
+              </p>
               <p className="text-lg font-semibold tabular-nums">
                 {snapshot.pending}
               </p>
             </Card>
             <Card className="p-3">
-              <p className="text-[11px] text-muted-foreground">Collected</p>
+              <p className="text-[11px] text-muted-foreground">
+                Collected (Page)
+              </p>
               <p className="text-lg font-semibold tabular-nums">
                 ₹{snapshot.collected.toLocaleString('en-IN')}
               </p>
             </Card>
             <Card className="p-3 col-span-2 sm:col-span-1">
-              <p className="text-[11px] text-muted-foreground">Due</p>
+              <p className="text-[11px] text-muted-foreground">Due (Page)</p>
               <p className="text-lg font-semibold tabular-nums">
                 ₹{snapshot.due.toLocaleString('en-IN')}
               </p>

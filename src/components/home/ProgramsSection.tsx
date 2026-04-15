@@ -161,7 +161,7 @@ export default function ProgramsSection() {
                     aria-label={`Learn more about ${prog.title}`}
                     className="btn-primary flex-1 justify-center gap-2 py-2.5 text-sm sm:text-base bg-gradient-to-r from-yellow-500 to-red-600 hover:from-yellow-400 hover:to-red-500 border-0 text-white"
                   >
-                    <span>Learn More</span>
+                    <span>Explore {prog.title}</span>
                     <svg
                       className="w-4 h-4 transform group-hover:translate-x-1 transition-transform"
                       fill="none"
