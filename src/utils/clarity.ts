@@ -38,8 +38,16 @@ const getClarityProjectId = (): string | null => {
 export const initializeClarity = (): void => {
   if (typeof window === 'undefined' || isClarityInitialized) return;
 
-  // If Clarity already exists (for example via GTM), avoid a second SDK init.
-  if (hasGlobalClarity() || hasClarityScriptTag()) {
+  // If Clarity already exists globally (for example via GTM), avoid a second
+  // SDK init but still mark it as usable for downstream tracking calls.
+  if (hasGlobalClarity()) {
+    isClarityTagDetected = true;
+    isClarityInitialized = true;
+    return;
+  }
+
+  // A script tag alone does not guarantee the global API is ready yet.
+  if (hasClarityScriptTag()) {
     isClarityTagDetected = true;
     return;
   }
@@ -78,7 +86,7 @@ export const clarityIdentify = (
     return;
   }
 
-  if (!isClarityInitialized && !isClarityTagDetected) return;
+  if (!isClarityInitialized) return;
 
   try {
     Clarity.identify(customId, customSessionId, customPageId, friendlyName);
@@ -99,7 +107,7 @@ export const claritySetTag = (key: string, value: string | string[]): void => {
     return;
   }
 
-  if (!isClarityInitialized && !isClarityTagDetected) return;
+  if (!isClarityInitialized) return;
 
   try {
     Clarity.setTag(key, value);
@@ -120,7 +128,7 @@ export const clarityEvent = (eventName: string): void => {
     return;
   }
 
-  if (!isClarityInitialized && !isClarityTagDetected) return;
+  if (!isClarityInitialized) return;
 
   try {
     Clarity.event(eventName);
@@ -141,7 +149,7 @@ export const clarityConsentV2 = (consentOptions?: ClarityConsent): void => {
     return;
   }
 
-  if (!isClarityInitialized && !isClarityTagDetected) return;
+  if (!isClarityInitialized) return;
 
   try {
     Clarity.consentV2(consentOptions);
@@ -154,7 +162,7 @@ export const trackClarityPageView = (
   path: string,
   pageTitle?: string
 ): void => {
-  if (!isClarityInitialized) return;
+  if (!isClarityInitialized && !hasGlobalClarity()) return;
 
   claritySetTag('page_path', path);
   if (pageTitle) {
