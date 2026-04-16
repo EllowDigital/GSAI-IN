@@ -74,10 +74,8 @@ const lockWarningPattern =
 const realtimeEarlyClosePattern =
   /WebSocket is closed before the connection is established/i;
 const shouldSurfaceLockWarnings =
-  import.meta.env.DEV &&
   import.meta.env.VITE_SUPABASE_LOCK_WARN_CONSOLE === 'true';
 const shouldSurfaceRealtimeSocketErrors =
-  import.meta.env.DEV &&
   import.meta.env.VITE_SUPABASE_SOCKET_ERROR_CONSOLE === 'true';
 
 let consoleTelemetryPatched = false;
