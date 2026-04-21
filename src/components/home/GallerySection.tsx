@@ -12,6 +12,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useGalleryQuery } from '@/hooks/useEnhancedQuery';
 import Spinner from '@/components/ui/spinner';
+import { optimizeSupabaseImageUrl } from '@/utils/supabaseImage';
 
 export default function GallerySection() {
   const navigate = useNavigate();
@@ -220,10 +221,22 @@ export default function GallerySection() {
                   }`}
                 >
                   <img
-                    src={image.image_url}
+                    src={optimizeSupabaseImageUrl(image.image_url, {
+                      width: idx === 0 || idx === 7 ? 1200 : 800,
+                      height: idx === 0 || idx === 7 ? 900 : 800,
+                      quality: 72,
+                      format: 'webp',
+                      resize: 'cover',
+                    })}
                     alt={image.caption || 'Gallery Image'}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     loading="lazy"
+                    decoding="async"
+                    sizes={
+                      idx === 0 || idx === 7
+                        ? '(min-width: 768px) 66vw, 100vw'
+                        : '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw'
+                    }
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 sm:p-6">
                     <p className="text-white font-medium text-sm sm:text-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
@@ -300,9 +313,19 @@ export default function GallerySection() {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src={galleryImages[selectedImageIndex].image_url}
+                src={optimizeSupabaseImageUrl(
+                  galleryImages[selectedImageIndex].image_url,
+                  {
+                    width: 1800,
+                    height: 1200,
+                    quality: 78,
+                    format: 'webp',
+                    resize: 'contain',
+                  }
+                )}
                 alt={galleryImages[selectedImageIndex].caption}
                 className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+                decoding="async"
               />
               {galleryImages[selectedImageIndex].caption && (
                 <div className="mt-4 text-white text-center text-base sm:text-lg font-medium bg-black/50 px-4 py-2 rounded-full backdrop-blur-sm">

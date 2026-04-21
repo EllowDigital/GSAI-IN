@@ -53,16 +53,15 @@ function DeferredSection({
   minHeight?: number;
 }) {
   const hostRef = useRef<HTMLDivElement | null>(null);
-  const [shouldRender, setShouldRender] = useState(false);
+  const [shouldRender, setShouldRender] = useState(
+    () => typeof IntersectionObserver === 'undefined'
+  );
 
   useEffect(() => {
     if (shouldRender) return;
 
     const target = hostRef.current;
-    if (!target || typeof IntersectionObserver === 'undefined') {
-      setShouldRender(true);
-      return;
-    }
+    if (!target || typeof IntersectionObserver === 'undefined') return;
 
     const observer = new IntersectionObserver(
       (entries) => {

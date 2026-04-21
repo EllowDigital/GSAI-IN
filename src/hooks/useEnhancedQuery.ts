@@ -45,7 +45,7 @@ export function useEnhancedQuery<T = any>({
   retryAttempts = 3,
   staleTime = 1000 * 60 * 5, // 5 minutes
   cacheTime = 1000 * 60 * 30, // 30 minutes
-  refetchOnWindowFocus = true,
+  refetchOnWindowFocus = false,
   enabled = true,
 }: EnhancedQueryOptions): UseEnhancedQueryReturn<T> {
   const queryClient = useQueryClient();
@@ -90,9 +90,7 @@ export function useEnhancedQuery<T = any>({
           schema: 'public',
           table: realtimeTable,
         },
-        (payload) => {
-          console.log(`Real-time update for ${realtimeTable}:`, payload);
-
+        () => {
           // Invalidate and refetch queries
           queryClient.invalidateQueries({ queryKey });
 
@@ -176,7 +174,7 @@ export function useGalleryQuery() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('gallery_images')
-        .select('*')
+        .select('id, image_url, caption, tag, created_at')
         .order('created_at', { ascending: false })
         .limit(100);
 

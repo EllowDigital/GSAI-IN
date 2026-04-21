@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
+import { optimizeSupabaseImageUrl } from '@/utils/supabaseImage';
 
 export default function UpcomingCompetitionsSection() {
   const { data: competitions = [], isLoading } = useQuery({
@@ -28,7 +29,9 @@ export default function UpcomingCompetitionsSection() {
       if (error) throw error;
       return data || [];
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
   });
 
   if (isLoading) return null;
@@ -167,10 +170,18 @@ export default function UpcomingCompetitionsSection() {
               {comp.image_url && (
                 <div className="h-40 sm:h-44 overflow-hidden relative">
                   <img
-                    src={comp.image_url}
+                    src={optimizeSupabaseImageUrl(comp.image_url, {
+                      width: 640,
+                      height: 360,
+                      quality: 72,
+                      format: 'webp',
+                      resize: 'cover',
+                    })}
                     alt={comp.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     loading="lazy"
+                    decoding="async"
+                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
                   {/* Status badge on image */}

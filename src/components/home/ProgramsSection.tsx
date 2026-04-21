@@ -48,7 +48,7 @@ export default function ProgramsSection() {
   return (
     <section
       id="programs"
-      className="section-shell relative bg-[#0a0a0a] overflow-hidden py-12 md:py-20 lg:py-24"
+      className="section-shell scroll-mt-24 relative bg-[#0a0a0a] overflow-hidden py-12 md:py-20 lg:py-24"
     >
       {/* Background Gradients */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">

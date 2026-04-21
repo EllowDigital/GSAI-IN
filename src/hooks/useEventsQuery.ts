@@ -33,7 +33,7 @@ export function useEventsQuery() {
       cacheDuration: 1000 * 60 * 2, // 2 minutes
       retries: 2,
       staleTime: 1000 * 60, // 1 minute
-      refetchOnWindowFocus: true,
+      refetchOnWindowFocus: false,
     }
   );
 
