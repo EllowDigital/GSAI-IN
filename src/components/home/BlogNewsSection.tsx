@@ -23,13 +23,16 @@ function getReadingTime(description: string | null): string {
   return `${readingTime} min read`;
 }
 
-type Blog = {
+type BlogCard = {
   id: string;
   image_url: string | null;
   title: string;
   description: string | null;
-  content?: string;
   published_at: string | null;
+};
+
+type BlogDetail = BlogCard & {
+  content: string;
 };
 
 const containerVariants: Variants = {
@@ -57,10 +60,12 @@ const itemVariants: Variants = {
 export default function BlogNewsSection() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [selectedBlog, setSelectedBlog] = React.useState<Blog | null>(null);
+  const [selectedBlog, setSelectedBlog] = React.useState<BlogDetail | null>(
+    null
+  );
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  const { data: posts = [], isLoading: loading } = useQuery<Blog[]>({
+  const { data: posts = [], isLoading: loading } = useQuery<BlogCard[]>({
     queryKey: ['blogs', 'public', 'cards'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -69,7 +74,7 @@ export default function BlogNewsSection() {
         .order('published_at', { ascending: false })
         .limit(6);
       if (error) throw error;
-      return (data as Blog[]) ?? [];
+      return (data as BlogCard[]) ?? [];
     },
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
@@ -107,7 +112,11 @@ export default function BlogNewsSection() {
             .single();
 
           if (error) throw error;
-          return data as Blog;
+          if (!data || typeof data.content !== 'string') {
+            throw new Error('Blog detail is missing required content');
+          }
+
+          return data as BlogDetail;
         },
         staleTime: 1000 * 60 * 10,
         gcTime: 1000 * 60 * 30,

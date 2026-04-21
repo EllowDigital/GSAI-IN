@@ -1,7 +1,21 @@
 // Supabase project constants are sourced from Vite env variables.
-export const SUPABASE_PROJECT_ID =
-  import.meta.env.VITE_SUPABASE_PROJECT_ID || '';
 export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
+
+const deriveProjectIdFromUrl = (url: string): string => {
+  if (!url) return '';
+
+  try {
+    const parsed = new URL(url);
+    const [subdomain] = parsed.hostname.split('.');
+    return subdomain || '';
+  } catch {
+    return '';
+  }
+};
+
+export const SUPABASE_PROJECT_ID =
+  import.meta.env.VITE_SUPABASE_PROJECT_ID ||
+  deriveProjectIdFromUrl(SUPABASE_URL);
 // Public anon key (safe to embed in client apps)
 export const SUPABASE_ANON_KEY =
   import.meta.env.VITE_SUPABASE_ANON_KEY ||
@@ -22,8 +36,7 @@ const hasPlaceholderValue = (value: string): boolean => {
 
 export const IS_SUPABASE_CONFIGURED =
   !hasPlaceholderValue(SUPABASE_URL) &&
-  !hasPlaceholderValue(SUPABASE_ANON_KEY) &&
-  !hasPlaceholderValue(SUPABASE_PROJECT_ID);
+  !hasPlaceholderValue(SUPABASE_ANON_KEY);
 
 export const ADMIN_SESSION_STORAGE_KEY = 'gsai-admin-session';
 export const STUDENT_SESSION_STORAGE_KEY = 'gsai-student-session';
@@ -37,12 +50,13 @@ export const validateSupabaseConfig = (): void => {
       '🚨 CRITICAL: Invalid Supabase environment variables!',
       `SUPABASE_URL: ${hasPlaceholderValue(SUPABASE_URL) ? '✗ Missing/Placeholder' : '✓ Set'}`,
       `SUPABASE_ANON_KEY: ${hasPlaceholderValue(SUPABASE_ANON_KEY) ? '✗ Missing/Placeholder' : '✓ Set'}`,
-      `SUPABASE_PROJECT_ID: ${hasPlaceholderValue(SUPABASE_PROJECT_ID) ? '✗ Missing/Placeholder' : '✓ Set'}`,
+      `SUPABASE_PROJECT_ID: ${SUPABASE_PROJECT_ID ? '✓ Set/Derived' : '⚠ Optional (missing)'}`,
       '',
       'For local development: Check your .env.local file',
       'For Netlify deployment: Set these in Netlify Dashboard:',
       '  → Site settings > Environment variables',
-      '  → Add: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_SUPABASE_PROJECT_ID',
+      '  → Required: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY',
+      '  → Optional: VITE_SUPABASE_PROJECT_ID (auto-derived from URL when omitted)',
       '',
     ].join('\n');
 

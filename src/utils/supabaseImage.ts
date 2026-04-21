@@ -8,11 +8,32 @@ export type SupabaseImageOptions = {
 
 const DEFAULT_QUALITY = 72;
 
+const OBJECT_PUBLIC_PREFIX = '/storage/v1/object/public/';
+const RENDER_PUBLIC_PREFIX = '/storage/v1/render/image/public/';
+
 function isSupabaseStorageUrl(url: URL): boolean {
   return (
     url.hostname.endsWith('.supabase.co') &&
-    url.pathname.includes('/storage/v1/object/')
+    (url.pathname.startsWith(OBJECT_PUBLIC_PREFIX) ||
+      url.pathname.startsWith(RENDER_PUBLIC_PREFIX))
   );
+}
+
+function toTransformEndpoint(url: URL): URL {
+  if (url.pathname.startsWith(RENDER_PUBLIC_PREFIX)) {
+    return new URL(url.toString());
+  }
+
+  if (url.pathname.startsWith(OBJECT_PUBLIC_PREFIX)) {
+    const transformed = new URL(url.toString());
+    transformed.pathname = transformed.pathname.replace(
+      OBJECT_PUBLIC_PREFIX,
+      RENDER_PUBLIC_PREFIX
+    );
+    return transformed;
+  }
+
+  return new URL(url.toString());
 }
 
 export function optimizeSupabaseImageUrl(
@@ -28,6 +49,8 @@ export function optimizeSupabaseImageUrl(
       return rawUrl;
     }
 
+    const transformUrl = toTransformEndpoint(url);
+
     const {
       width,
       height,
@@ -36,13 +59,13 @@ export function optimizeSupabaseImageUrl(
       resize = 'cover',
     } = options;
 
-    if (width) url.searchParams.set('width', String(width));
-    if (height) url.searchParams.set('height', String(height));
-    if (quality) url.searchParams.set('quality', String(quality));
-    if (format !== 'origin') url.searchParams.set('format', format);
-    if (resize) url.searchParams.set('resize', resize);
+    if (width) transformUrl.searchParams.set('width', String(width));
+    if (height) transformUrl.searchParams.set('height', String(height));
+    if (quality) transformUrl.searchParams.set('quality', String(quality));
+    if (format !== 'origin') transformUrl.searchParams.set('format', format);
+    if (resize) transformUrl.searchParams.set('resize', resize);
 
-    return url.toString();
+    return transformUrl.toString();
   } catch {
     return rawUrl;
   }
