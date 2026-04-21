@@ -33,6 +33,7 @@ import { Badge } from '@/components/ui/badge';
 import Navbar from '@/components/layout/Navbar';
 import FooterSection from '@/components/layout/FooterSection';
 import { Seo } from '@/components/seo/Seo';
+import { optimizeSupabaseImageUrl } from '@/utils/supabaseImage';
 
 type GalleryImage = {
   id: string;
@@ -502,11 +503,23 @@ export default function AllGalleryPage() {
                       }`}
                     >
                       <img
-                        src={img.image_url}
+                        src={optimizeSupabaseImageUrl(img.image_url, {
+                          width: gridSize === 'large' ? 1200 : 700,
+                          height: gridSize === 'large' ? 900 : 700,
+                          quality: 72,
+                          format: 'webp',
+                          resize: 'cover',
+                        })}
                         alt={
                           img.caption || `Academy gallery image ${index + 1}`
                         }
                         loading="lazy"
+                        decoding="async"
+                        sizes={
+                          gridSize === 'large'
+                            ? '(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw'
+                            : '(min-width: 1280px) 20vw, (min-width: 768px) 25vw, 50vw'
+                        }
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -621,9 +634,16 @@ export default function AllGalleryPage() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <img
-                  src={selectedImage.image_url}
+                  src={optimizeSupabaseImageUrl(selectedImage.image_url, {
+                    width: 2200,
+                    height: 1500,
+                    quality: 80,
+                    format: 'webp',
+                    resize: 'contain',
+                  })}
                   alt={selectedImage.caption || 'Gallery image'}
                   className="max-w-full max-h-full object-contain rounded-xl md:rounded-2xl shadow-2xl shadow-black/50 border border-white/10"
+                  decoding="async"
                 />
 
                 {/* Image Info Overlay */}

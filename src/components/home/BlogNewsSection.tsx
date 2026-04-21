@@ -1,9 +1,11 @@
 import React from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/services/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { BookOpenText, Calendar, ArrowRight, Clock, User } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
 import { BlogPostModal } from '@/components/modals/BlogPostModal';
+import { optimizeSupabaseImageUrl } from '@/utils/supabaseImage';
 
 function formatDate(dt: string) {
   return new Date(dt).toLocaleDateString(undefined, {
@@ -26,7 +28,7 @@ type Blog = {
   image_url: string | null;
   title: string;
   description: string | null;
-  content: string;
+  content?: string;
   published_at: string | null;
 };
 
@@ -54,53 +56,68 @@ const itemVariants: Variants = {
 
 export default function BlogNewsSection() {
   const navigate = useNavigate();
-  const [posts, setPosts] = React.useState<Blog[]>([]);
-  const [loading, setLoading] = React.useState(true);
+  const queryClient = useQueryClient();
   const [selectedBlog, setSelectedBlog] = React.useState<Blog | null>(null);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  React.useEffect(() => {
-    let isMounted = true;
-    async function fetchBlogs() {
-      setLoading(true);
+  const {
+    data: posts = [],
+    isLoading: loading,
+  } = useQuery<Blog[]>({
+    queryKey: ['blogs', 'public', 'cards'],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from('blogs')
-        .select('id, image_url, title, description, content, published_at')
+        .select('id, image_url, title, description, published_at')
         .order('published_at', { ascending: false })
         .limit(6);
-      if (!error && data && isMounted) {
-        setPosts(data as Blog[]);
-      }
-      setLoading(false);
-    }
-    fetchBlogs();
+      if (error) throw error;
+      return (data as Blog[]) ?? [];
+    },
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+  });
 
+  React.useEffect(() => {
     const channel = supabase
       .channel('blogs-public')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'blogs' },
-        () => fetchBlogs()
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['blogs', 'public', 'cards'] });
+        }
       )
       .subscribe();
 
     return () => {
-      isMounted = false;
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [queryClient]);
 
   const handleReadMore = async (postId: string) => {
-    // Fetch full post data including content
-    const { data, error } = await supabase
-      .from('blogs')
-      .select('*')
-      .eq('id', postId)
-      .single();
+    try {
+      const blog = await queryClient.fetchQuery({
+        queryKey: ['blogs', 'detail', postId],
+        queryFn: async () => {
+          const { data, error } = await supabase
+            .from('blogs')
+            .select('*')
+            .eq('id', postId)
+            .single();
 
-    if (!error && data) {
-      setSelectedBlog(data);
+          if (error) throw error;
+          return data as Blog;
+        },
+        staleTime: 1000 * 60 * 10,
+        gcTime: 1000 * 60 * 30,
+      });
+
+      setSelectedBlog(blog);
       setIsModalOpen(true);
+    } catch {
+      // Keep current UI state if detail fetch fails.
     }
   };
 
@@ -205,10 +222,18 @@ export default function BlogNewsSection() {
                 <div className="relative h-48 sm:h-56 overflow-hidden">
                   {post.image_url ? (
                     <img
-                      src={post.image_url}
+                      src={optimizeSupabaseImageUrl(post.image_url, {
+                        width: 720,
+                        height: 420,
+                        quality: 72,
+                        format: 'webp',
+                        resize: 'cover',
+                      })}
                       alt={post.title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       loading="lazy"
+                      decoding="async"
+                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-white/5 to-white/10 flex items-center justify-center">

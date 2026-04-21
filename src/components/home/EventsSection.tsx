@@ -6,6 +6,7 @@ import { useEventsQuery } from '@/hooks/useEventsQuery';
 import { Calendar, Clock, MapPin, ArrowRight, Sparkles } from 'lucide-react';
 import { EventModal } from '@/components/modals/EventModal';
 import type { EventRow } from '@/hooks/useEventsQuery';
+import { optimizeSupabaseImageUrl } from '@/utils/supabaseImage';
 
 export default function EventsSection() {
   const navigate = useNavigate();
@@ -214,10 +215,18 @@ export default function EventsSection() {
                     <div className="relative h-48 sm:h-56 overflow-hidden">
                       {event.image_url ? (
                         <img
-                          src={event.image_url}
+                          src={optimizeSupabaseImageUrl(event.image_url, {
+                            width: 720,
+                            height: 420,
+                            quality: 72,
+                            format: 'webp',
+                            resize: 'cover',
+                          })}
                           alt={event.title}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                           loading="lazy"
+                          decoding="async"
+                          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-white/5">
