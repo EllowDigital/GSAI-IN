@@ -74,7 +74,7 @@ export default function Navbar() {
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(140%_120%_at_10%_0%,rgba(255,255,255,0.12),transparent_48%),radial-gradient(120%_100%_at_90%_100%,rgba(250,204,21,0.1),transparent_46%)]" />
           <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/35 to-transparent" />
           <div
-            className={`pointer-events-none absolute -left-1/2 top-0 h-full w-1/2 skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/20 to-transparent blur-xl transition-[transform,opacity] duration-[1300ms] ease-out ${
+            className={`pointer-events-none absolute -left-1/2 top-0 h-full w-1/2 skew-x-[-20deg] bg-gradient-to-r from-transparent via-yellow-200/35 to-transparent blur-xl transition-[transform,opacity] duration-[1200ms] ease-out ${
               scrolled
                 ? 'translate-x-[320%] opacity-100'
                 : 'translate-x-0 opacity-0'

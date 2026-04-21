@@ -163,7 +163,7 @@ export function MobileNavbar({
                           onClick={() => setMobileOpen(false)}
                           className={`group flex items-center p-3 rounded-2xl border active:scale-[0.98] transition-all duration-200 ${
                             isActive
-                              ? 'bg-white/12 border-yellow-400/35 shadow-[0_0_24px_rgba(250,204,21,0.2)]'
+                              ? 'bg-white/16 border-yellow-300/55 shadow-[0_0_30px_rgba(250,204,21,0.35)]'
                               : 'bg-white/5 border-white/8 hover:bg-white/10 hover:border-white/15'
                           }`}
                           style={{ animationDelay: `${idx * 50}ms` }}
@@ -171,12 +171,15 @@ export function MobileNavbar({
                           role="menuitem"
                         >
                           <div
-                            className={`p-2 rounded-xl bg-gradient-to-br from-gray-800 to-black border transition-colors shadow-inner ${
+                            className={`relative p-2 rounded-xl bg-gradient-to-br from-gray-800 to-black border transition-colors shadow-inner ${
                               isActive
                                 ? 'border-yellow-400/40 text-yellow-300'
                                 : 'border-white/5 text-gray-400 group-hover:text-yellow-400 group-hover:border-yellow-500/30'
                             }`}
                           >
+                            {isActive && (
+                              <span className="pointer-events-none absolute inset-[-2px] rounded-xl border border-yellow-300/50 animate-[pulse_1.8s_ease-in-out_infinite]" />
+                            )}
                             <IconComponent className="w-5 h-5" />
                           </div>
                           <span
@@ -191,7 +194,7 @@ export function MobileNavbar({
                           <span
                             className={`ml-auto w-8 h-8 flex items-center justify-center rounded-full transition-all ${
                               isActive
-                                ? 'bg-yellow-500/20 text-yellow-300'
+                                ? 'bg-yellow-400/25 text-yellow-200 shadow-[0_0_18px_rgba(250,204,21,0.35)]'
                                 : 'bg-black/45 text-gray-500 group-hover:bg-yellow-500/20 group-hover:text-yellow-400'
                             }`}
                           >

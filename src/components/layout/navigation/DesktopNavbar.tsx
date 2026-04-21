@@ -53,13 +53,16 @@ export function DesktopNavbar({ activeHash }: DesktopNavbarProps) {
                 name={link.name}
                 className={`relative rounded-full px-4 py-2 text-sm lg:text-base font-semibold transition-all duration-300 group ${
                   isActive
-                    ? 'text-white bg-white/14 shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_0_20px_rgba(250,204,21,0.25)]'
+                    ? 'text-white bg-white/18 shadow-[0_0_0_1px_rgba(255,255,255,0.28),0_0_24px_rgba(250,204,21,0.38),0_0_38px_rgba(245,158,11,0.2)]'
                     : 'text-gray-200/95 hover:text-white hover:bg-white/10'
                 }`}
                 role="menuitem"
                 tabIndex={0}
               >
                 {link.name}
+                {isActive && (
+                  <span className="pointer-events-none absolute inset-[-2px] rounded-full border border-yellow-300/55 shadow-[0_0_20px_rgba(250,204,21,0.45)] animate-[pulse_1.8s_ease-in-out_infinite]" />
+                )}
                 <span
                   className={`pointer-events-none absolute inset-0 rounded-full border transition-colors duration-300 ${
                     isActive
