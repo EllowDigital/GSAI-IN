@@ -72,10 +72,10 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
         {/* Menu Toggle Button */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className={`relative flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-yellow-500/50 ${
+          className={`relative flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-full border transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-yellow-500/50 ${
             mobileOpen
-              ? 'bg-gradient-to-r from-yellow-500 to-red-600 text-white shadow-lg shadow-orange-500/30 rotate-90'
-              : 'text-gray-300 hover:bg-white/10 hover:text-white'
+              ? 'border-yellow-300/40 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 text-white shadow-[0_10px_25px_rgba(251,146,60,0.45)] rotate-90'
+              : 'border-white/20 bg-white/10 text-gray-100 backdrop-blur-sm hover:bg-white/20 hover:border-white/35 hover:text-white'
           }`}
           aria-label={mobileOpen ? 'Close mobile menu' : 'Open mobile menu'}
           aria-expanded={mobileOpen}
@@ -96,7 +96,7 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
           <>
             {/* MENU OVERLAY - Modern Bottom Sheet (Mobile & Tablet) */}
             <div
-              className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 z-[100] bg-[radial-gradient(circle_at_20%_10%,rgba(255,255,255,0.15),transparent_35%),radial-gradient(circle_at_80%_90%,rgba(250,204,21,0.15),transparent_30%)] bg-black/60 backdrop-blur-sm"
               id="mobile-menu"
               role="dialog"
               aria-modal="true"
@@ -104,20 +104,22 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
               onClick={() => setMobileOpen(false)}
             >
               <div
-                className="absolute inset-x-0 bottom-0 h-[85vh] bg-[#0a0a0a] border-t border-white/10 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col animate-in slide-in-from-bottom-full duration-300 ease-out md:max-w-lg md:mx-auto md:rounded-[2rem] md:bottom-6 md:inset-x-6 md:h-auto md:max-h-[85vh] md:border md:border-white/10"
+                className="absolute inset-x-0 bottom-0 h-[85vh] border-t border-white/25 bg-white/10 backdrop-blur-3xl rounded-t-[2rem] shadow-[0_-12px_50px_rgba(0,0,0,0.55)] overflow-hidden flex flex-col animate-in slide-in-from-bottom-full duration-300 ease-out md:max-w-lg md:mx-auto md:rounded-[2rem] md:bottom-6 md:inset-x-6 md:h-auto md:max-h-[85vh] md:border md:border-white/20"
                 onClick={(e) => e.stopPropagation()}
               >
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_100%_at_0%_0%,rgba(255,255,255,0.22),transparent_45%),radial-gradient(100%_90%_at_100%_100%,rgba(250,204,21,0.18),transparent_45%)]" />
+                <div className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent" />
                 {/* Handle Bar */}
                 <div
-                  className="w-full flex justify-center pt-4 pb-2"
+                  className="relative w-full flex justify-center pt-4 pb-2"
                   onClick={() => setMobileOpen(false)}
                 >
-                  <div className="w-12 h-1.5 bg-white/20 rounded-full hover:bg-white/40 transition-colors cursor-pointer" />
+                  <div className="w-12 h-1.5 bg-white/35 rounded-full hover:bg-white/55 transition-colors cursor-pointer" />
                 </div>
 
-                <div className="flex-1 overflow-y-auto px-6 pb-8 scrollbar-hide">
+                <div className="relative flex-1 overflow-y-auto px-6 pb-8 scrollbar-hide">
                   {/* Menu Header */}
-                  <div className="flex items-center justify-between py-4 mb-4 border-b border-white/5">
+                  <div className="flex items-center justify-between py-4 mb-4 border-b border-white/15">
                     <div>
                       <h2
                         id="mobile-menu-title"
@@ -131,7 +133,7 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                     </div>
                     <button
                       onClick={() => setMobileOpen(false)}
-                      className="p-2 rounded-full bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition-colors"
+                      className="p-2 rounded-full border border-white/20 bg-white/10 text-gray-300 hover:bg-white/20 hover:text-white transition-colors"
                       aria-label="Close menu"
                     >
                       <X size={20} />
