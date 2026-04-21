@@ -60,10 +60,7 @@ export default function BlogNewsSection() {
   const [selectedBlog, setSelectedBlog] = React.useState<Blog | null>(null);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  const {
-    data: posts = [],
-    isLoading: loading,
-  } = useQuery<Blog[]>({
+  const { data: posts = [], isLoading: loading } = useQuery<Blog[]>({
     queryKey: ['blogs', 'public', 'cards'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -86,7 +83,9 @@ export default function BlogNewsSection() {
         'postgres_changes',
         { event: '*', schema: 'public', table: 'blogs' },
         () => {
-          queryClient.invalidateQueries({ queryKey: ['blogs', 'public', 'cards'] });
+          queryClient.invalidateQueries({
+            queryKey: ['blogs', 'public', 'cards'],
+          });
         }
       )
       .subscribe();

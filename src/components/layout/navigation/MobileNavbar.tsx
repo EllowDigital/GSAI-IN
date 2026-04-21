@@ -24,6 +24,7 @@ import { navLinks } from '@/constants/navLinks';
 interface MobileNavbarProps {
   mobileOpen: boolean;
   setMobileOpen: (open: boolean) => void;
+  activeHash: string;
 }
 
 const iconMap: Record<string, React.ComponentType<any>> = {
@@ -36,7 +37,11 @@ const iconMap: Record<string, React.ComponentType<any>> = {
   Location: MapPin,
 };
 
-export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
+export function MobileNavbar({
+  mobileOpen,
+  setMobileOpen,
+  activeHash,
+}: MobileNavbarProps) {
   const portalTarget = typeof document !== 'undefined' ? document.body : null;
 
   return (
@@ -75,7 +80,7 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
           className={`relative flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-full border transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-yellow-500/50 ${
             mobileOpen
               ? 'border-yellow-300/40 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 text-white shadow-[0_10px_25px_rgba(251,146,60,0.45)] rotate-90'
-              : 'border-white/20 bg-white/10 text-gray-100 backdrop-blur-sm hover:bg-white/20 hover:border-white/35 hover:text-white'
+              : 'border-white/20 bg-black/45 text-gray-100 backdrop-blur-sm hover:bg-black/60 hover:border-white/35 hover:text-white'
           }`}
           aria-label={mobileOpen ? 'Close mobile menu' : 'Open mobile menu'}
           aria-expanded={mobileOpen}
@@ -104,11 +109,11 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
               onClick={() => setMobileOpen(false)}
             >
               <div
-                className="absolute inset-x-0 bottom-0 h-[85vh] border-t border-white/25 bg-white/10 backdrop-blur-3xl rounded-t-[2rem] shadow-[0_-12px_50px_rgba(0,0,0,0.55)] overflow-hidden flex flex-col animate-in slide-in-from-bottom-full duration-300 ease-out md:max-w-lg md:mx-auto md:rounded-[2rem] md:bottom-6 md:inset-x-6 md:h-auto md:max-h-[85vh] md:border md:border-white/20"
+                className="absolute inset-x-0 bottom-0 h-[85vh] border-t border-white/18 bg-black/70 backdrop-blur-3xl rounded-t-[2rem] shadow-[0_-12px_50px_rgba(0,0,0,0.65)] overflow-hidden flex flex-col animate-in slide-in-from-bottom-full duration-300 ease-out md:max-w-lg md:mx-auto md:rounded-[2rem] md:bottom-6 md:inset-x-6 md:h-auto md:max-h-[85vh] md:border md:border-white/16"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_100%_at_0%_0%,rgba(255,255,255,0.22),transparent_45%),radial-gradient(100%_90%_at_100%_100%,rgba(250,204,21,0.18),transparent_45%)]" />
-                <div className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_100%_at_0%_0%,rgba(255,255,255,0.14),transparent_45%),radial-gradient(100%_90%_at_100%_100%,rgba(250,204,21,0.12),transparent_45%)]" />
+                <div className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-white/45 to-transparent" />
                 {/* Handle Bar */}
                 <div
                   className="relative w-full flex justify-center pt-4 pb-2"
@@ -133,7 +138,7 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                     </div>
                     <button
                       onClick={() => setMobileOpen(false)}
-                      className="p-2 rounded-full border border-white/20 bg-white/10 text-gray-300 hover:bg-white/20 hover:text-white transition-colors"
+                      className="p-2 rounded-full border border-white/20 bg-black/45 text-gray-300 hover:bg-black/60 hover:text-white transition-colors"
                       aria-label="Close menu"
                     >
                       <X size={20} />
@@ -148,24 +153,48 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                   >
                     {navLinks.map((link, idx) => {
                       const IconComponent = iconMap[link.name] || Home;
+                      const isActive = activeHash === link.href;
+
                       return (
                         <NavLinkItem
                           key={link.name}
                           name={link.name}
                           href={link.href}
                           onClick={() => setMobileOpen(false)}
-                          className="group flex items-center p-3 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 active:scale-[0.98] transition-all duration-200"
+                          className={`group flex items-center p-3 rounded-2xl border active:scale-[0.98] transition-all duration-200 ${
+                            isActive
+                              ? 'bg-white/12 border-yellow-400/35 shadow-[0_0_24px_rgba(250,204,21,0.2)]'
+                              : 'bg-white/5 border-white/8 hover:bg-white/10 hover:border-white/15'
+                          }`}
                           style={{ animationDelay: `${idx * 50}ms` }}
                           tabIndex={0}
                           role="menuitem"
                         >
-                          <div className="p-2 rounded-xl bg-gradient-to-br from-gray-800 to-black border border-white/5 text-gray-400 group-hover:text-yellow-400 group-hover:border-yellow-500/30 transition-colors shadow-inner">
+                          <div
+                            className={`p-2 rounded-xl bg-gradient-to-br from-gray-800 to-black border transition-colors shadow-inner ${
+                              isActive
+                                ? 'border-yellow-400/40 text-yellow-300'
+                                : 'border-white/5 text-gray-400 group-hover:text-yellow-400 group-hover:border-yellow-500/30'
+                            }`}
+                          >
                             <IconComponent className="w-5 h-5" />
                           </div>
-                          <span className="ml-4 text-base font-medium text-gray-200 group-hover:text-white">
+                          <span
+                            className={`ml-4 text-base font-medium transition-colors ${
+                              isActive
+                                ? 'text-white'
+                                : 'text-gray-200 group-hover:text-white'
+                            }`}
+                          >
                             {link.name}
                           </span>
-                          <span className="ml-auto w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-gray-500 group-hover:bg-yellow-500/20 group-hover:text-yellow-400 transition-all">
+                          <span
+                            className={`ml-auto w-8 h-8 flex items-center justify-center rounded-full transition-all ${
+                              isActive
+                                ? 'bg-yellow-500/20 text-yellow-300'
+                                : 'bg-black/45 text-gray-500 group-hover:bg-yellow-500/20 group-hover:text-yellow-400'
+                            }`}
+                          >
                             <ChevronRight className="w-4 h-4" />
                           </span>
                         </NavLinkItem>

@@ -3,7 +3,11 @@ import { Link } from 'react-router-dom';
 import { NavLinkItem } from './NavLinkItem';
 import { navLinks } from '@/constants/navLinks';
 
-export function DesktopNavbar() {
+interface DesktopNavbarProps {
+  activeHash: string;
+}
+
+export function DesktopNavbar({ activeHash }: DesktopNavbarProps) {
   return (
     <>
       {/* Desktop Navigation - xl and above */}
@@ -35,23 +39,37 @@ export function DesktopNavbar() {
 
         {/* Navigation Links */}
         <nav
-          className="flex items-center gap-2 rounded-full border border-white/15 bg-black/20 px-2 py-1 backdrop-blur-md"
+          className="flex items-center gap-2 rounded-full border border-white/12 bg-black/45 px-2 py-1 backdrop-blur-md"
           role="menubar"
           aria-label="Primary navigation"
         >
-          {navLinks.map((link) => (
-            <NavLinkItem
-              key={link.name}
-              href={link.href}
-              name={link.name}
-              className="relative rounded-full px-4 py-2 text-sm lg:text-base font-semibold text-gray-200/95 hover:text-white transition-all duration-300 hover:bg-white/10 group"
-              role="menuitem"
-              tabIndex={0}
-            >
-              {link.name}
-              <span className="pointer-events-none absolute inset-0 rounded-full border border-transparent group-hover:border-white/20 transition-colors duration-300"></span>
-            </NavLinkItem>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = activeHash === link.href;
+
+            return (
+              <NavLinkItem
+                key={link.name}
+                href={link.href}
+                name={link.name}
+                className={`relative rounded-full px-4 py-2 text-sm lg:text-base font-semibold transition-all duration-300 group ${
+                  isActive
+                    ? 'text-white bg-white/14 shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_0_20px_rgba(250,204,21,0.25)]'
+                    : 'text-gray-200/95 hover:text-white hover:bg-white/10'
+                }`}
+                role="menuitem"
+                tabIndex={0}
+              >
+                {link.name}
+                <span
+                  className={`pointer-events-none absolute inset-0 rounded-full border transition-colors duration-300 ${
+                    isActive
+                      ? 'border-yellow-400/50'
+                      : 'border-transparent group-hover:border-white/20'
+                  }`}
+                ></span>
+              </NavLinkItem>
+            );
+          })}
         </nav>
 
         {/* CTA Buttons */}

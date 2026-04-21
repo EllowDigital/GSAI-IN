@@ -131,7 +131,9 @@ export default function HeroSection() {
       );
 
       const shouldShowNow = scrollY.get() >= hindiRevealThresholdRef.current;
-      setShowHindiQuote((prev) => (prev !== shouldShowNow ? shouldShowNow : prev));
+      setShowHindiQuote((prev) =>
+        prev !== shouldShowNow ? shouldShowNow : prev
+      );
     };
 
     updateThreshold();
