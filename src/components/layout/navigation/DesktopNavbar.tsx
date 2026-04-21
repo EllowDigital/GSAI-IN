@@ -3,11 +3,7 @@ import { Link } from 'react-router-dom';
 import { NavLinkItem } from './NavLinkItem';
 import { navLinks } from '@/constants/navLinks';
 
-interface DesktopNavbarProps {
-  activeHash: string;
-}
-
-export function DesktopNavbar({ activeHash }: DesktopNavbarProps) {
+export function DesktopNavbar() {
   return (
     <>
       {/* Desktop Navigation - xl and above */}
@@ -39,54 +35,37 @@ export function DesktopNavbar({ activeHash }: DesktopNavbarProps) {
 
         {/* Navigation Links */}
         <nav
-          className="flex items-center gap-2 rounded-full border border-white/12 bg-black/45 px-2 py-1 backdrop-blur-md"
+          className="flex items-center gap-6 xl:gap-8"
           role="menubar"
           aria-label="Primary navigation"
         >
-          {navLinks.map((link) => {
-            const isActive = activeHash === link.href;
-
-            return (
-              <NavLinkItem
-                key={link.name}
-                href={link.href}
-                name={link.name}
-                className={`relative rounded-full px-4 py-2 text-sm lg:text-base font-semibold transition-all duration-300 group ${
-                  isActive
-                    ? 'text-white bg-white/18 shadow-[0_0_0_1px_rgba(255,255,255,0.28),0_0_24px_rgba(250,204,21,0.38),0_0_38px_rgba(245,158,11,0.2)]'
-                    : 'text-gray-200/95 hover:text-white hover:bg-white/10'
-                }`}
-                role="menuitem"
-                tabIndex={0}
-              >
-                {link.name}
-                {isActive && (
-                  <span className="pointer-events-none absolute inset-[-2px] rounded-full border border-yellow-300/55 shadow-[0_0_20px_rgba(250,204,21,0.45)] animate-[pulse_1.8s_ease-in-out_infinite]" />
-                )}
-                <span
-                  className={`pointer-events-none absolute inset-0 rounded-full border transition-colors duration-300 ${
-                    isActive
-                      ? 'border-yellow-400/50'
-                      : 'border-transparent group-hover:border-white/20'
-                  }`}
-                ></span>
-              </NavLinkItem>
-            );
-          })}
+          {navLinks.map((link) => (
+            <NavLinkItem
+              key={link.name}
+              href={link.href}
+              name={link.name}
+              className="relative text-sm lg:text-base font-medium text-gray-300 hover:text-white transition-colors duration-300 py-2 group"
+              role="menuitem"
+              tabIndex={0}
+            >
+              {link.name}
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-yellow-400 to-red-500 transition-all duration-300 group-hover:w-full"></span>
+            </NavLinkItem>
+          ))}
         </nav>
 
         {/* CTA Buttons */}
         <div className="flex items-center gap-3 flex-shrink-0">
           <Link
             to="/student/login"
-            className="py-2 px-5 h-10 rounded-full flex items-center gap-1.5 border border-white/25 bg-white/5 text-gray-100 hover:text-white hover:border-white/45 hover:bg-white/10 transition-all duration-300 text-sm font-semibold backdrop-blur-sm"
+            className="py-2 px-5 h-10 rounded-full flex items-center gap-1.5 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 transition-all duration-300 text-sm font-medium"
             aria-label="Student portal login"
           >
             Student Portal
           </Link>
           <Link
             to="/enroll"
-            className="relative overflow-hidden group py-2 px-6 h-10 rounded-full flex items-center gap-2 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 text-white shadow-[0_10px_25px_rgba(251,146,60,0.35)] hover:shadow-[0_14px_30px_rgba(251,146,60,0.5)] transition-all duration-300 hover:-translate-y-0.5"
+            className="relative overflow-hidden group py-2 px-6 h-10 rounded-full flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-red-600 text-white shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all duration-300 hover:-translate-y-0.5"
             aria-label="Enroll at Ghatak Sports Academy"
           >
             <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer"></span>
