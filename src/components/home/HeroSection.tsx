@@ -97,10 +97,11 @@ export default function HeroSection() {
   const [isMuted, setIsMuted] = useState(true);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [wordIndex, setWordIndex] = useState(0);
-  const [showSanskrit, setShowSanskrit] = useState(false);
+  const [showHindiQuote, setShowHindiQuote] = useState(false);
   const imageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroRef = useRef<HTMLElement>(null);
+  const hindiRevealThresholdRef = useRef(24);
   const isVideoActive = mediaMode === 'video';
 
   // Use CSS custom properties for mouse position instead of state (no re-renders)
@@ -118,13 +119,36 @@ export default function HeroSection() {
   const { scrollY } = useScroll();
   const parallaxY = useTransform(scrollY, [0, 500], [0, 100]);
   const parallaxScale = useTransform(scrollY, [0, 500], [1.02, 1.1]);
-  const contentOpacity = useTransform(scrollY, [0, 300], [1, 0]);
+  const contentOpacity = useTransform(scrollY, [0, 420], [1, 0]);
 
-  // Sanskrit quote — use useMotionValueEvent instead of subscribing + setState on every frame
+  // Keep reveal threshold responsive for mobile/tablet/desktop viewport heights.
+  useEffect(() => {
+    const updateThreshold = () => {
+      const viewportHeight = window.innerHeight || 800;
+      hindiRevealThresholdRef.current = Math.max(
+        18,
+        Math.min(Math.round(viewportHeight * 0.07), 72)
+      );
+
+      const shouldShowNow = scrollY.get() >= hindiRevealThresholdRef.current;
+      setShowHindiQuote((prev) => (prev !== shouldShowNow ? shouldShowNow : prev));
+    };
+
+    updateThreshold();
+    window.addEventListener('resize', updateThreshold);
+    window.addEventListener('orientationchange', updateThreshold);
+
+    return () => {
+      window.removeEventListener('resize', updateThreshold);
+      window.removeEventListener('orientationchange', updateThreshold);
+    };
+  }, [scrollY]);
+
+  // Hindi quote reveal on scroll with threshold normalized by viewport.
   useMotionValueEvent(scrollY, 'change', (latest) => {
-    const shouldShow = latest >= 20;
+    const shouldShow = latest >= hindiRevealThresholdRef.current;
     // Only update state when value actually changes
-    setShowSanskrit((prev) => (prev !== shouldShow ? shouldShow : prev));
+    setShowHindiQuote((prev) => (prev !== shouldShow ? shouldShow : prev));
   });
 
   // Word animation cycle
@@ -286,7 +310,6 @@ export default function HeroSection() {
             alt=""
             aria-hidden="true"
             loading="eager"
-            fetchPriority="high"
             decoding="async"
             className="absolute inset-0 w-full h-full object-cover"
           />
@@ -437,7 +460,7 @@ export default function HeroSection() {
             </a>
 
             <a
-              href="#programs"
+              href="/programs"
               className="group inline-flex items-center justify-center px-5 sm:px-6 md:px-8 py-3 sm:py-3.5 text-sm sm:text-base font-bold text-white transition-all duration-200 bg-white/10 border border-white/20 rounded-xl hover:bg-white/20 hover:border-white/40 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50"
             >
               <span className="flex items-center gap-2">
@@ -447,21 +470,21 @@ export default function HeroSection() {
             </a>
           </motion.div>
 
-          {/* Sanskrit Quote */}
+          {/* Hindi Quote */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{
-              opacity: showSanskrit ? 1 : 0,
-              y: showSanskrit ? 0 : 10,
+              opacity: showHindiQuote ? 1 : 0,
+              y: showHindiQuote ? 0 : 10,
             }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
             className="mt-6 sm:mt-8 md:mt-10 text-center px-4"
           >
             <p
-              lang="sa"
+              lang="hi"
               className="text-base sm:text-lg md:text-xl lg:text-2xl font-serif text-yellow-400/80 tracking-wide mb-1"
             >
-              शौर्यं बलं अनुशासनम्।
+              शक्ति, साहस और अनुशासन।
             </p>
             <p className="text-xs sm:text-sm text-gray-400 italic tracking-wider">
               Strength is born from discipline.
