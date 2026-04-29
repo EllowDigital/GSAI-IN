@@ -35,8 +35,7 @@ const hasPlaceholderValue = (value: string): boolean => {
 };
 
 export const IS_SUPABASE_CONFIGURED =
-  !hasPlaceholderValue(SUPABASE_URL) &&
-  !hasPlaceholderValue(SUPABASE_ANON_KEY);
+  !hasPlaceholderValue(SUPABASE_URL) && !hasPlaceholderValue(SUPABASE_ANON_KEY);
 
 export const ADMIN_SESSION_STORAGE_KEY = 'gsai-admin-session';
 export const STUDENT_SESSION_STORAGE_KEY = 'gsai-student-session';

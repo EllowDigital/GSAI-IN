@@ -6,14 +6,70 @@ export type SupabaseImageOptions = {
   resize?: 'cover' | 'contain' | 'fill';
 };
 
+import { SUPABASE_URL } from '@/services/supabase/constants';
+
 const DEFAULT_QUALITY = 72;
 
 const OBJECT_PUBLIC_PREFIX = '/storage/v1/object/public/';
 const RENDER_PUBLIC_PREFIX = '/storage/v1/render/image/public/';
+const STORAGE_PREFIX = '/storage/v1/';
+
+function toAbsoluteSupabaseUrl(rawUrl: string): URL | null {
+  const value = rawUrl.trim();
+  if (!value) return null;
+
+  // Absolute URL.
+  if (/^https?:\/\//i.test(value)) {
+    try {
+      return new URL(value);
+    } catch {
+      return null;
+    }
+  }
+
+  // Relative storage API URLs.
+  if (SUPABASE_URL && value.startsWith(STORAGE_PREFIX)) {
+    try {
+      return new URL(value, SUPABASE_URL);
+    } catch {
+      return null;
+    }
+  }
+
+  if (SUPABASE_URL && value.startsWith('storage/v1/')) {
+    try {
+      return new URL(`/${value}`, SUPABASE_URL);
+    } catch {
+      return null;
+    }
+  }
+
+  // Bucket/object paths like "gallery/file.jpg".
+  if (SUPABASE_URL && !value.startsWith('/')) {
+    try {
+      return new URL(`${OBJECT_PUBLIC_PREFIX}${value}`, SUPABASE_URL);
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+}
 
 function isSupabaseStorageUrl(url: URL): boolean {
+  let configuredHost = '';
+  try {
+    configuredHost = SUPABASE_URL ? new URL(SUPABASE_URL).hostname : '';
+  } catch {
+    configuredHost = '';
+  }
+
+  const isSupabaseHost =
+    url.hostname.endsWith('.supabase.co') ||
+    (configuredHost !== '' && url.hostname === configuredHost);
+
   return (
-    url.hostname.endsWith('.supabase.co') &&
+    isSupabaseHost &&
     (url.pathname.startsWith(OBJECT_PUBLIC_PREFIX) ||
       url.pathname.startsWith(RENDER_PUBLIC_PREFIX))
   );
@@ -42,11 +98,14 @@ export function optimizeSupabaseImageUrl(
 ): string {
   if (!rawUrl) return '';
 
+  const resolvedUrl = toAbsoluteSupabaseUrl(rawUrl);
+  if (!resolvedUrl) return rawUrl;
+
   try {
-    const url = new URL(rawUrl);
+    const url = resolvedUrl;
 
     if (!isSupabaseStorageUrl(url)) {
-      return rawUrl;
+      return url.toString();
     }
 
     const transformUrl = toTransformEndpoint(url);
