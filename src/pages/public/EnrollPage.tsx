@@ -226,24 +226,56 @@ export default function EnrollPage() {
     'ghatak sports academy india',
     'ghatak sports academy admission',
     'ghatak sports academy enroll',
-    'ghatak admissio',
-    'ghatak sports admissio',
-    'ghatak sports academy admissio',
-    'ghatak sports academy india admissio',
+    'ghatak admission',
+    'ghatak sports admission',
+    'ghatak sports academy admission',
+    'ghatak sports academy india admission',
     'ghatak enroll',
     'ghatak sports enroll',
     'ghatak sports academy india enroll',
+    'martial arts admission lucknow',
+    'boxing academy enrollment',
+    'self defense training admission',
+    'grappling classes enroll',
+    'martial arts coaching lucknow',
+    'sports academy admission lucknow',
+    'ghatak admission form',
+    'ghatak enrollment form',
   ];
 
   const enrollStructuredData = {
     '@context': 'https://schema.org',
     '@graph': [
       {
-        '@type': 'EducationalOrganization',
+        '@type': 'LocalBusiness',
         '@id': 'https://ghataksportsacademy.com/#organization',
         name: 'Ghatak Sports Academy India',
+        alternateName: 'Ghatak Sports',
         url: 'https://ghataksportsacademy.com',
         email: ACADEMY_CONTACT_EMAIL,
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: 'Lucknow',
+          addressLocality: 'Lucknow',
+          addressRegion: 'Uttar Pradesh',
+          addressCountry: 'IN',
+        },
+        sameAs: [
+          'https://ghataksportsacademy.com',
+          'https://ghataksportsacademy.com/enroll',
+        ],
+        knowsAbout: [
+          'Martial Arts Training',
+          'Boxing Academy',
+          'Grappling Classes',
+          'Self Defense',
+        ],
+      },
+      {
+        '@type': 'SportsActivityLocation',
+        name: 'Ghatak Sports Academy India',
+        url: 'https://ghataksportsacademy.com/enroll',
+        sport: ['Martial Arts', 'Boxing', 'Grappling', 'Self Defense'],
         address: {
           '@type': 'PostalAddress',
           addressLocality: 'Lucknow',
@@ -252,16 +284,28 @@ export default function EnrollPage() {
         },
       },
       {
-        '@type': 'SportsActivityLocation',
-        name: 'Ghatak Sports Academy India',
+        '@type': 'Service',
+        name: 'Ghatak Sports Academy Enrollment',
+        provider: {
+          '@type': 'LocalBusiness',
+          '@id': 'https://ghataksportsacademy.com/#organization',
+          name: 'Ghatak Sports Academy India',
+        },
         url: 'https://ghataksportsacademy.com/enroll',
-        sport: ['Martial Arts', 'Boxing', 'Grappling', 'Self Defense'],
+        description:
+          'Official enrollment page for Ghatak Sports Academy India. Apply for Boxing, Grappling, Self Defense, and Martial Arts training in Lucknow.',
+        areaServed: {
+          '@type': 'City',
+          name: 'Lucknow',
+        },
       },
       {
         '@type': 'WebPage',
         '@id': 'https://ghataksportsacademy.com/enroll',
-        name: 'Ghatak Sports Academy Admission and Enroll',
+        name: 'Ghatak Sports Admission & Enroll',
         url: 'https://ghataksportsacademy.com/enroll',
+        description:
+          'Official Ghatak Sports admission & enroll page. Apply now for martial arts training in Lucknow.',
         isPartOf: { '@id': 'https://ghataksportsacademy.com/#organization' },
       },
     ],
@@ -414,8 +458,8 @@ export default function EnrollPage() {
     <div className="min-h-screen bg-[#050505] selection:bg-orange-500/30">
       <Navbar />
       <Seo
-        title="Ghatak Sports Academy Admission and Enroll | India"
-        description="Official Ghatak Sports Academy India admission and enroll page. Apply for Boxing, Grappling, Self Defense, Fat Loss, and martial arts coaching in Lucknow."
+        title="Ghatak Sports Admission & Enroll - Official Martial Arts Academy Lucknow"
+        description="Ghatak Sports admission & enroll online now. Official admission portal for Ghatak Sports Academy India - Boxing, Grappling, Self Defense in Lucknow. Apply today!"
         canonical="/enroll"
         keywords={enrollKeywords}
         noIndex={hasQueryParams}
@@ -449,7 +493,7 @@ export default function EnrollPage() {
                       ADMISSION OPEN 2026
                     </Badge>
                     <h1 className="text-3xl lg:text-5xl font-black text-white leading-tight">
-                      Ghatak Sports Academy Admission & Enroll
+                      Ghatak Sports Admission & Enroll Now Online
                     </h1>
                     <h2 className="text-4xl lg:text-6xl font-black text-white leading-tight">
                       Begin Your{' '}
@@ -459,11 +503,11 @@ export default function EnrollPage() {
                       Legacy
                     </h2>
                     <p className="text-zinc-400 text-lg leading-relaxed max-w-md">
-                      Use this official Ghatak Sports Academy India admission
-                      portal to enroll in your preferred discipline. If you
-                      searched for terms like ghatak sports academy admission,
-                      ghatak sports academy enroll, or variations of
-                      &quot;ghatak admission,&quot; you are on the right page.
+                      Start your Ghatak sports enrollment today through our official admission portal. 
+                      Ghatak Sports Academy India welcomes aspiring martial artists for Boxing, Grappling, 
+                      Self Defense, and more. Whether you searched for &quot;ghatak sports admission,&quot; 
+                      &quot;ghatak sports enroll,&quot; or &quot;ghatak admission,&quot; 
+                      this is the official page to apply now.
                     </p>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
