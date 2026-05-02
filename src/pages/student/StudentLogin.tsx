@@ -27,16 +27,18 @@ const BrandingPanel = React.memo(() => (
       <div className="relative z-10 space-y-8">
         <div className="inline-flex items-center gap-2 rounded-full border border-indigo-300/30 bg-indigo-500/20 px-4 py-1.5 text-xs font-semibold tracking-wide text-indigo-100 backdrop-blur-md shadow-sm">
           <Sparkles className="h-4 w-4 text-indigo-300" />
-          Student Access Portal
+          Ghatak Sports Student Portal
         </div>
 
         <div className="space-y-4">
           <h1 className="text-4xl xl:text-5xl font-bold leading-[1.15] tracking-tight">
-            Track Progress, Fees, Events & Competitions.
+            Ghatak Sports Student Portal Login.
           </h1>
           <p className="max-w-md text-base text-slate-300 leading-relaxed">
             Securely log in to view your personal dashboard, manage upcoming
-            events, and stay updated in one modern workspace.
+            events, and stay updated in one modern workspace. If you searched
+            for Ghatak Sports student login or student portal, this is the
+            official access page.
           </p>
         </div>
 
@@ -70,10 +72,10 @@ BrandingPanel.displayName = 'BrandingPanel';
 const studentPortalStructuredData = {
   '@context': 'https://schema.org',
   '@type': 'WebPage',
-  name: 'Ghatak Sports Academy Student Portal Login',
+  name: 'Ghatak Sports Student Portal Login',
   url: 'https://ghataksportsacademy.com/student/login',
   description:
-    'Official student portal login page for Ghatak Sports Academy India.',
+    'Official Ghatak Sports student portal login page for Ghatak Sports Academy India.',
   isPartOf: {
     '@type': 'WebSite',
     name: 'Ghatak Sports Academy India',
@@ -83,8 +85,11 @@ const studentPortalStructuredData = {
 const studentPortalStructuredDataList = [studentPortalStructuredData];
 const studentPortalKeywords = [
   'ghatak sports academy student portal',
+  'ghatak sports student portal',
+  'ghatak sports student login',
   'ghatak student login',
   'ghatak sports academy login',
+  'ghatak sports student',
   'gsai student portal',
   'ghatak sports academy student dashboard',
 ];
@@ -123,10 +128,11 @@ export default function StudentLogin() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-indigo-50/80 font-sans text-slate-900 selection:bg-primary/20">
       <Seo
-        title="Ghatak Sports Academy Student Portal Login | GSAI"
-        description="Login to the official Ghatak Sports Academy India student portal to view progress, fees, events, competitions, and announcements."
+        title="Ghatak Sports Student Portal Login | GSAI"
+        description="Login to the official Ghatak Sports student portal to view progress, fees, events, competitions, and announcements."
         canonical="/student/login"
         keywords={studentPortalKeywords}
+        noIndex
         structuredData={studentPortalStructuredDataList}
       />
       <div className="mx-auto grid min-h-screen w-full max-w-7xl items-center gap-8 px-4 py-8 sm:px-6 lg:grid-cols-2 lg:px-12">
@@ -142,7 +148,7 @@ export default function StudentLogin() {
                 <GraduationCap className="h-8 w-8 text-primary" />
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-                Welcome Back
+                Ghatak Sports Student Portal
               </h2>
               <p className="text-sm text-muted-foreground font-medium">
                 Sign in with your Student ID to continue

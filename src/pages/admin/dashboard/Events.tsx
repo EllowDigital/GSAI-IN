@@ -87,7 +87,9 @@ const Events = () => {
   }, []);
 
   useEffect(() => {
-    void fetchEvents();
+    const frame = window.requestAnimationFrame(() => {
+      void fetchEvents();
+    });
     const channel = supabase
       .channel('events-db-changes')
       .on(
@@ -100,6 +102,7 @@ const Events = () => {
       .subscribe();
 
     return () => {
+      window.cancelAnimationFrame(frame);
       supabase.removeChannel(channel);
     };
   }, [fetchEvents]);

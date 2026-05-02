@@ -44,12 +44,12 @@ export function DesktopNavbar() {
               key={link.name}
               href={link.href}
               name={link.name}
-              className="relative text-sm lg:text-base font-medium text-gray-300 hover:text-white transition-colors duration-300 py-2 group"
+              className="relative text-sm lg:text-base font-medium text-gray-300 hover:text-white focus-visible:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm transition-colors duration-300 py-2 group"
               role="menuitem"
               tabIndex={0}
             >
               {link.name}
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-yellow-400 to-red-500 transition-all duration-300 group-hover:w-full"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-yellow-400 to-red-500 transition-all duration-300 group-hover:w-full group-focus-visible:w-full"></span>
             </NavLinkItem>
           ))}
         </nav>
@@ -57,15 +57,15 @@ export function DesktopNavbar() {
         {/* CTA Buttons */}
         <div className="flex items-center gap-3 flex-shrink-0">
           <Link
-            to="/student/login"
-            className="py-2 px-5 h-10 rounded-full flex items-center gap-1.5 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 transition-all duration-300 text-sm font-medium"
-            aria-label="Student portal login"
+            to="/student"
+            className="py-2 px-5 h-10 rounded-full flex items-center gap-1.5 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-all duration-300 text-sm font-medium"
+            aria-label="Student portal"
           >
             Student Portal
           </Link>
           <Link
             to="/enroll"
-            className="relative overflow-hidden group py-2 px-6 h-10 rounded-full flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-red-600 text-white shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all duration-300 hover:-translate-y-0.5"
+            className="relative overflow-hidden group py-2 px-6 h-10 rounded-full flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-red-600 text-white shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
             aria-label="Enroll at Ghatak Sports Academy"
           >
             <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer"></span>

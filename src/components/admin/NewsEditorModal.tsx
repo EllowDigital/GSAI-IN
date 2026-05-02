@@ -62,23 +62,29 @@ export default function NewsEditorModal({
 
   React.useEffect(() => {
     if (editingNews) {
-      reset({
-        title: editingNews.title,
-        short_description: editingNews.short_description,
-        date: editingNews.date,
-        status: editingNews.status,
-        image_url: editingNews.image_url,
+      const frame = window.requestAnimationFrame(() => {
+        reset({
+          title: editingNews.title,
+          short_description: editingNews.short_description,
+          date: editingNews.date,
+          status: editingNews.status,
+          image_url: editingNews.image_url,
+        });
+        setImageUrl(editingNews.image_url);
       });
-      setImageUrl(editingNews.image_url);
+      return () => window.cancelAnimationFrame(frame);
     } else {
-      reset({
-        title: '',
-        short_description: '',
-        date: '',
-        status: 'Draft',
-        image_url: null,
+      const frame = window.requestAnimationFrame(() => {
+        reset({
+          title: '',
+          short_description: '',
+          date: '',
+          status: 'Draft',
+          image_url: null,
+        });
+        setImageUrl(null);
       });
-      setImageUrl(null);
+      return () => window.cancelAnimationFrame(frame);
     }
   }, [editingNews, open, reset]);
 

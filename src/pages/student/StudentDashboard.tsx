@@ -184,7 +184,7 @@ export default function StudentDashboard() {
         .select('*')
         .order('date', { ascending: false });
       if (error) throw error;
-      return data || [];
+      return (data || []) as Competition[];
     },
     enabled: isAuthenticated,
     staleTime: 1000 * 60 * 5,

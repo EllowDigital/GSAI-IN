@@ -109,9 +109,15 @@ export default function AssignStudentBeltDialog({
   // Auto-select first program when student changes
   React.useEffect(() => {
     if (studentId && studentPrograms.length > 0) {
-      setSelectedProgram(studentPrograms[0]);
+      const frame = window.requestAnimationFrame(() => {
+        setSelectedProgram(studentPrograms[0]);
+      });
+      return () => window.cancelAnimationFrame(frame);
     } else {
-      setSelectedProgram('');
+      const frame = window.requestAnimationFrame(() => {
+        setSelectedProgram('');
+      });
+      return () => window.cancelAnimationFrame(frame);
     }
   }, [studentId, studentPrograms]);
 

@@ -264,6 +264,12 @@ export default function ProgramDetail() {
               title="Related Internal Links"
               items={[
                 {
+                  to: '/enroll',
+                  label: 'Ghatak Sports Admission & Enroll',
+                  description:
+                    'Start your enrollment at Ghatak Sports Academy India. Apply now for admission.',
+                },
+                {
                   to: '/programs',
                   label: 'All Programs',
                   description:

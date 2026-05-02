@@ -54,6 +54,7 @@ const AllProgramsPage = lazy(() => import('@/pages/public/AllProgramsPage'));
 const AllCompetitionsPage = lazy(
   () => import('@/pages/public/AllCompetitionsPage')
 );
+const StudentLanding = lazy(() => import('@/pages/student/StudentLanding'));
 const EnrollPage = lazy(() => import('@/pages/public/EnrollPage'));
 const StudentPortal = lazy(() => import('./pages/student/StudentPortal'));
 
@@ -124,24 +125,31 @@ const App = () => {
 
   useEffect(() => {
     if (!isLoginPortalPage) {
-      setDismissedInstallToast(true);
-      return;
+      const frame = window.requestAnimationFrame(() => {
+        setDismissedInstallToast(true);
+      });
+      return () => window.cancelAnimationFrame(frame);
     }
 
     const key = `pwa-install-dismissed-${activePortalScope}`;
-    try {
-      const dismissed = localStorage.getItem(key);
-      if (!dismissed) {
-        setDismissedInstallToast(false);
-        return;
-      }
+    const frame = window.requestAnimationFrame(() => {
+      try {
+        const dismissed = localStorage.getItem(key);
+        if (!dismissed) {
+          setDismissedInstallToast(false);
+          return;
+        }
 
-      const { timestamp } = JSON.parse(dismissed);
-      const isStillDismissed = Date.now() - timestamp < 7 * 24 * 60 * 60 * 1000;
-      setDismissedInstallToast(isStillDismissed);
-    } catch {
-      setDismissedInstallToast(false);
-    }
+        const { timestamp } = JSON.parse(dismissed);
+        const isStillDismissed =
+          Date.now() - timestamp < 7 * 24 * 60 * 60 * 1000;
+        setDismissedInstallToast(isStillDismissed);
+      } catch {
+        setDismissedInstallToast(false);
+      }
+    });
+
+    return () => window.cancelAnimationFrame(frame);
   }, [activePortalScope, isLoginPortalPage]);
 
   // Check if already installed as PWA
@@ -176,8 +184,13 @@ const App = () => {
         };
       }
 
-      const timeoutId = window.setTimeout(task, 120);
-      return () => window.clearTimeout(timeoutId);
+      const timeoutId = (
+        window as unknown as { setTimeout: typeof setTimeout }
+      ).setTimeout(task, 120);
+      return () =>
+        (
+          window as unknown as { clearTimeout: typeof clearTimeout }
+        ).clearTimeout(timeoutId);
     };
 
     const cancelIdleInit = scheduleIdleTask(() => {
@@ -189,12 +202,9 @@ const App = () => {
       }
     });
 
-    try {
-      // Let the UI render as soon as possible.
+    const loadingFrame = window.requestAnimationFrame(() => {
       setLoading(false);
-    } catch {
-      setLoading(false);
-    }
+    });
 
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -235,6 +245,7 @@ const App = () => {
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
+      window.cancelAnimationFrame(loadingFrame);
       cancelIdleInit();
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
@@ -345,6 +356,7 @@ const App = () => {
                     <Route path="/admin/*" element={<AdminArea />} />
 
                     {/* --- STUDENT PORTAL --- */}
+                    <Route path="/student" element={<StudentLanding />} />
                     <Route path="/student/*" element={<StudentPortal />} />
 
                     {/* CUSTOM ROUTES */}

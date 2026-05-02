@@ -307,6 +307,9 @@ export const shouldPageBeIndexed = (pathname: string): boolean => {
     /^\/signup/,
     /^\/404/,
     /^\/(pages\/)?success/,
+    /^\/student\/login/,
+    /^\/student\/set-password/,
+    /^\/student\/dashboard/,
   ];
 
   return !noIndexPatterns.some((pattern) => pattern.test(pathname));

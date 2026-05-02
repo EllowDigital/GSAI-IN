@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { BookOpenText, Calendar, ArrowRight, Clock, User } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
 import { BlogPostModal } from '@/components/modals/BlogPostModal';
-import { optimizeSupabaseImageUrl } from '@/utils/supabaseImage';
+import { SmartImage } from '@/components/ui/smart-image';
 
 function formatDate(dt: string) {
   return new Date(dt).toLocaleDateString(undefined, {
@@ -23,13 +23,16 @@ function getReadingTime(description: string | null): string {
   return `${readingTime} min read`;
 }
 
-type Blog = {
+type BlogCard = {
   id: string;
   image_url: string | null;
   title: string;
   description: string | null;
-  content?: string;
   published_at: string | null;
+};
+
+type BlogDetail = BlogCard & {
+  content: string;
 };
 
 const containerVariants: Variants = {
@@ -57,10 +60,12 @@ const itemVariants: Variants = {
 export default function BlogNewsSection() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [selectedBlog, setSelectedBlog] = React.useState<Blog | null>(null);
+  const [selectedBlog, setSelectedBlog] = React.useState<BlogDetail | null>(
+    null
+  );
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  const { data: posts = [], isLoading: loading } = useQuery<Blog[]>({
+  const { data: posts = [], isLoading: loading } = useQuery<BlogCard[]>({
     queryKey: ['blogs', 'public', 'cards'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -69,7 +74,7 @@ export default function BlogNewsSection() {
         .order('published_at', { ascending: false })
         .limit(6);
       if (error) throw error;
-      return (data as Blog[]) ?? [];
+      return (data as BlogCard[]) ?? [];
     },
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
@@ -107,7 +112,11 @@ export default function BlogNewsSection() {
             .single();
 
           if (error) throw error;
-          return data as Blog;
+          if (!data || typeof data.content !== 'string') {
+            throw new Error('Blog detail is missing required content');
+          }
+
+          return data as BlogDetail;
         },
         staleTime: 1000 * 60 * 10,
         gcTime: 1000 * 60 * 30,
@@ -220,18 +229,17 @@ export default function BlogNewsSection() {
               >
                 <div className="relative h-48 sm:h-56 overflow-hidden">
                   {post.image_url ? (
-                    <img
-                      src={optimizeSupabaseImageUrl(post.image_url, {
+                    <SmartImage
+                      src={post.image_url}
+                      transform={{
                         width: 720,
                         height: 420,
                         quality: 72,
                         format: 'webp',
                         resize: 'cover',
-                      })}
+                      }}
                       alt={post.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      loading="lazy"
-                      decoding="async"
+                      imgClassName="object-cover transition-transform duration-500 group-hover:scale-110"
                       sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                     />
                   ) : (

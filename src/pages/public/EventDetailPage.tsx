@@ -65,7 +65,6 @@ export default function EventDetail() {
       } catch (error) {
         console.error('Error fetching event:', error);
         toast.error('Failed to load event details');
-        navigate('/');
       } finally {
         setLoading(false);
       }

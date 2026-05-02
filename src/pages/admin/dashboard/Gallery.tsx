@@ -187,7 +187,10 @@ export default function Gallery() {
   }, [images, query, tagFilter, dateFrom, dateTo]);
 
   useEffect(() => {
-    setPage(1);
+    const frame = window.requestAnimationFrame(() => {
+      setPage(1);
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, [query, tagFilter, dateFrom, dateTo, viewMode]);
 
   const activeDateRange = useMemo(

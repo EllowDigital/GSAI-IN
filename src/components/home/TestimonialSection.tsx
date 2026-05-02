@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import {
   Card,
   CardHeader,
@@ -118,18 +118,23 @@ export default function TestimonialSection() {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
 
-  const plugin = React.useRef(
-    Autoplay({ delay: 4000, stopOnInteraction: true })
+  const autoplayPlugin = useMemo(
+    () => Autoplay({ delay: 4000, stopOnInteraction: true }),
+    []
   );
 
   useEffect(() => {
     if (!api) return;
 
-    setCurrent(api.selectedScrollSnap());
+    const syncCurrent = () => setCurrent(api.selectedScrollSnap());
+    const frame = window.requestAnimationFrame(syncCurrent);
 
-    api.on('select', () => {
-      setCurrent(api.selectedScrollSnap());
-    });
+    api.on('select', syncCurrent);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      api.off('select', syncCurrent);
+    };
   }, [api]);
 
   return (
@@ -218,11 +223,11 @@ export default function TestimonialSection() {
         >
           <Carousel
             opts={{ align: 'start', loop: true }}
-            plugins={[plugin.current]}
+            plugins={[autoplayPlugin]}
             setApi={setApi}
             className="w-full"
-            onMouseEnter={plugin.current.stop}
-            onMouseLeave={plugin.current.reset}
+            onMouseEnter={() => autoplayPlugin.stop()}
+            onMouseLeave={() => autoplayPlugin.reset()}
           >
             <CarouselContent className="-ml-4">
               {testimonials.map((t, i) => (

@@ -74,11 +74,16 @@ export function FeeForm({
   onClose,
 }: Props) {
   const queryClient = useQueryClient();
-  const [selectedProgramName, setSelectedProgramName] =
-    React.useState(initialProgramName);
+  const [selectedProgramName, setSelectedProgramName] = React.useState(
+    () => initialProgramName || 'General'
+  );
 
   React.useEffect(() => {
-    setSelectedProgramName(initialProgramName || 'General');
+    const nextProgram = initialProgramName || 'General';
+    const frame = window.requestAnimationFrame(() => {
+      setSelectedProgramName(nextProgram);
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, [initialProgramName]);
 
   const { data: enrolledPrograms = [] } = useQuery({
@@ -132,7 +137,10 @@ export function FeeForm({
     ) {
       return;
     }
-    setSelectedProgramName(studentProgramOptions[0] || 'General');
+    const frame = window.requestAnimationFrame(() => {
+      setSelectedProgramName(studentProgramOptions[0] || 'General');
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, [selectedProgramName, studentProgramOptions]);
 
   const { data: carryForwardForProgram } = useQuery({

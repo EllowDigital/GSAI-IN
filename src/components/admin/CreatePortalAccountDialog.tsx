@@ -60,8 +60,11 @@ export default function CreatePortalAccountDialog({
     if (student && open) {
       const autoLoginId = generateLoginId(student.aadhar_number);
       const autoPassword = generateDefaultPassword(student.join_date);
-      setLoginId(autoLoginId);
-      setPassword(autoPassword);
+      const frame = window.requestAnimationFrame(() => {
+        setLoginId(autoLoginId);
+        setPassword(autoPassword);
+      });
+      return () => window.cancelAnimationFrame(frame);
     }
   }, [student, open]);
 

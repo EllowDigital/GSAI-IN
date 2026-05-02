@@ -80,7 +80,10 @@ export default function FeeSettingsCard() {
       PROGRAMS.forEach((p) => {
         initial[p.value] = programFees?.[p.value] ?? globalFee;
       });
-      setFeeValues(initial);
+      const frame = window.requestAnimationFrame(() => {
+        setFeeValues(initial);
+      });
+      return () => window.cancelAnimationFrame(frame);
     }
   }, [editing, programFees, globalFee]);
 

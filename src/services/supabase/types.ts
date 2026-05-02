@@ -652,6 +652,7 @@ export type Database = {
           monthly_fee: number;
           notes: string | null;
           paid_amount: number;
+          program_name: string;
           receipt_url: string | null;
           status: string | null;
           student_id: string;
@@ -666,6 +667,7 @@ export type Database = {
           monthly_fee: number;
           notes?: string | null;
           paid_amount?: number;
+          program_name?: string;
           receipt_url?: string | null;
           status?: string | null;
           student_id: string;
@@ -680,6 +682,7 @@ export type Database = {
           monthly_fee?: number;
           notes?: string | null;
           paid_amount?: number;
+          program_name?: string;
           receipt_url?: string | null;
           status?: string | null;
           student_id?: string;
@@ -696,6 +699,48 @@ export type Database = {
           },
           {
             foreignKeyName: 'fees_student_id_fkey';
+            columns: ['student_id'];
+            isOneToOne: false;
+            referencedRelation: 'students_masked';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      student_program_fee_overrides: {
+        Row: {
+          created_at: string;
+          id: string;
+          monthly_fee: number;
+          program_name: string;
+          student_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          monthly_fee: number;
+          program_name: string;
+          student_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          monthly_fee?: number;
+          program_name?: string;
+          student_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'student_program_fee_overrides_student_id_fkey';
+            columns: ['student_id'];
+            isOneToOne: false;
+            referencedRelation: 'students';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'student_program_fee_overrides_student_id_fkey';
             columns: ['student_id'];
             isOneToOne: false;
             referencedRelation: 'students_masked';

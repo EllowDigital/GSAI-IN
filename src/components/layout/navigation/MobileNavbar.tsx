@@ -108,11 +108,15 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Handle Bar */}
-                <div
-                  className="w-full flex justify-center pt-4 pb-2"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  <div className="w-12 h-1.5 bg-white/20 rounded-full hover:bg-white/40 transition-colors cursor-pointer" />
+                <div className="w-full flex justify-center pt-4 pb-2">
+                  <button
+                    type="button"
+                    onClick={() => setMobileOpen(false)}
+                    className="w-16 h-6 inline-flex items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+                    aria-label="Close mobile menu"
+                  >
+                    <span className="w-12 h-1.5 bg-white/20 rounded-full hover:bg-white/40 transition-colors" />
+                  </button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto px-6 pb-8 scrollbar-hide">
@@ -131,7 +135,7 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                     </div>
                     <button
                       onClick={() => setMobileOpen(false)}
-                      className="p-2 rounded-full bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition-colors"
+                      className="p-2 rounded-full bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                       aria-label="Close menu"
                     >
                       <X size={20} />
@@ -152,18 +156,18 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                           name={link.name}
                           href={link.href}
                           onClick={() => setMobileOpen(false)}
-                          className="group flex items-center p-3 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 active:scale-[0.98] transition-all duration-200"
+                          className="group flex items-center p-3 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 active:scale-[0.98] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                           style={{ animationDelay: `${idx * 50}ms` }}
                           tabIndex={0}
                           role="menuitem"
                         >
-                          <div className="p-2 rounded-xl bg-gradient-to-br from-gray-800 to-black border border-white/5 text-gray-400 group-hover:text-yellow-400 group-hover:border-yellow-500/30 transition-colors shadow-inner">
+                          <div className="p-2 rounded-xl bg-gradient-to-br from-gray-800 to-black border border-white/5 text-gray-400 group-hover:text-yellow-400 group-hover:border-yellow-500/30 group-focus-visible:text-yellow-400 group-focus-visible:border-yellow-500/30 transition-colors shadow-inner">
                             <IconComponent className="w-5 h-5" />
                           </div>
-                          <span className="ml-4 text-base font-medium text-gray-200 group-hover:text-white">
+                          <span className="ml-4 text-base font-medium text-gray-200 group-hover:text-white group-focus-visible:text-white">
                             {link.name}
                           </span>
-                          <span className="ml-auto w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-gray-500 group-hover:bg-yellow-500/20 group-hover:text-yellow-400 transition-all">
+                          <span className="ml-auto w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-gray-500 group-hover:bg-yellow-500/20 group-hover:text-yellow-400 group-focus-visible:bg-yellow-500/20 group-focus-visible:text-yellow-400 transition-all">
                             <ChevronRight className="w-4 h-4" />
                           </span>
                         </NavLinkItem>
@@ -183,7 +187,7 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                     </Link>
 
                     <Link
-                      to="/student/login"
+                      to="/student"
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center justify-center gap-2 p-3.5 rounded-2xl border border-white/15 text-gray-200 text-base font-semibold hover:bg-white/10 active:scale-[0.98] transition-all"
                       role="menuitem"

@@ -529,11 +529,71 @@ export type Database = {
         };
         Relationships: [];
       };
+      enrollment_email_events: {
+        Row: {
+          action: string;
+          created_at: string;
+          enrollment_request_id: string;
+          error_message: string | null;
+          id: string;
+          idempotency_key: string;
+          provider_message_id: string | null;
+          recipient_email: string;
+          sent_at: string | null;
+          status: string;
+          subject: string;
+          triggered_by: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          action: string;
+          created_at?: string;
+          enrollment_request_id: string;
+          error_message?: string | null;
+          id?: string;
+          idempotency_key: string;
+          provider_message_id?: string | null;
+          recipient_email: string;
+          sent_at?: string | null;
+          status?: string;
+          subject: string;
+          triggered_by?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          action?: string;
+          created_at?: string;
+          enrollment_request_id?: string;
+          error_message?: string | null;
+          id?: string;
+          idempotency_key?: string;
+          provider_message_id?: string | null;
+          recipient_email?: string;
+          sent_at?: string | null;
+          status?: string;
+          subject?: string;
+          triggered_by?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'enrollment_email_events_enrollment_request_id_fkey';
+            columns: ['enrollment_request_id'];
+            isOneToOne: false;
+            referencedRelation: 'enrollment_requests';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       enrollment_requests: {
         Row: {
           aadhar_number: string | null;
           admin_notes: string | null;
           age: number;
+          approved_email_sent: boolean;
+          approved_email_sent_at: string | null;
+          contacted_email_sent: boolean;
+          contacted_email_sent_at: string | null;
           created_at: string;
           gender: string;
           id: string;
@@ -543,6 +603,8 @@ export type Database = {
           parent_name: string;
           parent_phone: string;
           program: string;
+          rejected_email_sent: boolean;
+          rejected_email_sent_at: string | null;
           reviewed_at: string | null;
           reviewed_by: string | null;
           status: string;
@@ -554,6 +616,10 @@ export type Database = {
           aadhar_number?: string | null;
           admin_notes?: string | null;
           age: number;
+          approved_email_sent?: boolean;
+          approved_email_sent_at?: string | null;
+          contacted_email_sent?: boolean;
+          contacted_email_sent_at?: string | null;
           created_at?: string;
           gender: string;
           id?: string;
@@ -563,6 +629,8 @@ export type Database = {
           parent_name: string;
           parent_phone: string;
           program: string;
+          rejected_email_sent?: boolean;
+          rejected_email_sent_at?: string | null;
           reviewed_at?: string | null;
           reviewed_by?: string | null;
           status?: string;
@@ -574,6 +642,10 @@ export type Database = {
           aadhar_number?: string | null;
           admin_notes?: string | null;
           age?: number;
+          approved_email_sent?: boolean;
+          approved_email_sent_at?: string | null;
+          contacted_email_sent?: boolean;
+          contacted_email_sent_at?: string | null;
           created_at?: string;
           gender?: string;
           id?: string;
@@ -583,6 +655,8 @@ export type Database = {
           parent_name?: string;
           parent_phone?: string;
           program?: string;
+          rejected_email_sent?: boolean;
+          rejected_email_sent_at?: string | null;
           reviewed_at?: string | null;
           reviewed_by?: string | null;
           status?: string;
@@ -652,6 +726,7 @@ export type Database = {
           monthly_fee: number;
           notes: string | null;
           paid_amount: number;
+          program_name: string;
           receipt_url: string | null;
           status: string | null;
           student_id: string;
@@ -666,6 +741,7 @@ export type Database = {
           monthly_fee: number;
           notes?: string | null;
           paid_amount?: number;
+          program_name?: string;
           receipt_url?: string | null;
           status?: string | null;
           student_id: string;
@@ -680,6 +756,7 @@ export type Database = {
           monthly_fee?: number;
           notes?: string | null;
           paid_amount?: number;
+          program_name?: string;
           receipt_url?: string | null;
           status?: string | null;
           student_id?: string;
@@ -858,6 +935,108 @@ export type Database = {
           },
         ];
       };
+      push_notification_delivery_logs: {
+        Row: {
+          body: string;
+          created_at: string;
+          failed_count: number;
+          id: string;
+          metadata: Json;
+          portal_scope: string | null;
+          sent_count: number;
+          target_url: string | null;
+          target_user_id: string | null;
+          title: string;
+          total_targets: number;
+          triggered_by: string | null;
+        };
+        Insert: {
+          body: string;
+          created_at?: string;
+          failed_count?: number;
+          id?: string;
+          metadata?: Json;
+          portal_scope?: string | null;
+          sent_count?: number;
+          target_url?: string | null;
+          target_user_id?: string | null;
+          title: string;
+          total_targets?: number;
+          triggered_by?: string | null;
+        };
+        Update: {
+          body?: string;
+          created_at?: string;
+          failed_count?: number;
+          id?: string;
+          metadata?: Json;
+          portal_scope?: string | null;
+          sent_count?: number;
+          target_url?: string | null;
+          target_user_id?: string | null;
+          title?: string;
+          total_targets?: number;
+          triggered_by?: string | null;
+        };
+        Relationships: [];
+      };
+      push_subscriptions: {
+        Row: {
+          auth: string;
+          auth_user_id: string | null;
+          created_at: string;
+          disable_reason: string | null;
+          disabled_at: string | null;
+          endpoint: string;
+          expiration_time: number | null;
+          fail_count: number;
+          id: string;
+          is_active: boolean;
+          last_seen_at: string;
+          metadata: Json;
+          p256dh: string;
+          portal_scope: string;
+          updated_at: string;
+          user_agent: string | null;
+        };
+        Insert: {
+          auth: string;
+          auth_user_id?: string | null;
+          created_at?: string;
+          disable_reason?: string | null;
+          disabled_at?: string | null;
+          endpoint: string;
+          expiration_time?: number | null;
+          fail_count?: number;
+          id?: string;
+          is_active?: boolean;
+          last_seen_at?: string;
+          metadata?: Json;
+          p256dh: string;
+          portal_scope: string;
+          updated_at?: string;
+          user_agent?: string | null;
+        };
+        Update: {
+          auth?: string;
+          auth_user_id?: string | null;
+          created_at?: string;
+          disable_reason?: string | null;
+          disabled_at?: string | null;
+          endpoint?: string;
+          expiration_time?: number | null;
+          fail_count?: number;
+          id?: string;
+          is_active?: boolean;
+          last_seen_at?: string;
+          metadata?: Json;
+          p256dh?: string;
+          portal_scope?: string;
+          updated_at?: string;
+          user_agent?: string | null;
+        };
+        Relationships: [];
+      };
       sensitive_data_audit: {
         Row: {
           accessed_at: string | null;
@@ -989,6 +1168,48 @@ export type Database = {
             foreignKeyName: 'student_portal_accounts_student_id_fkey';
             columns: ['student_id'];
             isOneToOne: true;
+            referencedRelation: 'students_masked';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      student_program_fee_overrides: {
+        Row: {
+          created_at: string;
+          id: string;
+          monthly_fee: number;
+          program_name: string;
+          student_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          monthly_fee: number;
+          program_name: string;
+          student_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          monthly_fee?: number;
+          program_name?: string;
+          student_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'student_program_fee_overrides_student_id_fkey';
+            columns: ['student_id'];
+            isOneToOne: false;
+            referencedRelation: 'students';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'student_program_fee_overrides_student_id_fkey';
+            columns: ['student_id'];
+            isOneToOne: false;
             referencedRelation: 'students_masked';
             referencedColumns: ['id'];
           },
@@ -1231,8 +1452,31 @@ export type Database = {
         };
         Relationships: [];
       };
+      vw_duplicate_active_enrollment_aadhar: {
+        Row: {
+          aadhar_number: string | null;
+          active_count: number | null;
+          first_created_at: string | null;
+          last_created_at: string | null;
+          request_ids: string[] | null;
+          statuses: string[] | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
+      clean_duplicate_active_enrollment_aadhar: {
+        Args: {
+          p_aadhar_number: string;
+          p_admin_note?: string;
+          p_keep_request_id: string;
+        };
+        Returns: number;
+      };
+      clean_stale_push_subscriptions: {
+        Args: { p_inactive_days?: number; p_max_fail_count?: number };
+        Returns: number;
+      };
       decrypt_sensitive_data: {
         Args: { encrypted_data: string };
         Returns: string;
@@ -1247,6 +1491,10 @@ export type Database = {
             Returns: boolean;
           }
         | { Args: { required_role: string }; Returns: boolean };
+      increment_push_failures: {
+        Args: { p_subscription_ids: string[] };
+        Returns: number;
+      };
       is_progress_status_unchanged: {
         Args: { new_status: string; row_id: string };
         Returns: boolean;

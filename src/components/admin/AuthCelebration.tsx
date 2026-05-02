@@ -16,7 +16,7 @@ const overlayVariants = {
   exit: { opacity: 0, transition: { duration: 0.2, delay: 0.1 } },
 };
 
-const cardVariants = {
+const cardVariants: any = {
   hidden: { opacity: 0, y: 20, scale: 0.95 },
   visible: {
     opacity: 1,
@@ -25,7 +25,6 @@ const cardVariants = {
     transition: {
       duration: 0.4,
       ease: [0.22, 1, 0.36, 1],
-      // Stagger the children (icon, text) to animate in one after another
       staggerChildren: 0.1,
       delayChildren: 0.1,
     },
@@ -38,7 +37,7 @@ const cardVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: any = {
   hidden: { opacity: 0, y: 10 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
 };

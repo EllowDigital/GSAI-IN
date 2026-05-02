@@ -71,7 +71,10 @@ export default function CompetitionCertificates({
     setUploading(studentId);
     try {
       const ext = file.name.split('.').pop()?.toLowerCase() || 'pdf';
-      const filename = `${competition.id}/${studentId}-${Date.now()}.${ext}`;
+      const safeStudentId = studentId.replace(/[^a-z0-9_-]/gi, '_');
+      const filename = `${competition.id}/${safeStudentId}-${file.name
+        .replace(/[^a-z0-9._-]+/gi, '_')
+        .replace(/_+/g, '_')}.${ext}`;
       const { error: uploadErr } = await supabase.storage
         .from('certificates')
         .upload(filename, file, { upsert: true });

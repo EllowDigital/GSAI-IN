@@ -124,7 +124,7 @@ const AdminLayout: React.FC = () => {
       toast({
         title: 'Refresh Failed',
         description: 'Unable to refresh data. Please check your connection.',
-        variant: 'destructive',
+        variant: 'error',
       });
     } finally {
       setTimeout(() => setIsRefreshing(false), 500);
