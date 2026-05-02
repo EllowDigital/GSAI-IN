@@ -17,6 +17,8 @@ const landingKeywords = [
   'gsai student portal',
   'student portal lucknow',
   'ghatak sports academy login',
+  'sports academy student dashboard',
+  'ghatak sports fees portal',
 ];
 
 const landingStructuredData = {
@@ -25,7 +27,15 @@ const landingStructuredData = {
   name: 'Ghatak Sports Student Portal',
   url: 'https://ghataksportsacademy.com/student',
   description:
-    'Public student portal landing page for Ghatak Sports Academy India.',
+    'Official student portal landing page for Ghatak Sports Academy India. Access your student dashboard, view fees, and get academy updates.',
+  publisher: {
+    '@type': 'Organization',
+    name: 'Ghatak Sports Academy India',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://ghataksportsacademy.com/logo.png', // Update with actual logo URL if available
+    },
+  },
   isPartOf: {
     '@type': 'WebSite',
     name: 'Ghatak Sports Academy India',
@@ -36,30 +46,34 @@ const landingStructuredData = {
 const highlights = [
   {
     icon: ShieldCheck,
-    title: 'Secure access',
-    description: 'Protected portal entry for enrolled students.',
+    title: 'Secure Access',
+    description:
+      'Protected and encrypted portal entry for officially enrolled students.',
   },
   {
     icon: Clock3,
-    title: '24x7 availability',
-    description: 'Check updates, fees, and announcements anytime.',
+    title: '24/7 Availability',
+    description:
+      'Check your progress updates, fee schedules, and announcements anytime.',
   },
   {
     icon: BadgeCheck,
-    title: 'Official portal',
-    description: 'The official Ghatak Sports student portal for India.',
+    title: 'Official Portal',
+    description:
+      'The sole authenticated Ghatak Sports student portal for India.',
   },
 ];
 
 export default function StudentLanding() {
   const { isAuthenticated } = useStudentAuth();
 
+  // Redirect to dashboard if already logged in
   if (isAuthenticated) {
     return <Navigate to="/student/dashboard" replace />;
   }
 
   return (
-    <div className="min-h-screen bg-[#07111f] text-white selection:bg-cyan-400/30">
+    <div className="min-h-screen bg-[#07111f] text-white selection:bg-cyan-400/30 font-sans">
       <Seo
         title="Ghatak Sports Student Portal | Login, Fees & Dashboard"
         description="Official Ghatak Sports student portal landing page. Sign in to view fees, progress, announcements, events, and dashboard updates."
@@ -68,62 +82,77 @@ export default function StudentLanding() {
         structuredData={[landingStructuredData]}
       />
 
-      <main className="relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-24 left-0 h-80 w-80 rounded-full bg-cyan-500/20 blur-3xl" />
-          <div className="absolute top-40 right-0 h-96 w-96 rounded-full bg-blue-600/15 blur-3xl" />
-          <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-amber-500/10 blur-3xl" />
+      <main className="relative overflow-hidden flex min-h-screen items-center">
+        {/* Background Ambient Glows */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-cyan-500/20 blur-[100px]" />
+          <div className="absolute top-40 -right-24 h-[30rem] w-[30rem] rounded-full bg-blue-600/15 blur-[120px]" />
+          <div className="absolute -bottom-24 left-1/3 h-80 w-80 rounded-full bg-amber-500/10 blur-[100px]" />
         </div>
 
-        <section className="relative mx-auto flex min-h-screen max-w-7xl flex-col justify-center px-4 py-24 sm:px-6 lg:px-8">
-          <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
-            <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-cyan-200 backdrop-blur">
-                <GraduationCap className="h-4 w-4" />
-                Ghatak Sports Student Portal
+        <section className="relative w-full mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 z-10">
+          <div className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+            {/* Left Column: Hero Content */}
+            <div className="space-y-8 lg:space-y-10">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300 backdrop-blur-md">
+                <GraduationCap className="h-4 w-4" aria-hidden="true" />
+                <span>Ghatak Sports Student Portal</span>
               </div>
 
-              <div className="space-y-4">
-                <h1 className="max-w-3xl text-4xl font-black leading-tight sm:text-5xl lg:text-6xl">
-                  Student portal access for progress, fees, events, and updates.
+              {/* Main Heading & Subtitle */}
+              <div className="space-y-5">
+                <h1 className="max-w-3xl text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl lg:leading-[1.1]">
+                  Student portal access for{' '}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+                    progress, fees & updates.
+                  </span>
                 </h1>
-                <p className="max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
+                <p className="max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
                   Use the official Ghatak Sports student portal to sign in and
                   manage your training journey. If you searched for Ghatak
-                  Sports student login, student portal, or academy login, this
-                  is the correct public entry page.
+                  Sports student login, student portal, or academy login, you
+                  are in the right place.
                 </p>
               </div>
 
-              <div className="flex flex-col gap-3 sm:flex-row">
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   to="/student/login"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 to-blue-600 px-6 py-3.5 font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition-transform hover:-translate-y-0.5"
+                  className="group inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-cyan-500/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-cyan-500/40 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-[#07111f]"
                 >
                   Go to Login
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight
+                    className="h-4 w-4 transition-transform group-hover:translate-x-1"
+                    aria-hidden="true"
+                  />
                 </Link>
                 <Link
                   to="/enroll"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-3.5 font-semibold text-white transition-colors hover:bg-white/10"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-700 bg-white/5 px-8 py-3.5 text-base font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:bg-white/10 hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-[#07111f]"
                 >
-                  New student admission
+                  New Student Admission
                 </Link>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-3">
+              {/* Feature Highlights Grid */}
+              <div className="grid gap-4 sm:grid-cols-3 pt-4">
                 {highlights.map((item) => {
                   const Icon = item.icon;
                   return (
                     <div
                       key={item.title}
-                      className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur"
+                      className="group rounded-2xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-md transition-all duration-300 hover:bg-white/[0.06] hover:-translate-y-1"
                     >
-                      <Icon className="h-5 w-5 text-cyan-300" />
-                      <h2 className="mt-3 text-sm font-bold text-white">
+                      <Icon
+                        className="h-6 w-6 text-cyan-400 mb-3"
+                        aria-hidden="true"
+                      />
+                      <h2 className="text-base font-bold text-white tracking-wide">
                         {item.title}
                       </h2>
-                      <p className="mt-1 text-sm leading-6 text-slate-400">
+                      <p className="mt-1.5 text-sm leading-relaxed text-slate-400 group-hover:text-slate-300 transition-colors">
                         {item.description}
                       </p>
                     </div>
@@ -132,31 +161,33 @@ export default function StudentLanding() {
               </div>
             </div>
 
-            <div className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-2xl shadow-cyan-500/10 backdrop-blur-xl sm:p-8">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 text-cyan-200">
-                  <ShieldCheck className="h-5 w-5" />
-                  <span className="text-sm font-semibold uppercase tracking-[0.2em]">
-                    Official portal access
+            {/* Right Column: Info Card */}
+            <div className="relative rounded-[2rem] border border-white/10 bg-slate-900/60 p-8 shadow-2xl shadow-cyan-900/20 backdrop-blur-xl sm:p-10 lg:ml-auto w-full max-w-md">
+              <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+
+              <div className="relative space-y-6">
+                <div className="inline-flex items-center gap-2.5 text-cyan-300">
+                  <ShieldCheck className="h-6 w-6" aria-hidden="true" />
+                  <span className="text-xs font-bold uppercase tracking-[0.2em]">
+                    Official Portal Access
                   </span>
                 </div>
-                <h2 className="text-2xl font-black leading-tight">
-                  One portal for students and academy updates.
-                </h2>
-                <p className="text-sm leading-6 text-slate-300">
-                  Sign in to see your student dashboard, fee details, notices,
-                  and upcoming events. This landing page is the version Google
-                  should show for student portal searches.
-                </p>
-              </div>
 
-              <div className="mt-8 rounded-2xl border border-cyan-400/20 bg-cyan-400/5 p-5">
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-200/80">
-                  Search terms covered
+                <h2 className="text-3xl font-black leading-tight text-white">
+                  One hub for your academy updates.
+                </h2>
+
+                <p className="text-base leading-relaxed text-slate-300">
+                  Sign in to securely access your student dashboard, view
+                  transparent fee details, read official notices, and track
+                  upcoming academy events.
                 </p>
-                <p className="mt-2 text-sm leading-6 text-slate-300">
-                  Ghatak Sports student portal, Ghatak Sports student login,
-                  GSAI student portal, and student portal Lucknow.
+
+                <hr className="border-white/10" />
+
+                <p className="text-xs leading-relaxed text-slate-500">
+                  This secure landing page serves as the verified entry point
+                  for all Ghatak Sports India members and staff.
                 </p>
               </div>
             </div>

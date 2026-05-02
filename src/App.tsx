@@ -355,7 +355,6 @@ const App = () => {
                     <Route path="/admin/*" element={<AdminArea />} />
 
                     {/* --- STUDENT PORTAL --- */}
-                    <Route path="/student" element={<StudentPortal />} />
                     <Route path="/student/*" element={<StudentPortal />} />
 
                     {/* CUSTOM ROUTES */}
