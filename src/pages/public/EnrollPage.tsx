@@ -462,7 +462,6 @@ export default function EnrollPage() {
         description="Ghatak Sports admission & enroll online now. Official admission portal for Ghatak Sports Academy India - Boxing, Grappling, Self Defense in Lucknow. Apply today!"
         canonical="/enroll"
         keywords={enrollKeywords}
-        noIndex={hasQueryParams}
         structuredData={[enrollStructuredData]}
       />
 
