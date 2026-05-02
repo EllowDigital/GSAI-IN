@@ -176,8 +176,13 @@ const App = () => {
         };
       }
 
-      const timeoutId = (window as unknown as { setTimeout: typeof setTimeout }).setTimeout(task, 120);
-      return () => (window as unknown as { clearTimeout: typeof clearTimeout }).clearTimeout(timeoutId);
+      const timeoutId = (
+        window as unknown as { setTimeout: typeof setTimeout }
+      ).setTimeout(task, 120);
+      return () =>
+        (
+          window as unknown as { clearTimeout: typeof clearTimeout }
+        ).clearTimeout(timeoutId);
     };
 
     const cancelIdleInit = scheduleIdleTask(() => {
