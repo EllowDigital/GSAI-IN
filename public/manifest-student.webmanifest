@@ -3,7 +3,7 @@
   "name": "GSAI Student Portal",
   "short_name": "GSAI Student",
   "description": "Student dashboard for classes, fees, events and progress.",
-  "start_url": "/student/login?source=pwa",
+  "start_url": "/student/login",
   "scope": "/student/",
   "display": "standalone",
   "theme_color": "#1e3a8a",

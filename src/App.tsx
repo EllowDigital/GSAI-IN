@@ -350,6 +350,10 @@ const App = () => {
                     <Route path="/admin/*" element={<AdminArea />} />
 
                     {/* --- STUDENT PORTAL --- */}
+                    <Route
+                      path="/student"
+                      element={<Navigate to="/student/login" replace />}
+                    />
                     <Route path="/student/*" element={<StudentPortal />} />
 
                     {/* CUSTOM ROUTES */}
