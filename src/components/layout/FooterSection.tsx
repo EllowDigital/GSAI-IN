@@ -20,7 +20,7 @@ const quickLinks = [
   { name: 'Gallery', href: '#gallery' },
   { name: 'Contact', href: '#contact' },
   { name: 'Location', href: '#location' },
-  { name: 'Student Portal', href: '/student/login' },
+  { name: 'Student Portal', href: '/student' },
   { name: 'FAQ', href: '#faq' },
 ];
 

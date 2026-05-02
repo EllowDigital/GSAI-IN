@@ -57,9 +57,9 @@ export function DesktopNavbar() {
         {/* CTA Buttons */}
         <div className="flex items-center gap-3 flex-shrink-0">
           <Link
-            to="/student/login"
+            to="/student"
             className="py-2 px-5 h-10 rounded-full flex items-center gap-1.5 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-all duration-300 text-sm font-medium"
-            aria-label="Student portal login"
+            aria-label="Student portal"
           >
             Student Portal
           </Link>

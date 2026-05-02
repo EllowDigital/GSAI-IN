@@ -59,6 +59,8 @@ function resolveRouteTitle(pathname: string): string {
   if (pathname.startsWith('/news/')) return 'News Article | GSAI';
   if (pathname.startsWith('/programs/')) return 'Program Details | GSAI';
 
+  if (pathname === '/student')
+    return 'Ghatak Sports Student Portal | GSAI Portal';
   if (pathname === '/student/login') return 'Student Login | GSAI Portal';
   if (pathname === '/student/set-password') return 'Set Password | GSAI Portal';
   if (pathname === '/student/dashboard')

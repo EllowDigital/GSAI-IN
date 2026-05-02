@@ -132,6 +132,7 @@ export default function StudentLogin() {
         description="Login to the official Ghatak Sports student portal to view progress, fees, events, competitions, and announcements."
         canonical="/student/login"
         keywords={studentPortalKeywords}
+        noIndex
         structuredData={studentPortalStructuredDataList}
       />
       <div className="mx-auto grid min-h-screen w-full max-w-7xl items-center gap-8 px-4 py-8 sm:px-6 lg:grid-cols-2 lg:px-12">

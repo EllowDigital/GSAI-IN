@@ -356,7 +356,7 @@ const AllCompetitionsPage: React.FC = () => {
                 className="text-center mt-16"
               >
                 <div className="inline-flex flex-col sm:flex-row items-center gap-4 bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10">
-                  <Link to="/student/login">
+                  <Link to="/student">
                     <button className="btn-primary w-full sm:w-auto justify-center px-8 py-3 text-base sm:text-lg shadow-lg shadow-yellow-500/20 bg-gradient-to-r from-yellow-500 to-red-600 border-0 text-white gap-2">
                       Register via Student Portal{' '}
                       <ArrowRight className="w-4 h-4" />

@@ -7,6 +7,7 @@ import { Loader2 } from 'lucide-react';
 // These components are only downloaded when the user specifically visits their route,
 // drastically improving the initial page load speed.
 const StudentLogin = lazy(() => import('./StudentLogin'));
+const StudentLanding = lazy(() => import('./StudentLanding'));
 const StudentSetPassword = lazy(() => import('./StudentSetPassword'));
 const StudentDashboard = lazy(() => import('./StudentDashboard'));
 
@@ -27,6 +28,7 @@ export default function StudentPortal() {
       <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* Main App Routes */}
+          <Route index element={<StudentLanding />} />
           <Route path="login" element={<StudentLogin />} />
           <Route path="set-password" element={<StudentSetPassword />} />
           <Route path="dashboard" element={<StudentDashboard />} />
@@ -34,8 +36,7 @@ export default function StudentPortal() {
           {/* Redirects */}
           {/* If the user is logged in, the StudentAuthProvider will intercept 
               this login redirect and securely send them to the dashboard. */}
-          <Route index element={<Navigate to="login" replace />} />
-          <Route path="*" element={<Navigate to="login" replace />} />
+          <Route path="*" element={<Navigate to="." replace />} />
         </Routes>
       </Suspense>
     </StudentAuthProvider>

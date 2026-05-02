@@ -187,7 +187,7 @@ export function MobileNavbar({ mobileOpen, setMobileOpen }: MobileNavbarProps) {
                     </Link>
 
                     <Link
-                      to="/student/login"
+                      to="/student"
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center justify-center gap-2 p-3.5 rounded-2xl border border-white/15 text-gray-200 text-base font-semibold hover:bg-white/10 active:scale-[0.98] transition-all"
                       role="menuitem"
