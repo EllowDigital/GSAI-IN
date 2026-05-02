@@ -20,7 +20,7 @@ const runWhenIdle = (task: () => void, fallbackDelay = 150) => {
     return;
   }
 
-  window.setTimeout(task, fallbackDelay);
+  (window as unknown as { setTimeout: typeof setTimeout }).setTimeout(task, fallbackDelay);
 };
 
 // Initialize build optimizations
