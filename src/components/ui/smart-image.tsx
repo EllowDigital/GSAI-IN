@@ -101,7 +101,10 @@ export function SmartImage({
   return (
     <div className={cn('relative w-full h-full', wrapperClassName, className)}>
       {!loaded && (
-        <div className="absolute inset-0 animate-pulse bg-white/5" aria-hidden />
+        <div
+          className="absolute inset-0 animate-pulse bg-white/5"
+          aria-hidden
+        />
       )}
       <img
         {...rest}
