@@ -46,9 +46,11 @@ function SectionSkeleton() {
 }
 
 function DeferredSection({
+  id,
   children,
   minHeight = 220,
 }: {
+  id?: string;
   children: ReactNode;
   minHeight?: number;
 }) {
@@ -85,7 +87,11 @@ function DeferredSection({
   return (
     <div
       ref={hostRef}
-      style={{ minHeight: `${minHeight}px` }}
+      id={id}
+      style={{
+        minHeight: `${minHeight}px`,
+        scrollMarginTop: 'calc(var(--nav-height) + 1.5rem)',
+      }}
       className="w-full"
       data-deferred-section="true"
     >
@@ -660,46 +666,46 @@ export default function Index() {
       <main className="flex-1 flex flex-col gap-0" role="main">
         <HeroSection />
         <AboutSection />
-        <DeferredSection minHeight={280}>
+        <DeferredSection id="founder" minHeight={280}>
           <FounderSection />
         </DeferredSection>
-        <DeferredSection minHeight={280}>
+        <DeferredSection id="programs" minHeight={280}>
           <ProgramsSection />
         </DeferredSection>
-        <DeferredSection minHeight={260}>
+        <DeferredSection id="achievements" minHeight={260}>
           <AchievementSection />
         </DeferredSection>
-        <DeferredSection minHeight={260}>
+        <DeferredSection id="competitions" minHeight={260}>
           <CompetitionResultsSection />
         </DeferredSection>
-        <DeferredSection minHeight={260}>
+        <DeferredSection id="upcoming-competitions" minHeight={260}>
           <UpcomingCompetitionsSection />
         </DeferredSection>
-        <DeferredSection minHeight={320}>
+        <DeferredSection id="gallery" minHeight={320}>
           <GallerySection />
         </DeferredSection>
-        <DeferredSection minHeight={260}>
+        <DeferredSection id="testimonials" minHeight={260}>
           <TestimonialSection />
         </DeferredSection>
-        <DeferredSection minHeight={280}>
+        <DeferredSection id="events" minHeight={280}>
           <EventsSection />
         </DeferredSection>
-        <DeferredSection minHeight={280}>
+        <DeferredSection id="news" minHeight={280}>
           <NewsSection />
         </DeferredSection>
-        <DeferredSection minHeight={280}>
+        <DeferredSection id="blog" minHeight={280}>
           <BlogNewsSection />
         </DeferredSection>
-        <DeferredSection minHeight={260}>
+        <DeferredSection id="faq" minHeight={260}>
           <FaqSection />
         </DeferredSection>
-        <DeferredSection minHeight={280}>
+        <DeferredSection id="location" minHeight={280}>
           <LocationSection />
         </DeferredSection>
-        <DeferredSection minHeight={320}>
+        <DeferredSection id="contact" minHeight={320}>
           <ContactSection />
         </DeferredSection>
-        <DeferredSection minHeight={260}>
+        <DeferredSection id="affiliations" minHeight={260}>
           <RecognitionAffiliationsSection />
         </DeferredSection>
       </main>
