@@ -135,13 +135,19 @@ const HomePageWrapper: React.FC = () => {
   }, [navigate]);
 
   // Show in-app success banner when redirected from contact form
-  const [showSuccessBanner, setShowSuccessBanner] = useState(false);
+  const [showSuccessBanner, setShowSuccessBanner] = useState(() => {
+    try {
+      const search = new URLSearchParams(window.location.search);
+      return search.get('success') === '1';
+    } catch {
+      return false;
+    }
+  });
 
   useEffect(() => {
     try {
       const search = new URLSearchParams(window.location.search);
       if (search.get('success') === '1') {
-        setShowSuccessBanner(true);
         // remove query param without reloading
         search.delete('success');
         const newSearch = search.toString();

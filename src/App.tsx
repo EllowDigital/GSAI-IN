@@ -125,24 +125,30 @@ const App = () => {
 
   useEffect(() => {
     if (!isLoginPortalPage) {
-      setDismissedInstallToast(true);
-      return;
+      const frame = window.requestAnimationFrame(() => {
+        setDismissedInstallToast(true);
+      });
+      return () => window.cancelAnimationFrame(frame);
     }
 
     const key = `pwa-install-dismissed-${activePortalScope}`;
-    try {
-      const dismissed = localStorage.getItem(key);
-      if (!dismissed) {
-        setDismissedInstallToast(false);
-        return;
-      }
+    const frame = window.requestAnimationFrame(() => {
+      try {
+        const dismissed = localStorage.getItem(key);
+        if (!dismissed) {
+          setDismissedInstallToast(false);
+          return;
+        }
 
-      const { timestamp } = JSON.parse(dismissed);
-      const isStillDismissed = Date.now() - timestamp < 7 * 24 * 60 * 60 * 1000;
-      setDismissedInstallToast(isStillDismissed);
-    } catch {
-      setDismissedInstallToast(false);
-    }
+        const { timestamp } = JSON.parse(dismissed);
+        const isStillDismissed = Date.now() - timestamp < 7 * 24 * 60 * 60 * 1000;
+        setDismissedInstallToast(isStillDismissed);
+      } catch {
+        setDismissedInstallToast(false);
+      }
+    });
+
+    return () => window.cancelAnimationFrame(frame);
   }, [activePortalScope, isLoginPortalPage]);
 
   // Check if already installed as PWA
@@ -195,12 +201,9 @@ const App = () => {
       }
     });
 
-    try {
-      // Let the UI render as soon as possible.
+    const loadingFrame = window.requestAnimationFrame(() => {
       setLoading(false);
-    } catch {
-      setLoading(false);
-    }
+    });
 
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -241,6 +244,7 @@ const App = () => {
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
+      window.cancelAnimationFrame(loadingFrame);
       cancelIdleInit();
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);

@@ -52,11 +52,15 @@ export function SmartImage({
   const triedRawRef = React.useRef(false);
 
   React.useEffect(() => {
-    setCurrentSrc(optimized);
-    setAttempt(0);
-    setLoaded(false);
-    setFailed(false);
-    triedRawRef.current = false;
+    const frame = window.requestAnimationFrame(() => {
+      setCurrentSrc(optimized);
+      setAttempt(0);
+      setLoaded(false);
+      setFailed(false);
+      triedRawRef.current = false;
+    });
+
+    return () => window.cancelAnimationFrame(frame);
   }, [optimized]);
 
   const handleError = React.useCallback(() => {
