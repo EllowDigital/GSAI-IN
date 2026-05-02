@@ -34,9 +34,7 @@ export default function FloatingEnrollButton() {
             aria-label="Start Ghatak Sports enrollment now"
           >
             <span className="text-lg">🥋</span>
-            <span className="hidden sm:inline">
-              Ghatak Sports Enroll Now
-            </span>
+            <span className="hidden sm:inline">Ghatak Sports Enroll Now</span>
             <span className="sm:hidden">Enroll Now</span>
           </Link>
         </motion.div>

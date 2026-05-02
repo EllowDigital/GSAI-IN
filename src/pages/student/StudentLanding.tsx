@@ -1,6 +1,12 @@
 import React from 'react';
 import { Navigate, Link } from 'react-router-dom';
-import { ArrowRight, GraduationCap, ShieldCheck, Clock3, BadgeCheck } from 'lucide-react';
+import {
+  ArrowRight,
+  GraduationCap,
+  ShieldCheck,
+  Clock3,
+  BadgeCheck,
+} from 'lucide-react';
 import Seo from '@/components/seo/Seo';
 import { useStudentAuth } from './StudentAuthContext';
 

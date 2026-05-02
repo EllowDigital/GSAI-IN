@@ -502,11 +502,13 @@ export default function EnrollPage() {
                       Legacy
                     </h2>
                     <p className="text-zinc-400 text-lg leading-relaxed max-w-md">
-                      Start your Ghatak sports enrollment today through our official admission portal. 
-                      Ghatak Sports Academy India welcomes aspiring martial artists for Boxing, Grappling, 
-                      Self Defense, and more. Whether you searched for &quot;ghatak sports admission,&quot; 
-                      &quot;ghatak sports enroll,&quot; or &quot;ghatak admission,&quot; 
-                      this is the official page to apply now.
+                      Start your Ghatak sports enrollment today through our
+                      official admission portal. Ghatak Sports Academy India
+                      welcomes aspiring martial artists for Boxing, Grappling,
+                      Self Defense, and more. Whether you searched for
+                      &quot;ghatak sports admission,&quot; &quot;ghatak sports
+                      enroll,&quot; or &quot;ghatak admission,&quot; this is the
+                      official page to apply now.
                     </p>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
