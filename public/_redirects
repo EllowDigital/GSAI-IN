@@ -1,29 +1,37 @@
+## Netlify Redirect Rules
+## Purpose: Domain migration, canonicalization, and SPA routing
 
-## Netlify redirect rules for domain migration and canonical URLs
+# --------------------------------------------------
+# 1. Enforce HTTPS + canonical domain (non-www)
+# --------------------------------------------------
+http://ghataksportsacademy.com/*        https://ghataksportsacademy.com/:splat 301!
+https://www.ghataksportsacademy.com/*  https://ghataksportsacademy.com/:splat 301!
+http://www.ghataksportsacademy.com/*   https://ghataksportsacademy.com/:splat 301!
 
-# Force HTTPS and canonical domain (non-www)
-http://ghataksportsacademy.com/* https://ghataksportsacademy.com/:splat 301!
-https://www.ghataksportsacademy.com/* https://ghataksportsacademy.com/:splat 301!
-http://www.ghataksportsacademy.com/* https://ghataksportsacademy.com/:splat 301!
+# --------------------------------------------------
+# 2. Redirect old Netlify domain → production domain
+# --------------------------------------------------
+http://ghatakgsai.netlify.app/*         https://ghataksportsacademy.com/:splat 301!
+https://ghatakgsai.netlify.app/*        https://ghataksportsacademy.com/:splat 301!
+http://www.ghatakgsai.netlify.app/*     https://ghataksportsacademy.com/:splat 301!
+https://www.ghatakgsai.netlify.app/*    https://ghataksportsacademy.com/:splat 301!
 
-# Force 301 redirect from old Netlify domain to production domain
-https://ghatakgsai.netlify.app/* https://ghataksportsacademy.com/:splat 301!
-http://ghatakgsai.netlify.app/* https://ghataksportsacademy.com/:splat 301!
-https://www.ghatakgsai.netlify.app/* https://ghataksportsacademy.com/:splat 301!
-http://www.ghatakgsai.netlify.app/* https://ghataksportsacademy.com/:splat 301!
+# --------------------------------------------------
+# 3. Legacy favicon path support (temporary)
+# Remove after caches and crawlers stabilize
+# --------------------------------------------------
+/favicon_io/favicon.ico   /favicon.ico 301
+/favicon_io/*             /icons/:splat 301
 
-# Temporary favicon migration compatibility.
-# Remove these once the new /icons paths have been live in production long enough
-# for browser caches, crawlers, and external references to stop requesting /favicon_io.
-/favicon_io/favicon.ico /favicon.ico 301
-/favicon_io/* /icons/:splat 301
+# --------------------------------------------------
+# 4. Route normalization / cleanup
+# --------------------------------------------------
+/contact     /         301
+/corporate   /         301
+/event       /events   301
+/event/      /events   301
 
-# Canonical route consolidation for home-section aliases.
-/contact / 301
-/corporate / 301
-/event /events 301
-/event/ /events 301
-/student/login/ /student/login 301
-
-# SPA fallback - must be last
+# --------------------------------------------------
+# 5. SPA fallback (MUST remain last)
+# --------------------------------------------------
 /* /index.html 200
