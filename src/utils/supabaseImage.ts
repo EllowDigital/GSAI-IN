@@ -96,10 +96,13 @@ export function optimizeSupabaseImageUrl(
   rawUrl: string | null | undefined,
   options: SupabaseImageOptions = {}
 ): string {
-  if (!rawUrl) return '';
+  if (!rawUrl || typeof rawUrl !== 'string') return '';
 
-  const resolvedUrl = toAbsoluteSupabaseUrl(rawUrl);
-  if (!resolvedUrl) return rawUrl;
+  const trimmed = rawUrl.trim();
+  if (!trimmed) return '';
+
+  const resolvedUrl = toAbsoluteSupabaseUrl(trimmed);
+  if (!resolvedUrl) return trimmed;
 
   try {
     const url = resolvedUrl;
@@ -118,14 +121,40 @@ export function optimizeSupabaseImageUrl(
       resize = 'cover',
     } = options;
 
-    if (width) transformUrl.searchParams.set('width', String(width));
-    if (height) transformUrl.searchParams.set('height', String(height));
-    if (quality) transformUrl.searchParams.set('quality', String(quality));
+    // Clamp dimensions to Supabase render limits (avoid 400s).
+    const clamp = (n: number) => Math.max(1, Math.min(2500, Math.round(n)));
+
+    if (width) transformUrl.searchParams.set('width', String(clamp(width)));
+    if (height) transformUrl.searchParams.set('height', String(clamp(height)));
+    if (quality)
+      transformUrl.searchParams.set(
+        'quality',
+        String(Math.max(20, Math.min(100, quality)))
+      );
     if (format !== 'origin') transformUrl.searchParams.set('format', format);
     if (resize) transformUrl.searchParams.set('resize', resize);
 
     return transformUrl.toString();
   } catch {
-    return rawUrl;
+    return trimmed;
   }
+}
+
+/**
+ * Build a `srcSet` string for responsive images using the Supabase render
+ * endpoint. Falls back to the raw URL when the source isn't on Supabase.
+ */
+export function buildSupabaseSrcSet(
+  rawUrl: string | null | undefined,
+  widths: number[],
+  options: Omit<SupabaseImageOptions, 'width'> = {}
+): string {
+  if (!rawUrl) return '';
+  return widths
+    .map(
+      (w) =>
+        `${optimizeSupabaseImageUrl(rawUrl, { ...options, width: w })} ${w}w`
+    )
+    .filter(Boolean)
+    .join(', ');
 }
