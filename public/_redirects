@@ -23,7 +23,6 @@ http://www.ghatakgsai.netlify.app/* https://ghataksportsacademy.com/:splat 301!
 /corporate / 301
 /event /events 301
 /event/ /events 301
-/student/ /student 301
 /student/login/ /student/login 301
 
 # SPA fallback - must be last

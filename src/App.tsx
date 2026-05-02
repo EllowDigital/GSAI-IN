@@ -54,6 +54,7 @@ const AllProgramsPage = lazy(() => import('@/pages/public/AllProgramsPage'));
 const AllCompetitionsPage = lazy(
   () => import('@/pages/public/AllCompetitionsPage')
 );
+const StudentLanding = lazy(() => import('@/pages/student/StudentLanding'));
 const EnrollPage = lazy(() => import('@/pages/public/EnrollPage'));
 const StudentPortal = lazy(() => import('./pages/student/StudentPortal'));
 
@@ -350,6 +351,7 @@ const App = () => {
                     <Route path="/admin/*" element={<AdminArea />} />
 
                     {/* --- STUDENT PORTAL --- */}
+                    <Route path="/student" element={<StudentLanding />} />
                     <Route path="/student/*" element={<StudentPortal />} />
 
                     {/* CUSTOM ROUTES */}
