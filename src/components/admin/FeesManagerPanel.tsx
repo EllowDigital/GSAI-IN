@@ -366,7 +366,7 @@ export default function FeesManagerPanel({
         );
       }
 
-      const { error } = await supabase.from('fees').insert(records);
+      const { error } = await supabase.from('fees').insert(records as never);
       if (error) throw error;
 
       return records.length;
