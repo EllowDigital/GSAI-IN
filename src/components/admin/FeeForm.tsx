@@ -74,8 +74,9 @@ export function FeeForm({
   onClose,
 }: Props) {
   const queryClient = useQueryClient();
-  const [selectedProgramName, setSelectedProgramName] =
-    React.useState(() => initialProgramName || 'General');
+  const [selectedProgramName, setSelectedProgramName] = React.useState(
+    () => initialProgramName || 'General'
+  );
 
   React.useEffect(() => {
     const nextProgram = initialProgramName || 'General';

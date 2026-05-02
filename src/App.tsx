@@ -141,7 +141,8 @@ const App = () => {
         }
 
         const { timestamp } = JSON.parse(dismissed);
-        const isStillDismissed = Date.now() - timestamp < 7 * 24 * 60 * 60 * 1000;
+        const isStillDismissed =
+          Date.now() - timestamp < 7 * 24 * 60 * 60 * 1000;
         setDismissedInstallToast(isStillDismissed);
       } catch {
         setDismissedInstallToast(false);
