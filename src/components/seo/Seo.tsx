@@ -124,17 +124,48 @@ export const Seo = memo(
       ? resolveUrl(canonical)
       : resolveDefaultCanonical();
     const fullImageUrl = image ? resolveUrl(image) : SITE_CONFIG.defaultImage;
-    const robotsContent = `${noIndex ? 'noindex' : 'index'}, ${noFollow ? 'nofollow' : 'follow'}`;
+    const robotsContent = [
+      noIndex ? 'noindex' : 'index',
+      noFollow ? 'nofollow' : 'follow',
+      'max-snippet:-1',
+      'max-image-preview:large',
+      'max-video-preview:-1',
+    ].join(', ');
 
     // Structured Data logic
-    const jsonLd = [
+    const jsonLd: object[] = [
       {
         '@context': 'https://schema.org',
-        '@type': 'Organization',
+        '@type': ['Organization', 'SportsActivityLocation', 'LocalBusiness'],
+        '@id': `${SITE_CONFIG.url}/#organization`,
         name: SITE_CONFIG.name,
+        alternateName: SITE_CONFIG.shortName,
         url: SITE_CONFIG.url,
-        logo: SITE_CONFIG.logo,
+        logo: {
+          '@type': 'ImageObject',
+          url: SITE_CONFIG.logo,
+          width: 512,
+          height: 512,
+        },
+        image: SITE_CONFIG.defaultImage,
+        description:
+          "India's premier martial arts and self-defense academy in Lucknow offering Karate, Taekwondo, MMA, Boxing, Kickboxing, BJJ and Kalaripayattu training for kids, women and adults.",
         sameAs: SITE_CONFIG.socials,
+        telephone: SITE_CONFIG.contact.phone,
+        email: SITE_CONFIG.contact.email,
+        priceRange: SITE_CONFIG.priceRange,
+        openingHours: SITE_CONFIG.openingHours,
+        address: { '@type': 'PostalAddress', ...SITE_CONFIG.address },
+        geo: {
+          '@type': 'GeoCoordinates',
+          latitude: SITE_CONFIG.geo.latitude,
+          longitude: SITE_CONFIG.geo.longitude,
+        },
+        areaServed: [
+          { '@type': 'City', name: 'Lucknow' },
+          { '@type': 'State', name: 'Uttar Pradesh' },
+          { '@type': 'Country', name: 'India' },
+        ],
         contactPoint: {
           '@type': 'ContactPoint',
           contactType: 'customer support',
@@ -143,12 +174,25 @@ export const Seo = memo(
           areaServed: 'IN',
           availableLanguage: ['en', 'hi'],
         },
+        sport: [
+          'Karate',
+          'Taekwondo',
+          'Mixed Martial Arts',
+          'Boxing',
+          'Kickboxing',
+          'Brazilian Jiu-Jitsu',
+          'Kalaripayattu',
+          'Self-Defense',
+        ],
       },
       {
         '@context': 'https://schema.org',
         '@type': 'WebSite',
+        '@id': `${SITE_CONFIG.url}/#website`,
         name: SITE_CONFIG.name,
         url: SITE_CONFIG.url,
+        publisher: { '@id': `${SITE_CONFIG.url}/#organization` },
+        inLanguage: 'en-IN',
         potentialAction: {
           '@type': 'SearchAction',
           target: `${SITE_CONFIG.url}/?s={search_term_string}`,
