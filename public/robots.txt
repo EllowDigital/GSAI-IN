@@ -1,24 +1,21 @@
 User-agent: *
+# Allow full site access by default
 Allow: /
-Disallow: /admin
+
+# Block private/sensitive areas
 Disallow: /admin/
-Disallow: /student/login
 Disallow: /student/dashboard
 Disallow: /student/set-password
 Disallow: /api/
+
+# Allow login page (better for crawl flow)
+Allow: /student/login
+
+# Prevent crawling of tracking / duplicate URLs
 Disallow: /*?*utm_
 Disallow: /*?*ref=
 
-# Block resource-heavy AI scrapers (optional - remove if you want AI visibility)
-User-agent: GPTBot
-Allow: /
-
-User-agent: Googlebot
-Allow: /
-Crawl-delay: 0
-
-User-agent: Bingbot
-Allow: /
-
+# Sitemap for search engines
 Sitemap: https://ghataksportsacademy.com/sitemap.xml
+
 Host: https://ghataksportsacademy.com
