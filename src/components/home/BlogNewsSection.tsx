@@ -65,7 +65,12 @@ export default function BlogNewsSection() {
   );
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  const { data: posts = [], isLoading: loading } = useQuery<BlogCard[]>({
+  const {
+    data: posts = [],
+    isLoading: loading,
+    error: blogError,
+    refetch,
+  } = useQuery<BlogCard[]>({
     queryKey: ['blogs', 'public', 'cards'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -79,6 +84,7 @@ export default function BlogNewsSection() {
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
     refetchOnWindowFocus: false,
+    retry: 2,
   });
 
   React.useEffect(() => {
