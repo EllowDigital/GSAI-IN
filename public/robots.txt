@@ -1,4 +1,24 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /student/login
+Disallow: /student/dashboard
+Disallow: /student/set-password
+Disallow: /api/
+Disallow: /*?*utm_
+Disallow: /*?*ref=
+
+# Block resource-heavy AI scrapers (optional - remove if you want AI visibility)
+User-agent: GPTBot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
 
 Sitemap: https://ghataksportsacademy.com/sitemap.xml
+Host: https://ghataksportsacademy.com
