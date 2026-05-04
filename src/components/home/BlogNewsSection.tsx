@@ -244,9 +244,17 @@ export default function BlogNewsSection() {
                         format: 'webp',
                         resize: 'cover',
                       }}
+                      srcSetWidths={[360, 540, 720, 960]}
                       alt={post.title}
                       imgClassName="object-cover transition-transform duration-500 group-hover:scale-110"
                       sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                      maxRetries={3}
+                      errorFallback={
+                        <div className="w-full h-full bg-gradient-to-br from-white/5 to-white/10 flex flex-col items-center justify-center gap-2 text-white/40">
+                          <BookOpenText className="w-12 h-12" />
+                          <span className="text-xs">Image unavailable</span>
+                        </div>
+                      }
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-white/5 to-white/10 flex items-center justify-center">
