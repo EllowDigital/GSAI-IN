@@ -331,6 +331,7 @@ const App = () => {
 
             <Toaster />
             <Sonner />
+            <EnvCheckBanner />
             {loading && <Preloader />}
 
             {!loading && (
