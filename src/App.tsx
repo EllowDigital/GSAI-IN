@@ -20,6 +20,7 @@ import { initializeAuthTelemetry } from '@/utils/authTelemetry';
 import Preloader from '@/components/common/Preloader';
 import OfflineBanner from '@/components/common/OfflineBanner';
 import PWAInstallToast from '@/components/common/PWAInstallToast';
+import EnvCheckBanner from '@/components/common/EnvCheckBanner';
 import EnhancedErrorBoundary from '@/components/feedback/EnhancedErrorBoundary';
 import PageTracker from '@/components/layout/PageTracker';
 import RouteTitleManager from '@/components/layout/RouteTitleManager';
@@ -330,6 +331,7 @@ const App = () => {
 
             <Toaster />
             <Sonner />
+            <EnvCheckBanner />
             {loading && <Preloader />}
 
             {!loading && (

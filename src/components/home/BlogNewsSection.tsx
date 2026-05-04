@@ -65,7 +65,12 @@ export default function BlogNewsSection() {
   );
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  const { data: posts = [], isLoading: loading } = useQuery<BlogCard[]>({
+  const {
+    data: posts = [],
+    isLoading: loading,
+    error: blogError,
+    refetch,
+  } = useQuery<BlogCard[]>({
     queryKey: ['blogs', 'public', 'cards'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -79,6 +84,7 @@ export default function BlogNewsSection() {
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
     refetchOnWindowFocus: false,
+    retry: 2,
   });
 
   React.useEffect(() => {
@@ -199,7 +205,30 @@ export default function BlogNewsSection() {
           viewport={{ once: true, amount: 0.2 }}
           variants={containerVariants}
         >
-          {loading ? (
+          {blogError && !loading ? (
+            <motion.div
+              className="col-span-full max-w-2xl mx-auto text-center py-12 sm:py-16"
+              variants={itemVariants}
+            >
+              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 border border-red-500/20">
+                <BookOpenText className="w-10 h-10 sm:w-12 sm:h-12 text-red-400" />
+              </div>
+              <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-4">
+                Unable to load blog posts
+              </h3>
+              <p className="text-gray-400 text-base sm:text-lg leading-relaxed mb-6">
+                We hit a network hiccup while fetching the latest articles.
+                Please try again in a moment.
+              </p>
+              <button
+                onClick={() => refetch()}
+                className="btn-primary gap-2 px-6 py-3 text-base shadow-lg shadow-yellow-500/20"
+              >
+                Retry
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </motion.div>
+          ) : loading ? (
             Array.from({ length: 6 }).map((_, idx) => (
               <motion.div
                 key={idx}
@@ -238,9 +267,17 @@ export default function BlogNewsSection() {
                         format: 'webp',
                         resize: 'cover',
                       }}
+                      srcSetWidths={[360, 540, 720, 960]}
                       alt={post.title}
                       imgClassName="object-cover transition-transform duration-500 group-hover:scale-110"
                       sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                      maxRetries={3}
+                      errorFallback={
+                        <div className="w-full h-full bg-gradient-to-br from-white/5 to-white/10 flex flex-col items-center justify-center gap-2 text-white/40">
+                          <BookOpenText className="w-12 h-12" />
+                          <span className="text-xs">Image unavailable</span>
+                        </div>
+                      }
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-white/5 to-white/10 flex items-center justify-center">
