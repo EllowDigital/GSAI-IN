@@ -261,6 +261,7 @@ export const Seo = memo(
         {/* App & Tech */}
         <meta name="theme-color" content="#000000" />
         <meta name="format-detection" content="telephone=no" />
+        <link rel="alternate" hrefLang="en-IN" href={fullCanonicalUrl} />
         <link rel="alternate" hrefLang="x-default" href={fullCanonicalUrl} />
         {alternateLanguages.map((lang) => (
           <link
