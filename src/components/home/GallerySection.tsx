@@ -229,6 +229,11 @@ export default function GallerySection() {
                       format: 'webp',
                       resize: 'cover',
                     }}
+                    srcSetWidths={
+                      idx === 0 || idx === 7
+                        ? [600, 900, 1200, 1600]
+                        : [320, 480, 640, 800]
+                    }
                     alt={image.caption || 'Gallery Image'}
                     imgClassName="object-cover transition-transform duration-700 group-hover:scale-110"
                     sizes={
