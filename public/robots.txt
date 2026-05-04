@@ -1,4 +1,21 @@
 User-agent: *
+# Allow full site access by default
 Allow: /
 
+# Block private/sensitive areas
+Disallow: /admin/
+Disallow: /student/dashboard
+Disallow: /student/set-password
+Disallow: /api/
+
+# Allow login page (better for crawl flow)
+Allow: /student/login
+
+# Prevent crawling of tracking / duplicate URLs
+Disallow: /*?*utm_
+Disallow: /*?*ref=
+
+# Sitemap for search engines
 Sitemap: https://ghataksportsacademy.com/sitemap.xml
+
+Host: https://ghataksportsacademy.com

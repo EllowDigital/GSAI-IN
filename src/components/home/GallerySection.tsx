@@ -229,6 +229,11 @@ export default function GallerySection() {
                       format: 'webp',
                       resize: 'cover',
                     }}
+                    srcSetWidths={
+                      idx === 0 || idx === 7
+                        ? [600, 900, 1200, 1600]
+                        : [320, 480, 640, 800]
+                    }
                     alt={image.caption || 'Gallery Image'}
                     imgClassName="object-cover transition-transform duration-700 group-hover:scale-110"
                     sizes={
@@ -311,7 +316,7 @@ export default function GallerySection() {
               className="relative max-w-5xl max-h-[85vh] w-full flex flex-col items-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="max-w-full max-h-[80vh] w-full">
+              <div className="max-w-full max-h-[80vh] w-full min-h-[40vh] flex items-center justify-center">
                 <SmartImage
                   src={galleryImages[selectedImageIndex].image_url}
                   transform={{
@@ -321,9 +326,36 @@ export default function GallerySection() {
                     format: 'webp',
                     resize: 'contain',
                   }}
+                  srcSetWidths={[800, 1200, 1800]}
+                  sizes="100vw"
                   alt={galleryImages[selectedImageIndex].caption || 'Gallery'}
                   loading="eager"
+                  maxRetries={3}
                   imgClassName="object-contain rounded-lg shadow-2xl max-h-[80vh]"
+                  errorFallback={
+                    <div className="flex flex-col items-center justify-center gap-3 p-8 sm:p-12 bg-white/5 border border-white/10 rounded-2xl text-center max-w-md">
+                      <div className="w-14 h-14 rounded-full bg-red-500/15 flex items-center justify-center">
+                        <ImageIcon className="w-7 h-7 text-red-400" />
+                      </div>
+                      <h4 className="text-white font-semibold text-lg">
+                        We couldn't load this image
+                      </h4>
+                      <p className="text-gray-400 text-sm">
+                        The image may be temporarily unavailable. Try again or
+                        browse the next photo.
+                      </p>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleNextImage(e);
+                        }}
+                        className="mt-1 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-yellow-500 to-red-600 text-white text-sm font-semibold"
+                      >
+                        Next Image
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  }
                 />
               </div>
               {galleryImages[selectedImageIndex].caption && (
