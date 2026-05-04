@@ -113,7 +113,7 @@ export const Seo = memo(
     author = SITE_CONFIG.author,
     keywords = [],
     category,
-    locale = 'en_US',
+    locale = 'en_IN',
     alternateLanguages = [],
     children,
     structuredData = [],
