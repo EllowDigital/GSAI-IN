@@ -5,6 +5,7 @@ import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
 // --- Configuration ---
 const SITE_CONFIG = {
   name: 'Ghatak Sports Academy India™',
+  shortName: 'GSAI',
   url: 'https://ghataksportsacademy.com',
   handle: '@ghataksportsacademy',
   author: 'Ghatak Sports Academy India',
@@ -15,6 +16,16 @@ const SITE_CONFIG = {
     phone: '+91-63941-35988',
     email: ACADEMY_CONTACT_EMAIL,
   },
+  address: {
+    streetAddress: 'Naubasta Kala, Sector-H, Jankipuram',
+    addressLocality: 'Lucknow',
+    addressRegion: 'Uttar Pradesh',
+    postalCode: '226021',
+    addressCountry: 'IN',
+  },
+  geo: { latitude: 26.9124, longitude: 80.9469 },
+  openingHours: 'Mo-Sa 06:00-21:00',
+  priceRange: '₹₹',
   socials: [
     'https://www.facebook.com/ghataksportsacademy',
     'https://www.instagram.com/ghataksportsacademy',
