@@ -3,6 +3,10 @@ import Seo from '@/components/seo/Seo';
 import Navbar from '@/components/layout/Navbar';
 import FooterSection from '@/components/layout/FooterSection';
 import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
+import {
+  buildFaqStructuredData,
+  locationLucknowFaqs,
+} from '@/utils/faqStructuredData';
 
 const lucknowStructuredData = {
   '@context': 'https://schema.org',
@@ -71,14 +75,13 @@ export default function LocationLucknow() {
   return (
     <div className="min-h-screen bg-black text-white">
       <Seo
-        title="Ghatak Sports Academy India - Lucknow Martial Arts Training"
-        description="Ghatak Sports Academy India in Lucknow offers karate, taekwondo, MMA, boxing, kickboxing, self-defense, and fitness training. Located in Indira Nagar, Takrohi with expert coaches and structured programs for all ages."
+        title="Martial Arts & Boxing Academy in Lucknow (Indira Nagar) | GSAI"
+        description="Train at Ghatak Sports Academy India in Indira Nagar, Lucknow. Karate, Taekwondo, MMA, Boxing, Kickboxing, BJJ, Self-Defense & Fitness for kids, women and adults — open Mon–Sun."
         canonical="/locations/lucknow"
         image="/assets/images/logo.webp"
         imageAlt="Ghatak Sports Academy India - Lucknow"
         type="website"
         keywords={[
-          'Ghatak Sports Academy India Lucknow',
           'martial arts academy Lucknow',
           'karate classes Lucknow',
           'taekwondo classes Lucknow',
@@ -86,11 +89,15 @@ export default function LocationLucknow() {
           'boxing classes Lucknow',
           'kickboxing classes Lucknow',
           'self defense classes Lucknow',
+          'BJJ Lucknow',
           'fitness training Lucknow',
           'Indira Nagar martial arts',
           'Takrohi martial arts',
         ]}
-        structuredData={[lucknowStructuredData]}
+        structuredData={[
+          lucknowStructuredData,
+          buildFaqStructuredData(locationLucknowFaqs),
+        ]}
       />
 
       <Navbar />
