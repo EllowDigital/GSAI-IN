@@ -559,8 +559,8 @@ export default function Index() {
     <div className="bg-background w-full min-h-screen flex flex-col font-sans antialiased">
       {/* Advanced SEO with comprehensive optimization */}
       <Seo
-        title="Best Martial Arts Academy in Lucknow | Karate, MMA, Boxing Training - Ghatak Sports Academy India"
-        description="Join India's premier martial arts academy in Lucknow. Expert training in Karate, Taekwondo, MMA, Boxing, Kickboxing & Self-Defense for all ages. Professional coaches, world-class facilities. Start your fitness journey today!"
+        title="Ghatak Sports Academy — Karate, MMA & Boxing in Lucknow"
+        description="India's premier martial arts academy in Lucknow. Karate, Taekwondo, MMA, Boxing, Kickboxing, BJJ & Self-Defense for kids, women & adults. Free trial class available."
         canonical="/"
         image="/assets/images/logo.webp"
         imageAlt="Ghatak Sports Academy India Logo - Modern Martial Arts Academy"
