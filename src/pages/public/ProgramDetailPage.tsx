@@ -66,10 +66,21 @@ export default function ProgramDetail() {
   return (
     <>
       <Seo
-        title={`${program.title} Training — GSAI Lucknow`}
-        description={program.fullDescription.slice(0, 155)}
+        title={`${program.title} Classes in Lucknow — ${program.ageGroup} | GSAI`}
+        description={`${program.title} training in Lucknow at Ghatak Sports Academy India. ${program.fullDescription.slice(0, 120)}`}
         canonical={`/programs/${program.slug}`}
-        structuredData={[productStructuredData, courseStructuredData]}
+        keywords={[
+          `${program.title} classes Lucknow`,
+          `${program.title} training`,
+          `${program.title} academy`,
+          'Ghatak Sports Academy India',
+          'martial arts Lucknow',
+        ]}
+        structuredData={[
+          productStructuredData,
+          courseStructuredData,
+          buildFaqStructuredData(programsFaqs),
+        ]}
       />
 
       <Navbar />
