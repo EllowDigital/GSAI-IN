@@ -331,8 +331,9 @@ export default function GallerySection() {
                   alt={galleryImages[selectedImageIndex].caption || 'Gallery'}
                   loading="eager"
                   maxRetries={3}
+                  telemetryContext="gallery-lightbox"
                   imgClassName="object-contain rounded-lg shadow-2xl max-h-[80vh]"
-                  errorFallback={
+                  renderError={(retry) => (
                     <div className="flex flex-col items-center justify-center gap-3 p-8 sm:p-12 bg-white/5 border border-white/10 rounded-2xl text-center max-w-md">
                       <div className="w-14 h-14 rounded-full bg-red-500/15 flex items-center justify-center">
                         <ImageIcon className="w-7 h-7 text-red-400" />
@@ -341,21 +342,41 @@ export default function GallerySection() {
                         We couldn't load this image
                       </h4>
                       <p className="text-gray-400 text-sm">
-                        The image may be temporarily unavailable. Try again or
-                        browse the next photo.
+                        The image may be temporarily unavailable. Try again,
+                        skip to the next photo, or close the viewer.
                       </p>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleNextImage(e);
-                        }}
-                        className="mt-1 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-yellow-500 to-red-600 text-white text-sm font-semibold"
-                      >
-                        Next Image
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
+                      <div className="flex flex-wrap justify-center gap-2 mt-1">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            retry();
+                          }}
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/15 text-white text-sm font-semibold"
+                        >
+                          Retry
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleNextImage(e);
+                          }}
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-yellow-500 to-red-600 text-white text-sm font-semibold"
+                        >
+                          Next
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCloseLightbox();
+                          }}
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/15 text-white/80 hover:text-white text-sm font-semibold"
+                        >
+                          Close
+                        </button>
+                      </div>
                     </div>
-                  }
+                  )}
                 />
               </div>
               {galleryImages[selectedImageIndex].caption && (
