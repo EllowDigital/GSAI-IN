@@ -235,6 +235,7 @@ export default function GallerySection() {
                         : [320, 480, 640, 800]
                     }
                     alt={image.caption || 'Gallery Image'}
+                    telemetryContext="gallery-grid"
                     imgClassName="object-cover transition-transform duration-700 group-hover:scale-110"
                     sizes={
                       idx === 0 || idx === 7
