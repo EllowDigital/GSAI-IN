@@ -3,6 +3,10 @@ import Seo from '@/components/seo/Seo';
 import Navbar from '@/components/layout/Navbar';
 import FooterSection from '@/components/layout/FooterSection';
 import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
+import {
+  buildFaqStructuredData,
+  locationLucknowFaqs,
+} from '@/utils/faqStructuredData';
 
 const lucknowStructuredData = {
   '@context': 'https://schema.org',
