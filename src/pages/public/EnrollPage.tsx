@@ -43,6 +43,7 @@ import { useDisciplines } from '@/hooks/useDisciplines';
 import { cn } from '@/lib/utils';
 import { mapSupabaseErrorToFriendly } from '@/utils/errorHandling';
 import { ACADEMY_CONTACT_EMAIL, ADMIN_CC_EMAIL } from '@/config/contact';
+import { buildFaqStructuredData, enrollFaqs } from '@/utils/faqStructuredData';
 
 // --- Validation Logic ---
 const enrollSchema = z.object({
