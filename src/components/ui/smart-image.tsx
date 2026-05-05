@@ -15,15 +15,15 @@ type SmartImageProps = Omit<
   src: string | null | undefined;
   alt: string;
   transform?: SupabaseImageOptions;
-  /** Widths used to generate a responsive srcSet via Supabase render endpoint. */
   srcSetWidths?: number[];
-  /** Max retry attempts before falling back to the raw URL / placeholder. */
   maxRetries?: number;
-  /** Wrapper className for the skeleton/placeholder layer. */
   wrapperClassName?: string;
   imgClassName?: string;
-  /** Optional custom node to render when the image fails after all retries. */
   errorFallback?: React.ReactNode;
+  /** Identifier used in telemetry for image-failure events. */
+  telemetryContext?: string;
+  /** Render-prop fallback that gives access to a manual retry function. */
+  renderError?: (retry: () => void) => React.ReactNode;
 };
 
 const DEFAULT_WIDTHS = [400, 800, 1200, 1600];
