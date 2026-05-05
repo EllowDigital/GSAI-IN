@@ -66,9 +66,18 @@ export default function AllProgramsPage() {
   return (
     <>
       <Seo
-        title="All Programs — Ghatak Sports Academy India"
-        description="Explore all martial arts and fitness programs at GSAI. Filter by category to find the perfect training for you."
-        canonical="https://ghataksportsacademy.com/programs"
+        title="All Martial Arts Programs in Lucknow — Karate, MMA, Boxing & More | GSAI"
+        description="Browse every program at Ghatak Sports Academy India, Lucknow — Karate, Taekwondo, MMA, Boxing, Kickboxing, BJJ, Kalaripayattu, Self-Defense & Fitness. Filter, compare and enroll."
+        canonical="/programs"
+        keywords={[
+          'martial arts programs Lucknow',
+          'karate classes Lucknow',
+          'MMA training Lucknow',
+          'boxing academy Lucknow',
+          'BJJ classes Lucknow',
+          'self defense classes Lucknow',
+        ]}
+        structuredData={[buildFaqStructuredData(programsFaqs)]}
       />
       <Navbar />
       <main className="min-h-screen bg-[#0a0a0a] pt-20">
