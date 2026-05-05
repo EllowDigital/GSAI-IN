@@ -6,6 +6,7 @@ import {
   type SupabaseImageOptions,
 } from '@/utils/supabaseImage';
 import { ImageIcon } from 'lucide-react';
+import { logImageFailure } from '@/utils/imageTelemetry';
 
 type SmartImageProps = Omit<
   React.ImgHTMLAttributes<HTMLImageElement>,
