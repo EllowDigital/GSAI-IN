@@ -699,6 +699,9 @@ export default function Index() {
         <DeferredSection id="blog" minHeight={280}>
           <BlogNewsSection />
         </DeferredSection>
+        <DeferredSection id="about-academy" minHeight={400}>
+          <SeoContentSection />
+        </DeferredSection>
         <DeferredSection id="faq" minHeight={260}>
           <FaqSection />
         </DeferredSection>
