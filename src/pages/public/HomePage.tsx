@@ -40,6 +40,9 @@ const ContactSection = lazy(() => import('@/components/home/ContactSection'));
 const RecognitionAffiliationsSection = lazy(
   () => import('@/components/home/RecognitionAffiliationsSection')
 );
+const SeoContentSection = lazy(
+  () => import('@/components/home/SeoContentSection')
+);
 
 function SectionSkeleton() {
   return <div className="min-h-[220px] w-full" aria-hidden="true" />;
@@ -695,6 +698,9 @@ export default function Index() {
         </DeferredSection>
         <DeferredSection id="blog" minHeight={280}>
           <BlogNewsSection />
+        </DeferredSection>
+        <DeferredSection id="about-academy" minHeight={400}>
+          <SeoContentSection />
         </DeferredSection>
         <DeferredSection id="faq" minHeight={260}>
           <FaqSection />
