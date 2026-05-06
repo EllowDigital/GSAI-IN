@@ -269,15 +269,26 @@ export default function BlogNewsSection() {
                       }}
                       srcSetWidths={[360, 540, 720, 960]}
                       alt={post.title}
+                      telemetryContext="blog-card"
                       imgClassName="object-cover transition-transform duration-500 group-hover:scale-110"
                       sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                       maxRetries={3}
-                      errorFallback={
-                        <div className="w-full h-full bg-gradient-to-br from-white/5 to-white/10 flex flex-col items-center justify-center gap-2 text-white/40">
+                      renderError={(retry) => (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            retry();
+                          }}
+                          className="w-full h-full bg-gradient-to-br from-white/5 to-white/10 flex flex-col items-center justify-center gap-2 text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+                          aria-label="Retry loading image"
+                        >
                           <BookOpenText className="w-12 h-12" />
-                          <span className="text-xs">Image unavailable</span>
-                        </div>
-                      }
+                          <span className="text-xs font-medium">
+                            Image failed — tap to retry
+                          </span>
+                        </button>
+                      )}
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-white/5 to-white/10 flex items-center justify-center">

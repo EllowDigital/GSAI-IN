@@ -6,6 +6,7 @@ import {
   type SupabaseImageOptions,
 } from '@/utils/supabaseImage';
 import { ImageIcon } from 'lucide-react';
+import { logImageFailure } from '@/utils/imageTelemetry';
 
 type SmartImageProps = Omit<
   React.ImgHTMLAttributes<HTMLImageElement>,
@@ -14,15 +15,15 @@ type SmartImageProps = Omit<
   src: string | null | undefined;
   alt: string;
   transform?: SupabaseImageOptions;
-  /** Widths used to generate a responsive srcSet via Supabase render endpoint. */
   srcSetWidths?: number[];
-  /** Max retry attempts before falling back to the raw URL / placeholder. */
   maxRetries?: number;
-  /** Wrapper className for the skeleton/placeholder layer. */
   wrapperClassName?: string;
   imgClassName?: string;
-  /** Optional custom node to render when the image fails after all retries. */
   errorFallback?: React.ReactNode;
+  /** Identifier used in telemetry for image-failure events. */
+  telemetryContext?: string;
+  /** Render-prop fallback that gives access to a manual retry function. */
+  renderError?: (retry: () => void) => React.ReactNode;
 };
 
 const DEFAULT_WIDTHS = [400, 800, 1200, 1600];
@@ -45,6 +46,8 @@ export function SmartImage({
   imgClassName,
   className,
   errorFallback,
+  renderError,
+  telemetryContext,
   loading = 'lazy',
   decoding = 'async',
   sizes,
@@ -74,19 +77,30 @@ export function SmartImage({
   const [attempt, setAttempt] = React.useState(0);
   const [loaded, setLoaded] = React.useState(false);
   const [failed, setFailed] = React.useState(false);
-  const triedRawRef = React.useRef(false);
+  const [triedRaw, setTriedRaw] = React.useState(false);
   const timerRef = React.useRef<number | null>(null);
+  const [manualRetryCount, setManualRetryCount] = React.useState(0);
+  const retryCountRef = React.useRef(0);
 
   React.useEffect(() => {
-    const frame = window.requestAnimationFrame(() => {
-      setCurrentSrc(optimized);
-      setUseSrcSet(true);
-      setAttempt(0);
-      setLoaded(false);
-      setFailed(false);
-      triedRawRef.current = false;
-    });
+    retryCountRef.current = manualRetryCount;
+  }, [manualRetryCount]);
 
+  const reset = React.useCallback(() => {
+    if (timerRef.current !== null) {
+      window.clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    setCurrentSrc(optimized);
+    setUseSrcSet(true);
+    setAttempt(0);
+    setLoaded(false);
+    setFailed(false);
+    setTriedRaw(false);
+  }, [optimized]);
+
+  React.useEffect(() => {
+    const frame = window.requestAnimationFrame(reset);
     return () => {
       window.cancelAnimationFrame(frame);
       if (timerRef.current !== null) {
@@ -94,23 +108,35 @@ export function SmartImage({
         timerRef.current = null;
       }
     };
-  }, [optimized]);
+  }, [reset]);
+
+  const manualRetry = React.useCallback(() => {
+    setManualRetryCount((count) => count + 1);
+    if (!src) return;
+    const sep = src.includes('?') ? '&' : '?';
+    setAttempt(0);
+    setUseSrcSet(true);
+    setLoaded(false);
+    setFailed(false);
+    setTriedRaw(false);
+    setCurrentSrc(`${optimized || src}${sep}rk=${Date.now()}`);
+  }, [optimized, src]);
 
   const handleError = React.useCallback(() => {
-    // First fallback: drop the transform/srcSet and try the original URL.
-    if (!triedRawRef.current && src && currentSrc !== src) {
-      triedRawRef.current = true;
+    if (!triedRaw && src && currentSrc !== src) {
+      setTriedRaw(true);
       setUseSrcSet(false);
       setCurrentSrc(src);
       return;
     }
-    // Then retry with exponential backoff and cache-busting up to maxRetries.
     if (attempt < maxRetries) {
       const next = attempt + 1;
       const base = src || optimized;
       const sep = base.includes('?') ? '&' : '?';
       const delay = Math.min(300 * Math.pow(2, attempt), 4000);
+      const scheduledRetryCount = retryCountRef.current;
       timerRef.current = window.setTimeout(() => {
+        if (retryCountRef.current !== scheduledRetryCount) return;
         setAttempt(next);
         setUseSrcSet(false);
         setCurrentSrc(`${base}${sep}r=${next}-${Date.now()}`);
@@ -118,9 +144,26 @@ export function SmartImage({
       return;
     }
     setFailed(true);
-  }, [attempt, currentSrc, maxRetries, optimized, src]);
+    logImageFailure({
+      src: src || optimized || '',
+      context: telemetryContext || 'unknown',
+      attempts: attempt + 1,
+      finalUrl: currentSrc,
+    });
+  }, [
+    attempt,
+    currentSrc,
+    maxRetries,
+    optimized,
+    src,
+    telemetryContext,
+    triedRaw,
+  ]);
 
   if (!src || failed) {
+    if (renderError) {
+      return <>{renderError(manualRetry)}</>;
+    }
     if (errorFallback) {
       return <>{errorFallback}</>;
     }
@@ -136,6 +179,15 @@ export function SmartImage({
       >
         <ImageIcon className="w-8 h-8" />
         <span className="text-xs px-2 text-center">Image unavailable</span>
+        {src && (
+          <button
+            type="button"
+            onClick={manualRetry}
+            className="mt-1 text-xs underline text-white/60 hover:text-white"
+          >
+            Retry
+          </button>
+        )}
       </div>
     );
   }

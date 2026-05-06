@@ -75,8 +75,8 @@ export default function StudentLanding() {
   return (
     <div className="min-h-screen bg-[#07111f] text-white selection:bg-cyan-400/30 font-sans">
       <Seo
-        title="Ghatak Sports Student Portal | Login, Fees & Dashboard"
-        description="Official Ghatak Sports student portal landing page. Sign in to view fees, progress, announcements, events, and dashboard updates."
+        title="GSAI Student Portal — Login, Fees & Dashboard"
+        description="Official Ghatak Sports Academy India student portal. Sign in to view fees, progress, attendance, announcements and upcoming events."
         canonical="/student"
         keywords={landingKeywords}
         structuredData={[landingStructuredData]}
