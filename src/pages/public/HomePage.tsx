@@ -40,6 +40,9 @@ const ContactSection = lazy(() => import('@/components/home/ContactSection'));
 const RecognitionAffiliationsSection = lazy(
   () => import('@/components/home/RecognitionAffiliationsSection')
 );
+const SeoContentSection = lazy(
+  () => import('@/components/home/SeoContentSection')
+);
 
 function SectionSkeleton() {
   return <div className="min-h-[220px] w-full" aria-hidden="true" />;
