@@ -35,19 +35,31 @@ export default function SeoContentSection() {
             professionals and law-enforcement officers in disciplined,
             world-class martial arts. From beginners stepping onto the mat for
             the very first time to national-level athletes preparing for
-            championships, our certified coaches deliver structured curricula
-            in <Link to="/programs" className="text-yellow-400 hover:underline">Karate</Link>,
-            {' '}
-            <Link to="/programs" className="text-yellow-400 hover:underline">Taekwondo</Link>,
-            {' '}
-            <Link to="/programs" className="text-yellow-400 hover:underline">Mixed Martial Arts (MMA)</Link>,
-            {' '}
-            <Link to="/programs" className="text-yellow-400 hover:underline">Boxing</Link>,
-            {' '}
-            <Link to="/programs" className="text-yellow-400 hover:underline">Kickboxing</Link>,
-            {' '}
-            <Link to="/programs" className="text-yellow-400 hover:underline">Brazilian Jiu-Jitsu (BJJ)</Link>,
-            {' '}Kalaripayattu and modern Self-Defense.
+            championships, our certified coaches deliver structured curricula in{' '}
+            <Link to="/programs" className="text-yellow-400 hover:underline">
+              Karate
+            </Link>
+            ,{' '}
+            <Link to="/programs" className="text-yellow-400 hover:underline">
+              Taekwondo
+            </Link>
+            ,{' '}
+            <Link to="/programs" className="text-yellow-400 hover:underline">
+              Mixed Martial Arts (MMA)
+            </Link>
+            ,{' '}
+            <Link to="/programs" className="text-yellow-400 hover:underline">
+              Boxing
+            </Link>
+            ,{' '}
+            <Link to="/programs" className="text-yellow-400 hover:underline">
+              Kickboxing
+            </Link>
+            ,{' '}
+            <Link to="/programs" className="text-yellow-400 hover:underline">
+              Brazilian Jiu-Jitsu (BJJ)
+            </Link>
+            , Kalaripayattu and modern Self-Defense.
           </p>
 
           <h3 className="text-2xl font-bold text-white mt-8">
@@ -64,7 +76,10 @@ export default function SeoContentSection() {
             <strong>Naubasta Kala, Jankipuram</strong> feature professional
             mats, focus pads, heavy bags, MMA cages and dedicated areas for
             grappling and conditioning. Visit our{' '}
-            <Link to="/locations/lucknow" className="text-yellow-400 hover:underline">
+            <Link
+              to="/locations/lucknow"
+              className="text-yellow-400 hover:underline"
+            >
               Lucknow training centre page
             </Link>{' '}
             for directions, hours and a full facility tour.
@@ -74,19 +89,23 @@ export default function SeoContentSection() {
             Karate Classes in Lucknow for Kids and Adults
           </h3>
           <p>
-            Karate at GSAI follows the <strong>Shotokan and World Karate
-            Federation (WKF)</strong> syllabus, with a transparent belt-grading
-            system from White Belt through Black Belt Dan ranks. Children as
-            young as four learn coordination, balance and self-control through
-            playful, structured drills. Teen and adult karateka develop kihon
-            (basics), kata (forms) and kumite (sparring) under coaches who have
-            represented India at international tournaments. Each promotion is
-            tracked through our digital{' '}
-            <Link to="/student/login" className="text-yellow-400 hover:underline">
+            Karate at GSAI follows the{' '}
+            <strong>Shotokan and World Karate Federation (WKF)</strong>{' '}
+            syllabus, with a transparent belt-grading system from White Belt
+            through Black Belt Dan ranks. Children as young as four learn
+            coordination, balance and self-control through playful, structured
+            drills. Teen and adult karateka develop kihon (basics), kata (forms)
+            and kumite (sparring) under coaches who have represented India at
+            international tournaments. Each promotion is tracked through our
+            digital{' '}
+            <Link
+              to="/student/login"
+              className="text-yellow-400 hover:underline"
+            >
               student portal
             </Link>{' '}
-            so parents and athletes can review attendance, fees and belt
-            history at any time.
+            so parents and athletes can review attendance, fees and belt history
+            at any time.
           </p>
 
           <h3 className="text-2xl font-bold text-white mt-8">
@@ -97,9 +116,10 @@ export default function SeoContentSection() {
             framework. Students train Olympic-style sparring, breaking
             techniques and Poomsae forms. Dynamic kicking drills, plyometrics
             and flexibility work make Taekwondo one of the most popular
-            disciplines for young athletes in <strong>Lucknow and Uttar
-            Pradesh</strong>. We regularly send students to district, state and
-            national selections, with multiple medallists every season.
+            disciplines for young athletes in{' '}
+            <strong>Lucknow and Uttar Pradesh</strong>. We regularly send
+            students to district, state and national selections, with multiple
+            medallists every season.
           </p>
 
           <h3 className="text-2xl font-bold text-white mt-8">
@@ -125,16 +145,16 @@ export default function SeoContentSection() {
           </h3>
           <p>
             Personal safety is a fundamental right. Our{' '}
-            <strong>self-defense classes for women and girls</strong> in
-            Lucknow focus on situational awareness, verbal de-escalation, and
-            practical techniques against the most common threats. We also run
-            corporate workshops for IT companies, schools and colleges across
-            Uttar Pradesh, building safer communities one cohort at a time.
-            Schools, NGOs and corporates can request a tailored proposal
-            through our{' '}
+            <strong>self-defense classes for women and girls</strong> in Lucknow
+            focus on situational awareness, verbal de-escalation, and practical
+            techniques against the most common threats. We also run corporate
+            workshops for IT companies, schools and colleges across Uttar
+            Pradesh, building safer communities one cohort at a time. Schools,
+            NGOs and corporates can request a tailored proposal through our{' '}
             <Link to="/enroll" className="text-yellow-400 hover:underline">
               enrolment page
-            </Link>.
+            </Link>
+            .
           </p>
 
           <h3 className="text-2xl font-bold text-white mt-8">
@@ -146,8 +166,8 @@ export default function SeoContentSection() {
             combat systems. GSAI proudly preserves this heritage with weekend
             sessions covering Meipayattu (body conditioning), Kolthari (stick
             fighting) and Angathari (weapon forms). It is a unique opportunity
-            for students in <strong>Lucknow</strong> to connect with a 3,000-year-old
-            Indian tradition.
+            for students in <strong>Lucknow</strong> to connect with a
+            3,000-year-old Indian tradition.
           </p>
 
           <h3 className="text-2xl font-bold text-white mt-8">
@@ -157,11 +177,15 @@ export default function SeoContentSection() {
             Joining GSAI is simple. Visit our{' '}
             <Link to="/enroll" className="text-yellow-400 hover:underline">
               online enrolment page
-            </Link>, choose your discipline, pick a batch, and complete the
-            form. You will receive WhatsApp and email confirmation within
-            hours, along with a <strong>free trial class</strong> invitation.
-            Existing students can log in to the{' '}
-            <Link to="/student/login" className="text-yellow-400 hover:underline">
+            </Link>
+            , choose your discipline, pick a batch, and complete the form. You
+            will receive WhatsApp and email confirmation within hours, along
+            with a <strong>free trial class</strong> invitation. Existing
+            students can log in to the{' '}
+            <Link
+              to="/student/login"
+              className="text-yellow-400 hover:underline"
+            >
               GSAI student portal
             </Link>{' '}
             to view fee history, belt promotions, upcoming events and
@@ -175,13 +199,14 @@ export default function SeoContentSection() {
             GSAI is registered under the Government of India's MSME initiative
             and affiliated with multiple state and national federations
             including Karate, Taekwondo, MMA and Boxing associations. Our
-            certificates are recognised for school sports quotas, government
-            job applications and university admissions across India. To
-            request a press kit, certificate copies or testimonials for
-            partnerships, please contact us via the{' '}
+            certificates are recognised for school sports quotas, government job
+            applications and university admissions across India. To request a
+            press kit, certificate copies or testimonials for partnerships,
+            please contact us via the{' '}
             <a href="#contact" className="text-yellow-400 hover:underline">
               contact section
-            </a>.
+            </a>
+            .
           </p>
 
           <h3 className="text-2xl font-bold text-white mt-8">
@@ -191,13 +216,12 @@ export default function SeoContentSection() {
             Our students have won medals at district, state and national
             championships in Karate, Taekwondo, MMA and Boxing. We provide
             athlete welfare support, nutrition guidance and mental conditioning
-            so every student can perform at their peak. Whether you are a
-            parent in <strong>Indira Nagar</strong>, a college student in{' '}
+            so every student can perform at their peak. Whether you are a parent
+            in <strong>Indira Nagar</strong>, a college student in{' '}
             <strong>Gomti Nagar</strong>, or a working professional in{' '}
             <strong>Hazratganj</strong>, GSAI is the trusted name for martial
-            arts training in <strong>Lucknow, Uttar Pradesh</strong>. Come
-            train with India's most awarded coaches and discover the warrior
-            within.
+            arts training in <strong>Lucknow, Uttar Pradesh</strong>. Come train
+            with India's most awarded coaches and discover the warrior within.
           </p>
         </div>
       </div>
