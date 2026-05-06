@@ -20,7 +20,6 @@ declare global {
 
 export function logImageFailure(info: ImageFailureInfo) {
   try {
-    // eslint-disable-next-line no-console
     console.warn('[image-failure]', info.context, {
       src: info.src,
       attempts: info.attempts,

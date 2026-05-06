@@ -79,7 +79,7 @@ export function SmartImage({
   const [failed, setFailed] = React.useState(false);
   const triedRawRef = React.useRef(false);
   const timerRef = React.useRef<number | null>(null);
-  const reloadKeyRef = React.useRef(0);
+  const [manualRetryCount, setManualRetryCount] = React.useState(0);
 
   const reset = React.useCallback(() => {
     if (timerRef.current !== null) {
@@ -105,9 +105,8 @@ export function SmartImage({
     };
   }, [reset]);
 
-  const manualRetry = React.useCallback(() => {
-    reloadKeyRef.current += 1;
-    if (!src) return;
+  React.useEffect(() => {
+    if (!src || manualRetryCount === 0) return;
     const sep = src.includes('?') ? '&' : '?';
     if (timerRef.current !== null) {
       window.clearTimeout(timerRef.current);
@@ -119,9 +118,13 @@ export function SmartImage({
     setLoaded(false);
     setFailed(false);
     setCurrentSrc(
-      `${optimized || src}${sep}rk=${reloadKeyRef.current}-${Date.now()}`
+      `${optimized || src}${sep}rk=${manualRetryCount}-${Date.now()}`
     );
-  }, [optimized, src]);
+  }, [manualRetryCount, optimized, src]);
+
+  const manualRetry = React.useCallback(() => {
+    setManualRetryCount((count) => count + 1);
+  }, []);
 
   const handleError = React.useCallback(() => {
     if (!triedRawRef.current && src && currentSrc !== src) {
