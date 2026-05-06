@@ -77,9 +77,14 @@ export function SmartImage({
   const [attempt, setAttempt] = React.useState(0);
   const [loaded, setLoaded] = React.useState(false);
   const [failed, setFailed] = React.useState(false);
-  const triedRawRef = React.useRef(false);
+  const [triedRaw, setTriedRaw] = React.useState(false);
   const timerRef = React.useRef<number | null>(null);
   const [manualRetryCount, setManualRetryCount] = React.useState(0);
+  const retryCountRef = React.useRef(0);
+
+  React.useEffect(() => {
+    retryCountRef.current = manualRetryCount;
+  }, [manualRetryCount]);
 
   const reset = React.useCallback(() => {
     if (timerRef.current !== null) {
@@ -91,7 +96,7 @@ export function SmartImage({
     setAttempt(0);
     setLoaded(false);
     setFailed(false);
-    triedRawRef.current = false;
+    setTriedRaw(false);
   }, [optimized]);
 
   React.useEffect(() => {
@@ -105,30 +110,21 @@ export function SmartImage({
     };
   }, [reset]);
 
-  React.useEffect(() => {
-    if (!src || manualRetryCount === 0) return;
+  const manualRetry = React.useCallback(() => {
+    setManualRetryCount((count) => count + 1);
+    if (!src) return;
     const sep = src.includes('?') ? '&' : '?';
-    if (timerRef.current !== null) {
-      window.clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-    triedRawRef.current = false;
     setAttempt(0);
     setUseSrcSet(true);
     setLoaded(false);
     setFailed(false);
-    setCurrentSrc(
-      `${optimized || src}${sep}rk=${manualRetryCount}-${Date.now()}`
-    );
-  }, [manualRetryCount, optimized, src]);
-
-  const manualRetry = React.useCallback(() => {
-    setManualRetryCount((count) => count + 1);
-  }, []);
+    setTriedRaw(false);
+    setCurrentSrc(`${optimized || src}${sep}rk=${Date.now()}`);
+  }, [optimized, src]);
 
   const handleError = React.useCallback(() => {
-    if (!triedRawRef.current && src && currentSrc !== src) {
-      triedRawRef.current = true;
+    if (!triedRaw && src && currentSrc !== src) {
+      setTriedRaw(true);
       setUseSrcSet(false);
       setCurrentSrc(src);
       return;
@@ -138,7 +134,9 @@ export function SmartImage({
       const base = src || optimized;
       const sep = base.includes('?') ? '&' : '?';
       const delay = Math.min(300 * Math.pow(2, attempt), 4000);
+      const scheduledRetryCount = retryCountRef.current;
       timerRef.current = window.setTimeout(() => {
+        if (retryCountRef.current !== scheduledRetryCount) return;
         setAttempt(next);
         setUseSrcSet(false);
         setCurrentSrc(`${base}${sep}r=${next}-${Date.now()}`);
@@ -152,7 +150,15 @@ export function SmartImage({
       attempts: attempt + 1,
       finalUrl: currentSrc,
     });
-  }, [attempt, currentSrc, maxRetries, optimized, src, telemetryContext]);
+  }, [
+    attempt,
+    currentSrc,
+    maxRetries,
+    optimized,
+    src,
+    telemetryContext,
+    triedRaw,
+  ]);
 
   if (!src || failed) {
     if (renderError) {
