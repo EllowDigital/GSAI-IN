@@ -13,7 +13,10 @@ import Navbar from '@/components/layout/Navbar';
 import FooterSection from '@/components/layout/FooterSection';
 import ProgramCompareDrawer from '@/components/home/ProgramCompareDrawer';
 import Seo from '@/components/seo/Seo';
-import { buildFaqStructuredData, programsFaqs } from '@/utils/faqStructuredData';
+import {
+  buildFaqStructuredData,
+  programsFaqs,
+} from '@/utils/faqStructuredData';
 
 const containerVariants: Variants = {
   offscreen: {},

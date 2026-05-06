@@ -118,7 +118,9 @@ export function SmartImage({
     setUseSrcSet(true);
     setLoaded(false);
     setFailed(false);
-    setCurrentSrc(`${optimized || src}${sep}rk=${reloadKeyRef.current}-${Date.now()}`);
+    setCurrentSrc(
+      `${optimized || src}${sep}rk=${reloadKeyRef.current}-${Date.now()}`
+    );
   }, [optimized, src]);
 
   const handleError = React.useCallback(() => {

@@ -16,7 +16,10 @@ import InternalLinksBlock from '@/components/common/InternalLinksBlock';
 import ProgramEnquiryForm from '@/components/home/ProgramEnquiryForm';
 import ProgramTestimonials from '@/components/home/ProgramTestimonials';
 import Seo from '@/components/seo/Seo';
-import { buildFaqStructuredData, programsFaqs } from '@/utils/faqStructuredData';
+import {
+  buildFaqStructuredData,
+  programsFaqs,
+} from '@/utils/faqStructuredData';
 
 export default function ProgramDetail() {
   const { slug } = useParams<{ slug: string }>();

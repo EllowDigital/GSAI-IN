@@ -463,7 +463,10 @@ export default function EnrollPage() {
         description="Apply online for admission at Ghatak Sports Academy India, Lucknow. Karate, Taekwondo, Boxing, MMA, BJJ, Kickboxing & Self-Defense classes for kids, teens & adults."
         canonical="/enroll"
         keywords={enrollKeywords}
-        structuredData={[enrollStructuredData, buildFaqStructuredData(enrollFaqs)]}
+        structuredData={[
+          enrollStructuredData,
+          buildFaqStructuredData(enrollFaqs),
+        ]}
       />
 
       <main className="relative pt-32 pb-20 px-4">
