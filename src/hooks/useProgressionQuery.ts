@@ -165,7 +165,7 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
 
       const { error } = await supabase
         .from('student_progress')
-        .update(payload)
+        .update(payload as never)
         .eq('id', id);
 
       if (error) throw error;
@@ -468,7 +468,7 @@ export function useProgressionQuery(filters: ProgressionFilters = {}) {
 
       const { error } = await supabase
         .from('student_progress')
-        .update(payload)
+        .update(payload as never)
         .eq('id', id);
 
       if (error) throw error;

@@ -43,6 +43,9 @@ const RecognitionAffiliationsSection = lazy(
 const SeoContentSection = lazy(
   () => import('@/components/home/SeoContentSection')
 );
+const ProgramsAdmissionsFaqSection = lazy(
+  () => import('@/components/home/ProgramsAdmissionsFaqSection')
+);
 
 function SectionSkeleton() {
   return <div className="min-h-[220px] w-full" aria-hidden="true" />;
@@ -701,6 +704,9 @@ export default function Index() {
         </DeferredSection>
         <DeferredSection id="about-academy" minHeight={400}>
           <SeoContentSection />
+        </DeferredSection>
+        <DeferredSection id="programs-admissions-faq" minHeight={320}>
+          <ProgramsAdmissionsFaqSection />
         </DeferredSection>
         <DeferredSection id="faq" minHeight={260}>
           <FaqSection />

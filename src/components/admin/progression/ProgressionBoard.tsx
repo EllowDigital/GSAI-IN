@@ -821,7 +821,7 @@ export default function ProgressionBoard() {
       if (coach_notes !== undefined) payload.coach_notes = coach_notes;
       const { error } = await supabase
         .from('student_discipline_progress')
-        .update(payload)
+        .update(payload as never)
         .eq('id', id);
       if (error) throw error;
     },
