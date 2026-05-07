@@ -1,6 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Download, Mail, Phone, Quote, Star, FileText, Image as ImageIcon } from 'lucide-react';
+import {
+  ArrowLeft,
+  Download,
+  Mail,
+  Phone,
+  Quote,
+  Star,
+  FileText,
+  Image as ImageIcon,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 import Seo from '@/components/seo/Seo';
 import Navbar from '@/components/layout/Navbar';
@@ -23,13 +32,19 @@ const pressKitAssets = [
   },
   {
     label: 'Founder Bio & Academy Fact Sheet',
-    href: 'mailto:' + ACADEMY_CONTACT_EMAIL + '?subject=Press%20Kit%20Request%20-%20Fact%20Sheet',
+    href:
+      'mailto:' +
+      ACADEMY_CONTACT_EMAIL +
+      '?subject=Press%20Kit%20Request%20-%20Fact%20Sheet',
     icon: FileText,
     type: 'Document',
   },
   {
     label: 'Championship Photo Pack',
-    href: 'mailto:' + ACADEMY_CONTACT_EMAIL + '?subject=Press%20Kit%20Request%20-%20Photo%20Pack',
+    href:
+      'mailto:' +
+      ACADEMY_CONTACT_EMAIL +
+      '?subject=Press%20Kit%20Request%20-%20Photo%20Pack',
     icon: ImageIcon,
     type: 'Photo Pack',
   },
@@ -106,7 +121,11 @@ export default function PressPage() {
         title="Press Kit & Testimonials | Ghatak Sports Academy India"
         description="Download official press assets, founder bio, championship photos and read verified testimonials from students, parents and corporate clients of GSAI Lucknow."
         canonical="/press"
-        keywords={['ghatak sports academy press kit', 'gsai testimonials', 'martial arts media lucknow']}
+        keywords={[
+          'ghatak sports academy press kit',
+          'gsai testimonials',
+          'martial arts media lucknow',
+        ]}
         structuredData={[reviewSchema]}
       />
       <Navbar />
@@ -143,13 +162,18 @@ export default function PressPage() {
               GSAI Press Kit & Testimonials
             </h1>
             <p className="text-gray-400 max-w-2xl mx-auto text-base md:text-lg">
-              Everything journalists, schools, sponsors and corporate partners need to feature, partner with or write about Ghatak Sports Academy India.
+              Everything journalists, schools, sponsors and corporate partners
+              need to feature, partner with or write about Ghatak Sports Academy
+              India.
             </p>
           </motion.header>
 
           {/* Press Kit Downloads */}
           <section aria-labelledby="press-kit-heading" className="mb-16">
-            <h2 id="press-kit-heading" className="text-2xl md:text-3xl font-bold text-white mb-6">
+            <h2
+              id="press-kit-heading"
+              className="text-2xl md:text-3xl font-bold text-white mb-6"
+            >
               Downloadable Press Kit
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -160,14 +184,22 @@ export default function PressPage() {
                   <a
                     key={asset.label}
                     href={asset.href}
-                    {...(!isMail ? { download: true, target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    {...(!isMail
+                      ? {
+                          download: true,
+                          target: '_blank',
+                          rel: 'noopener noreferrer',
+                        }
+                      : {})}
                     className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-yellow-500/30 p-5 transition-colors group"
                   >
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-500 to-red-600 flex items-center justify-center flex-shrink-0">
                       <Icon className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-white font-semibold group-hover:text-yellow-500 truncate">{asset.label}</p>
+                      <p className="text-white font-semibold group-hover:text-yellow-500 truncate">
+                        {asset.label}
+                      </p>
                       <p className="text-gray-500 text-sm">{asset.type}</p>
                     </div>
                     <Download className="w-5 h-5 text-gray-400 group-hover:text-yellow-500" />
@@ -177,7 +209,10 @@ export default function PressPage() {
             </div>
             <p className="text-sm text-gray-500 mt-4">
               Need a custom asset, interview or quote? Email{' '}
-              <a href={`mailto:${ACADEMY_CONTACT_EMAIL}`} className="text-yellow-500 hover:text-yellow-400">
+              <a
+                href={`mailto:${ACADEMY_CONTACT_EMAIL}`}
+                className="text-yellow-500 hover:text-yellow-400"
+              >
                 {ACADEMY_CONTACT_EMAIL}
               </a>
               .
@@ -186,7 +221,10 @@ export default function PressPage() {
 
           {/* Testimonials Gallery */}
           <section aria-labelledby="testimonials-heading" className="mb-16">
-            <h2 id="testimonials-heading" className="text-2xl md:text-3xl font-bold text-white mb-6">
+            <h2
+              id="testimonials-heading"
+              className="text-2xl md:text-3xl font-bold text-white mb-6"
+            >
               Testimonials Gallery
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -199,13 +237,22 @@ export default function PressPage() {
                   transition={{ duration: 0.4, delay: i * 0.05 }}
                   className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-6 flex flex-col"
                 >
-                  <Quote className="w-6 h-6 text-yellow-500 mb-3" aria-hidden="true" />
+                  <Quote
+                    className="w-6 h-6 text-yellow-500 mb-3"
+                    aria-hidden="true"
+                  />
                   <blockquote className="text-gray-300 text-sm md:text-base leading-relaxed flex-1">
                     "{t.quote}"
                   </blockquote>
-                  <div className="flex items-center gap-1 mt-4" aria-label={`${t.rating} out of 5 stars`}>
+                  <div
+                    className="flex items-center gap-1 mt-4"
+                    aria-label={`${t.rating} out of 5 stars`}
+                  >
                     {Array.from({ length: t.rating }).map((_, idx) => (
-                      <Star key={idx} className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                      <Star
+                        key={idx}
+                        className="w-4 h-4 text-yellow-500 fill-yellow-500"
+                      />
                     ))}
                   </div>
                   <figcaption className="mt-3">
@@ -222,11 +269,15 @@ export default function PressPage() {
             aria-labelledby="press-contact"
             className="rounded-2xl bg-gradient-to-br from-yellow-900/20 via-black to-red-900/20 border border-white/10 p-6 md:p-10 text-center"
           >
-            <h2 id="press-contact" className="text-2xl md:text-3xl font-bold text-white mb-3">
+            <h2
+              id="press-contact"
+              className="text-2xl md:text-3xl font-bold text-white mb-3"
+            >
               Press & Partnership Contact
             </h2>
             <p className="text-gray-400 mb-6 max-w-xl mx-auto">
-              Reach out for interviews, school partnerships, corporate workshops or sponsorship opportunities.
+              Reach out for interviews, school partnerships, corporate workshops
+              or sponsorship opportunities.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <a

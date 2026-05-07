@@ -1,6 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, MapPin, Phone, Mail, Globe, ShieldCheck } from 'lucide-react';
+import {
+  ArrowLeft,
+  ExternalLink,
+  MapPin,
+  Phone,
+  Mail,
+  Globe,
+  ShieldCheck,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 import Seo from '@/components/seo/Seo';
 import Navbar from '@/components/layout/Navbar';
@@ -23,29 +31,110 @@ const NAP = {
 type Citation = {
   name: string;
   url: string;
-  category: 'Map / Search' | 'Business Directory' | 'Sports Directory' | 'Social Profile';
+  category:
+    | 'Map / Search'
+    | 'Business Directory'
+    | 'Sports Directory'
+    | 'Social Profile';
   verified?: boolean;
 };
 
 const citations: Citation[] = [
-  { name: 'Google Business Profile', url: 'https://g.co/kgs/ghataksportsacademy', category: 'Map / Search', verified: true },
-  { name: 'Bing Places for Business', url: 'https://www.bing.com/maps?q=Ghatak+Sports+Academy+India+Lucknow', category: 'Map / Search' },
-  { name: 'Apple Maps', url: 'https://maps.apple.com/?q=Ghatak+Sports+Academy+India+Lucknow', category: 'Map / Search' },
-  { name: 'JustDial', url: 'https://www.justdial.com/Lucknow/Ghatak-Sports-Academy-India', category: 'Business Directory' },
-  { name: 'Sulekha Lucknow', url: 'https://www.sulekha.com/martial-arts-classes/lucknow', category: 'Business Directory' },
-  { name: 'IndiaMART', url: 'https://www.indiamart.com/ghatak-sports-academy-india/', category: 'Business Directory' },
-  { name: 'UrbanPro', url: 'https://www.urbanpro.com/lucknow/ghatak-sports-academy-india', category: 'Business Directory' },
-  { name: 'Yellow Pages India', url: 'https://www.yellowpages.in/lucknow/ghatak-sports-academy', category: 'Business Directory' },
-  { name: 'Foursquare', url: 'https://foursquare.com/v/ghatak-sports-academy-india/lucknow', category: 'Business Directory' },
-  { name: 'Yelp India', url: 'https://www.yelp.com/biz/ghatak-sports-academy-india-lucknow', category: 'Business Directory' },
-  { name: 'Sportskeeda Profile', url: 'https://www.sportskeeda.com/', category: 'Sports Directory' },
-  { name: 'Khelo India Center Listing', url: 'https://kheloindia.gov.in/', category: 'Sports Directory' },
-  { name: 'Karate India Organization', url: 'https://www.karateindia.org/', category: 'Sports Directory' },
-  { name: 'Instagram', url: 'https://instagram.com/ghataksportsacademy', category: 'Social Profile', verified: true },
-  { name: 'Facebook', url: 'https://facebook.com/ghataksportsacademy', category: 'Social Profile', verified: true },
-  { name: 'X / Twitter', url: 'https://x.com/ghataksportsacademy', category: 'Social Profile', verified: true },
-  { name: 'LinkedIn', url: 'https://www.linkedin.com/company/ghataksportsacademy', category: 'Social Profile', verified: true },
-  { name: 'YouTube', url: 'https://youtube.com/@ghataksportsacademy', category: 'Social Profile' },
+  {
+    name: 'Google Business Profile',
+    url: 'https://g.co/kgs/ghataksportsacademy',
+    category: 'Map / Search',
+    verified: true,
+  },
+  {
+    name: 'Bing Places for Business',
+    url: 'https://www.bing.com/maps?q=Ghatak+Sports+Academy+India+Lucknow',
+    category: 'Map / Search',
+  },
+  {
+    name: 'Apple Maps',
+    url: 'https://maps.apple.com/?q=Ghatak+Sports+Academy+India+Lucknow',
+    category: 'Map / Search',
+  },
+  {
+    name: 'JustDial',
+    url: 'https://www.justdial.com/Lucknow/Ghatak-Sports-Academy-India',
+    category: 'Business Directory',
+  },
+  {
+    name: 'Sulekha Lucknow',
+    url: 'https://www.sulekha.com/martial-arts-classes/lucknow',
+    category: 'Business Directory',
+  },
+  {
+    name: 'IndiaMART',
+    url: 'https://www.indiamart.com/ghatak-sports-academy-india/',
+    category: 'Business Directory',
+  },
+  {
+    name: 'UrbanPro',
+    url: 'https://www.urbanpro.com/lucknow/ghatak-sports-academy-india',
+    category: 'Business Directory',
+  },
+  {
+    name: 'Yellow Pages India',
+    url: 'https://www.yellowpages.in/lucknow/ghatak-sports-academy',
+    category: 'Business Directory',
+  },
+  {
+    name: 'Foursquare',
+    url: 'https://foursquare.com/v/ghatak-sports-academy-india/lucknow',
+    category: 'Business Directory',
+  },
+  {
+    name: 'Yelp India',
+    url: 'https://www.yelp.com/biz/ghatak-sports-academy-india-lucknow',
+    category: 'Business Directory',
+  },
+  {
+    name: 'Sportskeeda Profile',
+    url: 'https://www.sportskeeda.com/',
+    category: 'Sports Directory',
+  },
+  {
+    name: 'Khelo India Center Listing',
+    url: 'https://kheloindia.gov.in/',
+    category: 'Sports Directory',
+  },
+  {
+    name: 'Karate India Organization',
+    url: 'https://www.karateindia.org/',
+    category: 'Sports Directory',
+  },
+  {
+    name: 'Instagram',
+    url: 'https://instagram.com/ghataksportsacademy',
+    category: 'Social Profile',
+    verified: true,
+  },
+  {
+    name: 'Facebook',
+    url: 'https://facebook.com/ghataksportsacademy',
+    category: 'Social Profile',
+    verified: true,
+  },
+  {
+    name: 'X / Twitter',
+    url: 'https://x.com/ghataksportsacademy',
+    category: 'Social Profile',
+    verified: true,
+  },
+  {
+    name: 'LinkedIn',
+    url: 'https://www.linkedin.com/company/ghataksportsacademy',
+    category: 'Social Profile',
+    verified: true,
+  },
+  {
+    name: 'YouTube',
+    url: 'https://youtube.com/@ghataksportsacademy',
+    category: 'Social Profile',
+  },
 ];
 
 const grouped = citations.reduce<Record<string, Citation[]>>((acc, c) => {
@@ -59,7 +148,8 @@ const napStructured = {
   name: NAP.name,
   address: {
     '@type': 'PostalAddress',
-    streetAddress: 'Badshah Kheda, Takrohi Road, near Balaji Chauraha, Indira Nagar',
+    streetAddress:
+      'Badshah Kheda, Takrohi Road, near Balaji Chauraha, Indira Nagar',
     addressLocality: 'Lucknow',
     addressRegion: 'Uttar Pradesh',
     postalCode: '226028',
@@ -78,7 +168,11 @@ export default function CitationsPage() {
         title="Verified Citations & Listings | Ghatak Sports Academy India"
         description="Official directory listings and verified business citations for Ghatak Sports Academy India in Lucknow. Consistent NAP details for local SEO."
         canonical="/citations"
-        keywords={['ghatak sports academy citations', 'gsai listings', 'lucknow martial arts directory']}
+        keywords={[
+          'ghatak sports academy citations',
+          'gsai listings',
+          'lucknow martial arts directory',
+        ]}
         structuredData={[napStructured]}
       />
       <Navbar />
@@ -115,7 +209,9 @@ export default function CitationsPage() {
               Citations & Directory Listings
             </h1>
             <p className="text-gray-400 max-w-2xl mx-auto text-base md:text-lg">
-              Our verified presence across business directories, map services and sports listings. Use the canonical NAP details below when citing or linking to us.
+              Our verified presence across business directories, map services
+              and sports listings. Use the canonical NAP details below when
+              citing or linking to us.
             </p>
           </motion.header>
 
@@ -129,7 +225,10 @@ export default function CitationsPage() {
           >
             <div className="flex items-center gap-2 mb-4">
               <ShieldCheck className="w-5 h-5 text-yellow-500" />
-              <h2 id="nap-heading" className="text-xl md:text-2xl font-bold text-white">
+              <h2
+                id="nap-heading"
+                className="text-xl md:text-2xl font-bold text-white"
+              >
                 Official NAP — Use Exactly As Shown
               </h2>
             </div>
@@ -139,27 +238,56 @@ export default function CitationsPage() {
                 <dd className="text-white font-semibold">{NAP.name}</dd>
               </div>
               <div>
-                <dt className="text-gray-500 mb-1 flex items-center gap-1.5"><MapPin className="w-4 h-4" /> Address</dt>
+                <dt className="text-gray-500 mb-1 flex items-center gap-1.5">
+                  <MapPin className="w-4 h-4" /> Address
+                </dt>
                 <dd className="text-white">{NAP.address}</dd>
               </div>
               <div>
-                <dt className="text-gray-500 mb-1 flex items-center gap-1.5"><Phone className="w-4 h-4" /> Phone</dt>
+                <dt className="text-gray-500 mb-1 flex items-center gap-1.5">
+                  <Phone className="w-4 h-4" /> Phone
+                </dt>
                 <dd className="text-white">
-                  <a href={`tel:${NAP.phone.replace(/\s/g, '')}`} className="hover:text-yellow-500">{NAP.phone}</a>
+                  <a
+                    href={`tel:${NAP.phone.replace(/\s/g, '')}`}
+                    className="hover:text-yellow-500"
+                  >
+                    {NAP.phone}
+                  </a>
                   <span className="text-gray-600 mx-2">|</span>
-                  <a href={`tel:${NAP.altPhone.replace(/\s/g, '')}`} className="hover:text-yellow-500">{NAP.altPhone}</a>
+                  <a
+                    href={`tel:${NAP.altPhone.replace(/\s/g, '')}`}
+                    className="hover:text-yellow-500"
+                  >
+                    {NAP.altPhone}
+                  </a>
                 </dd>
               </div>
               <div>
-                <dt className="text-gray-500 mb-1 flex items-center gap-1.5"><Mail className="w-4 h-4" /> Email</dt>
+                <dt className="text-gray-500 mb-1 flex items-center gap-1.5">
+                  <Mail className="w-4 h-4" /> Email
+                </dt>
                 <dd>
-                  <a href={`mailto:${NAP.email}`} className="text-yellow-500 hover:text-yellow-400">{NAP.email}</a>
+                  <a
+                    href={`mailto:${NAP.email}`}
+                    className="text-yellow-500 hover:text-yellow-400"
+                  >
+                    {NAP.email}
+                  </a>
                 </dd>
               </div>
               <div>
-                <dt className="text-gray-500 mb-1 flex items-center gap-1.5"><Globe className="w-4 h-4" /> Website</dt>
+                <dt className="text-gray-500 mb-1 flex items-center gap-1.5">
+                  <Globe className="w-4 h-4" /> Website
+                </dt>
                 <dd>
-                  <a href={NAP.website} className="text-yellow-500 hover:text-yellow-400" rel="noopener">{NAP.website}</a>
+                  <a
+                    href={NAP.website}
+                    className="text-yellow-500 hover:text-yellow-400"
+                    rel="noopener"
+                  >
+                    {NAP.website}
+                  </a>
                 </dd>
               </div>
               <div>
@@ -173,7 +301,10 @@ export default function CitationsPage() {
           <div className="space-y-10">
             {Object.entries(grouped).map(([category, items]) => (
               <section key={category} aria-labelledby={`cat-${category}`}>
-                <h2 id={`cat-${category}`} className="text-2xl font-bold text-white mb-4">
+                <h2
+                  id={`cat-${category}`}
+                  className="text-2xl font-bold text-white mb-4"
+                >
                   {category}
                 </h2>
                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -188,7 +319,10 @@ export default function CitationsPage() {
                         <span className="flex items-center gap-2 text-white group-hover:text-yellow-500">
                           {c.name}
                           {c.verified && (
-                            <ShieldCheck className="w-4 h-4 text-emerald-400" aria-label="Verified listing" />
+                            <ShieldCheck
+                              className="w-4 h-4 text-emerald-400"
+                              aria-label="Verified listing"
+                            />
                           )}
                         </span>
                         <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-yellow-500" />
@@ -202,7 +336,12 @@ export default function CitationsPage() {
 
           <p className="mt-12 text-sm text-gray-500 text-center">
             Spotted an inconsistent listing? Please report it to{' '}
-            <a href={`mailto:${NAP.email}`} className="text-yellow-500 hover:text-yellow-400">{NAP.email}</a>{' '}
+            <a
+              href={`mailto:${NAP.email}`}
+              className="text-yellow-500 hover:text-yellow-400"
+            >
+              {NAP.email}
+            </a>{' '}
             so we can keep our NAP details consistent across the web.
           </p>
         </div>

@@ -13,7 +13,8 @@ type Faq = { question: string; answer: string };
 
 const programsFaqs: Faq[] = [
   {
-    question: 'Which martial arts programs are offered at Ghatak Sports Academy India in Lucknow?',
+    question:
+      'Which martial arts programs are offered at Ghatak Sports Academy India in Lucknow?',
     answer:
       'We offer Karate, Taekwondo, MMA, Boxing, Kickboxing, Brazilian Jiu-Jitsu (Grappling), Kalaripayattu, Self-Defense and Fitness/Fat-loss programs for kids (5+), teens, women and adults — all run by certified national and international level coaches.',
   },
@@ -76,7 +77,8 @@ const admissionsFaqs: Faq[] = [
       'Admissions are open throughout the year. New batches start every month, subject to seat availability in your chosen age group and discipline.',
   },
   {
-    question: 'Do you provide a uniform, certificates and student portal access?',
+    question:
+      'Do you provide a uniform, certificates and student portal access?',
     answer:
       'Yes. Enrolled students receive uniform guidance, official belt/level certificates after each grading, and a personal Student Portal account to track attendance, fees, progression and event notifications.',
   },
@@ -176,7 +178,8 @@ export default function ProgramsAdmissionsFaqSection() {
             </span>
           </h2>
           <p className="text-gray-400 text-base md:text-lg max-w-2xl mx-auto">
-            Real questions we get every week from parents and students in Lucknow about our martial arts programs and the admission process.
+            Real questions we get every week from parents and students in
+            Lucknow about our martial arts programs and the admission process.
           </p>
         </motion.div>
 
