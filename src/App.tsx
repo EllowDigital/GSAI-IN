@@ -58,6 +58,12 @@ const AllCompetitionsPage = lazy(
 const EnrollPage = lazy(() => import('@/pages/public/EnrollPage'));
 const CitationsPage = lazy(() => import('@/pages/public/CitationsPage'));
 const PressPage = lazy(() => import('@/pages/public/PressPage'));
+const AboutPage = lazy(() => import('@/pages/public/AboutPage'));
+const CoachesPage = lazy(() => import('@/pages/public/CoachesPage'));
+const FacilitiesPage = lazy(() => import('@/pages/public/FacilitiesPage'));
+const AchievementsPage = lazy(() => import('@/pages/public/AchievementsPage'));
+const FaqPage = lazy(() => import('@/pages/public/FaqPage'));
+const ContactPage = lazy(() => import('@/pages/public/ContactPage'));
 const StudentPortal = lazy(() => import('./pages/student/StudentPortal'));
 
 const AdminArea = lazy(() => import('./pages/admin/AdminArea'));
@@ -386,8 +392,13 @@ const App = () => {
                       element={<AllCompetitionsPage />}
                     />
 
-                    {/* Section landing aliases to prevent direct-link 404s */}
-                    <Route path="/contact" element={<HomePageWrapper />} />
+                    {/* Dedicated section pages (mirror homepage anchors) */}
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/coaches" element={<CoachesPage />} />
+                    <Route path="/facilities" element={<FacilitiesPage />} />
+                    <Route path="/achievements" element={<AchievementsPage />} />
+                    <Route path="/faq" element={<FaqPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
                     <Route path="/corporate" element={<HomePageWrapper />} />
 
                     {/* Legacy static path aliases */}
