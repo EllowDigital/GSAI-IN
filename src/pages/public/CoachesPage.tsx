@@ -5,8 +5,8 @@ import FooterSection from '@/components/layout/FooterSection';
 import { Seo } from '@/components/seo/Seo';
 
 const FounderSection = lazy(() => import('@/components/home/FounderSection'));
-const ProgramTestimonials = lazy(
-  () => import('@/components/home/ProgramTestimonials')
+const TestimonialSection = lazy(
+  () => import('@/components/home/TestimonialSection')
 );
 
 const coaches = [
@@ -89,7 +89,7 @@ export default function CoachesPage() {
         </section>
         <Suspense fallback={null}>
           <FounderSection />
-          <ProgramTestimonials />
+          <TestimonialSection />)
         </Suspense>
       </main>
       <FooterSection />
