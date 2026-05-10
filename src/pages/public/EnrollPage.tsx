@@ -893,6 +893,23 @@ export default function EnrollPage() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Internal link to Programs & Admissions FAQ for SEO + UX */}
+          <section className="mt-16 rounded-2xl border border-orange-500/30 bg-gradient-to-br from-orange-500/10 to-red-500/10 p-6 md:p-8 text-center">
+            <h2 className="text-xl md:text-2xl font-bold text-white">
+              Have questions before enrolling?
+            </h2>
+            <p className="mt-2 text-zinc-300 text-sm md:text-base">
+              Browse our Programs &amp; Admissions FAQ for details on fees, age
+              groups, trial classes, schedules and women-only batches.
+            </p>
+            <Link
+              to="/faq"
+              className="inline-flex mt-4 px-6 py-3 rounded-full bg-gradient-to-r from-yellow-500 to-red-600 text-white font-semibold"
+            >
+              Read the Programs &amp; Admissions FAQ
+            </Link>
+          </section>
         </div>
       </main>
     </div>
