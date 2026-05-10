@@ -308,8 +308,30 @@ export default function ProgramDetail() {
                   description:
                     'Reach out for batch timings, trial classes, and enrolment.',
                 },
+                {
+                  to: '/faq',
+                  label: 'Programs & Admissions FAQ',
+                  description:
+                    'Answers about fees, age groups, trial classes, schedules and women-only batches.',
+                },
               ]}
             />
+
+            <div className="mt-10 rounded-2xl border border-yellow-500/30 bg-gradient-to-br from-yellow-500/10 to-red-500/10 p-6 md:p-8 text-center">
+              <h3 className="text-xl md:text-2xl font-bold text-white">
+                Still have questions about {program.title}?
+              </h3>
+              <p className="mt-2 text-gray-300 text-sm md:text-base">
+                Visit our Programs &amp; Admissions FAQ for fees, schedules,
+                trial classes and eligibility.
+              </p>
+              <Link
+                to="/faq"
+                className="inline-flex mt-4 px-6 py-3 rounded-full bg-gradient-to-r from-yellow-500 to-red-600 text-white font-semibold"
+              >
+                Read the Programs &amp; Admissions FAQ
+              </Link>
+            </div>
           </div>
         </section>
 
