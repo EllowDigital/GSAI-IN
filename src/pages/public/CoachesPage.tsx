@@ -89,7 +89,7 @@ export default function CoachesPage() {
         </section>
         <Suspense fallback={null}>
           <FounderSection />
-          <TestimonialSection />)
+          <TestimonialSection />
         </Suspense>
       </main>
       <FooterSection />
