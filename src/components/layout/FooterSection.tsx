@@ -364,7 +364,7 @@ export default function FooterSection() {
               <Heart className="w-3 h-3 text-red-500 animate-pulse fill-red-500" />
               <span>by</span>
               <a
-                href="https://ellowdigitals.me"
+                href="https://ellowdigital.space"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-yellow-500 hover:text-yellow-400 transition-colors duration-300 font-medium"
