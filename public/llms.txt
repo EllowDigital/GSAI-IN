@@ -1,0 +1,28 @@
+# Ghatak Sports Academy India (GSAI)
+
+> Government-recognised martial arts and self-defense academy in Lucknow, India — training kids, women and adults in Karate, Taekwondo, MMA, Boxing, Kickboxing, BJJ and Kalaripayattu.
+
+## Pages
+
+- [Home](/): Overview of programs, coaches, and the academy.
+- [About](/about): Mission, history, founder and recognitions.
+- [Programs](/programs): All martial arts and fitness programs.
+- [Enroll](/enroll): Admission form and process.
+- [Coaches](/coaches): Certified instructors and their credentials.
+- [Facilities](/facilities): Training centres and equipment.
+- [Achievements](/achievements): Medals, championships and student wins.
+- [Gallery](/gallery): Photos from training, events and competitions.
+- [Events](/events): Upcoming workshops, seminars and exhibitions.
+- [Competitions](/competitions): Tournaments and results.
+- [Blog](/blogs): Training tips, athlete journeys, academy news.
+- [News](/news): Press and academy updates.
+- [FAQ](/faq): Programs, admissions, fees and schedules.
+- [Contact](/contact): Phone, WhatsApp, email and centre addresses.
+- [Lucknow Location](/locations/lucknow): Lucknow centre details.
+- [Citations](/citations): Verified business directory listings (NAP).
+- [Press](/press): Press kit, logos and media assets.
+
+## Optional
+
+- [Privacy Policy](/privacy)
+- [Terms of Service](/terms)
