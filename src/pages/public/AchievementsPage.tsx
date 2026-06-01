@@ -12,8 +12,8 @@ export default function AchievementsPage() {
   return (
     <>
       <Seo
-        title="Achievements & Championships | Ghatak Sports Academy India"
-        description="Explore the medals, championships and student success stories at Ghatak Sports Academy India — proof of consistent excellence in martial arts and self-defense training."
+        title="Achievements & Championships | GSAI Lucknow"
+        description="Medals, championships and student success stories at Ghatak Sports Academy India — proof of consistent excellence in martial arts training."
         canonical="/achievements"
         keywords={[
           'GSAI achievements',
