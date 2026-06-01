@@ -16,6 +16,6 @@ Disallow: /*?*utm_
 Disallow: /*?*ref=
 
 # Sitemap for search engines
-Sitemap: https://gsai-in.lovable.app/sitemap.xml
+Sitemap: https://ghataksportsacademy.com/sitemap.xml
 
-Host: https://gsai-in.lovable.app
+Host: https://ghataksportsacademy.com/

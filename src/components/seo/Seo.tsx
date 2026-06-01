@@ -6,12 +6,12 @@ import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
 const SITE_CONFIG = {
   name: 'Ghatak Sports Academy India™',
   shortName: 'GSAI',
-  url: 'https://gsai-in.lovable.app',
+  url: 'https://ghataksportsacademy.com',
   handle: '@ghataksportsacademy',
   author: 'Ghatak Sports Academy India',
-  logo: 'https://gsai-in.lovable.app/assets/images/logo.webp',
+  logo: 'https://ghataksportsacademy.com/assets/images/logo.webp',
   defaultImage:
-    'https://gsai-in.lovable.app/assets/images/social-preview.png',
+    'https://ghataksportsacademy.com/assets/images/social-preview.png',
   contact: {
     phone: '+91-63941-35988',
     email: ACADEMY_CONTACT_EMAIL,

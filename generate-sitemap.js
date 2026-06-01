@@ -28,29 +28,33 @@ const Logger = {
 };
 
 // ---------------------- Hostname Logic --------------------
-const PRIMARY_HOST = 'https://gsai-in.lovable.app';
-const FALLBACK_HOSTS = [PRIMARY_HOST, 'https://ghataksportsacademy.com'];
+// Normalize hosts (no trailing slash, lowercase) and compare
+const PRIMARY_HOST = 'https://ghataksportsacademy.com';
+const FALLBACK_HOSTS = [PRIMARY_HOST];
+
+// Keep simple hostnames here (no protocol, no trailing slash)
 const placeholderHosts = new Set([
-  'https://yourdomain.com', 'http://yourdomain.com', 'yourdomain.com',
-  'https://example.com', 'http://example.com', 'example.com',
+  'yourdomain.com', 'example.com', 'localhost', '127.0.0.1',
 ]);
 
 const ensureAbsolute = (value) => {
   if (!value || !value.trim()) return FALLBACK_HOSTS[0];
   const trimmed = value.trim();
-  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  const withProto = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  return withProto.replace(/\/$/, '');
 };
 
 const candidateHost = ensureAbsolute(
   process.env.SITE_URL || process.env.CANONICAL_URL || process.env.URL ||
   process.env.DEPLOY_PRIME_URL || process.env.NEXT_PUBLIC_SITE_URL || FALLBACK_HOSTS[0]
-);
+).toLowerCase();
 
-const normalizedHost = candidateHost.replace(/\/$/, '');
-const allowedHosts = new Set(FALLBACK_HOSTS.map((host) => host.toLowerCase()));
+const normalizedHost = candidateHost; // already lowercased and trimmed
+const allowedHosts = new Set(FALLBACK_HOSTS.map((host) => host.toLowerCase().replace(/\/$/, '')));
+const hostWithoutProtocol = normalizedHost.replace(/^https?:\/\//, '');
+
 const hostname =
-  placeholderHosts.has(normalizedHost.toLowerCase()) ||
-  !allowedHosts.has(normalizedHost.toLowerCase())
+  placeholderHosts.has(hostWithoutProtocol) || !allowedHosts.has(normalizedHost)
     ? FALLBACK_HOSTS[0]
     : normalizedHost;
 
