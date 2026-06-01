@@ -89,8 +89,8 @@ const AllBlogsPage: React.FC = () => {
   return (
     <>
       <Seo
-        title="All Blog Articles - Ghatak Sports Academy India"
-        description="Read all our blog articles covering martial arts insights, training tips, athlete journeys, and academy highlights. Expert guidance and inspiring stories from our community."
+        title="Blog | Martial Arts Tips & Stories | GSAI"
+        description="Martial arts insights, training tips, athlete journeys and academy highlights from Ghatak Sports Academy India."
         canonical="/blogs"
         keywords={[
           'martial arts blog',

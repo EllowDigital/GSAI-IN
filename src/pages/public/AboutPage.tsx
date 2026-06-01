@@ -13,8 +13,8 @@ export default function AboutPage() {
   return (
     <>
       <Seo
-        title="About Ghatak Sports Academy India | Lucknow's Premier Martial Arts Academy"
-        description="Learn about Ghatak Sports Academy India (GSAI) — a government-recognised martial arts and self-defense academy in Lucknow training champions in Karate, Taekwondo, MMA, Boxing and Kalaripayattu."
+        title="About GSAI | Lucknow Martial Arts Academy"
+        description="Ghatak Sports Academy India (GSAI) is a government-recognised Lucknow academy training champions in Karate, Taekwondo, MMA, Boxing and Kalaripayattu."
         canonical="/about"
         keywords={[
           'about Ghatak Sports Academy',

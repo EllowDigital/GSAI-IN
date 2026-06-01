@@ -28,29 +28,33 @@ const Logger = {
 };
 
 // ---------------------- Hostname Logic --------------------
+// Normalize hosts (no trailing slash, lowercase) and compare
 const PRIMARY_HOST = 'https://ghataksportsacademy.com';
 const FALLBACK_HOSTS = [PRIMARY_HOST];
+
+// Keep simple hostnames here (no protocol, no trailing slash)
 const placeholderHosts = new Set([
-  'https://yourdomain.com', 'http://yourdomain.com', 'yourdomain.com',
-  'https://example.com', 'http://example.com', 'example.com',
+  'yourdomain.com', 'example.com', 'localhost', '127.0.0.1',
 ]);
 
 const ensureAbsolute = (value) => {
   if (!value || !value.trim()) return FALLBACK_HOSTS[0];
   const trimmed = value.trim();
-  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  const withProto = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  return withProto.replace(/\/$/, '');
 };
 
 const candidateHost = ensureAbsolute(
   process.env.SITE_URL || process.env.CANONICAL_URL || process.env.URL ||
   process.env.DEPLOY_PRIME_URL || process.env.NEXT_PUBLIC_SITE_URL || FALLBACK_HOSTS[0]
-);
+).toLowerCase();
 
-const normalizedHost = candidateHost.replace(/\/$/, '');
-const allowedHosts = new Set(FALLBACK_HOSTS.map((host) => host.toLowerCase()));
+const normalizedHost = candidateHost; // already lowercased and trimmed
+const allowedHosts = new Set(FALLBACK_HOSTS.map((host) => host.toLowerCase().replace(/\/$/, '')));
+const hostWithoutProtocol = normalizedHost.replace(/^https?:\/\//, '');
+
 const hostname =
-  placeholderHosts.has(normalizedHost.toLowerCase()) ||
-  !allowedHosts.has(normalizedHost.toLowerCase())
+  placeholderHosts.has(hostWithoutProtocol) || !allowedHosts.has(normalizedHost)
     ? FALLBACK_HOSTS[0]
     : normalizedHost;
 
@@ -99,13 +103,17 @@ const marketingPages = [
   { url: '/', changefreq: 'weekly', priority: 1.0 },
   { url: '/programs', changefreq: 'weekly', priority: 0.8 },
   { url: '/events', changefreq: 'daily', priority: 0.8 },
+  { url: '/event', changefreq: 'daily', priority: 0.7 },
   { url: '/news', changefreq: 'daily', priority: 0.7 },
   { url: '/blogs', changefreq: 'daily', priority: 0.7 },
   { url: '/gallery', changefreq: 'weekly', priority: 0.6 },
   { url: '/competitions', changefreq: 'weekly', priority: 0.7 },
   { url: '/locations/lucknow', changefreq: 'monthly', priority: 0.5 },
   { url: '/enroll', changefreq: 'weekly', priority: 1.0 },
-  { url: '/student', changefreq: 'weekly', priority: 0.8 },
+  { url: '/contact', changefreq: 'weekly', priority: 0.6 },
+  { url: '/corporate', changefreq: 'weekly', priority: 0.5 },
+  { url: '/pages/privacy.html', changefreq: 'yearly', priority: 0.2 },
+  { url: '/pages/terms.html', changefreq: 'yearly', priority: 0.2 },
   { url: '/privacy', changefreq: 'yearly', priority: 0.3 },
   { url: '/terms', changefreq: 'yearly', priority: 0.3 },
 ];
@@ -171,16 +179,7 @@ const shouldIncludeStaticRoute = (url) => {
   if (!url || !url.startsWith('/')) return false;
   if (url.includes('*') || url.includes(':')) return false;
   if (url.startsWith('/admin')) return false;
-
-  // Alias routes resolve to sections on home and should not be indexed separately.
-  if (url === '/contact' || url === '/corporate') return false;
-
-  // Skip legacy redirect aliases to avoid duplicate indexing.
-  if (url === '/pages/privacy.html' || url === '/pages/terms.html') return false;
-
-  // Skip event aliases that 301 to /events.
-  if (url === '/event' || url === '/event/') return false;
-
+  if (url.startsWith('/student')) return false;
   return true;
 };
 
@@ -213,13 +212,13 @@ const getPublicHtmlPageEntries = () => {
     const pages = readdirSync(publicPagesPath, { withFileTypes: true })
       .filter((entry) => entry.isFile() && entry.name.toLowerCase().endsWith('.html'))
       .map((entry) => `/pages/${entry.name}`)
-      .filter((url) => url !== '/pages/privacy.html' && url !== '/pages/terms.html');
+      .filter((url) => url !== '/pages/success.html');
 
     const uniquePages = [...new Set(pages)];
     return uniquePages.map((url) => ({
       url,
       changefreq: 'yearly',
-      priority: url === '/pages/success.html' ? 0.2 : 0.3,
+      priority: 0.3,
     }));
   } catch (err) {
     Logger.warn(`Could not auto-discover public HTML pages from ${publicPagesPath}: ${err.message}`);
