@@ -95,10 +95,26 @@ const testimonials = [
   },
 ];
 
+const SITE_URL = 'https://ghataksportsacademy.com';
+
 const reviewSchema = {
   '@context': 'https://schema.org',
-  '@type': 'Organization',
+  '@type': 'LocalBusiness',
+  '@id': `${SITE_URL}/#organization`,
   name: 'Ghatak Sports Academy India',
+  url: SITE_URL,
+  image: `${SITE_URL}/assets/images/social-preview.png`,
+  logo: `${SITE_URL}/assets/images/logo.webp`,
+  telephone: '+91-63941-35988',
+  priceRange: '₹₹',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Naubasta Kala, Sector-H, Jankipuram',
+    addressLocality: 'Lucknow',
+    addressRegion: 'Uttar Pradesh',
+    postalCode: '226021',
+    addressCountry: 'IN',
+  },
   aggregateRating: {
     '@type': 'AggregateRating',
     ratingValue: '5.0',
@@ -110,7 +126,24 @@ const reviewSchema = {
     '@type': 'Review',
     author: { '@type': 'Person', name: t.name },
     reviewBody: t.quote,
-    reviewRating: { '@type': 'Rating', ratingValue: t.rating, bestRating: '5' },
+    datePublished: '2024-12-01',
+    itemReviewed: {
+      '@type': 'LocalBusiness',
+      name: 'Ghatak Sports Academy India',
+      image: `${SITE_URL}/assets/images/social-preview.png`,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Lucknow',
+        addressRegion: 'Uttar Pradesh',
+        addressCountry: 'IN',
+      },
+    },
+    reviewRating: {
+      '@type': 'Rating',
+      ratingValue: t.rating.toString(),
+      bestRating: '5',
+      worstRating: '1',
+    },
   })),
 };
 
