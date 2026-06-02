@@ -145,7 +145,10 @@ const grouped = citations.reduce<Record<string, Citation[]>>((acc, c) => {
 const napStructured = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
+  '@id': `${NAP.website}/#organization`,
   name: NAP.name,
+  image: `${NAP.website}/assets/images/social-preview.png`,
+  logo: `${NAP.website}/assets/images/logo.webp`,
   address: {
     '@type': 'PostalAddress',
     streetAddress:
@@ -155,9 +158,36 @@ const napStructured = {
     postalCode: '226028',
     addressCountry: 'IN',
   },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: 26.8924,
+    longitude: 81.0086,
+  },
   telephone: NAP.phone,
   email: NAP.email,
   url: NAP.website,
+  priceRange: '₹₹',
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+      ],
+      opens: '16:00',
+      closes: '20:00',
+    },
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: 'Sunday',
+      opens: '07:00',
+      closes: '11:00',
+    },
+  ],
   sameAs: citations.map((c) => c.url),
 };
 
