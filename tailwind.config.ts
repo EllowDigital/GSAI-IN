@@ -62,6 +62,16 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				ink: {
+					DEFAULT: 'hsl(var(--ink))',
+					elevated: 'hsl(var(--ink-elevated))',
+					line: 'hsl(var(--ink-line))'
+				},
+				ember: {
+					DEFAULT: 'hsl(var(--ember))',
+					strong: 'hsl(var(--ember-strong))',
+					foreground: 'hsl(var(--ember-foreground))'
 				}
 			},
 			borderRadius: {
@@ -71,8 +81,10 @@ export default {
 			},
 			fontFamily: {
 				sans: ['Inter', 'system-ui', 'sans-serif'],
-				display: ['Inter', 'system-ui', 'sans-serif'],
+				display: ['Bebas Neue', 'Impact', 'system-ui', 'sans-serif'],
+				body: ['Barlow', 'Inter', 'system-ui', 'sans-serif'],
 			},
+
 			fontSize: {
 				'xs': ['0.75rem', { lineHeight: '1rem' }],
 				'sm': ['0.875rem', { lineHeight: '1.25rem' }],

@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap');
+
 
 @tailwind base;
 @tailwind components;
@@ -44,6 +46,15 @@
     --brand-yellow: 42 96% 55%;
     --brand-slate: 222 47% 11%;
     --brand-slate-soft: 215 22% 17%;
+
+    /* Charcoal & Ember (homepage bento system) */
+    --ink: 0 0% 10%;
+    --ink-elevated: 0 0% 18%;
+    --ink-line: 0 0% 29%;
+    --ember: 13 79% 57%;
+    --ember-strong: 13 65% 49%;
+    --ember-foreground: 0 0% 100%;
+
 
     --section-padding-y: clamp(4rem, 7vw, 6.5rem);
     --section-padding-x: clamp(1.5rem, 5vw, 4rem);
