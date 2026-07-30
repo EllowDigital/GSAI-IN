@@ -670,7 +670,7 @@ export default function Index() {
 
       {/* Main Content with improved semantic structure */}
       <main className="flex-1 flex flex-col gap-0" role="main">
-        <HeroSection />
+        <HeroBento />
         <AboutSection />
         <DeferredSection id="founder" minHeight={280}>
           <FounderSection />
