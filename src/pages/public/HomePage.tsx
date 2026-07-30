@@ -9,7 +9,7 @@ import {
 import Seo from '@/components/seo/Seo';
 import Navbar from '@/components/layout/Navbar';
 
-import HeroSection from '@/components/home/HeroSection';
+import HeroBento from '@/components/home/HeroBento';
 import AboutSection from '@/components/home/AboutSection';
 import FooterSection from '@/components/layout/FooterSection';
 import FloatingEnrollButton from '@/components/common/FloatingEnrollButton';
