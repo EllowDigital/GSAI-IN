@@ -9,7 +9,7 @@ import {
 import Seo from '@/components/seo/Seo';
 import Navbar from '@/components/layout/Navbar';
 
-import HeroBento from '@/components/home/HeroBento';
+import HeroSection from '@/components/home/HeroSection';
 import AboutSection from '@/components/home/AboutSection';
 import FooterSection from '@/components/layout/FooterSection';
 import FloatingEnrollButton from '@/components/common/FloatingEnrollButton';
@@ -670,7 +670,7 @@ export default function Index() {
 
       {/* Main Content with improved semantic structure */}
       <main className="flex-1 flex flex-col gap-0" role="main">
-        <HeroBento />
+        <HeroSection />
         <AboutSection />
         <DeferredSection id="founder" minHeight={280}>
           <FounderSection />
