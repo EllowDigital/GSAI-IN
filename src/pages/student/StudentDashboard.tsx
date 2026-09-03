@@ -481,7 +481,11 @@ export default function StudentDashboard() {
         <StudentProfileCard />
 
         {/* Tab Navigation */}
-        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+        <Tabs
+          value={activeTab}
+          onValueChange={handleTabChange}
+          className="w-full"
+        >
           <div className="sticky top-16 z-20 -mx-1 rounded-xl border border-border/60 bg-card/80 p-1.5 shadow-sm backdrop-blur-md supports-[backdrop-filter]:bg-card/60">
             <TabsList className="h-auto w-full grid grid-cols-2 gap-1.5 sm:grid-cols-4 bg-transparent">
               <TabsTrigger
@@ -502,7 +506,10 @@ export default function StudentDashboard() {
                 value="fees"
                 className="gap-2 text-xs sm:text-sm py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all"
               >
-                <IndianRupee className="w-4 h-4 text-primary" aria-hidden="true" />{' '}
+                <IndianRupee
+                  className="w-4 h-4 text-primary"
+                  aria-hidden="true"
+                />{' '}
                 Fees
               </TabsTrigger>
               <TabsTrigger

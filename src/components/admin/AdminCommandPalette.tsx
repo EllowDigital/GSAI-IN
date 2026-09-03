@@ -37,18 +37,38 @@ export type AdminCommandPaletteProps = {
 
 const NAV_COMMANDS = [
   { label: 'Dashboard', url: '/admin/dashboard', icon: Home },
-  { label: 'Enrollment Requests', url: '/admin/dashboard/enrollments', icon: UserPlus },
+  {
+    label: 'Enrollment Requests',
+    url: '/admin/dashboard/enrollments',
+    icon: UserPlus,
+  },
   { label: 'Students', url: '/admin/dashboard/students', icon: Users },
-  { label: 'Fee Management', url: '/admin/dashboard/fees', icon: BadgeDollarSign },
-  { label: 'Student Progression', url: '/admin/dashboard/progression', icon: Dumbbell },
+  {
+    label: 'Fee Management',
+    url: '/admin/dashboard/fees',
+    icon: BadgeDollarSign,
+  },
+  {
+    label: 'Student Progression',
+    url: '/admin/dashboard/progression',
+    icon: Dumbbell,
+  },
   { label: 'Disciplines', url: '/admin/dashboard/disciplines', icon: Swords },
   { label: 'Events', url: '/admin/dashboard/events', icon: Calendar },
   { label: 'Competitions', url: '/admin/dashboard/competitions', icon: Trophy },
   { label: 'Blogs', url: '/admin/dashboard/blogs', icon: BookOpen },
   { label: 'News', url: '/admin/dashboard/news', icon: Newspaper },
   { label: 'Gallery', url: '/admin/dashboard/gallery', icon: GalleryIcon },
-  { label: 'Testimonials', url: '/admin/dashboard/testimonials', icon: MessageSquare },
-  { label: 'Announcements', url: '/admin/dashboard/announcements', icon: Megaphone },
+  {
+    label: 'Testimonials',
+    url: '/admin/dashboard/testimonials',
+    icon: MessageSquare,
+  },
+  {
+    label: 'Announcements',
+    url: '/admin/dashboard/announcements',
+    icon: Megaphone,
+  },
   { label: 'About', url: '/admin/dashboard/about', icon: Info },
 ];
 

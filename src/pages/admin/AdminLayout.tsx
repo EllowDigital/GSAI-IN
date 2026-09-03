@@ -161,9 +161,11 @@ const AdminLayout: React.FC = () => {
     };
 
     const idle =
-      (window as unknown as { requestIdleCallback?: (cb: () => void) => number })
-        .requestIdleCallback ??
-      ((cb: () => void) => window.setTimeout(cb, 200));
+      (
+        window as unknown as {
+          requestIdleCallback?: (cb: () => void) => number;
+        }
+      ).requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 200));
     idle(() => {
       void warmAdminData();
     });
