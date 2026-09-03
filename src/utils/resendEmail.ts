@@ -482,10 +482,7 @@ export function buildCompetitionAnnouncementEmail(params: {
 // ── DISPATCHER ──
 
 export type EnrollmentEmailStage =
-  | 'pending'
-  | 'contacted'
-  | 'approved'
-  | 'rejected';
+  'pending' | 'contacted' | 'approved' | 'rejected';
 
 export function buildEnrollmentStageEmail(
   stage: EnrollmentEmailStage,

@@ -291,8 +291,7 @@ export default function DashboardHome() {
       icon: TrendingUp,
       hint: `${analytics.unpaidCount} unpaid records`,
       tone: (analytics.collectionRate >= 80 ? 'success' : 'warning') as
-        | 'success'
-        | 'warning',
+        'success' | 'warning',
     },
     {
       label: 'Active Content',

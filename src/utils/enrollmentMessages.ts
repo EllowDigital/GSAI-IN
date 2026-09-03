@@ -1,10 +1,7 @@
 import { ACADEMY_CONTACT_EMAIL } from '@/config/contact';
 
 export type EnrollmentMessageStage =
-  | 'pending'
-  | 'contacted'
-  | 'approved'
-  | 'rejected';
+  'pending' | 'contacted' | 'approved' | 'rejected';
 
 export interface EnrollmentMessageData {
   parentName: string;
