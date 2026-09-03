@@ -3,7 +3,14 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { useAdminAuth } from './AdminAuthProvider';
 import { AppSidebar } from '@/components/admin/AppSidebar';
 import { useQueryClient } from '@tanstack/react-query';
-import { RefreshCw, Menu, PanelLeftClose, PanelLeft } from 'lucide-react';
+import {
+  RefreshCw,
+  Menu,
+  PanelLeftClose,
+  PanelLeft,
+  Search,
+} from 'lucide-react';
+import AdminCommandPalette from '@/components/admin/AdminCommandPalette';
 import AdminNotificationBell from '@/components/admin/AdminNotificationBell';
 import { useToast } from '@/hooks/useToast';
 import { cn } from '@/lib/utils';
@@ -35,8 +42,16 @@ const PAGE_TITLES: Record<string, string> = {
 const AdminLayout: React.FC = () => {
   const { isAdmin, isLoading } = useAdminAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      return window.localStorage.getItem('admin:sidebar-collapsed') === '1';
+    } catch {
+      return false;
+    }
+  });
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [commandOpen, setCommandOpen] = useState(false);
 
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -54,6 +69,41 @@ const AdminLayout: React.FC = () => {
   useEffect(() => {
     document.title = `${pageTitle} | GSAI Admin Portal`;
   }, [pageTitle]);
+
+  // --- Persist Sidebar Preference ---
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        'admin:sidebar-collapsed',
+        sidebarCollapsed ? '1' : '0'
+      );
+    } catch {
+      // Ignore storage failures; layout still works.
+    }
+  }, [sidebarCollapsed]);
+
+  // --- Keyboard Shortcuts (Cmd/Ctrl+K, [) ---
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+      if ((event.metaKey || event.ctrlKey) && key === 'k') {
+        event.preventDefault();
+        setCommandOpen((prev) => !prev);
+        return;
+      }
+      if ((event.metaKey || event.ctrlKey) && key === 'b') {
+        event.preventDefault();
+        setSidebarCollapsed((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
+  // --- Close Mobile Sidebar On Route Change ---
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
 
   // --- Mobile Scroll Lock ---
   useEffect(() => {
@@ -110,7 +160,15 @@ const AdminLayout: React.FC = () => {
       ]);
     };
 
-    void warmAdminData();
+    const idle =
+      (
+        window as unknown as {
+          requestIdleCallback?: (cb: () => void) => number;
+        }
+      ).requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 200));
+    idle(() => {
+      void warmAdminData();
+    });
   }, [isAdmin, queryClient]);
 
   // --- Handlers ---
@@ -154,6 +212,19 @@ const AdminLayout: React.FC = () => {
 
   return (
     <div className="admin-shell h-dvh w-full flex overflow-hidden bg-background text-foreground selection:bg-primary/20">
+      <a
+        href="#admin-main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-primary focus:px-3 focus:py-2 focus:text-sm focus:text-primary-foreground"
+      >
+        Skip to content
+      </a>
+
+      <AdminCommandPalette
+        open={commandOpen}
+        onOpenChange={setCommandOpen}
+        onRefresh={handleRefresh}
+      />
+
       {/* Sidebar Navigation */}
       <AppSidebar
         open={sidebarOpen}
@@ -205,14 +276,37 @@ const AdminLayout: React.FC = () => {
               </button>
 
               <div className="ml-1 sm:ml-2">
-                <h1 className="text-base font-bold text-foreground tracking-tight leading-none sm:text-lg">
+                <h1 className="truncate text-base font-bold text-foreground tracking-tight leading-none sm:text-lg">
                   {pageTitle}
                 </h1>
+                <p className="mt-1 hidden text-xs text-muted-foreground sm:block">
+                  GSAI Admin Portal
+                </p>
               </div>
             </div>
 
             {/* Right: Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <button
+                onClick={() => setCommandOpen(true)}
+                className="hidden md:inline-flex h-9 items-center gap-2 rounded-xl border border-border/60 bg-muted/40 px-3 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                aria-label="Open command palette"
+              >
+                <Search className="h-4 w-4" />
+                <span className="hidden lg:inline">Search…</span>
+                <kbd className="hidden lg:inline rounded border border-border/60 bg-background px-1.5 py-0.5 text-[10px] font-medium tracking-wide">
+                  ⌘K
+                </kbd>
+              </button>
+
+              <button
+                onClick={() => setCommandOpen(true)}
+                className="md:hidden rounded-xl p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                aria-label="Search"
+              >
+                <Search className="h-4 w-4" />
+              </button>
+
               <AdminNotificationBell />
 
               <div className="h-6 w-px bg-border/60 mx-1 hidden sm:block" />
@@ -236,7 +330,10 @@ const AdminLayout: React.FC = () => {
         </header>
 
         {/* Main Content Area */}
-        <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain bg-slate-50/50 dark:bg-slate-950/20">
+        <main
+          id="admin-main-content"
+          className="flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-smooth bg-muted/30 [content-visibility:auto]"
+        >
           <Outlet />
         </main>
       </div>

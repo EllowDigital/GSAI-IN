@@ -35,8 +35,7 @@ const HARD_RELOAD_TYPES: PerformanceNavigationTiming['type'][] = [
 ];
 
 const getNavigationType = ():
-  | PerformanceNavigationTiming['type']
-  | undefined => {
+  PerformanceNavigationTiming['type'] | undefined => {
   if (
     typeof window === 'undefined' ||
     typeof window.performance === 'undefined'
