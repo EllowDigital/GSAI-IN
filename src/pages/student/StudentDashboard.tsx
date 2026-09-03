@@ -23,8 +23,10 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useSearchParams } from 'react-router-dom';
 import Spinner from '@/components/ui/spinner';
+import { Skeleton } from '@/components/ui/skeleton';
+import { SmartImage } from '@/components/ui/smart-image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ChangePasswordDialog from '@/components/student/ChangePasswordDialog';
 import StudentProfileCard from '@/components/student/StudentProfileCard';
@@ -82,6 +84,51 @@ export default function StudentDashboard() {
   const studentId = profile?.studentId;
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [openMapIds, setOpenMapIds] = useState<string[]>([]);
+
+  const validTabs = ['competitions', 'progression', 'fees', 'events'] as const;
+  type StudentTab = (typeof validTabs)[number];
+
+  const activeTab: StudentTab = useMemo(() => {
+    const fromUrl = searchParams.get('tab');
+    if (fromUrl && validTabs.includes(fromUrl as StudentTab)) {
+      return fromUrl as StudentTab;
+    }
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = window.localStorage.getItem('student:active-tab');
+        if (stored && validTabs.includes(stored as StudentTab)) {
+          return stored as StudentTab;
+        }
+      } catch {
+        // Ignore storage issues.
+      }
+    }
+    return 'competitions';
+  }, [searchParams]);
+
+  const handleTabChange = useCallback(
+    (value: string) => {
+      try {
+        window.localStorage.setItem('student:active-tab', value);
+      } catch {
+        // Ignore storage issues.
+      }
+      const next = new URLSearchParams(searchParams);
+      next.set('tab', value);
+      setSearchParams(next, { replace: true });
+    },
+    [searchParams, setSearchParams]
+  );
+
+  const toggleMap = useCallback((competitionId: string) => {
+    setOpenMapIds((prev) =>
+      prev.includes(competitionId)
+        ? prev.filter((id) => id !== competitionId)
+        : [...prev, competitionId]
+    );
+  }, []);
   const dashboardTitle = profile?.studentName
     ? `${profile.studentName} | GSAI Student Portal`
     : 'Student Dashboard | GSAI Student Portal';
@@ -282,7 +329,7 @@ export default function StudentDashboard() {
   // --- Render Checks ---
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50/50">
+      <div className="flex items-center justify-center min-h-dvh bg-muted/30">
         <Spinner size={32} className="text-primary" />
       </div>
     );
@@ -291,7 +338,7 @@ export default function StudentDashboard() {
   if (!isAuthenticated) return <Navigate to="/student/login" replace />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-background to-indigo-50/40 flex flex-col font-sans text-slate-900">
+    <div className="min-h-dvh bg-gradient-to-br from-muted/40 via-background to-muted/20 flex flex-col font-sans text-foreground">
       <Seo
         title={dashboardTitle}
         description="Private student dashboard for Ghatak Sports Academy India."
@@ -388,39 +435,39 @@ export default function StudentDashboard() {
       {/* Main Content */}
       <main className="max-w-5xl mx-auto p-4 lg:p-6 space-y-8 pb-20 flex-1 w-full">
         {/* Welcome Banner */}
-        <section className="relative overflow-hidden rounded-2xl border border-slate-700/50 bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 p-6 sm:p-8 text-slate-50 shadow-xl">
+        <section className="relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-foreground via-foreground to-foreground/90 p-6 sm:p-8 text-background shadow-xl">
           <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
             <Trophy className="w-48 h-48" />
           </div>
           <div className="relative z-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-indigo-400/30 bg-indigo-500/20 px-3 py-1 text-xs font-semibold tracking-wide text-indigo-200 backdrop-blur-sm">
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/20 px-3 py-1 text-xs font-semibold tracking-wide text-background backdrop-blur-sm">
                 <Sparkles className="h-3.5 w-3.5" />
                 Welcome Back
               </div>
               <h2 className="text-2xl font-bold sm:text-3xl tracking-tight">
                 {profile?.studentName || 'Student Dashboard'}
               </h2>
-              <p className="text-sm text-slate-300 max-w-md leading-relaxed">
+              <p className="text-sm text-background/70 max-w-md leading-relaxed">
                 Track your progression, view upcoming events, manage fees, and
                 monitor your competition activity all in one place.
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-3 sm:min-w-[280px]">
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm transition-colors hover:bg-white/10">
-                <p className="text-xs uppercase tracking-wider text-slate-400 font-medium">
+              <div className="rounded-xl border border-background/15 bg-background/10 p-4 backdrop-blur-sm transition-colors hover:bg-background/20">
+                <p className="text-xs uppercase tracking-wider text-background/60 font-medium">
                   Active Programs
                 </p>
-                <p className="mt-1 text-2xl font-bold text-white">
+                <p className="mt-1 text-2xl font-bold text-background">
                   {programBadges.length}
                 </p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm transition-colors hover:bg-white/10">
-                <p className="text-xs uppercase tracking-wider text-slate-400 font-medium">
+              <div className="rounded-xl border border-background/15 bg-background/10 p-4 backdrop-blur-sm transition-colors hover:bg-background/20">
+                <p className="text-xs uppercase tracking-wider text-background/60 font-medium">
                   Certificates
                 </p>
-                <p className="mt-1 text-2xl font-bold text-white">
+                <p className="mt-1 text-2xl font-bold text-background">
                   {myCertificates.length}
                 </p>
               </div>
@@ -434,35 +481,35 @@ export default function StudentDashboard() {
         <StudentProfileCard />
 
         {/* Tab Navigation */}
-        <Tabs defaultValue="competitions" className="w-full">
-          <div className="rounded-xl border border-border/60 bg-card/50 p-1.5 shadow-sm backdrop-blur-sm">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+          <div className="sticky top-16 z-20 -mx-1 rounded-xl border border-border/60 bg-card/80 p-1.5 shadow-sm backdrop-blur-md supports-[backdrop-filter]:bg-card/60">
             <TabsList className="h-auto w-full grid grid-cols-2 gap-1.5 sm:grid-cols-4 bg-transparent">
               <TabsTrigger
                 value="competitions"
                 className="gap-2 text-xs sm:text-sm py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all"
               >
-                <Trophy className="w-4 h-4 text-primary hidden sm:block" />{' '}
+                <Trophy className="w-4 h-4 text-primary" aria-hidden="true" />{' '}
                 Competitions
               </TabsTrigger>
               <TabsTrigger
                 value="progression"
                 className="gap-2 text-xs sm:text-sm py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all"
               >
-                <Award className="w-4 h-4 text-primary hidden sm:block" />{' '}
+                <Award className="w-4 h-4 text-primary" aria-hidden="true" />{' '}
                 Progression
               </TabsTrigger>
               <TabsTrigger
                 value="fees"
                 className="gap-2 text-xs sm:text-sm py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all"
               >
-                <IndianRupee className="w-4 h-4 text-primary hidden sm:block" />{' '}
+                <IndianRupee className="w-4 h-4 text-primary" aria-hidden="true" />{' '}
                 Fees
               </TabsTrigger>
               <TabsTrigger
                 value="events"
                 className="gap-2 text-xs sm:text-sm py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all"
               >
-                <Calendar className="w-4 h-4 text-primary hidden sm:block" />{' '}
+                <Calendar className="w-4 h-4 text-primary" aria-hidden="true" />{' '}
                 Events
               </TabsTrigger>
             </TabsList>
@@ -529,8 +576,21 @@ export default function StudentDashboard() {
               </h3>
 
               {compLoading ? (
-                <div className="flex justify-center py-12">
-                  <Spinner size={24} className="text-primary/60" />
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {[0, 1, 2].map((index) => (
+                    <Card
+                      key={index}
+                      className="border-border/60 overflow-hidden"
+                    >
+                      <Skeleton className="h-40 w-full rounded-none" />
+                      <CardContent className="space-y-3 p-5">
+                        <Skeleton className="h-5 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                        <Skeleton className="h-4 w-2/3" />
+                        <Skeleton className="h-9 w-full rounded-lg" />
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
               ) : upcomingComps.length === 0 ? (
                 <Card className="border-dashed border-border/60 bg-transparent">
@@ -558,17 +618,20 @@ export default function StudentDashboard() {
                         {c.image_url && (
                           <div className="h-40 overflow-hidden relative">
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
-                            <img
+                            <SmartImage
                               src={c.image_url}
                               alt={c.name}
-                              className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                              loading="lazy"
+                              telemetryContext="student-competition-card"
+                              srcSetWidths={[400, 800, 1200]}
+                              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                              wrapperClassName="h-full w-full"
+                              imgClassName="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                             />
                             <Badge
                               className={`absolute bottom-3 left-3 z-20 text-[10px] font-semibold tracking-wider uppercase border-none ${
                                 c.status === 'ongoing'
-                                  ? 'bg-green-500 text-white'
-                                  : 'bg-blue-500 text-white'
+                                  ? 'bg-emerald-600 text-primary-foreground'
+                                  : 'bg-primary text-primary-foreground'
                               }`}
                             >
                               {c.status === 'ongoing' ? 'Live Now' : 'Upcoming'}
@@ -582,8 +645,8 @@ export default function StudentDashboard() {
                                 variant="outline"
                                 className={`w-fit text-[10px] font-semibold tracking-wider uppercase ${
                                   c.status === 'ongoing'
-                                    ? 'bg-green-500/10 text-green-700 border-green-200'
-                                    : 'bg-blue-500/10 text-blue-700 border-blue-200'
+                                    ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/30'
+                                    : 'bg-primary/10 text-primary border-primary/30'
                                 }`}
                               >
                                 {c.status === 'ongoing'
@@ -630,22 +693,39 @@ export default function StudentDashboard() {
                           </div>
 
                           {c.location_text && (
-                            <div className="rounded-xl overflow-hidden border border-border/50 bg-muted/20 mt-2">
-                              <iframe
-                                title={`Map: ${c.location_text}`}
-                                src={`https://maps.google.com/maps?q=${encodeURIComponent(c.location_text)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
-                                width="100%"
-                                height="120"
-                                className="border-0 grayscale-[20%] contrast-125"
-                                loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
-                              />
+                            <div className="mt-2 space-y-2">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-full justify-center gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground"
+                                onClick={() => toggleMap(c.id)}
+                                aria-expanded={openMapIds.includes(c.id)}
+                              >
+                                <MapPin className="h-3.5 w-3.5" />
+                                {openMapIds.includes(c.id)
+                                  ? 'Hide map'
+                                  : 'View map'}
+                              </Button>
+                              {openMapIds.includes(c.id) && (
+                                <div className="rounded-xl overflow-hidden border border-border/50 bg-muted/20">
+                                  <iframe
+                                    title={`Map: ${c.location_text}`}
+                                    src={`https://maps.google.com/maps?q=${encodeURIComponent(c.location_text)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                                    width="100%"
+                                    height="140"
+                                    className="border-0"
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                  />
+                                </div>
+                              )}
                             </div>
                           )}
 
                           <div className="pt-2 mt-auto">
                             {isRegistered ? (
-                              <div className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-green-500/10 text-green-700 font-semibold text-sm border border-green-500/20">
+                              <div className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-emerald-500/10 text-emerald-700 font-semibold text-sm border border-emerald-500/20">
                                 <UserCheck className="w-4 h-4" /> You are
                                 Registered
                               </div>
@@ -742,7 +822,7 @@ export default function StudentDashboard() {
             </a>
           </p>
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background border border-border/50 shadow-sm">
-            <ShieldCheck className="h-3.5 w-3.5 text-green-600" />
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
             <span className="font-medium">Secure Connection</span>
           </div>
         </div>
