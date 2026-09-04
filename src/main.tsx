@@ -64,7 +64,6 @@ try {
     <BrowserRouter>
       <App />
     </BrowserRouter>
-
   );
 } catch (error) {
   console.error('Failed to render app:', error);
