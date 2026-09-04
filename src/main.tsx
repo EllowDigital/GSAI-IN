@@ -61,14 +61,10 @@ try {
   syncManifestForPath(window.location.pathname);
 
   createRoot(rootElement).render(
-    <BrowserRouter
-      future={{
-        v7_startTransition: true,
-        v7_relativeSplatPath: true,
-      }}
-    >
+    <BrowserRouter>
       <App />
     </BrowserRouter>
+
   );
 } catch (error) {
   console.error('Failed to render app:', error);
