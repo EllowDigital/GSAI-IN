@@ -1465,7 +1465,6 @@ export default function EnrollmentRequestsManager() {
             </>
           )}
         </DialogContent>
-
       </Dialog>
 
       {/* Approve & Add Student Flow */}
