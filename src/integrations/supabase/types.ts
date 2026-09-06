@@ -1495,6 +1495,7 @@ export type Database = {
         Args: { p_subscription_ids: string[] }
         Returns: number
       }
+      is_academy_admin: { Args: never; Returns: boolean }
       is_progress_status_unchanged: {
         Args: { new_status: string; row_id: string }
         Returns: boolean
