@@ -308,6 +308,45 @@ export type Database = {
         };
         Relationships: [];
       };
+      coaches: {
+        Row: {
+          bio: string;
+          created_at: string;
+          display_order: number;
+          id: string;
+          image_url: string | null;
+          is_active: boolean;
+          name: string;
+          role: string;
+          specialties: Json;
+          updated_at: string;
+        };
+        Insert: {
+          bio?: string;
+          created_at?: string;
+          display_order?: number;
+          id?: string;
+          image_url?: string | null;
+          is_active?: boolean;
+          name: string;
+          role?: string;
+          specialties?: Json;
+          updated_at?: string;
+        };
+        Update: {
+          bio?: string;
+          created_at?: string;
+          display_order?: number;
+          id?: string;
+          image_url?: string | null;
+          is_active?: boolean;
+          name?: string;
+          role?: string;
+          specialties?: Json;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       competition_certificates: {
         Row: {
           certificate_url: string;
@@ -870,6 +909,66 @@ export type Database = {
           rating?: number;
           review?: string;
           student_name?: string;
+        };
+        Relationships: [];
+      };
+      programs: {
+        Row: {
+          age_group: string;
+          benefits: Json;
+          category: string;
+          created_at: string;
+          display_order: number;
+          duration: string;
+          full_description: string;
+          icon: string;
+          id: string;
+          image_url: string | null;
+          is_active: boolean;
+          level: string;
+          schedule: string;
+          short_description: string;
+          slug: string;
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          age_group?: string;
+          benefits?: Json;
+          category?: string;
+          created_at?: string;
+          display_order?: number;
+          duration?: string;
+          full_description?: string;
+          icon?: string;
+          id?: string;
+          image_url?: string | null;
+          is_active?: boolean;
+          level?: string;
+          schedule?: string;
+          short_description?: string;
+          slug: string;
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          age_group?: string;
+          benefits?: Json;
+          category?: string;
+          created_at?: string;
+          display_order?: number;
+          duration?: string;
+          full_description?: string;
+          icon?: string;
+          id?: string;
+          image_url?: string | null;
+          is_active?: boolean;
+          level?: string;
+          schedule?: string;
+          short_description?: string;
+          slug?: string;
+          title?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
@@ -1495,6 +1594,7 @@ export type Database = {
         Args: { p_subscription_ids: string[] };
         Returns: number;
       };
+      is_academy_admin: { Args: never; Returns: boolean };
       is_progress_status_unchanged: {
         Args: { new_status: string; row_id: string };
         Returns: boolean;
