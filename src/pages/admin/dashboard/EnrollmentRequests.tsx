@@ -1210,183 +1210,184 @@ export default function EnrollmentRequestsManager() {
           if (!o) setViewReq(null);
         }}
       >
-        <DialogContent className="w-[calc(100vw-1rem)] max-w-xl max-h-[90vh] overflow-hidden p-0 sm:w-full">
-          <div className="max-h-[90vh] overflow-y-auto">
-            <DialogHeader className="border-b border-border px-4 py-4 sm:px-6">
-              <DialogTitle className="text-base leading-5 sm:text-lg sm:leading-6">
-                Enrollment Request
-              </DialogTitle>
-              <DialogDescription className="text-xs leading-4 sm:text-sm sm:leading-5">
-                Review the request, notes, and parent communication from one
-                simple screen.
-              </DialogDescription>
-            </DialogHeader>
-            {viewReq && (
-              <div className="space-y-5 p-4 sm:p-6">
-                <div className="grid grid-cols-1 gap-3 text-[13px] leading-5 sm:grid-cols-2 sm:text-sm sm:leading-5">
-                  <div>
-                    <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
-                      Student
-                    </p>
-                    <p className="font-medium break-words">
-                      {viewReq.student_name}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
-                      Age / Gender
-                    </p>
-                    <p className="font-medium break-words">
-                      {viewReq.age} yrs • {viewReq.gender}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
-                      Parent
-                    </p>
-                    <p className="font-medium break-words">
-                      {viewReq.parent_name}
-                    </p>
-                  </div>
-                  {viewReq.parent_email && (
-                    <div>
-                      <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
-                        Parent Email
-                      </p>
-                      <a
-                        href={`mailto:${viewReq.parent_email}`}
-                        className="font-medium text-primary hover:underline break-all"
-                      >
-                        {viewReq.parent_email}
-                      </a>
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
-                      Phone
-                    </p>
-                    <a
-                      href={`tel:${viewReq.parent_phone}`}
-                      className="font-medium text-primary hover:underline break-all"
+        <DialogContent className="flex max-h-[92dvh] w-[calc(100vw-1.5rem)] max-w-[min(56rem,calc(100vw-1.5rem))] flex-col gap-0 overflow-hidden p-0 sm:w-full">
+          <DialogHeader className="shrink-0 border-b border-border bg-card/60 px-4 py-3.5 text-left sm:px-6 sm:py-4">
+            <DialogTitle className="text-base leading-6 sm:text-lg">
+              Enrollment Request
+            </DialogTitle>
+            <DialogDescription className="text-xs leading-5 sm:text-sm">
+              Review the request, notes, and parent communication from one
+              simple screen.
+            </DialogDescription>
+          </DialogHeader>
+          {viewReq && (
+            <>
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6 sm:py-5">
+                <div className="space-y-5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge
+                      variant="outline"
+                      className={
+                        STATUS_CONFIG[viewReq.status]?.className ||
+                        'bg-muted text-muted-foreground'
+                      }
                     >
-                      {viewReq.parent_phone}
-                    </a>
+                      {STATUS_CONFIG[viewReq.status]?.label || viewReq.status}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      Submitted {format(new Date(viewReq.created_at), 'PPp')}
+                    </span>
                   </div>
-                  {viewReq.student_email && (
-                    <div>
-                      <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
-                        Student Email
-                      </p>
-                      <a
-                        href={`mailto:${viewReq.student_email}`}
-                        className="font-medium text-primary hover:underline break-all"
-                      >
-                        {viewReq.student_email}
-                      </a>
-                    </div>
-                  )}
-                  {viewReq.student_phone && (
-                    <div>
-                      <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
-                        Student Phone
-                      </p>
-                      <a
-                        href={`tel:${viewReq.student_phone}`}
-                        className="font-medium text-primary hover:underline break-all"
-                      >
-                        {viewReq.student_phone}
-                      </a>
-                    </div>
-                  )}
-                  <div className="sm:col-span-2">
-                    <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
-                      Program
-                    </p>
-                    <p className="font-medium break-words">{viewReq.program}</p>
-                  </div>
-                  {viewReq.aadhar_number && (
-                    <div className="sm:col-span-2">
-                      <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
-                        Aadhar Number
-                      </p>
-                      <p className="font-medium font-mono break-all">
-                        {viewReq.aadhar_number.replace(
+
+                  <div className="grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
+                    {[
+                      { label: 'Student', value: viewReq.student_name },
+                      {
+                        label: 'Age / Gender',
+                        value: `${viewReq.age} yrs • ${viewReq.gender}`,
+                      },
+                      { label: 'Program', value: viewReq.program },
+                      { label: 'Parent', value: viewReq.parent_name },
+                      {
+                        label: 'Parent Phone',
+                        value: viewReq.parent_phone,
+                        href: `tel:${viewReq.parent_phone}`,
+                      },
+                      viewReq.parent_email && {
+                        label: 'Parent Email',
+                        value: viewReq.parent_email,
+                        href: `mailto:${viewReq.parent_email}`,
+                      },
+                      viewReq.student_phone && {
+                        label: 'Student Phone',
+                        value: viewReq.student_phone,
+                        href: `tel:${viewReq.student_phone}`,
+                      },
+                      viewReq.student_email && {
+                        label: 'Student Email',
+                        value: viewReq.student_email,
+                        href: `mailto:${viewReq.student_email}`,
+                      },
+                      viewReq.aadhar_number && {
+                        label: 'Aadhar Number',
+                        value: viewReq.aadhar_number.replace(
                           /(\d{4})(\d{4})(\d{4})/,
                           '$1-$2-$3'
-                        )}
-                      </p>
-                    </div>
-                  )}
+                        ),
+                        mono: true,
+                      },
+                    ]
+                      .filter(Boolean)
+                      .map((field) => {
+                        const f = field as {
+                          label: string;
+                          value: string;
+                          href?: string;
+                          mono?: boolean;
+                        };
+                        return (
+                          <div key={f.label} className="bg-card p-3 sm:p-3.5">
+                            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                              {f.label}
+                            </p>
+                            {f.href ? (
+                              <a
+                                href={f.href}
+                                className="mt-0.5 block break-all text-sm font-medium text-primary hover:underline"
+                              >
+                                {f.value}
+                              </a>
+                            ) : (
+                              <p
+                                className={`mt-0.5 break-words text-sm font-medium ${f.mono ? 'font-mono' : ''}`}
+                              >
+                                {f.value}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
+                  </div>
+
                   {viewReq.message && (
-                    <div className="sm:col-span-2">
-                      <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
+                    <div className="rounded-xl border border-border bg-muted/40 p-3.5 sm:p-4">
+                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                         Message
                       </p>
-                      <p className="font-medium break-words">
+                      <p className="mt-1 whitespace-pre-wrap break-words text-sm">
                         {viewReq.message}
                       </p>
                     </div>
                   )}
-                  <div className="sm:col-span-2">
-                    <p className="text-[11px] leading-4 text-muted-foreground sm:text-xs">
-                      Submitted
-                    </p>
-                    <p className="font-medium break-words">
-                      {format(new Date(viewReq.created_at), 'PPp')}
-                    </p>
-                  </div>
-                </div>
 
-                {/* Admin Notes */}
-                <div className="rounded-xl border border-border bg-card p-3.5 sm:p-4">
-                  <label className="text-[11px] font-medium leading-4 text-muted-foreground sm:text-xs">
-                    Admin Notes{' '}
+                  <div className="rounded-xl border border-border bg-card p-3.5 sm:p-4">
+                    <label className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                      Admin Notes{' '}
+                      {viewReq.status !== 'approved' &&
+                      viewReq.status !== 'rejected'
+                        ? '(required for rejection)'
+                        : ''}
+                    </label>
+                    <Textarea
+                      value={adminNotes}
+                      onChange={(e) => setAdminNotes(e.target.value)}
+                      placeholder="Add notes (required for rejection)..."
+                      rows={3}
+                      className="mt-1.5 text-sm"
+                      disabled={
+                        viewReq.status === 'approved' ||
+                        viewReq.status === 'rejected'
+                      }
+                    />
                     {viewReq.status !== 'approved' &&
-                    viewReq.status !== 'rejected'
-                      ? '(required for rejection)'
-                      : ''}
-                  </label>
-                  <Textarea
-                    value={adminNotes}
-                    onChange={(e) => setAdminNotes(e.target.value)}
-                    placeholder="Add notes (required for rejection)..."
-                    rows={3}
-                    className="mt-1 text-[13px] leading-5 sm:text-sm"
-                    disabled={
-                      viewReq.status === 'approved' ||
-                      viewReq.status === 'rejected'
-                    }
-                  />
-                </div>
-
-                {/* Save notes button for any status */}
-                {viewReq.status !== 'approved' &&
-                  viewReq.status !== 'rejected' && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-9 sm:text-xs"
-                      disabled={updateMutation.isPending}
-                      onClick={() => {
-                        updateMutation.mutate({
-                          id: viewReq.id,
-                          status: viewReq.status,
-                          notes: adminNotes,
-                        });
-                      }}
-                    >
-                      💾 Save Notes
-                    </Button>
-                  )}
-
-                {viewReq.status !== 'approved' &&
-                  viewReq.status !== 'rejected' && (
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                      {viewReq.status === 'pending' && (
+                      viewReq.status !== 'rejected' && (
                         <Button
                           size="sm"
                           variant="outline"
-                          className="min-h-11 px-3 py-2.5 gap-1.5 text-[13px] sm:min-h-9 sm:text-xs"
+                          className="mt-2 w-full sm:w-auto"
+                          disabled={updateMutation.isPending}
+                          onClick={() => {
+                            updateMutation.mutate({
+                              id: viewReq.id,
+                              status: viewReq.status,
+                              notes: adminNotes,
+                            });
+                          }}
+                        >
+                          Save Notes
+                        </Button>
+                      )}
+                  </div>
+
+                  {viewReq.status === 'approved' && (
+                    <div className="rounded-lg border border-green-500/20 bg-green-500/10 p-3 text-sm font-medium text-green-700 dark:text-green-400">
+                      This enrollment has been approved. Student has been added.
+                    </div>
+                  )}
+                  {viewReq.status === 'rejected' && (
+                    <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive">
+                      This enrollment has been rejected.
+                    </div>
+                  )}
+                  {viewReq.status !== 'approved' &&
+                    viewReq.status !== 'rejected' &&
+                    !canRejectFromModal && (
+                      <p className="text-xs text-muted-foreground">
+                        Add a rejection reason in Admin Notes to enable the
+                        reject action.
+                      </p>
+                    )}
+                </div>
+              </div>
+
+              <div className="shrink-0 space-y-2 border-t border-border bg-card/80 px-4 py-3 sm:px-6 sm:py-4 backdrop-blur">
+                {viewReq.status !== 'approved' &&
+                  viewReq.status !== 'rejected' && (
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                      {viewReq.status === 'pending' && (
+                        <Button
+                          variant="outline"
+                          className="min-h-11 w-full gap-1.5 sm:min-h-10"
                           disabled={
                             isActionLocked(viewReq.id, 'contacted') ||
                             updateMutation.isPending
@@ -1398,12 +1399,11 @@ export default function EnrollmentRequestsManager() {
                             )
                           }
                         >
-                          <Phone className="w-3 h-3" /> Mark Contacted
+                          <Phone className="h-4 w-4" /> Mark Contacted
                         </Button>
                       )}
                       <Button
-                        size="sm"
-                        className="min-h-11 px-3 py-2.5 gap-1.5 text-[13px] bg-primary text-primary-foreground hover:bg-primary/90 sm:min-h-9 sm:text-xs sm:col-span-2"
+                        className="min-h-11 w-full gap-1.5 sm:min-h-10"
                         disabled={
                           approving || isActionLocked(viewReq.id, 'approved')
                         }
@@ -1412,12 +1412,11 @@ export default function EnrollmentRequestsManager() {
                           handleStartApprove(viewReq);
                         }}
                       >
-                        <Check className="w-3 h-3" /> Approve & Create Student
+                        <Check className="h-4 w-4" /> Approve & Create Student
                       </Button>
                       <Button
-                        size="sm"
                         variant="destructive"
-                        className="min-h-11 px-3 py-2.5 gap-1.5 text-[13px] sm:min-h-9 sm:text-xs"
+                        className="min-h-11 w-full gap-1.5 sm:min-h-10"
                         disabled={
                           !canRejectFromModal ||
                           isActionLocked(viewReq.id, 'rejected') ||
@@ -1425,65 +1424,48 @@ export default function EnrollmentRequestsManager() {
                         }
                         onClick={() => handleRejectWithNotes(viewReq)}
                       >
-                        <X className="w-3 h-3" /> Reject & Notify Parent
+                        <X className="h-4 w-4" /> Reject & Notify
                       </Button>
                     </div>
                   )}
-                {viewReq.status !== 'approved' &&
-                  viewReq.status !== 'rejected' &&
-                  !canRejectFromModal && (
-                    <p className="text-xs text-muted-foreground">
-                      Add a rejection reason in Admin Notes to enable the reject
-                      action.
-                    </p>
-                  )}
-                {viewReq.status === 'approved' && (
-                  <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-3 text-[13px] leading-5 text-green-700 dark:text-green-400 font-medium sm:text-sm">
-                    ✅ This enrollment has been approved. Student has been
-                    added.
-                  </div>
-                )}
-                {viewReq.status === 'rejected' && (
-                  <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-[13px] leading-5 text-destructive font-medium sm:text-sm">
-                    ❌ This enrollment has been rejected.
-                  </div>
-                )}
+
                 {parentWhatsAppUrl ? (
-                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                     <a
                       href={parentWhatsAppUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-[13px] font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:min-h-10 sm:text-sm sm:col-span-2"
+                      className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:min-h-10"
                     >
-                      📱 {currentWhatsAppLabel}
+                      {currentWhatsAppLabel}
                     </a>
                     <Button
                       type="button"
                       variant="outline"
-                      className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-10 sm:text-sm"
+                      className="min-h-11 w-full sm:min-h-10"
                       onClick={() => copyToClipboard(currentWhatsAppMessage)}
                     >
-                      <Copy className="w-4 h-4 mr-2" /> Copy Text
+                      <Copy className="mr-2 h-4 w-4" /> Copy Text
                     </Button>
                     <Button
                       type="button"
                       variant="outline"
-                      className="w-full min-h-11 px-3 py-2.5 text-[13px] sm:min-h-10 sm:text-sm sm:col-span-2"
+                      className="min-h-11 w-full sm:min-h-10"
                       onClick={() => copyToClipboard(viewReq.parent_phone)}
                     >
-                      <Phone className="w-4 h-4 mr-2" /> Copy Parent Number
+                      <Phone className="mr-2 h-4 w-4" /> Copy Number
                     </Button>
                   </div>
                 ) : (
-                  <div className="block w-full text-center py-2 rounded-lg bg-muted text-muted-foreground text-sm font-medium">
+                  <div className="w-full rounded-lg bg-muted py-2 text-center text-sm font-medium text-muted-foreground">
                     Parent phone number is invalid for WhatsApp
                   </div>
                 )}
               </div>
-            )}
-          </div>
+            </>
+          )}
         </DialogContent>
+
       </Dialog>
 
       {/* Approve & Add Student Flow */}
