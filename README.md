@@ -1,94 +1,77 @@
-# 🌟 Ghatak Sports Academy India™ (GSAI) Platform
-# ISO 9001:2015 Certified Martial Arts Management System
+# Ghatak Sports Academy India (GSAI) Platform
 
-<div align="center">
+A responsive web platform for Ghatak Sports Academy India, bringing public academy information and digital administration workflows into one interface.
 
-A modern platform for martial arts academy administration, belt progression,
-student management, and fitness tracking.
+> This repository contains application source code. Academy branding, certifications, affiliations, and third-party assets should be verified with the relevant rights holder before reuse.
 
-</div>
+## Project capabilities
 
-------------------------------------------------------------
+The application is designed to support workflows such as:
 
-📖 PROJECT OVERVIEW
+- Student registration and profile management
+- Belt progression and examination workflows
+- Administrative dashboards
+- Training, fitness, and academy information pages
+- Authentication and data-backed features built around Supabase
+- Responsive layouts for desktop and mobile browsers
 
-The GSAI Platform is a full-featured martial arts management system offering:
+Available features depend on the active deployment and its configured services.
 
-- Student registration & profiles
-- Belt progression workflow
-- Admin dashboard
-- Public academy portal
-- Examination management
-- Fitness and training monitoring
+## Technology
 
-------------------------------------------------------------
+- React, TypeScript, and Vite
+- Tailwind CSS and reusable UI components
+- Supabase / PostgreSQL for configured data and authentication features
+- Vitest and frontend quality tooling
+- Netlify-based deployment configuration
 
-🏛️ ACADEMY BACKGROUND
+## Requirements
 
-Ghatak Sports Academy India (GSAI) integrates:
+- Node.js and npm (use the version supported by the lockfile and build environment)
+- A development Supabase project for features that require a backend
+- Environment variables appropriate for your own development deployment
 
-- Karate
-- Mixed Martial Arts (MMA)
-- Kalaripayattu
-- Modern Fitness Training
+## Local development
 
-Recognitions:
-- Government of India
-- Fit India Movement
-- Khelo India Initiative
+```bash
+git clone https://github.com/EllowDigital/GSAI-IN.git
+cd GSAI-IN
+npm ci
+npm run dev
+```
 
-------------------------------------------------------------
+Create a local environment file based on `.env.example` and replace placeholders with values from services you control. Never commit `.env` or real credentials.
 
-🛠️ TECH STACK
+## Common commands
 
-Category            | Technologies
---------------------|---------------------------------------------
-Frontend            | React, TypeScript, Vite
-Styling             | Tailwind CSS, Lucide Icons
-Backend / Database  | Supabase (PostgreSQL, Auth, Realtime)
-Testing             | Vitest, Jest, React Testing Library
-CI/CD               | Netlify, GitHub Actions
-PWA                 | Vite PWA Plugin (Custom Install Flow)
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the Vite development server |
+| `npm run build` | Run the configured production checks and build |
+| `npm run preview` | Preview the production build locally |
+| `npm run typecheck` | Run TypeScript checks |
+| `npm run lint` | Run ESLint |
+| `npm test` | Run Vitest tests |
+| `npm run sitemap` | Generate the sitemap |
 
-------------------------------------------------------------
+Check `package.json` for the authoritative command list.
 
-🔎 SEO DISCOVERY ENDPOINTS
+## Environment and security
 
-- `https://ghataksportsacademy.com/robots.txt`
-- `https://ghataksportsacademy.com/sitemap.xml`
+- Values with the `VITE_` prefix are bundled into browser code. Treat them as public.
+- Supabase browser clients should use only the project's intended public/publishable key and appropriate database policies.
+- Never put `RESEND_API_KEY`, service-role keys, database passwords, email-provider secrets, or other privileged credentials in a `VITE_*` variable.
+- Keep email-sending and administrative operations on a trusted server or serverless function. Verify authentication and authorization on every privileged operation.
+- Use a separate development project and synthetic data when testing.
 
-The sitemap is generated via `npm run sitemap` and referenced in `public/robots.txt`.
+## Deployment
 
-------------------------------------------------------------
+The repository contains Netlify configuration. Connect the repository to a Netlify site, configure environment variables in the hosting dashboard, and use the build command documented in `package.json`. Verify all configured services and security policies before promoting a deployment to production.
 
-✨ KEY FEATURES
+## Contributing
 
-🥋 Belt Progression System
-- Drag-and-drop interface for belt exams and student ranking
-- Supabase-powered dynamic workflows
+Before making a substantial change, open an issue or contact the project maintainer to agree on the scope. Do not include customer data, private credentials, or production exports in issues or pull requests.
 
-📱 Progressive Web App (PWA)
-- Fully installable
-- Custom beforeinstallprompt logic for admin routes
+## License and third-party assets
 
-🔐 Role-Based Authentication
-- Supabase Auth
-- Session persistence via sessionStorage
-- 
-------------------------------------------------------------
-
-📞 CONTACT & SUPPORT
-
-EllowDigital Enterprise
-Developer: Sarwan Yadav
-Email: support@ghataksportsacademy.com
-Location: Indira Nagar, Lucknow, Uttar Pradesh
-
-------------------------------------------------------------
-
-📄 LICENSE
-
-MIT License  
-See LICENSE file for details.
-
-© 2025 EllowDigital Enterprise
+See [LICENSE](LICENSE) for the repository's current usage notice. Third-party packages, fonts, icons, images, brand assets, and content may have separate terms. Do not assume this client-facing project is open source unless the applicable rights holder grants permission.
